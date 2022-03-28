@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="40dp"
+        android:background="@color/backgroundColor"
+        android:orientation="vertical"
+        tools:context=".views.ContactNumberActivity"
+        >
+    <TextView
+        android:id="@+id/contact_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/contact_number"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@color/textColor"
+        android:textSize="25sp"
+        android:layout_gravity="center">
+
+    </TextView>
+
+    <com.google.android.material.appbar.AppBarLayout
+
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingEnd="15dp"
+            android:paddingStart="15dp"
+            android:id="@+id/toolbar"
+            android:minHeight="?attr/actionBarSize"
+
+            >
+
+
+
+
+
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/search_by_secret_number"
+                android:background="@drawable/ed_text_background"
+                app:queryHint="@string/search"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:baselineAligned="false"
+                android:nestedScrollingEnabled="false"
+                android:layout_margin="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginBottom="30dp"
+                />
+
+
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+        <include layout="@layout/item_divider" />
+
+        <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/recycler_view"
+        android:layout_marginTop="10dp"
+        tools:listitem="@layout/item_contact_number"/>
+       />
+    </LinearLayout>
+
+
+
+
+

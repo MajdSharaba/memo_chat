@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Memo</string>
+    <string name="company_name">YAWAER</string>
+    <string name="from">من</string>
+    <string name="send_code">ارسل رمز</string>
+    <string name="or">أو</string>
+    <string name="welcome">مرحبا!!</string>
+    <string name="status">الحالة</string>
+    <string name="number">رقم الهاتف</string>
+    <string name="update">تحديث</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="active">نشط</string>
+    <string name="verifiction_code">رمز التحقق</string>
+    <string name="verifiction">تحقق</string>
+    <string name="type_message">اكتب رسالة</string>
+    <string name="light_mode_selected">فاتح</string>
+    <string name="dark_mode_selected"> داكن</string>
+    <string name="title_activity_chat_room">ChatRoomActivity</string>
+    <string name="tab_text_1">المحادثات</string>
+    <string name="tab_text_2">بحث</string>
+    <string name="tab_text_3">اتصال</string>
+    <string name="tab_text_4">الملف الشخصي</string>
+    <string name="tab_text_5">الأعدادات</string>
+    <string name="delete">حذف</string>
+    <string name="dialog_message">هل انت متأكد من حذف العنصر</string>
+    <string name="dialog_title">تنبيه</string>
+
+
+    <string name="special_number">الرقم الخاص</string>
+    <string name="first_name">الاسم الاول</string>
+    <string name="last_name">اسم العائلة</string>
+    <string name="group_name">اسم المجموعة</string>
+    <string name="memebers">الأعضاء</string>
+    <string name="enter_group_name">أدخل اسم المجموعة</string>
+    <string name="chat">المحادثات</string>
+    <string name="search">بحث</string>
+    <string name="stories">الحالات</string>
+    <string name="forward">اعادة ارسال الى</string>
+    <string name="cancel">الغاء</string>
+    <string name="send">ارسال</string>
+
+
+    <string name="archived">مؤرشفة</string>
+    <string name="contact_number">جهات الاتصال</string>
+    <string name="new_group">مجموعة جديدة</string>
+    <string name="email">البريد الالكتروني</string>
+    <string name="phone_number">رقم الهاتف</string>
+    <string name="views">المشاهدات</string>
+    <string name="Mobile">رقم الهاتف</string>
+    <string name="specialNumber">رقم هاتف مميز</string>
+
+    <string name="add">اضافة</string>
+    <string name="addContact">اضافة الى جهة الاتصال</string>
+    <string name="userSeenYourStory">مشاهدة المستخدمين الى حالتك</string>
+
+    <string name="helloIamHere">مرحبا انا هنا</string>
+
+
+
+
+
+
+
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">اللغة</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="ui">الواجهات</string>
+    <string name="dark_mode">داكن</string>
+    <string name="dark_mode_def_value">MODE_NIGHT_FOLLOW_SYSTEM</string>
+    <string name="title_activity_settings2">الأعدادات</string>
+    <string name="resend">اعادة ارسال الكود</string>
+    <string name="sendText">ادخل رقمك الهاتف وسوف نقوم بأرسال رمز التحقق اليك ليتم تأكيد حسابك </string>
+    <string name="verifictionText">ادخل الرمز الذي قمنا بأرساله الى رقمك </string>
+    <string name="choose_special_number">اختر رقمك الخاص</string>
+    <string name="register">انشاء حساب</string>
+    <string name="alert_delete_message">حذف الرسائل؟</string>
+    <string name="delete_for_me">الحذف لدي</string>
+    <string name="delete_for_all">الحذف لدى الجميع</string>
+    <string name="call">مكالمة</string>
+    <string name="video">فيديو</string>
+    <string name="message">مراسلة</string>
+    <string name="mute">صامت</string>
+    <string name="more">المزيد</string>
+    <string name="media">الوسائط</string>
+    <string name="photo">صورة</string>
+    <string name="voice">تسجيل صوتي</string>
+    <string name="contact">جهة اتصال</string>
+    <string name="yesterday">الأمس</string>
+    <string name="yesterdayAt">الأمس عند </string>
+
+
+    <string name="connect_now">متصل الان </string>
+    <string name="writing_now">يكتب الان.... </string>
+    <string name="last_seen">اخر ظهور عند</string>
+    <string name="update_name">تعديل الاسم</string>
+    <string name="prograss_message">يرجى الانتظار....</string>
+    <string name="permission_necessary">صلاحية ضرورية</string>
+    <string name="contact_permission">لمساعدتك على التواصل مع اصدقائك وعائلتك يرجى منح صلاحية الوصول لجهات الاتصال من خلال الاعدادات>الأذونات>جهات الاتصال</string>
+    <string name="write_premission">لمساعدتك على حفظ الصور والملفات داخل التطبيق يرجى منح صلاحية التخزين من  خلال الاعدادات>الأذونات>تخزين</string>
+    <string name="read_premission">لمساعدتك على ارسال الملفات داخل التطبيق يرجى منح صلاحية قراءة الذاكرة من  خلال الاعدادات>الأذونات>تخزين</string>
+    <string name="record_voice_premission">لمساعدتك على تسجيل الصوت داخل التطبيق يرجى منح صلاحية الميكروفون من  خلال الاعدادات>الأذونات>الميكروفون</string>
+    <string name="camera_premission">لمساعدتك على التقاط الصور داخل التطبيق يرجى منح صلاحية الكاميرة من  خلال الاعدادات>الأذونات>الكاميرة</string>
+    <string name="location_premission">لمساعدتك على ارسال موقعك داخل التطبيق يرجى منح صلاحية الموقع من  خلال الاعدادات>الأذونات>الموقع</string>
+    <string name="valied_message">ادخل رقم صحيح لو سمحت</string>
+    <string name="valied_name_message">ادخل اسم بلا أرقام</string>
+    <string name="valied_special_message">اختر رقم خاص لو سمحت</string>
+    <string name="user_name">اسم المستخدم</string>
+    <string name="set_photo">اختر صورة</string>
+    <string name="set_user_name">اختر اسم مستخدم</string>
+    <string name="recent_call">المكالمات الاخيرة</string>
+    <string name="notification_sounds">الأشعارات والأصوات</string>
+    <string name="appearance">المظهر</string>
+    <string name="font_size">حجم الخط</string>
+    <string name="ask_memo">اسأل ميمو</string>
+    <string name="tell_friend">اخبر صديق</string>
+    <string name="slide_to_cancel">اسحب للألغاء</string>
+    <string name="use_memo"> استخدم التطبيق على اجهزة اخرى</string>
+    <string name="link_device"> اتصل بجهاز</string>
+    <string name="please_download"> قم بتنزيل الملف</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <string name="name">الآسم</string>
+    <string name="username">اسم المستخدم</string>
+    <string name="SetphotoOrVideo">أختر صورة او فديو</string>
+    <string name="SetUsername">تعيين اسم المستخدم</string>
+    <string name="devices">الاجهزة</string>
+    <string name="recentCalls">المكالمات الأخيرة</string>
+    <string name="notificationsandsounds">الإشعارات والأصوات</string>
+    <string name="Appearance">المظهر</string>
+    <string name="language">اللغة</string>
+    <string name="fontSize">حجم الخط</string>
+    <string name="askmemoaauestion">اسأل ميمو سؤال</string>
+    <string name="preference">الأفضلية</string>
+    <string name="tellafriend">مشاركة التطبيق</string>
+    <string name="help">المساعدة</string>
+    <string name="home">الرشيسية</string>
+    <string name="settings">الضبط</string>
+    <string name="MoveToSettings">اذهب الى الضبط</string>
+    <string name="location">موقعك</string>
+    <string name="sendCurrentLocation">ارسل موقعك الحالي</string>
+    <string name="state">الحالة</string>
+    <string name="hellohowareyou">مرحبا, كيف الحال</string>
+    <string name="invitation">دعوة</string>
+    <string name="sendMessage">ارسل رساله</string>
+
+    <string name="file">ملف</string>
+    <string name="memoFontSize">ميمو لتغير الخط</string>
+    <string name="change">تغير</string>
+    <string name="myStory">حالتي</string>
+    <string name="addToMyStory">أضف إلى حالتي</string>
+    <string name="laststatus">اخر حالة</string>
+    <string name="title">العنوان</string>
+    <string name="selectFontSize">اختر حجم الخط</string>
+</resources>

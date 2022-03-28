@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
+    tools:context=".views.RegisterActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:orientation="vertical">
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imageProfile"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            android:layout_margin="30dp"
+            android:src="@drawable/th"
+            app:civ_border_color="@color/green_500"
+            app:civ_border_width="2dp" />
+
+<!--        <Spinner-->
+
+<!--            android:background="@drawable/et_custom"-->
+<!--            android:popupBackground = "@color/backgroundColor"-->
+<!--            android:textColor="@color/textColor"-->
+<!--            android:textColorHint="#808080"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:layout_marginTop="50dp"-->
+<!--            android:id="@+id/spinner1"-->
+<!--            android:fontFamily="@font/roboto_regular"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:padding="5dp" />-->
+
+
+
+
+        <EditText
+            android:id="@+id/et_fName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/gray"
+            android:hint="@string/first_name"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="50dp"
+            android:padding="15dp"
+            android:fontFamily="@font/roboto_regular"
+            android:background="@drawable/et_custom"
+            android:fallbackLineSpacing="false"
+
+            android:textSize="15sp" />
+        <EditText
+            android:id="@+id/et_lName"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/last_name"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="50dp"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/gray"
+            android:padding="15dp"
+            android:fontFamily="@font/roboto_regular"
+            android:background="@drawable/et_custom"
+            android:textSize="15sp" />
+
+        <Spinner
+
+            android:background="@drawable/et_custom"
+            android:popupBackground = "@color/backgroundColor"
+            android:textColor="@color/textColor"
+            android:popupElevation="0dp"
+            android:textColorHint="#808080"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="50dp"
+            android:id="@+id/spinner1"
+            android:fontFamily="@font/roboto_regular"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:padding="5dp" />
+<!--        <EditText-->
+<!--            android:id="@+id/et_em"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="50dp"-->
+<!--            android:hint="@string/email"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:textColor="@color/colorBlack"-->
+<!--            android:textColorHint="@color/gray"-->
+<!--            android:layout_marginTop="50dp"-->
+<!--            android:padding="15dp"-->
+<!--            android:fontFamily="@font/roboto_regular"-->
+<!--            android:background="@drawable/et_custom"-->
+<!--            android:textSize="15sp" />-->
+
+
+        <Button
+            android:id="@+id/btn_Register"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_custom_blue_back"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="50dp"
+            android:fontFamily="@font/roboto_regular"
+            android:textColor="@android:color/white"
+            android:text="@string/register"/>
+
+
+
+<!--        <Button-->
+<!--            android:id="@+id/btn_skip"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_below="@id/btn_Register"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:layout_marginTop="50dp"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:background="@null"-->
+<!--            android:fontFamily="@font/roboto_regular"-->
+<!--            android:textColor="@color/green_500"-->
+<!--            android:textSize="20dp"-->
+<!--            android:text="SkIP"/>-->
+
+
+
+
+
+
+
+
+    </LinearLayout>
+
+
+
+
+
+</ScrollView>
+
