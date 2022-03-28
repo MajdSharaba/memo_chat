@@ -1,0 +1,451 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/liner_conversation"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@color/backgroundColor"
+    android:layout_height="match_parent"
+    android:layoutDirection="locale"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/relativeMaps"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:background="@color/green"
+            android:gravity="center"
+            android:text="@string/location"
+            android:textColor="@color/white"
+            android:textSize="25dp"
+
+            />
+
+        <fragment
+            android:id="@+id/google_map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <Button
+            android:id="@+id/sendLocation"
+            android:gravity="center"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/btn_custom_blue_back"
+            android:text="@string/sendCurrentLocation"
+            android:textColor="#fff"
+            android:padding="5dp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar"
+            android:background="@color/green_500"
+            android:minHeight="?attr/actionBarSize"
+
+            >
+
+            <LinearLayout
+                android:id="@+id/person_information_liner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/image_button_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/ic_arrow_back">
+
+            </ImageView>
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/user_image"
+                android:layout_width="41dp"
+                android:layout_height="41dp"
+                android:src="@drawable/th"
+                app:civ_border_color="@color/textColor"
+                android:layout_marginLeft="5dp"
+                app:civ_border_width="2dp" />
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="3"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="10dp"
+                android:gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:text="@string/name"
+                android:textSize="15sp"
+                android:textColor="@color/textColor"
+                >
+
+            </TextView>
+                    <TextView
+
+                        android:id="@+id/state"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_weight="0.5"
+                        android:visibility="gone"
+                        android:text="@string/state"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="5dp"
+                        android:textSize="10sp"
+                        android:textColor="@color/textColor"
+
+                />
+
+                </LinearLayout>
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_gravity="center"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_video_blue">
+
+                </ImageView>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_weight="0.5"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_call"
+                    app:tint="@color/green">
+
+                </ImageView>
+
+
+
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/search_con"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:queryHint="@string/search"
+                    android:layout_marginStart="18dp"
+                    app:searchIcon="@android:drawable/ic_menu_search" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/tools_liner_layout"
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:layout_height="wrap_content">
+                <ImageButton
+                    android:id="@+id/image_button_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_delete"/>
+                <ImageButton
+                    android:id="@+id/image_button_foword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:layout_marginStart="10dp"
+
+                    android:src="@drawable/ic_forword">
+
+
+                </ImageButton>
+
+            </LinearLayout>
+
+
+
+
+            
+
+        </androidx.appcompat.widget.Toolbar>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/container"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/messagesContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:layout_marginBottom="20dp"
+            android:layout_above="@+id/liner"
+            android:layout_marginTop="10dp"
+            android:listSelector="@android:color/transparent"
+            android:transcriptMode="alwaysScroll"
+            android:stackFromBottom="true"
+            android:divider="@null" />
+
+        <LinearLayout
+            android:id="@+id/liner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/green_500"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal">
+            <LinearLayout
+                android:id="@+id/messageLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.8"
+                android:orientation="horizontal"
+                android:visibility="visible">
+            <ImageButton
+                android:id="@+id/btn_send_message_image"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:layout_weight="0.2"
+                android:background="@null"
+                android:src="@drawable/ic_add_blue"
+                android:textColor="@color/background_material_light" />
+
+
+
+        <EditText
+            android:id="@+id/messageEdit"
+            android:background="@drawable/et_custom"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:padding="5dp"
+            android:layout_height="38dp"
+            android:layout_margin="5dp"
+            android:textColor="@color/textColor"
+            android:fallbackLineSpacing="false"
+            android:textColorHint="@color/gray"
+            android:hint="@string/type_message" />
+
+
+
+
+
+        </LinearLayout>
+            <com.devlomi.record_view.RecordView
+                android:id="@+id/recordView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.8"
+                android:visibility="gone"
+                app:slide_to_cancel_arrow="@drawable/recv_ic_arrow"
+                app:slide_to_cancel_arrow_color="@color/textColor"
+                app:slide_to_cancel_text="Slide to cancel" />
+            <ImageButton
+                android:id="@+id/btn_send_message_text"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_gravity="bottom"
+                android:layout_margin="5dp"
+                android:visibility="gone"
+                android:layout_weight="0.2"
+                android:background="@null"
+                android:src="@drawable/ic_arrow_send"
+                />
+            <com.devlomi.record_view.RecordButton
+                android:id="@+id/recordButton"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_gravity="center|bottom"
+                android:layout_margin="5dp"
+                android:layout_weight=".2"
+                android:background="@null"
+                android:scaleType="center"
+                android:tint="@color/green"
+                app:mic_icon="@drawable/ic_mic" />
+
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/dataLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/liner"
+            android:layout_margin="10dp"
+            android:layout_marginHorizontal="15dp"
+            android:background="@drawable/picker_background"
+            android:gravity="center"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+
+
+            android:visibility="invisible">
+
+
+            <LinearLayout
+                android:id="@+id/lytCameraPick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_margin="10dp"
+                android:gravity="start"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/camera_icon" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/gallery"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center"
+                    android:text="@string/title_camera"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/dialog_choose_text_color" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lytGallaryPick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:layout_centerHorizontal="true"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/gallery" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center"
+                    android:text="@string/title_gallery"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/dialog_choose_text_color" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pickFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/pdf_icon" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/pdf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/file"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/dialog_choose_text_color" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pick_contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/lytCameraPick"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/adduser" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/contact"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_gravity="center"
+                    android:text="@string/contact"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/dialog_choose_text_color" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/pick_location"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pickFile"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/location" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="@string/location"
+                    android:layout_gravity="center"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@color/dialog_choose_text_color" />
+
+            </LinearLayout>
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>

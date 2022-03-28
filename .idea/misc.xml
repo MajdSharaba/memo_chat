@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_add_archived.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_add_blue.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_add_phone_green.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_arrow_back.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_arrow_forword.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_arrow_send.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_bell.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_call.xml" value="0.1365" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_call_blue.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_check.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_delete.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_download.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_download_audio.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_email.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_file.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_forword.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_info.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_link.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_location.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_message.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_mic.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_mode.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_more.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_not_send.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_pause.xml" value="0.1015" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_person.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_recive_done.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_recive_done_green.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_search.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_select_image.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_send_done.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_setting.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_share.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_un_archived.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_video.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_video_blue.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_voice.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-xhdpi/in_message_bg.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-xhdpi/out_message_bg.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/border_file.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/border_spinner.xml" value="0.1365" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/bottom_navigation_selector.xml" value="0.1365" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/btn_background.xml" value="0.1365" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/btn_custom_blue_back.xml" value="0.1365" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/btn_custom_white_back.xml" value="0.1365" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/btx_custom.xml" value="0.1365" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/dialog_bg.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ed_text_background.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/et_custom.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ic_add.xml" value="0.2075" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ic_addphoto.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ic_home.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ic_launcher_background.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ic_logo_background.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ic_settings.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/item_chat_back.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/item_chat_message_back.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/language.xml" value="0.2075" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/ln_custom_grey_back.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/pdf_item_back.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/picker_background.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/shape_blnb.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/shape_blnt.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/volume_seekbar.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_archived.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_contact_number.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_conversation.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_dash_bord.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_devices_link.xml" value="0.25" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_group_properties.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_group_selector.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_login.xml" value="0.10572916666666667" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_register.xml" value="0.10572916666666667" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_splash_screen.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_test.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_user_details.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_user_information.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_verification.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/add_contact_dialog.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/chat_room_row.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/dialog_image_cht.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/dialog_select_shoice.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/dialog_video_player.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/fragment_chat_room.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/fragment_dialog_forward.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/fragment_google_map.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/fragment_profile.xml" value="0.10572916666666667" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/fragment_search.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/fragment_settings.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/fragment_stories.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/image_chat_dialog.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/image_item_chat_meesage.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/input_name_dialog.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/item_contact_number.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/item_device_link.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/item_group_selector.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/item_search.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/list_item_chat_message.xml" value="0.22" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/location_item_chat_message.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/media_item.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/notification.xml" value="0.11956521739130435" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/pdf_item_back.xml" value="0.1046875" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/pdf_item_chat_message.xml" value="0.11956521739130435" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/row_status.xml" value="0.1046875" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/settings_activity.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/video_item_chat_message.xml" value="0.1286231884057971" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/mipmap-anydpi-v26/ic_logo.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/mipmap-anydpi-v26/ic_logo_round.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/xml/root_preferences.xml" value="0.2" />
+        <entry key="..\:/yawar/app/src/main/res/layout/list_item_chat_message.xml" value="0.1" />
+        <entry key="..\:/yawar/app/src/main/res/layout/location_item_chat_message.xml" value="0.1" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>

@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:orientation="vertical"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+>
+
+
+
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="match_parent"
+        android:background="@null"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/toolbar"
+            android:minHeight="?attr/actionBarSize"
+
+            >
+
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="15dp"
+
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/stories"
+
+                    android:fontFamily="@font/roboto_regular"
+                    android:textColor="@color/textColor"
+                    android:textSize="25sp"
+                    android:layout_gravity="center">
+
+
+
+                </TextView>
+
+                <androidx.appcompat.widget.SearchView
+                    android:id="@+id/search"
+                    android:background="@drawable/ed_text_background"
+                    app:queryHint="@string/search"
+                    android:baselineAligned="false"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_margin="20dp"
+                    android:layout_marginBottom="30dp"
+                    />
+                <include layout="@layout/item_divider">
+
+                </include>
+            </LinearLayout>
+
+
+
+
+
+</androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <LinearLayout
+    android:id="@+id/liner_my_story"
+    android:layout_width="match_parent"
+    android:layout_below="@+id/app_bar"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:orientation="horizontal">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        >
+
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circle_image"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:paddingTop="10dp"
+
+            android:src="@drawable/ic_person" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circle_add"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignBottom="@+id/circle_image"
+            android:layout_marginStart="-33dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginBottom="-7dp"
+            android:layout_toEndOf="@+id/circle_image"
+            android:src="@drawable/ic_add_blue">
+
+        </de.hdodenhof.circleimageview.CircleImageView>
+    </RelativeLayout>
+
+
+
+
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="3"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="285dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:layout_marginLeft="44dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/myStory"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            app:layout_constraintStart_toEndOf="@+id/image_layout"
+            app:layout_constraintTop_toTopOf="@+id/image_layout" />
+        <TextView
+            android:id="@+id/text_time"
+            android:layout_width="285dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="3dp"
+            android:layout_marginLeft="44dp"
+            android:layout_marginTop="1dp"
+            android:text="@string/addToMyStory"
+            android:textColor="#A9A9A9"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@id/textView"
+            app:layout_constraintStart_toEndOf="@+id/image_layout"
+            app:layout_constraintTop_toTopOf="@+id/textView" />
+    </LinearLayout>
+
+    <!--        <ImageButton-->
+    <!--            android:id="@+id/pick_image"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_gravity="end|center_vertical"-->
+    <!--            android:background="@null"-->
+    <!--            android:layout_margin="15dp"-->
+    <!--            android:src="@drawable/ic_baseline_camera">-->
+    <!--        </ImageButton>-->
+
+    <!--        <ImageButton-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_gravity="end|center_vertical"-->
+    <!--            android:background="@null"-->
+    <!--            android:layout_margin="15dp"-->
+    <!--            android:src="@drawable/ic_baseline_edit_24">-->
+
+    <!--        </ImageButton>-->
+
+</LinearLayout>
+<TextView
+    android:id="@+id/text_last_status"
+    android:layout_below="@+id/liner_my_story"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="30dp"
+
+    android:text="@string/laststatus"
+    android:textColor="@android:color/black"
+    android:textSize="18sp"
+    >
+
+</TextView>
+
+
+
+<androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/rv"
+    android:layout_below="@id/text_last_status"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content" />
+<LinearLayout
+    android:id="@+id/dataLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginHorizontal="15dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/picker_background"
+    android:padding="25dp"
+    android:visibility="invisible">
+
+
+
+
+    <LinearLayout
+        android:id="@+id/lytCameraPick"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/image_pick"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/gallery"
+
+            tools:ignore="VectorDrawableCompat" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:textSize="10dp"
+            android:text="gallery"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/cardview_dark_background" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pickFile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/take_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/camera_icon"
+
+            tools:ignore="VectorDrawableCompat" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10dp"
+            android:layout_marginTop="5dp"
+            android:text="camera"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/cardview_dark_background" />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/take_video"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/record_video"
+
+            tools:ignore="VectorDrawableCompat" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10dp"
+            android:layout_marginTop="5dp"
+            android:text="video"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@color/cardview_dark_background" />
+
+</LinearLayout>
+</LinearLayout>
+
+
+</RelativeLayout>

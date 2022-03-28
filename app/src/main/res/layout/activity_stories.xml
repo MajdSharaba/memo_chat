@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+
+    >
+
+    <!--below is the image view where we will
+        be displaying images in our stories-->
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:layout_above="@+id/liner"
+        android:gravity="start"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:layout_above="@+id/image"
+        android:background="@null" >
+</androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ImageView
+        android:id="@+id/image"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blue"
+        android:contentDescription="@null"
+        tools:src="@drawable/ic_launcher_foreground" />
+
+    <VideoView
+         android:id="@+id/video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+            android:contentDescription="@null"
+            android:layout_gravity="center"
+            android:visibility="gone"
+
+
+
+                />
+
+    <!--on below line we are creating
+        linear layout for our views-->
+    <LinearLayout
+        android:id="@+id/liner"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
+
+        android:orientation="horizontal">
+
+        <!--view to handle move to previous image-->
+        <View
+            android:id="@+id/reverse"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <!--view to move to the next image-->
+        <View
+            android:id="@+id/skip"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+
+        <TextView
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:textSize="15dp"
+            android:background="@drawable/btn_custom_blue_back"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:text="@string/views">
+        </TextView>
+        <ImageButton
+            android:id="@+id/image_button_delete"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/ic_delete"
+            android:layout_gravity="end"
+            android:background="@null"
+            android:visibility="gone"
+            >
+        </ImageButton>
+
+    </LinearLayout>
+
+    <!--below widget is use to create indicator for our stories at top-->
+    <jp.shts.android.storiesprogressview.StoriesProgressView
+        android:id="@+id/stories"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_gravity="top"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" />
+
+</merge>

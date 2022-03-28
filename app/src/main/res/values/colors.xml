@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green">#19A15F</color>
+    <color name="green_500">#F6F6F6</color>
+    <color name="green_700">#F6F6F6</color>
+    <color name="colorPrimaryPix">#075e54</color>
+    <color name="colorPrimaryLightPix">#80075e54</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="textColor">#0B2027</color>
+    <color name="background_search">#EEEEEE</color>
+    <color name="background_bottom_navigation">#F6F6F6</color>
+    <color name="blue">#007DFF</color>
+    <color name="red">#F12311</color>
+    <color name="gray">#808080</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="background_editText_color">#EEEEEE</color>
+
+
+
+
+
+
+
+    <color name="backgroundColor">#FFFFFFFF</color>
+    <color name="background_send_message">#E9E9EB</color>
+
+
+    <color name="background_recive_message">#19A15F</color>
+    <color name="browser_actions_bg">#F5F5F5</color>
+    <color name="background_chat_page">#FFFFFFFF</color>
+    <color name="background_onLong_click">#e6e6fa</color>
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+
+
+
+
+
+
+
+</resources>

@@ -1,0 +1,165 @@
+<resources>
+    <string name="app_name">Memo</string>
+    <string name="company_name">YAWAER</string>
+    <string name="from">from</string>
+    <string name="send_code">send code</string>
+    <string name="or">OR</string>
+    <string name="welcome">Welcome!!</string>
+    <string name="status">Status</string>
+    <string name="number">Number</string>
+    <string name="update">Update</string>
+    <string name="logout">LogOut</string>
+    <string name="active">active</string>
+    <string name="verifiction_code">verifiction code</string>
+    <string name="verifiction">verifiction</string>
+    <string name="type_message">type message</string>
+    <string name="light_mode_selected">Light Mode Selected</string>
+    <string name="dark_mode_selected"> Dark Mode Selected</string>
+    <string name="title_activity_chat_room">ChatRoomActivity</string>
+    <string name="tab_text_1">Chats</string>
+    <string name="tab_text_2">search</string>
+    <string name="tab_text_3">Calls</string>
+    <string name="tab_text_4">Profile</string>
+    <string name="tab_text_5">Settings</string>
+
+    <string name="special_number">Special Number</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="group_name">Group Name</string>
+    <string name="memebers">Members</string>
+    <string name="enter_group_name">Enter Group Name</string>
+    <string name="chat">Chats</string>
+    <string name="stories">Stories</string>
+    <string name="email">E-Mail</string>
+    <string name="phone_number">Phone Number</string>
+
+
+    <string name="search">Search</string>
+    <string name="archived">Archived</string>
+    <string name="contact_number">Contacts Number</string>
+    <string name="new_group">New Group</string>
+    <string name="delete">delete</string>
+    <string name="dialog_message">Are you sure to delete the item?</string>
+    <string name="dialog_title">Alert</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Language</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="ui">UI</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="dark_mode_def_value">MODE_NIGHT_FOLLOW_SYSTEM</string>
+    <string name="title_activity_settings2">Settings</string>
+    <string name="resend">Resend Code</string>
+    <string name="forward">Forward TO</string>
+    <string name="cancel">Cancel</string>
+    <string name="send">Send</string>
+    <string name="sendText">Please enter your number and we will send code for you  </string>
+    <string name="verifictionText">Please enter your code that we have sent to your number  </string>
+    <string name="choose_special_number">choose special number</string>
+    <string name="register">Register</string>
+    <string name="alert_delete_message">Delete Messages?</string>
+    <string name="delete_for_me">Delete For Me</string>
+    <string name="delete_for_all">Delete For All</string>
+    <string name="call">Call</string>
+    <string name="video">Video</string>
+    <string name="message">Message</string>
+    <string name="mute">Mute</string>
+    <string name="more">More</string>
+    <string name="media">Media</string>
+    <string name="photo">Photo</string>
+    <string name="voice">Voice</string>
+    <string name="location">Location</string>
+    <string name="contact">Contact</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="settings">Settings</string>
+    <string name="connect_now">Connected now</string>
+    <string name="writing_now">Typing....</string>
+    <string name="last_seen">last seen</string>
+    <string name="update_name">Update Name</string>
+    <string name="prograss_message">please wait...</string>
+    <string name="permission_necessary">Permission Necessary</string>
+    <string name="contact_permission">To help you communicate with your friends and family, please grant access to contacts from settings>permission>contact</string>
+    <string name="write_premission">To help you save photos and files within the app , please grant access to storage from settings>permission>storage</string>
+    <string name="read_premission">To help you send files within the app , please grant access to read storage from settings>permission>storage</string>
+    <string name="record_voice_premission">To help you record voice within the app , please grant access to microphone from settings>permission>microphone</string>
+    <string name="camera_premission">To help you take photo within the app , please grant access to camera from settings>permission>camera</string>
+    <string name="location_premission">To help you send location within the app , please grant access to location from settings>permission>location</string>
+    <string name="valied_message">Please enter a valid phone number.</string>
+    <string name="valied_name_message">Please enter name without number.</string>
+    <string name="valied_special_message">Please choose secret number .</string>
+    <string name="user_name">User Name</string>
+    <string name="set_photo">Set Photo</string>
+    <string name="set_user_name">Set User Name</string>
+    <string name="devices">Devices</string>
+    <string name="recent_call">Recent Calls</string>
+    <string name="notification_sounds">Notification and Sounds</string>
+    <string name="appearance">Appearance</string>
+    <string name="language">Language</string>
+    <string name="font_size">Font Size</string>
+    <string name="ask_memo">Ask memo a question</string>
+    <string name="preference">Preference</string>
+    <string name="tell_friend">Tell a friend</string>
+    <string name="help">Help</string>
+    <string name="slide_to_cancel">Slide To Cancel</string>
+    <string name="use_memo"> Use Memo on Other Devices</string>
+    <string name="link_device"> Link a Device</string>
+    <string name="please_download"> please download file</string>
+    <string name="yesterdayAt">yesterday at </string>
+
+
+
+
+
+
+
+
+    <string name="name">  Name</string>
+    <string name="username">  User Name</string>
+    <string name="SetphotoOrVideo">  Set photo Or Video</string>
+    <string name="SetUsername">  Set Username</string>
+    <string name="recentCalls">  Recent Calls</string>
+    <string name="notificationsandsounds">  Notifications and sounds</string>
+    <string name="Appearance">  Appearance</string>
+    <string name="fontSize">  Font Size</string>
+    <string name="askmemoaauestion">  Ask Memo A Question</string>
+    <string name="tellafriend">  Tell A Friend</string>
+    <string name="home">Home</string>
+    <string name="MoveToSettings">Move To Settings</string>
+    <string name="sendCurrentLocation">Send Current Location</string>
+    <string name="state">State</string>
+    <string name="hellohowareyou">Hello how are you</string>
+    <string name="views">Views</string>
+    <string name="Mobile">Phone Number</string>
+    <string name="specialNumber">Special Phone Number</string>
+    <string name="add">Add</string>
+    <string name="addContact">Add Contact</string>
+    <string name="userSeenYourStory">User Seen Your Story</string>
+    <string name="invitation">Invitation</string>
+    <string name="sendMessage">Send Message</string>
+    <string name="file">File</string>
+    <string name="memoFontSize">Memo Font Size</string>
+    <string name="change">Change</string>
+    <string name="helloIamHere">Hello I am Here</string>
+    <string name="myStory">My Story</string>
+    <string name="addToMyStory">Add To My Story</string>
+    <string name="laststatus">last status</string>
+    <string name="title">Title</string>
+    <string name="selectFontSize">Select Your Text Size</string>
+
+</resources>

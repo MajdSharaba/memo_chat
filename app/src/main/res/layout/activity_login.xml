@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="locale"
+    android:background="@color/backgroundColor"
+    tools:context=".views.LoginActivity">
+    <RelativeLayout
+        android:layout_gravity="center"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_marginStart="100dp"
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="false"
+            app:srcCompat="@drawable/ic_splash"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginRight="8dp"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            tools:ignore="VectorDrawableCompat" />
+        <TextView
+            android:id="@+id/text"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginLeft="8dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_below="@+id/imageView"
+            android:text="@string/sendText">
+
+        </TextView>
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@+id/text"
+      android:orientation="vertical">
+       <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="50dp"
+           android:layoutDirection="ltr"
+          android:layout_marginTop="50dp"
+          android:layout_marginRight="10dp"
+          android:layout_marginLeft="10dp"
+          android:layout_marginBottom="10dp"
+           android:orientation="horizontal">
+
+          <com.hbb20.CountryCodePicker
+              android:id="@+id/ccp"
+              app:ccp_arrowColor="@color/textColor"
+              app:ccp_flagBorderColor="@color/textColor"
+              app:ccpDialog_textColor="@color/textColor"
+              app:ccp_contentColor="@color/textColor"
+              android:layout_width="wrap_content"
+              android:layout_height="match_parent"
+              app:ccp_defaultNameCode="IQ"
+              />
+
+          <EditText
+              android:id="@+id/editTextPhone"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:padding="5dp"
+              android:ems="12"
+              android:textColor="@color/textColor"
+              android:textColorHint="@color/gray"
+              android:background="@drawable/et_custom"
+              android:layout_marginStart="3dp"
+              android:hint="(415) 555 - 2671"
+              android:inputType="phone"
+              />
+       </LinearLayout>
+
+      <!--    <EditText-->
+<!--        android:id="@+id/et_password"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="50dp"-->
+<!--        android:hint="+964"-->
+<!--        android:layout_marginLeft="20dp"-->
+<!--        android:layout_marginRight="20dp"-->
+<!--        android:layout_marginTop="50dp"-->
+<!--        android:padding="15dp"-->
+<!--        android:fontFamily="@font/roboto_regular"-->
+<!--        android:inputType="phone"-->
+<!--        android:background="@drawable/et_custom"-->
+<!--        android:textSize="15sp" />-->
+
+
+    <Button
+        android:id="@+id/btn_send_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/btn_custom_blue_back"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/roboto_regular"
+        android:textColor="@android:color/white"
+        android:text="@string/send_code"/>
+
+<!--        <TextView-->
+<!--            android:layout_margin="10dp"-->
+<!--            android:id="@+id/orText"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/or"-->
+<!--            android:fontFamily="@font/roboto_regular"-->
+<!--            android:textSize="15sp"-->
+<!--            android:textColor="@color/green_500">-->
+
+<!--        </TextView>-->
+
+
+<!--        <com.google.android.gms.common.SignInButton-->
+<!--            android:id="@+id/sign_in_button"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginLeft="20dp"-->
+<!--            android:layout_marginRight="20dp"-->
+<!--            android:layout_marginBottom="20dp"-->
+<!--            android:textSize="36sp"-->
+<!--            app:buttonSize="icon_only">-->
+
+<!--        </com.google.android.gms.common.SignInButton>-->
+
+  </LinearLayout>
+    </RelativeLayout>
+
+
+
+
+
+</ScrollView>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="40dp"
+            android:background="@color/backgroundColor"
+            tools:context=".fragment.SearchFragment"
+            android:orientation="vertical">
+
+
+    <TextView
+        android:id="@+id/search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/search"
+        android:textColor="@color/textColor"
+        android:textSize="25sp">
+
+    </TextView>
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/app_bar"
+                android:layout_width="match_parent"
+                android:background="@null"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingEnd="15dp"
+                    android:paddingStart="15dp"
+
+                    android:minHeight="?attr/actionBarSize"
+
+                    >
+
+
+
+
+
+                        <androidx.appcompat.widget.SearchView
+                            android:id="@+id/search_by_secret_number"
+                            android:layout_width="match_parent"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:layout_height="40dp"
+                            android:layout_margin="20dp"
+                            android:layout_marginBottom="30dp"
+                            android:background="@drawable/ed_text_background"
+                            android:baselineAligned="false"
+                            android:nestedScrollingEnabled="false"
+                            app:queryHint="@string/search" />
+
+
+
+                </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.AppBarLayout>
+
+
+
+    <include layout="@layout/item_divider"
+        />
+    <androidx.core.widget.NestedScrollView
+
+        android:id="@+id/idNestedSV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <!--linear layout for displaying
+            our recycler view-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!--recycler view for displaying our list of data
+                and we are making nested scroll for our
+                recycler view as false-->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                tools:listitem="@layout/item_contact_number"
+                android:nestedScrollingEnabled="false"
+                 />
+
+            <!--we are adding progress bar
+                for the purpose of loading-->
+            <ProgressBar
+                android:visibility="gone"
+                android:id="@+id/idPBLoading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+
+
+
+
+
+
+
