@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/profile"
+        android:title="@string/tab_text_4"
+        android:icon="@drawable/ic_memo_logo"
+        app:cnb_iconColor="@color/green"/>
+    <item
+        android:id="@+id/calls"
+        android:title="@string/tab_text_3"
+        android:icon="@drawable/ic_call"
+        app:cnb_iconColor="@color/green"/>
+    <item
+        android:id="@+id/searchSn"
+        android:title="@string/tab_text_2"
+        android:icon="@drawable/ic_search"
+        app:cnb_iconColor="@color/green"/>
+    <item
+
+        android:id="@+id/chat"
+        android:title= "@string/tab_text_1"
+        android:icon="@drawable/ic_message"
+        app:cnb_iconColor="@color/green"/>
+
+    <item
+        android:id="@+id/settings"
+        android:title="@string/tab_text_5"
+        android:icon="@drawable/ic_memo_settings"
+        app:cnb_iconColor="@color/green"/>
+</menu>

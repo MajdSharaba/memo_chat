@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_bg"
+    tools:context=".fragment.ForwardDialogFragment">
+    <LinearLayout
+
+        android:layout_width="300dp"
+        android:layout_height="500dp"
+        android:background="@drawable/dialog_bg"
+
+        android:orientation="vertical"
+        >
+
+    <TextView
+        android:id="@+id/select_title2"
+        android:layout_height="0dp"
+        android:layout_weight="0.4"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:background="@drawable/btn_custom_blue_back"
+        android:padding="8dp"
+        android:text="@string/forward"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+       />
+
+
+    <!-- TODO: Update blank fragment layout -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            tools:listitem="@layout/item_group_selector" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:orientation="horizontal"
+           >
+
+            <Button
+                android:id="@+id/send"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:background="@drawable/btn_custom_blue_back"
+                android:layout_marginEnd="1dp"
+                android:text="@string/send">
+
+            </Button>
+
+            <Button
+                android:id="@+id/cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor="@color/white"
+                android:background="@drawable/btn_custom_blue_back"
+                android:text="@string/cancel" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>

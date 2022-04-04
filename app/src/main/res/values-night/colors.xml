@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green">#19A15F</color>
+    <color name="green_500">#0D2934</color>
+    <color name="green_700">#020014</color>
+    <color name="colorPrimaryPix">#075e54</color>
+    <color name="colorPrimaryLightPix">#80075e54</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="textColor">#FFFFFF</color>
+    <color name="background_search">#020014</color>
+    <color name="background_bottom_navigation">#171717</color>
+    <color name="browser_actions_bg">#171717</color>
+    <color name="background_editText_color">#171717</color>
+
+
+    <color name="gray">#808080</color>
+    <color name="black">#000000</color>
+
+
+    <color name="backgroundColor">#0B0618</color>
+    <color name="background_send_message">#0D2934</color>
+    <color name="background_recive_message">#19A15F</color>
+    <color name="background_chat_page">#FF000000</color>
+
+
+
+</resources>
