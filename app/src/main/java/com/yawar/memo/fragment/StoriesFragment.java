@@ -661,4 +661,3 @@ package com.yawar.memo.fragment;
 //        return byteBuffer.toByteArray();
 //    }
 //}
-///////////////////////

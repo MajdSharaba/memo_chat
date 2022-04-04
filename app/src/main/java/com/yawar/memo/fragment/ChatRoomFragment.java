@@ -372,11 +372,15 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 //        config.setLocale(locale);
 //        resources.updateConfiguration(config, resources.getDisplayMetrics());
         myBase = BaseApp.getInstance();
+
         myBase.getObserver().addObserver(this);
         classSharedPreferences = new ClassSharedPreferences(getContext());
+
         myId = classSharedPreferences.getUser().getUserId();
 
+
 //        SharedPreferences prefs = getSharedPreferences("languag", MODE_PRIVATE);
+//
 //        prefs.edit().putString("lan", "en").commit();
 
         ////////////for toolbar

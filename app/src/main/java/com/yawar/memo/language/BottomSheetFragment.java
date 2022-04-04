@@ -10,12 +10,16 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.SettingsFragment;
 import com.yawar.memo.language.helper.LocaleHelper;
 import com.yawar.memo.views.DashBord;
+
+
 import java.util.Locale;
+
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -29,7 +33,6 @@ public class BottomSheetFragment extends BottomSheetDialogFragment{
     String currentLang;
     String currentLanguage = "en";
 
-// tttttttttttttttttttttest
 
     @SuppressLint("RestrictedApi")
     @Override

@@ -22,7 +22,14 @@ import com.yawar.memo.views.ConversationActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
@@ -53,6 +60,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String GET_QR= "getIdForUser";
 
 
+
+
     private static final String EVENT_JOIN = "join";
     private static final String EVENT_RECEIVED = "received";
     private static final String EVENT_TYPING = "on typing";
@@ -60,9 +69,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
     Bitmap bitmap;
     String imageString;
 
+
     public static final String EXTRA_DATA = "extra_data_message";
     public static final String EXTRA_ROOM_ID = "extra_room_id";
-//  public static final String EXTRA_USER_ENTER = "extra_user_enter";
+//    public static final String EXTRA_USER_ENTER = "extra_user_enter";
     public static final String EXTRA_ENTER_PARAMTERS = "extra_enter_paramters";
     public static final String EXTRA_ON_DELETE_PARAMTERS = "extra_on_delete_paramters";
 
@@ -77,8 +87,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
 
 
-    public  static final String EXTRA_ON_SEEN_PARAMTERS = "extra_on_seen_paramters";
-    public  static final String EXTRA_EVENT_TYPE = "extra_event_type";
+    public static final String EXTRA_ON_SEEN_PARAMTERS = "extra_on_seen_paramters";
+    public static final String EXTRA_EVENT_TYPE = "extra_event_type";
     private static final String TAG = SocketIOService.class.getSimpleName();
     private Socket mSocket;
     private Boolean isConnected = true;
@@ -115,10 +125,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
             switch (msg.arg1) {
                 case 1:
                     Log.w(TAG, "Connected");
+
                     break;
                 case 2:
                     Log.w(TAG, "Disconnected");
                     stopSelfResult(msg.arg1);
+
+
+
                     break;
                 case 3:
                     Log.w(TAG, "Error in Connection");
@@ -148,8 +162,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
         myBase = (BaseApp) getApplication();
         myBase.getObserver().addObserver(this);
 
+
+
         try {
             mSocket = IO.socket(AllConstants.socket_url);
+
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -193,6 +210,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("getIdForUser", new SocketEventListener("getIdForUser", this));
 
 
+
+
+
+
+
+
+
+
         listenersMap.put("check connect", new SocketEventListener("check connect", this));
         listenersMap.put("on typing", new SocketEventListener("on typing", this));
         listenersMap.put("new message", new SocketEventListener("new message", this));
@@ -231,6 +256,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     break;
                 case EVENT_TYPE_TYPING:
                     System.out.println("EVENT_TYPE_TYPING");
+
+
                     if (isSocketConnected()) {
 //                        sendMessage(chat, eventType);
                         String typingString = intent.getExtras().getString(EXTRA_TYPING_PARAMTERS);
@@ -482,6 +509,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
        } catch (JSONException e) {
             e.printStackTrace();}
         mSocket.emit("forward message",chat);
+
+
 
 
     }

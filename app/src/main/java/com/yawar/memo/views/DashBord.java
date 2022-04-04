@@ -61,11 +61,12 @@ public class DashBord extends AppCompatActivity implements Observer {
                 e.printStackTrace();
             }
 
+
+
             JSONObject message = null;
             JSONObject user = null;
             String text = "";
             String chatId= null;
-
 //            String senderId = "";
 //            String reciverId = "";
 //            String id = "";
@@ -86,7 +87,10 @@ public class DashBord extends AppCompatActivity implements Observer {
                             user.getString("first_name"),
                             user.getString("id"),
                             text,
-                            user.getString("profile_image"),
+
+
+                            user.getString("profile_image")
+                            ,
                             false,
                             "0",
                             chatId,
@@ -95,21 +99,24 @@ public class DashBord extends AppCompatActivity implements Observer {
                             false,
                             user.getString("user_token"),
                             user.getString("sn"),
+
                             message.getString("message_type"),
                             message.getString("state"),
                             message.getString("created_at"),
                              false
-//                           "https://th.bing.com/th/id/OIP.2s7VxdmHEoDKji3gO_i-5QHaHa?pid=ImgDet&rs=1"
+
+
+
+//                                "https://th.bing.com/th/id/OIP.2s7VxdmHEoDKji3gO_i-5QHaHa?pid=ImgDet&rs=1"
 
                     ));
                 }
-
-//                state = message.getString("state");
+                //              state = message.getString("state");
 //                senderId = message.getString("sender_id");
 //                id = message.getString("message_id");
 //                reciverId = message.getString("reciver_id");
 //                chatId =  message.getString("chat_id");
-//                fileName = message.getString("orginalName");
+////                        fileName = message.getString("orginalName");
 
 
             } catch (JSONException e) {
@@ -127,6 +134,11 @@ public class DashBord extends AppCompatActivity implements Observer {
 //                myBase.getObserver().setLastMessage(text,chatId,myId,anthor_id);
         }
 
+//
+//
+//
+//
+//
     };
     private BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
         @Override
@@ -139,6 +151,7 @@ public class DashBord extends AppCompatActivity implements Observer {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
 
             String text = "";
             String type = "";
@@ -180,6 +193,10 @@ public class DashBord extends AppCompatActivity implements Observer {
                 myBase.getObserver().setLastMessage(text,chatId,myId,anthor_id,type,state,dateTime);
             }
         }
+
+
+
+
 
     };
     private BroadcastReceiver reciveTyping = new BroadcastReceiver() {
@@ -281,8 +298,11 @@ public class DashBord extends AppCompatActivity implements Observer {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat);
+                LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);
+
+
+
     }
 }
