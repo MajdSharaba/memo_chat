@@ -26,6 +26,7 @@
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_mic.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_mode.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_more.xml" value="0.107" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_more_option.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_not_send.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_pause.xml" value="0.1015" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_person.xml" value="0.1" />
@@ -70,7 +71,7 @@
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable/volume_seekbar.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_archived.xml" value="0.1286231884057971" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_contact_number.xml" value="0.1" />
-        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_conversation.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_conversation.xml" value="0.2" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_dash_bord.xml" value="0.2" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_devices_link.xml" value="0.25" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_group_properties.xml" value="0.1286231884057971" />
@@ -80,10 +81,12 @@
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_splash_screen.xml" value="0.2" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_test.xml" value="0.1286231884057971" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_user_details.xml" value="0.2" />
-        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_user_information.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_user_information.xml" value="0.22" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/activity_verification.xml" value="0.1286231884057971" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/add_contact_dialog.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/chat_room_row.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/content_scrolling.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/content_scrolling2.xml" value="0.2" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/dialog_image_cht.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/dialog_select_shoice.xml" value="0.1286231884057971" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/dialog_video_player.xml" value="0.1286231884057971" />
@@ -111,6 +114,8 @@
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/settings_activity.xml" value="0.2" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/layout/video_item_chat_message.xml" value="0.1286231884057971" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/menu/conversation_menu.xml" value="0.2" />
+        <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/menu/my_story_menu.xml" value="0.10572916666666667" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.107" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.107" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/mipmap-anydpi-v26/ic_logo.xml" value="0.107" />

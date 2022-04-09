@@ -19,18 +19,18 @@
         android:textColor="@color/textColor"
         android:textSize="25sp"
         android:layout_gravity="center"/>
-            <com.google.android.material.appbar.AppBarLayout
-                android:layout_width="match_parent"
-                android:background="@null"
-                android:layout_height="wrap_content">
-                <androidx.appcompat.widget.Toolbar
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingEnd="15dp"
-                    android:paddingStart="15dp"
-                    android:id="@+id/toolbar"
-                    android:minHeight="?attr/actionBarSize"
-                    >
+<!--    <com.google.android.material.appbar.AppBarLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:background="@null"-->
+<!--        android:layout_height="wrap_content">-->
+<!--                <androidx.appcompat.widget.Toolbar-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:paddingEnd="15dp"-->
+<!--                    android:paddingStart="15dp"-->
+<!--                    android:id="@+id/toolbar"-->
+<!--                    android:minHeight="?attr/actionBarSize"-->
+<!--                    >-->
 
 
 
@@ -50,8 +50,8 @@
                             />
 
 
-                </androidx.appcompat.widget.Toolbar>
-            </com.google.android.material.appbar.AppBarLayout>
+<!--                </androidx.appcompat.widget.Toolbar>-->
+<!--            </com.google.android.material.appbar.AppBarLayout>-->
             <include layout="@layout/item_divider" />
 
 

@@ -385,7 +385,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
         ////////////for toolbar
         toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle("Memo");
+        toolbar.setTitle("");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         activity.setSupportActionBar(toolbar);
@@ -505,9 +505,9 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     @Override
     public void onDestroy() {
         super.onDestroy();
-        System.out.println("on destrooyyyyyyyyyy");
+//        System.out.println("on destrooyyyyyyyyyy");
 //        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(onSocketConnect);
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(reciveNwMessage);
+//        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(reciveNwMessage);
 //        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(reciveNewChat);
 
 

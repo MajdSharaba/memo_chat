@@ -1,8 +1,15 @@
 package com.yawar.memo.utils;
 
 
+import android.annotation.SuppressLint;
 import android.app.Application;
+import android.content.Intent;
 import android.text.TextUtils;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleObserver;
+import androidx.lifecycle.OnLifecycleEvent;
+import androidx.lifecycle.ProcessLifecycleOwner;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -12,8 +19,9 @@ import com.yawar.memo.observe.ChatRoomObserve;
 import com.yawar.memo.observe.ContactNumberObserve;
 import com.yawar.memo.observe.FireBaseTokenObserve;
 import com.yawar.memo.observe.StoriesObserve;
+import com.yawar.memo.service.SocketIOService;
 
-public class BaseApp extends Application {
+public class BaseApp extends Application implements LifecycleObserver {
 
     ChatRoomObserve observeClass;
     FireBaseTokenObserve fireBaseTokenObserve;
@@ -27,7 +35,18 @@ public class BaseApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        sInstance = this;}
+        sInstance = this;
+        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+    }
+
+     public  String isActivityVisible(){
+         return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().name();
+     }
+    @Override
+    public void onTerminate() {
+        System.out.println("on Tirminal");
+        super.onTerminate();
+    }
 
     @Override
     public void onLowMemory() {
@@ -97,6 +116,33 @@ public class BaseApp extends Application {
         if (mRequestQueue != null) {
             mRequestQueue.cancelAll(tag);
         }
+    }
+    @SuppressLint("CheckResult")
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    public void onMoveToForeground() {
+//        System.out.println("on move to Forgroundgroundddddddddd");
+//        Intent service = new Intent(this, SocketIOService.class);
+//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
+//        this.startService(service);
+//            Intent service = new Intent(this, SocketIOService.class);
+//            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
+//            this.startService(service);
+
+//        notifyAll();
+
+
+    }
+
+    @SuppressLint("CheckResult")
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    public void onMoveToBackground() {
+        System.out.println("on move to Backgroundddddddddd");
+//            Intent service = new Intent(this, SocketIOService.class);
+//            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
+//            this.startService(service);
+
+
+
     }
 
 

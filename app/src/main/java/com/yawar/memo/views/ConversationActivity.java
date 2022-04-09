@@ -1,7 +1,5 @@
 package com.yawar.memo.views;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -9,7 +7,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -20,11 +17,12 @@ import android.Manifest;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -50,8 +48,9 @@ import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.WindowManager;
@@ -95,6 +94,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+
+import com.hbisoft.pickit.PickiT;
+import com.hbisoft.pickit.PickiTCallbacks;
 import com.yawar.memo.Api.ClassSharedPreferences;
 import com.yawar.memo.BuildConfig;
 import com.yawar.memo.R;
@@ -103,11 +105,9 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ForwardDialogFragment;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
-import com.yawar.memo.model.UserSeen;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.FileDownloader;
-import com.yawar.memo.utils.FilePath;
 import com.yawar.memo.utils.FileUtil;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.utils.VolleyMultipartRequest;
@@ -130,20 +130,21 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.socket.client.Socket;
 
 
-public class ConversationActivity extends AppCompatActivity implements ChatAdapter.CallbackInterface, Observer {
+public class ConversationActivity extends AppCompatActivity implements ChatAdapter.CallbackInterface, Observer , PickiTCallbacks {
 
 
     private EditText messageET;
@@ -160,6 +161,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private ImageButton sendMessageBtn;
     private ImageButton sendImageBtn;
     TimeProperties timeProperties;
+    private Menu menu;
+
 
     private ImageButton deletImageBtn;
     private ChatAdapter adapter;
@@ -187,6 +190,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     int IMAGE_PICKER_SELECT = 600;
     private static final int PICK_IMAGE_FROM_GALLERY = 8396;
     private static final int RESULT_PICK_CONTACT = 1;
+    public static final String URL_REGEX = "^((https?|ftp)://|(www|ftp)\\.)?[a-z0-9-]+(\\.[a-z0-9-]+)+([/?].*)?$";
+
 
     ProgressDialog mProgressDialog;
 
@@ -252,6 +257,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private static final String TAG = "MainActivity2";
     LinearLayout imageLiner;
     LinearLayout gallaryLiner;
+    ImageButton moreOption ;
 
     LinearLayout fileLiner;
     LinearLayout contactLiner;
@@ -731,6 +737,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     int progressNew = 0;
 
     SharedPreferences sharedPreferences;
+    PickiT pickiT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -740,7 +747,16 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         setContentView(R.layout.activity_conversation);
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+        pickiT = new PickiT(this, this, this);
+        Pattern p = Pattern.compile(URL_REGEX);
+        Matcher m = p.matcher("example");//replace with string to compare
+        if(m.find()) {
+            System.out.println("String contains URL");
+        }
+        else {
+            System.out.println("String dont contains URL");
 
+        }
 
         initViews();
         initAction();
@@ -779,7 +795,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 //        cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         timeProperties = new TimeProperties();
-
+//        moreOption = findViewById(R.id.image_button_Options);
 
         myBase = BaseApp.getInstance();
         myBase.getObserver().addObserver(this);
@@ -803,7 +819,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
 
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         backImageBtn = findViewById(R.id.image_button_back);
         LinearLayout linearLayout = findViewById(R.id.liner_conversation);
@@ -1286,59 +1302,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 recordView.setVisibility(View.GONE);
                 messageLayout.setVisibility(View.VISIBLE);
 
-///              sendRecodingMessage(audioPath);
                 File f = new File(audioPath);
 
-//                System.out.println(Uri.fromFile(f));
                 uploadVoice(audioName, Uri.fromFile(f));
-                System.out.println(Uri.fromFile(f));
-//                ChatMessage chatMessage = new ChatMessage();
-//                chatMessage.setId("122");//dummy
-//                chatMessage.setMessage(audioPath);
-//
-//                chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-//                chatMessage.setMe(true);
-//                chatMessage.setType("voice");
-//                chatMessage.setState("0");
-//                messageET.setText("");
-//                displayMessage(chatMessage);
+
             }
 
-//            @Override
-//            public void onFinish(long recordTime) {
-//                //Stop Recording..
-//                Log.d("RecordView", "onFinish");
-//
-//                try {
-//                    mediaRecorder.stop();
-//                    mediaRecorder.release();
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//
-//
-//                recordView.setVisibility(View.GONE);
-//                messageLayout.setVisibility(View.VISIBLE);
-//
-/////              sendRecodingMessage(audioPath);
-//                File f = new File(audioPath);
-//
-////                System.out.println(Uri.fromFile(f));
-//                uploadVoice(audioName, Uri.fromFile(f));
-//                System.out.println(Uri.fromFile(f));
-////                ChatMessage chatMessage = new ChatMessage();
-////                chatMessage.setId("122");//dummy
-////                chatMessage.setMessage(audioPath);
-////
-////                chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-////                chatMessage.setMe(true);
-////                chatMessage.setType("voice");
-////                chatMessage.setState("0");
-////                messageET.setText("");
-////                displayMessage(chatMessage);
-//
-//
-//            }
 
             @Override
             public void onLessThanSecond() {
@@ -1376,30 +1345,85 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         });
 
 
+
     }
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.conversation_menu, menu);
-//        return true;
-//    }
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        switch (id){
-//            case R.id.item1:
-//                Toast.makeText(getApplicationContext(),"Item 1 Selected",Toast.LENGTH_LONG).show();
-//                return true;
+    @SuppressLint("ResourceType")
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.conversation_menu, menu);
+//                    menu.removeItem(R.id.item_copy);
+
+
+//        if(selectedMessage.size()>1){
+//            menu.removeItem(R.id.item1);
+//        }
+//        else {
+//           menu.add(R.id.item1);
+//        }
+//        menu.removeItem(R.id.item1);
+        return true;
+    }
+
+    @SuppressLint("ResourceType")
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        System.out.println("oonPrepareOptionsMenu");
+        MenuItem item = menu.findItem(R.id.item_copy);
+
+        if(selectedMessage.size()>1){
+            System.out.println("selectedMessage.size()>1");
+            item.setVisible(false);
+//            menu.removeItem(item.getItemId());
+
+        }
+        else  if(selectedMessage.size()==1){
+           if(selectedMessage.get(0).getType().equals("text")){
+            item.setVisible(true);}
+
+        }
+        else {
+            item.setVisible(false);
+
+        }
+
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        switch (id){
+            case R.id.item_copy:
+                ClipboardManager  clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clipData = ClipData.newPlainText("key", selectedMessage.get(0).getMessage());
+                clipboardManager.setPrimaryClip(clipData);
+//                chatHistory.get(selectedMessage.get(0).).setChecked(false);
+                for(ChatMessage chatMessage:chatHistory){
+                    if(chatMessage.getId().equals(selectedMessage.get(0).getId())){
+                        chatMessage.setChecked(false);
+                        break;
+                    }
+                }
+                selectedMessage.clear();
+                deleteMessage.clear();
+//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
+
+                adapter.notifyDataSetChanged();
+                toolsLiner.setVisibility(View.GONE);
+                personInformationLiner.setVisibility(View.VISIBLE);
+                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));                return true;
 //            case R.id.item2:
 //                Toast.makeText(getApplicationContext(),"Item 2 Selected",Toast.LENGTH_LONG).show();
 //                return true;
 //            case R.id.item3:
 //                Toast.makeText(getApplicationContext(),"Item 3 Selected",Toast.LENGTH_LONG).show();
 //                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
 
     private void deleteMessage() {
@@ -1425,6 +1449,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 adapter.notifyDataSetChanged();
                 toolsLiner.setVisibility(View.GONE);
                 personInformationLiner.setVisibility(View.VISIBLE);
+                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+
 
 
             }
@@ -1894,6 +1920,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     File myFile = new File(uri.getPath());
                     String pathh = myFile.getAbsolutePath();
                     Uri pathUri = Uri.fromFile(new File(pathh));
+                    pickiT.getPath(data.getData(), Build.VERSION.SDK_INT);
 
                     Path path = null;
 //                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -2076,6 +2103,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                     } else if (mimeType.startsWith("video")) {
+//                        TrimVideo.activity(String.valueOf(selectedMediaUriGallery))
+////        .setCompressOption(new CompressOption()) //empty constructor for default compress option
+//                                .setHideSeekBar(true)
+//                                .setTrimType(TrimType.MIN_MAX_DURATION)
+//                                .setMinToMax(1, 60)  //seconds
+//                                .start(this);
 //                        System.out.println(selectedMediaUri.toString()+"selectedMediaUri.toString()");
 //                                                Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
 //
@@ -2092,40 +2125,40 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 //                            String path = myFile.getAbsolutePath();
                         ////////////////////////////
-//                        Uri pathhh = Uri.fromFile(new File(selectedMediaUriGallery.toString()));
-                        File myFilee = new File(selectedMediaUriGallery.toString());
-
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
-                        copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
-
-                        String displayNamee = null;
-
-                        if (selectedMediaUriGallery.toString().startsWith("content://")) {
-                            Cursor cursor = null;
-                            try {
-                                cursor = this.getContentResolver().query(selectedMediaUriGallery, null, null, null, null);
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                    Log.d("nameeeee>>>>  ", displayNamee);
-                                    System.out.println(displayNamee);
-
-                                    uploadVideo(displayNamee, selectedMediaUriGallery);
-                                }
-                            } finally {
-                                cursor.close();
-                            }
-                        } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
-                            displayNamee = myFilee.getName();
-                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-                            uploadVideo(displayNamee, selectedMediaUriGallery);
-
-
-                            Log.d("nameeeee>>>>  ", displayNamee);
-                        }
-
+//                        File myFilee = new File(selectedMediaUriGallery.toString());
+//
+////                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
+////                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+//                        copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+//
+//                        String displayNamee = null;
+//
+//                        if (selectedMediaUriGallery.toString().startsWith("content://")) {
+//                            Cursor cursor = null;
+//                            try {
+//                                cursor = this.getContentResolver().query(selectedMediaUriGallery, null, null, null, null);
+//                                if (cursor != null && cursor.moveToFirst()) {
+//                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//                                    Log.d("nameeeee>>>>  ", displayNamee);
+//                                    System.out.println(displayNamee);
+//
+//                                    uploadVideo(displayNamee, selectedMediaUriGallery);
+//                                }
+//                            } finally {
+//                                cursor.close();
+//                            }
+//                        } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
+//                            displayNamee = myFilee.getName();
+//                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
+//                            uploadVideo(displayNamee, selectedMediaUriGallery);
+//
+//
+//                            Log.d("nameeeee>>>>  ", displayNamee);
+//                        }
+//
                     }
                     break;
+
 
             }
         } else {
@@ -2249,20 +2282,22 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     //// for upload file to server
     private void uploadPDF(final String pdfname, Uri pdffile) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
-//        System.out.println(pdfname+"pdfnameeeeeeeeeeee");
-//
-//        ChatMessage chatMessage = new ChatMessage();
-//        chatMessage.setId(message_id);//dummy
-//        chatMessage.setMessage(pdffile.toString());
-//        chatMessage.setFileName(pdfname);
-//
+        System.out.println(pdfname+"pdfnameeeeeeeeeeee");
+
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setId(message_id);//dummy
+        chatMessage.setMessage(pdffile.toString());
+        chatMessage.setFileName(pdfname);
+        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+
+
 //        chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-//        chatMessage.setMe(true);
-//        chatMessage.setType("file");
-//        chatMessage.setState("0");
-//        messageET.setText("");
-//        chatMessage.setChecked(false);
-//        displayMessage(chatMessage);
+        chatMessage.setMe(true);
+        chatMessage.setType("file");
+        chatMessage.setState("0");
+        messageET.setText("");
+        chatMessage.setChecked(false);
+        displayMessage(chatMessage);
 
 
         InputStream iStream = null;
@@ -2326,18 +2361,18 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 //                                newMeesage(sendObject);
 
-                                ChatMessage chatMessage = new ChatMessage();
-                                chatMessage.setId(message_id);//dummy
-                                chatMessage.setMessage(jsonObject.getString("message"));
-                                chatMessage.setFileName(pdfname);
-
-                                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                                chatMessage.setMe(true);
-                                chatMessage.setType("file");
-                                chatMessage.setState("0");
-                                messageET.setText("");
-                                chatMessage.setChecked(false);
-                                displayMessage(chatMessage);
+//                                ChatMessage chatMessage = new ChatMessage();
+//                                chatMessage.setId(message_id);//dummy
+//                                chatMessage.setMessage(jsonObject.getString("message"));
+//                                chatMessage.setFileName(pdfname);
+//
+//                                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+//                                chatMessage.setMe(true);
+//                                chatMessage.setType("file");
+//                                chatMessage.setState("0");
+//                                messageET.setText("");
+//                                chatMessage.setChecked(false);
+//                                displayMessage(chatMessage);
                                 newMeesage(sendObject);
 
 
@@ -3242,11 +3277,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 }
 
 
+    @SuppressLint("ResourceType")
     @Override
     public void onLongClick(int position, ChatMessage chatMessage, boolean isChecked) {
         System.out.println(isChecked);
         System.out.println(chatMessage.getId() + "chatMessage.getId()");
         personInformationLiner.setVisibility(View.GONE);
+        toolbar.setBackgroundColor(getResources().getColor(R.color.green));
 
 
         toolsLiner.setVisibility(View.VISIBLE);
@@ -3260,10 +3297,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             deleteMessage.remove("\""+ chatMessage.getId()+"\"");
 
             if (selectedMessage.size() < 1) {
+                System.out.println("selectedMessage.size() < 1");
                 personInformationLiner.setVisibility(View.VISIBLE);
+                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
                 toolsLiner.setVisibility(View.GONE);
             }
+
         }
+
         System.out.println(deleteMessage.size()+"is sizeeee");
         adapter.notifyDataSetChanged();
     }
@@ -3339,6 +3380,40 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void PickiTonUriReturned() {
+        System.out.println("PickiTonUriReturned");
+
+    }
+
+    @Override
+    public void PickiTonStartListener() {
+        System.out.println("PickiTonStartListener");
+
+    }
+
+    @Override
+    public void PickiTonProgressUpdate(int progress) {
+        System.out.println("PickiTonProgressUpdate");
+
+    }
+
+    @Override
+    public void PickiTonCompleteListener(String path, boolean wasDriveFile, boolean wasUnknownProvider, boolean wasSuccessful, String Reason) {
+//        System.out.println("PickiTonCompleteListener");
+                    copyFileOrDirectory( path, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send").getAbsolutePath());
+//                    ll;l
+
+    }
+
+    @Override
+    public void PickiTonMultipleCompleteListener(ArrayList<String> paths, boolean wasSuccessful, String Reason) {
+        System.out.println("PickiTonMultipleCompleteListener"+paths+wasSuccessful);
+        System.out.println(paths.size()+"sizee");
+
+
     }
 
 
@@ -3522,6 +3597,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                adapter.notifyDataSetChanged();
                 toolsLiner.setVisibility(View.GONE);
                 personInformationLiner.setVisibility(View.VISIBLE);
+                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+
 
 
             }
@@ -3551,7 +3628,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 switch (chatMessage.getType()){
                     case "imageWeb":
                         File imageFile;
-                            System.out.println("image weeeeeeeeeeeeeeeeeeeeeeeb");
                         File d = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/video");
 
                         imageFile = new File(d, chatMessage.getImage().toString());
@@ -3744,6 +3820,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             permissions.requestContact(this);
         }
     }
+
+
 }
 
 

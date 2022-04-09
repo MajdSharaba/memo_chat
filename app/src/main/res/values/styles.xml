@@ -20,4 +20,11 @@
         <item name="android:background">@color/black_overlay</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
     </style>
+
+    <!-- Style to replace actionbar overflow icon. set item 'android:actionOverflowButtonStyle' in AppTheme -->
+<style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.Light.ActionButton.Overflow">
+<item name="android:src">@drawable/ic_more_option</item>
+<item name="android:background">?android:attr/actionBarItemBackground</item>
+<item name="android:contentDescription">"Lala"</item>
+</style>
 </resources>

@@ -87,6 +87,7 @@ public class UserInformationActivity extends AppCompatActivity {
         
         recyclerView = findViewById(R.id.idCourseRV);
 
+
         sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
          adapter = new MediaAdapter(recyclerDataArrayList, this);
@@ -156,7 +157,10 @@ public class UserInformationActivity extends AppCompatActivity {
         if(!imageUrl.isEmpty()){
             Glide.with(circleImageView.getContext()).load(AllConstants.imageUrl+imageUrl).into(circleImageView);}
        txtUserName.setText(userName);
-        txtSpecialNumber.setText(specialNumber);
+        String firstString = specialNumber.substring(0,3);
+        String secondString = specialNumber.substring(3,6);
+        String thirtyString = specialNumber.substring(6);
+        txtSpecialNumber.setText(firstString+"-"+secondString+"-"+thirtyString);
         imgBtnMessage =  findViewById(R.id.ib_message);
         getMedia();
 

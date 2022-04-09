@@ -50,7 +50,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final int EVENT_TYPE_JOIN = 1, EVENT_TYPE_MESSAGE = 2,
             EVENT_TYPE_TYPING = 3,EVENT_TYPE_ENTER = 4,EVENT_TYPE_CHECK_CONNECT=5,
             EVENT_TYPE_ON_SEEN=6,EVENT_TYPE_Forward=7,EVENT_TYPE_ON_DELETE =8,
-            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10;
+            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11;
     public static final String EVENT_DELETE = "delete message";
     private static final String EVENT_MESSAGE = "new message";
     private static final String EVENT_CHANGE = "change";
@@ -225,12 +225,16 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
     @Override
     public IBinder onBind(Intent intent) {
+        System.out.println("onBinddddddd");
+
+
         return null;
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 //        (TAG, "onStartCommand");
+
         System.out.println("onStartCommand");
         if (intent != null) {
             int eventType = intent.getIntExtra(EXTRA_EVENT_TYPE, EVENT_TYPE_JOIN);
@@ -242,6 +246,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
 //                    room_id = intent.getStringExtra(EXTRA_ROOM_ID);
                     if (!mSocket.connected()) {
+                        System.out.println("connectttttttttttttted");
                         mSocket.connect();
                     }
                     joinSocket();
@@ -252,6 +257,18 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     String chat = intent.getExtras().getString(EXTRA_NEW_MESSAGE_PARAMTERS);
                     if (isSocketConnected()) {
                         sendMessage(chat);
+                    }
+                    break;
+                case EVENT_TYPE_DISCONNECT:
+                    System.out.println("EVENT_TYPE_MESSAGEEEEEEE");
+
+                    if (isSocketConnected()) {
+                        System.out.println("Lowwwwwwwwwwww");
+                        mSocket.disconnect();
+//                        heartBeat.stop();
+//                        for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
+//                            mSocket.off(entry.getKey(), entry.getValue());
+//                        }
                     }
                     break;
                 case EVENT_TYPE_TYPING:
@@ -563,6 +580,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         System.out.println("destroyyyyyyyyyyyyyyyy");
         mSocket.disconnect();
         mSocket.close();
@@ -580,7 +598,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
         super.onLowMemory();
         System.out.println("Lowwwwwwwwwwww");
         mSocket.disconnect();
-        mSocket.close();
         heartBeat.stop();
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.off(entry.getKey(), entry.getValue());
@@ -597,7 +614,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //            mSocket.off(entry.getKey(), entry.getValue());
 //        }
 //    }
-
+@Override
+public void onTaskRemoved(Intent rootIntent) {
+//    Intent restartServiceIntent = new Intent(getApplicationContext(),this.getClass());
+//    restartServiceIntent.setPackage(getPackageName());
+//    startService(restartServiceIntent);
+    System.out.println("on task removeeeeed");
+    super.onTaskRemoved(rootIntent);
+}
 
     @Override
     public void onEventCall(String event, Object... args) {

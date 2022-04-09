@@ -235,7 +235,6 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
                             intent.putExtras(bundle);
                             view.getContext().startActivity(intent);
                             mDialog.dismiss();
-                            Toast.makeText(view.getContext(), "Movie Name clicked", Toast.LENGTH_SHORT).show();
 
                         }
                     });

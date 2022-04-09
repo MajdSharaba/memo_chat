@@ -261,7 +261,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
 
         spennerItemChooser= adapterView.getItemAtPosition(i).toString();
-        System.out.println(spennerItemChooser);
+//        System.out.println(spennerItemChooser);
 
     }
 

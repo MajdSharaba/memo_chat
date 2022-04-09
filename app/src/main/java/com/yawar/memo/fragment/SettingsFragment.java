@@ -149,13 +149,17 @@ public class SettingsFragment extends Fragment {
 
         userName =(TextView) view.findViewById(R.id.username);
         userName.setTextSize(textSize);
-        userName.setText(userModel.getUserName()+userModel.getLastName());
+        userName.setText(userModel.getUserName()+" "+userModel.getLastName());
         userName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         phoneNumber =(TextView) view.findViewById(R.id.phoneNumber);
         phoneNumber.setTextSize(textSize);
         phoneNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-        phoneNumber.setText(userModel.getSecretNumber());
+        String firstString = userModel.getSecretNumber().substring(0,3);
+        String secondString = userModel.getSecretNumber().substring(3,6);
+        String thirtyString = userModel.getSecretNumber().substring(6);
+
+        phoneNumber.setText(firstString+"-"+secondString+"-"+thirtyString);
 
 
         setPhoto =(TextView) view.findViewById(R.id.selectImage);
@@ -292,7 +296,6 @@ public class SettingsFragment extends Fragment {
 
                         }
                         if(!txt_inputLastName.getText().toString().isEmpty()){
-                            System.out.println("last Name is"+txt_inputLastName);
                             lastName= txt_inputLastName.getText().toString();
 
                         }
@@ -305,7 +308,7 @@ public class SettingsFragment extends Fragment {
 
                         serverApi.updateProfile(firstName,lastName,"","",userModel.getUserId());
 
-                        userName.setText(firstName+lastName);
+                        userName.setText(firstName+" "+lastName);
                         userModel.setUserName(firstName);
                         userModel.setLastName(lastName);
 //                        classSharedPreferences.setUser(userModel);

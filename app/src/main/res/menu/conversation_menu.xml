@@ -2,19 +2,32 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     tools:context="example.javatpoint.com.optionmenu.MainActivity">
 
-    <item  android:id="@+id/item1"
-        android:title="Item 1"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_call_blue"/>
-    <item  android:id="@+id/item2"
-        android:title="Item 2"
-        app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_video_blue"/>
-    <item  android:id="@+id/item3"
-        android:title="Item 3"
+<!--    <item  android:id="@+id/item1"-->
+<!--        android:title="Item 1"-->
+<!--        app:showAsAction="always"-->
+<!--        android:icon="@drawable/ic_call_blue"/>-->
+<!--    <item  android:id="@+id/item2"-->
+<!--        android:title="Item 2"-->
+<!--        app:showAsAction="ifRoom"-->
+<!--        android:icon="@drawable/ic_video_blue"/>-->
+    <item  android:id="@+id/item_copy"
+        android:title="@string/copy"
         app:showAsAction="withText"
-        android:iconTint="@color/blue"
+        android:iconTint="@color/white"
         android:icon="@android:drawable/btn_plus"/>
+
+    <item  android:id="@+id/item2"
+        android:title="@string/block"
+        app:showAsAction="withText"
+        android:iconTint="@color/white"
+        android:icon="@android:drawable/btn_plus"/>
+<!--    <item  android:id="@+id/item3"-->
+<!--        android:title="Item 3"-->
+<!--        app:showAsAction="withText"-->
+<!--        android:iconTint="@color/white"-->
+<!--        android:icon="@android:drawable/btn_plus"/>-->
+
 </menu>

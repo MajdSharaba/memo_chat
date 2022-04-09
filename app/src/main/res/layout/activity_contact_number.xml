@@ -22,21 +22,21 @@
 
     </TextView>
 
-    <com.google.android.material.appbar.AppBarLayout
+<!--    <com.google.android.material.appbar.AppBarLayout-->
 
-        android:layout_width="match_parent"
-        android:background="@null"
-        android:layout_height="wrap_content">
+<!--        android:layout_width="match_parent"-->
+<!--        android:background="@null"-->
+<!--        android:layout_height="wrap_content">-->
 
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingEnd="15dp"
-            android:paddingStart="15dp"
-            android:id="@+id/toolbar"
-            android:minHeight="?attr/actionBarSize"
+<!--        <androidx.appcompat.widget.Toolbar-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:paddingEnd="15dp"-->
+<!--            android:paddingStart="15dp"-->
+<!--            android:id="@+id/toolbar"-->
+<!--            android:minHeight="?attr/actionBarSize"-->
 
-            >
+<!--            >-->
 
 
 
@@ -57,8 +57,8 @@
                 />
 
 
-        </androidx.appcompat.widget.Toolbar>
-    </com.google.android.material.appbar.AppBarLayout>
+<!--        </androidx.appcompat.widget.Toolbar>-->
+<!--    </com.google.android.material.appbar.AppBarLayout>-->
 
         <include layout="@layout/item_divider" />
 

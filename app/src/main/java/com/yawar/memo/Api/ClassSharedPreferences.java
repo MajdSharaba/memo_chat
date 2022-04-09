@@ -120,23 +120,23 @@ public class ClassSharedPreferences {
 
     }
 
-    public void setLocale(String lan) {
-        SharedPreferences prefs = context.getSharedPreferences("language", MODE_PRIVATE);
+//    public void setLocale(String lan) {
+//        SharedPreferences prefs = context.getSharedPreferences("language", MODE_PRIVATE);
+//
+//        prefs.edit().putString("lan", lan).commit();
+//
+//
+//    }
 
-        prefs.edit().putString("lan", lan).commit();
-
-
-    }
-
-    public String getLocale() {
-
-        SharedPreferences prefs = context.getSharedPreferences("language", MODE_PRIVATE);
-
-
-        String lan = prefs.getString("lan", "ar");
-        return lan;
-
-    }
+//    public String getLocale() {
+//
+//        SharedPreferences prefs = context.getSharedPreferences("language", MODE_PRIVATE);
+//
+//
+//        String lan = prefs.getString("lan", "ar");
+//        return lan;
+//
+//    }
 
     public <T> void setList(String key, List<T> list) {
         Gson gson = new Gson();

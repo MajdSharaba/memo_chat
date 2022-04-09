@@ -195,4 +195,6 @@
     <string name="laststatus">اخر حالة</string>
     <string name="title">العنوان</string>
     <string name="selectFontSize">اختر حجم الخط</string>
+    <string name="block">حظر</string>
+
 </resources>

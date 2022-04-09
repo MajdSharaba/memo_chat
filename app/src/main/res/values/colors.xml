@@ -7,6 +7,8 @@
     <color name="colorPrimaryLightPix">#80075e54</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
+    <color name="blue_200">#19B5FE</color>
+
     <color name="textColor">#0B2027</color>
     <color name="background_search">#EEEEEE</color>
     <color name="background_bottom_navigation">#F6F6F6</color>

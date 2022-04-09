@@ -161,5 +161,8 @@
     <string name="laststatus">last status</string>
     <string name="title">Title</string>
     <string name="selectFontSize">Select Your Text Size</string>
+    <string name="block">Block</string>
+
+
 
 </resources>

@@ -32,6 +32,7 @@ import java.util.Observer;
 public class DashBord extends AppCompatActivity implements Observer {
 
 
+
     private ChipNavigationBar navigationBar;
     private Fragment fragment = null;
     BaseApp myBase;
@@ -233,7 +234,7 @@ public class DashBord extends AppCompatActivity implements Observer {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-        connectSocket();
+//        connectSocket();
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, new IntentFilter(TYPING));
 
@@ -298,6 +299,7 @@ public class DashBord extends AppCompatActivity implements Observer {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        System.out.println("on Destroyyyyyyyyyyyyyy");
                 LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);
