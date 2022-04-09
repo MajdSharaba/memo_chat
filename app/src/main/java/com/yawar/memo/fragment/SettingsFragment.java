@@ -479,7 +479,17 @@ public class SettingsFragment extends Fragment {
         tellafriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "This Tell a Friend", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getActivity(), "This Tell a Friend", Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+              //  String Body ="حمل هذا التطبيق";
+                String Sub ="https://play.google.com/store/apps/details?id=com.facebook.katana"+"\n"
+                        +"حمل التطبيق الان.";
+           //     intent.putExtra(Intent.EXTRA_TEXT,Body);
+                intent.putExtra(Intent.EXTRA_TEXT,Sub);
+                startActivity(Intent.createChooser(intent,"Share Using"));
+
             }
         });
         help.setOnClickListener(new View.OnClickListener() {
