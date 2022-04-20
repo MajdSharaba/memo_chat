@@ -397,7 +397,7 @@
 
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/askMemoQuestion"
+                    android:id="@+id/contact_number_blocked"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     app:cardBackgroundColor="@color/background_chat_page"
@@ -428,7 +428,7 @@
                             android:id="@+id/askMemoQuesti"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/ask_memo"
+                            android:text="@string/contact_number_blocked"
                             android:layout_marginStart="10dp"
                             android:textSize="16dp"
                             android:textColor="@color/textColor"

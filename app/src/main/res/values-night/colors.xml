@@ -20,7 +20,7 @@
     <color name="black">#000000</color>
 
 
-    <color name="backgroundColor">#0B0618</color>
+    <color name="backgroundColor">#000000</color>
     <color name="background_send_message">#0D2934</color>
     <color name="background_recive_message">#19A15F</color>
     <color name="background_chat_page">#FF000000</color>

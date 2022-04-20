@@ -3,14 +3,11 @@ package com.yawar.memo.service;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.MediaStore;
-import android.util.Base64;
 import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -18,18 +15,14 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.yawar.memo.Api.ClassSharedPreferences;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ChatRoomFragment;
+import com.yawar.memo.model.UserModel;
+import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.views.ConversationActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URISyntaxException;
-import java.text.DateFormat;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
@@ -50,7 +43,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final int EVENT_TYPE_JOIN = 1, EVENT_TYPE_MESSAGE = 2,
             EVENT_TYPE_TYPING = 3,EVENT_TYPE_ENTER = 4,EVENT_TYPE_CHECK_CONNECT=5,
             EVENT_TYPE_ON_SEEN=6,EVENT_TYPE_Forward=7,EVENT_TYPE_ON_DELETE =8,
-            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11;
+            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11, EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13;
     public static final String EVENT_DELETE = "delete message";
     private static final String EVENT_MESSAGE = "new message";
     private static final String EVENT_CHANGE = "change";
@@ -58,6 +51,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String FORWARD= "forward message";
     private static final String CHECK_QR= "checkQrKey";
     private static final String GET_QR= "getIdForUser";
+    private static final String BLOCK_USER= "block";
+    private static final String UNBLOCK_USER= "unblock";
+
+
 
 
 
@@ -75,6 +72,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //    public static final String EXTRA_USER_ENTER = "extra_user_enter";
     public static final String EXTRA_ENTER_PARAMTERS = "extra_enter_paramters";
     public static final String EXTRA_ON_DELETE_PARAMTERS = "extra_on_delete_paramters";
+    public static final String EXTRA_BLOCK_PARAMTERS = "extra_block_paramters";
+    public static final String EXTRA_UN_BLOCK_PARAMTERS = "extra_un_block_paramters";
+
+
 
 
     public static final String EXTRA_CHECK_CONNECT_PARAMTERS = "extra_check_connect_paramters";
@@ -89,12 +90,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
     public static final String EXTRA_ON_SEEN_PARAMTERS = "extra_on_seen_paramters";
     public static final String EXTRA_EVENT_TYPE = "extra_event_type";
+
     private static final String TAG = SocketIOService.class.getSimpleName();
     private Socket mSocket;
     private Boolean isConnected = true;
     private boolean mTyping;
     private Queue<Message> chatQueue;
     String my_id;
+    BlockUserRepo blockUserRepo;
      ClassSharedPreferences classSharedPreferences;
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
@@ -160,6 +163,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mServiceLooper = thread.getLooper();
         mServiceHandler = new ServiceHandler(mServiceLooper);
         myBase = (BaseApp) getApplication();
+        blockUserRepo = myBase.getBlockUserRepo();
         myBase.getObserver().addObserver(this);
 
 
@@ -208,6 +212,9 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("delete message", new SocketEventListener("delete message", this));
         listenersMap.put("checkQrKey", new SocketEventListener("checkQrKey", this));
         listenersMap.put("getIdForUser", new SocketEventListener("getIdForUser", this));
+        listenersMap.put("block", new SocketEventListener("block", this));
+        listenersMap.put("unblock", new SocketEventListener("unblock", this));
+
 
 
 
@@ -353,6 +360,26 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         getQr(qr_get_paramter);
                     }
                     break;
+                case EVENT_TYPE_BLOCK:
+                    System.out.println("EVENT_TYPE_block");
+
+                    String block_paramter = intent.getExtras().getString(EXTRA_BLOCK_PARAMTERS);
+
+                    if (isSocketConnected()) {
+                        System.out.println("blocked is connect");
+                        blockUser(block_paramter);
+                    }
+                    break;
+                case EVENT_TYPE_UN_BLOCK:
+                    System.out.println("EVENT_TYPE_block");
+
+                    String unBlock_paramter = intent.getExtras().getString(EXTRA_UN_BLOCK_PARAMTERS);
+
+                    if (isSocketConnected()) {
+                        System.out.println("unblocked is connect");
+                        unBlockUser(unBlock_paramter);
+                    }
+                    break;
 
 
             }
@@ -403,75 +430,21 @@ public class SocketIOService extends Service implements SocketEventListener.List
         String type= "";
         try {
             chat = new JSONObject(messageObject);
-//             type = chat.getString("message_type");
         } catch (JSONException e) {
             e.printStackTrace();}
-//            if(type.equals("image")){
-//                try {
-//
-//
-//             bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), Uri.fromFile(new File(chat.getString("message"))));
-//
-//              ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//
-//               if (bitmap != null) {
-//                   System.out.println("bitmap not nulllllllllll");
-//               bitmap.compress(Bitmap.CompressFormat., 90, baos);
-//               byte[] imageBytes = baos.toByteArray();
-//               imageString = Base64.encodeToString(imageBytes, Base64.DEFAULT);
-//                 }
-////                jsonObjec.put("sender_id", user_id);
-////                jsonObjec.put("reciver_id", anthor_user_id);
-////                jsonObjec.put("message", selectedMediaUri);
-////                jsonObjec.put("state", "0");
-////                jsonObjec.put("message_id", message_id);
-////                jsonObjec.put("orginalName", "صورة");
-////
-////
-////                jsonObjec.put("message_type", "image");
-////                jsonObjec.put("dateTime", DateFormat.getDateTimeInstance().format(new Date()));
-//               //////////////////
-//                jsonObjec.put("sender_id", chat.getString("sender_id"));
-//                jsonObjec.put("reciver_id", chat.getString("reciver_id"));
-//                jsonObjec.put("message", imageString);
-//                jsonObjec.put("state", "0");
-//                jsonObjec.put("message_id", chat.getString("message_id"));
-//
-//                    jsonObjec.put("orginalName", "صورة");
-//                jsonObjec.put("message_type", "image");
-//                jsonObjec.put("dateTime", chat.getString("dateTime"));
-//                chat = new JSONObject(String.valueOf(jsonObjec));
-//                System.out.println(chat.getString("sender_id")+chat.getString("reciver_id")+chat.getString("message_id")+ chat.getString("dateTime"));
-//                    System.out.println(chat.toString()+"message send");
-//
-//                    mSocket.emit("new message", chat);
-//
-//
-//
-//
-//
-//                } catch (JSONException e) {
-//            e.printStackTrace();
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//            }else {
+
                 mSocket.emit("new message", chat);
 
 
 
-//        System.out.println(chat.toString()+"message send");
-//        mSocket.emit("new message", chat);
+
     }
     private void enter(String messageObject) {
         JSONObject chat = null;
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat.toString()+"enterrrrrrrrrrrrrrrrr");
-            System.out.println("enterrrrrrrrrrrrrrrrr");
+
             mSocket.emit("enter", chat);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -574,6 +547,32 @@ public class SocketIOService extends Service implements SocketEventListener.List
         System.out.println(" getIdForUser Emittttttttttttt");
 
         mSocket.emit("getIdForUser", chat);
+
+    }
+    private void blockUser(String messageObject) {
+        JSONObject chat = null;
+        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(chat.toString()+"blocked paramters");
+        mSocket.emit("block", chat);
+
+    }
+    private void unBlockUser(String messageObject) {
+        JSONObject chat = null;
+        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(chat.toString()+"blocked paramters");
+        mSocket.emit("unblock", chat);
 
     }
 
@@ -717,6 +716,70 @@ public void onTaskRemoved(Intent rootIntent) {
                 intent = new Intent(DevicesLinkActivity.GET_QR);
                 intent.putExtra("get qr", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+
+            case BLOCK_USER:
+                System.out.println(args[0].toString()+"NEW_Block");
+                String userDoBlock = "";
+                String userBlock = "";
+                String blockedFor = "";
+                String name = "";
+                String image = "";
+                String special_number = "";
+                try {
+                    JSONObject jsonObject = new JSONObject(args[0].toString());
+                    userDoBlock = jsonObject.getString("my_id");
+                    userBlock = jsonObject.getString("user_id");
+                    blockedFor = jsonObject.getString("blocked_for");
+                    name = jsonObject.getString("userDoBlockName");
+                    special_number = jsonObject.getString("userDoBlockSpecialNumber");
+                    image = jsonObject.getString("userDoBlockImage");
+
+
+
+
+                    if(userBlock.equals(my_id)){
+                        System.out.println("doooo it");
+                        UserModel userModel = new UserModel(userDoBlock,name,"","","",special_number,image,blockedFor);
+                        blockUserRepo.addBlockUser(userModel);
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case UNBLOCK_USER:
+                System.out.println(args[0].toString()+"NEW_UNBlock");
+                String userDoUnBlock = "";
+                String userUnBlock = "";
+                String unBlockedFor = "";
+
+                try {
+                    JSONObject jsonObject = new JSONObject(args[0].toString());
+                    userDoUnBlock = jsonObject.getString("my_id");
+                    userUnBlock = jsonObject.getString("user_id");
+                    unBlockedFor = jsonObject.getString("blocked_for");
+
+
+
+
+
+                    if(userUnBlock.equals(my_id)){
+                        System.out.println("doooo it");
+                        blockUserRepo.deleteBlockUser(userDoUnBlock,unBlockedFor);
+                    }
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }

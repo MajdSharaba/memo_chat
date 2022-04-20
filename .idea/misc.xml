@@ -3,6 +3,19 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_conversation.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/menu/basic_menu.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/menu/conversation_menu.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/drawable-anydpi/ic_lock.xml" value="0.1" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/drawable-anydpi/ic_share.xml" value="0.1" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/layout/activity_blocked_users.xml" value="0.2" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/layout/activity_contact_number.xml" value="0.2" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/layout/activity_conversation.xml" value="0.2" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/layout/activity_user_information.xml" value="0.2" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/layout/fragment_settings.xml" value="0.2" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/layout/item_block_user.xml" value="0.2" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/layout/item_contact_number.xml" value="0.2" />
+        <entry key="..\:/New folder/yawar/app/src/main/res/menu/main_menu.xml" value="0.2" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_add_archived.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_add_blue.xml" value="0.1" />
         <entry key="..\:/chat_memo_project/yawar/yawar/app/src/main/res/drawable-anydpi/ic_add_phone_green.xml" value="0.1" />
@@ -126,7 +139,7 @@
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

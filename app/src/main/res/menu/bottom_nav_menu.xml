@@ -25,7 +25,7 @@
         app:cnb_iconColor="@color/green"/>
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/block"
         android:title="@string/tab_text_5"
         android:icon="@drawable/ic_memo_settings"
         app:cnb_iconColor="@color/green"/>

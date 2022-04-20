@@ -17,6 +17,7 @@ public class ChatRoomModel {
     public String specialNumber;
     public  String lastMessageTime;
     public boolean isTyping;
+    public  String blockedFor;
 
 
 
@@ -25,7 +26,7 @@ public class ChatRoomModel {
 
 
     public ChatRoomModel(String name,String senderId, String lastMessage, String image, boolean isChecked, String numberMessage,String chatId,String state,String numberUnRMessage,
-                         boolean inChat,String fcmToken,String specialNumber, String lastMessageType, String lastMessageState,String lastMessageTime, boolean isTyping) {
+                         boolean inChat,String fcmToken,String specialNumber, String lastMessageType, String lastMessageState,String lastMessageTime, boolean isTyping, String blockedFor) {
         this.name = name;
         this.userId = senderId;
         this.lastMessage = lastMessage;
@@ -42,6 +43,7 @@ public class ChatRoomModel {
         this.lastMessageType = lastMessageType;
         this.lastMessageTime = lastMessageTime;
         this.isTyping = isTyping;
+        this.blockedFor = blockedFor;
     }
 
     public String getName() {
@@ -171,4 +173,12 @@ public class ChatRoomModel {
         isTyping = typing;
     }
 
+
+    public String getBlockedFor() {
+        return blockedFor;
+    }
+
+    public void setBlockedFor(String blockedFor) {
+        this.blockedFor = blockedFor;
+    }
 }

@@ -19,6 +19,8 @@ import com.yawar.memo.observe.ChatRoomObserve;
 import com.yawar.memo.observe.ContactNumberObserve;
 import com.yawar.memo.observe.FireBaseTokenObserve;
 import com.yawar.memo.observe.StoriesObserve;
+import com.yawar.memo.repositry.BlockUserRepo;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 
 public class BaseApp extends Application implements LifecycleObserver {
@@ -30,6 +32,8 @@ public class BaseApp extends Application implements LifecycleObserver {
     public static final String TAG = "VolleyPatterns";
     private RequestQueue mRequestQueue;
     private static BaseApp sInstance;
+    ChatRoomRepo chatRoomRepo;
+    BlockUserRepo blockUserRepo;
 
 
     @Override
@@ -100,6 +104,18 @@ public class BaseApp extends Application implements LifecycleObserver {
         }
 
         return mRequestQueue;
+    }
+    public ChatRoomRepo getChatRoomRepo() {
+        if(chatRoomRepo== null){
+            chatRoomRepo = new ChatRoomRepo(this);
+        }
+        return chatRoomRepo;
+    }
+    public BlockUserRepo getBlockUserRepo() {
+        if(blockUserRepo== null){
+            blockUserRepo = new BlockUserRepo(this);
+        }
+        return blockUserRepo;
     }
 
     public <T> void addToRequestQueue(Request<T> req, String tag) {

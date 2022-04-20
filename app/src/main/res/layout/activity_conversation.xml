@@ -227,6 +227,19 @@
             android:transcriptMode="alwaysScroll"
             android:stackFromBottom="true"
             android:divider="@null" />
+        <TextView
+            android:id="@+id/text_for_block"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/block_message"
+            android:gravity="center"
+            android:padding="10dp"
+            android:background="@color/green_500"
+            android:textSize="15sp"
+
+            android:textColor="@color/red"
+            android:visibility="gone"
+            android:layout_alignParentBottom="true"/>
 
         <LinearLayout
             android:id="@+id/liner"
@@ -234,6 +247,7 @@
             android:layout_height="wrap_content"
             android:background="@color/green_500"
             android:layout_alignParentBottom="true"
+            android:visibility="visible"
             android:orientation="horizontal">
             <LinearLayout
                 android:id="@+id/messageLayout"

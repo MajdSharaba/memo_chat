@@ -98,6 +98,7 @@ import com.google.android.gms.tasks.Task;
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
 import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.BuildConfig;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.ChatAdapter;
@@ -105,6 +106,9 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ForwardDialogFragment;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.model.UserModel;
+import com.yawar.memo.repositry.BlockUserRepo;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.FileDownloader;
@@ -161,12 +165,18 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private ImageButton sendMessageBtn;
     private ImageButton sendImageBtn;
     TimeProperties timeProperties;
+    BlockUserRepo blockUserRepo;
     private Menu menu;
+    TextView textForBlock;
+    boolean blockedForMe = false;
+    ServerApi serverApi;
+
 
 
     private ImageButton deletImageBtn;
     private ChatAdapter adapter;
     BaseApp myBase;
+    ChatRoomRepo chatRoomRepo;
     String chat_id = "";
     String fcmToken;
     boolean isAllMessgeMe = true;
@@ -241,6 +251,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     LinearLayout personInformationLiner;
     LinearLayout toolsLiner;
     ClassSharedPreferences classSharedPreferences;
+    LinearLayout messageLiner;
 
 
     public static final String CHEK = "ConversationActivity.CHECK_CONNECT";
@@ -448,7 +459,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         if (!state.equals("3") && chat_id.equals(user_id + anthor_user_id)) {
 //                            myBase.getObserver().setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
                             if(!recive_chat_id.isEmpty()){
-                                myBase.getObserver().setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
+                               chatRoomRepo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
 
                             chat_id = recive_chat_id;}
                         }
@@ -702,7 +713,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
         if (chat_id.isEmpty()) {
             chat_id = user_id + anthor_user_id;
-            myBase.getObserver().getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false));
+          chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false,"null"));
         }
 
         sendNotification(message, type);
@@ -745,18 +756,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
-        pickiT = new PickiT(this, this, this);
-        Pattern p = Pattern.compile(URL_REGEX);
-        Matcher m = p.matcher("example");//replace with string to compare
-        if(m.find()) {
-            System.out.println("String contains URL");
-        }
-        else {
-            System.out.println("String dont contains URL");
 
-        }
 
         initViews();
         initAction();
@@ -796,20 +800,38 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //        cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         timeProperties = new TimeProperties();
 //        moreOption = findViewById(R.id.image_button_Options);
+        messageLiner = findViewById(R.id.liner);
 
         myBase = BaseApp.getInstance();
-        myBase.getObserver().addObserver(this);
+        textForBlock = findViewById(R.id.text_for_block);
+        serverApi = new ServerApi(this);
+
+        chatRoomRepo = myBase.getChatRoomRepo();
+        blockUserRepo = myBase.getBlockUserRepo();
         Bundle bundle = getIntent().getExtras();
         user_id = bundle.getString("sender_id", "1");
         anthor_user_id = bundle.getString("reciver_id", "2");
         userName = bundle.getString("name", "user");
         imageUrl = bundle.getString("image");
         specialNumber = bundle.getString("special", "");
+//        blockedFor= bundle.getString("blockedFor","null");
+//       if(blockedFor.equals(user_id)){
+//           messageLiner.setVisibility(View.GONE);
+//           textForBlock.setVisibility(View.VISIBLE);
+//
+//       }
+//       else {
+//           messageLiner.setVisibility(View.VISIBLE);
+//           textForBlock.setVisibility(View.GONE);
+//
+//       }
+
+
 
         chat_id = bundle.getString("chat_id", "");
         if (chat_id.isEmpty()) {
             System.out.println("anthor_user_id" + anthor_user_id);
-            chat_id = myBase.getObserver().getChatId(anthor_user_id);
+            chat_id =chatRoomRepo.getChatId(anthor_user_id);
             System.out.println(chat_id + "chat_iddddddddd");
         }
         fcmToken = bundle.getString("fcm_token", "");
@@ -819,8 +841,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
 
 
-         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         backImageBtn = findViewById(R.id.image_button_back);
         LinearLayout linearLayout = findViewById(R.id.liner_conversation);
         messagesContainer = findViewById(R.id.messagesContainer);
@@ -837,7 +858,67 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         messagesContainer.setLayoutManager(linearLayoutManager);
 
+        ///// block when anthor user do
+;
+        blockUserRepo.userBlockListMutableLiveData.observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
+            @Override
+            public void onChanged(ArrayList<UserModel> userModelArrayList) {
+                boolean isAnyOneBlock= false;
 
+                if(userModelArrayList!=null) {
+                    for (UserModel userModel : userModelArrayList) {
+                        if (userModel.getUserId().equals(anthor_user_id)) {
+                            if (userModel.getStatus().equals(user_id)) {
+                                textForBlock.setText(getResources().getString(R.string.block_message));
+                                textForBlock.setVisibility(View.VISIBLE);
+                                messageLiner.setVisibility(View.GONE);
+                                blockedForMe = true;
+                                isAnyOneBlock= true;
+                            } else if (userModel.getStatus().equals(anthor_user_id)) {
+                                textForBlock.setVisibility(View.VISIBLE);
+                                messageLiner.setVisibility(View.GONE);
+
+                                textForBlock.setText(getResources().getString(R.string.block_message2));
+                                blockedForMe = false;
+                                isAnyOneBlock= true;
+
+
+                            } else if (userModel.getStatus().equals("0")) {
+                                textForBlock.setVisibility(View.VISIBLE);
+                                messageLiner.setVisibility(View.GONE);
+                                textForBlock.setText(getResources().getString(R.string.block_message2));
+                                blockedForMe = true;
+                                isAnyOneBlock= true;
+
+
+                            } else {
+                                textForBlock.setVisibility(View.GONE);
+                                messageLiner.setVisibility(View.VISIBLE);
+                                blockedForMe = false;
+                                isAnyOneBlock= false;
+
+
+                            }
+
+                            break;
+
+
+                        }
+                    }
+                    if(!isAnyOneBlock){
+                        textForBlock.setVisibility(View.GONE);
+                        messageLiner.setVisibility(View.VISIBLE);
+                        blockedForMe = false;}
+
+                    }
+                }
+
+
+
+
+
+
+        });
         adapter = new ChatAdapter(ConversationActivity.this, new ArrayList<ChatMessage>());
         messagesContainer.setAdapter(adapter);
         messagesContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -923,7 +1004,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
 
 
-        myBase.getObserver().setInChat(chat_id, true);
+       chatRoomRepo.setInChat(chat_id, true);
         container = (RelativeLayout) findViewById(R.id.container);
         openMaps = (LinearLayout) findViewById(R.id.pick_location);
         sendLocation = (Button) findViewById(R.id.sendLocation);
@@ -999,6 +1080,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 bundle.putString("fcm_token", fcmToken);
                 bundle.putString("special", specialNumber);
                 bundle.putString("chat_id", chat_id);
+                bundle.putString("blockedFor","");
+
+
                 intent.putExtras(bundle);
                 startActivity(intent);
             }
@@ -1060,12 +1144,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             public void onClick(View view) {
                 // MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.song);
 
-                if (!viewVisability) {
-                    System.out.println("show dialog");
-                    showLayout();
-                } else
-                    hideLayout();
-            }
+                    if (!viewVisability) {
+                        System.out.println("show dialog");
+                        showLayout();
+                    } else
+                        hideLayout();
+                }
+
             ///////////////////
         });
 
@@ -1073,56 +1158,58 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         sendMessageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message_id = System.currentTimeMillis() + "_" + user_id;
-                System.out.println(System.currentTimeMillis() + "_--" + user_id);
 
-                if (classSharedPreferences.getList() != null) {
-                    unSendMessage = classSharedPreferences.getList();
+                    String message_id = System.currentTimeMillis() + "_" + user_id;
+                    System.out.println(System.currentTimeMillis() + "_--" + user_id);
 
-                }
-                String messageText = messageET.getText().toString();
+                    if (classSharedPreferences.getList() != null) {
+                        unSendMessage = classSharedPreferences.getList();
 
-                if (TextUtils.isEmpty(messageText)) {
-                    return;
-                }
-                JSONObject jsonObject = new JSONObject();
-                try {
-                    jsonObject.put("sender_id", user_id);
-                    jsonObject.put("reciver_id", anthor_user_id);
-                    jsonObject.put("message", messageText);
-                    jsonObject.put("message_type", "text");
-                    jsonObject.put("state", "0");
-                    jsonObject.put("message_id", message_id);
-                    jsonObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                ChatMessage chatMessage = new ChatMessage();
-                chatMessage.setId(message_id);//dummy
-                chatMessage.setMessage(messageText);
-                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                chatMessage.setMe(true);
-                chatMessage.setType("text");
-                chatMessage.setState("0");
-                chatMessage.setChecked(false);
-                chatMessage.setId(message_id);
-                messageET.setText("");
-                displayMessage(chatMessage);
-                unSendMessage.clear();
+                    }
+                    String messageText = messageET.getText().toString();
 
-                unSendMessage.add(jsonObject);
+                    if (TextUtils.isEmpty(messageText)) {
+                        return;
+                    }
+                    JSONObject jsonObject = new JSONObject();
+                    try {
+                        jsonObject.put("sender_id", user_id);
+                        jsonObject.put("reciver_id", anthor_user_id);
+                        jsonObject.put("message", messageText);
+                        jsonObject.put("message_type", "text");
+                        jsonObject.put("state", "0");
+                        jsonObject.put("message_id", message_id);
+                        jsonObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    ChatMessage chatMessage = new ChatMessage();
+                    chatMessage.setId(message_id);//dummy
+                    chatMessage.setMessage(messageText);
+                    chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                    chatMessage.setMe(true);
+                    chatMessage.setType("text");
+                    chatMessage.setState("0");
+                    chatMessage.setChecked(false);
+                    chatMessage.setId(message_id);
+                    messageET.setText("");
+                    displayMessage(chatMessage);
+                    unSendMessage.clear();
+
+                    unSendMessage.add(jsonObject);
 //              unSendMessage.clear();
 
 
-                classSharedPreferences.setList("list", unSendMessage);
-                for (JSONObject message :
-                        unSendMessage) {
+                    classSharedPreferences.setList("list", unSendMessage);
+                    for (JSONObject message :
+                            unSendMessage) {
 
-                    newMeesage(message);
+                        newMeesage(message);
 
-                }
+                    }
 
 //                newMeesage(jsonObject);
+
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -1203,7 +1290,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         recordButton.setListenForRecord(true);
 
         recordButton.setOnClickListener(view -> {
-            System.out.println("cancccccccc");
+
 //            recordButton.setListenForRecord(true);
 
 //            recordButton.setListenForRecord(true);
@@ -1218,6 +1305,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         recordView.setLessThanSecondAllowed(false);
         recordView.setRecordPermissionHandler(new RecordPermissionHandler() {
             @Override
+
             public boolean isPermissionGranted() {
                 System.out.println("permission");
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
@@ -1352,38 +1440,41 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.conversation_menu, menu);
-//                    menu.removeItem(R.id.item_copy);
 
-
-//        if(selectedMessage.size()>1){
-//            menu.removeItem(R.id.item1);
-//        }
-//        else {
-//           menu.add(R.id.item1);
-//        }
-//        menu.removeItem(R.id.item1);
         return true;
     }
 
     @SuppressLint("ResourceType")
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        System.out.println("oonPrepareOptionsMenu");
-        MenuItem item = menu.findItem(R.id.item_copy);
+        MenuItem copyItem = menu.findItem(R.id.item_copy);
+        MenuItem blockItem = menu.findItem(R.id.item_block);
+        MenuItem unblockItem = menu.findItem(R.id.item_unblock);
+
 
         if(selectedMessage.size()>1){
             System.out.println("selectedMessage.size()>1");
-            item.setVisible(false);
+            copyItem.setVisible(false);
 //            menu.removeItem(item.getItemId());
 
         }
         else  if(selectedMessage.size()==1){
            if(selectedMessage.get(0).getType().equals("text")){
-            item.setVisible(true);}
+            copyItem.setVisible(true);}
 
         }
         else {
-            item.setVisible(false);
+            copyItem.setVisible(false);
+
+        }
+        if(blockedForMe){
+            blockItem.setVisible(false);
+            unblockItem.setVisible(true);
+        }
+        else{
+            blockItem.setVisible(true);
+            unblockItem.setVisible(false);
+
 
         }
 
@@ -1393,15 +1484,17 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        UserModel userModel = new UserModel(anthor_user_id,userName,"","","",specialNumber,imageUrl,"");
 
-        switch (id){
+
+        switch (id) {
             case R.id.item_copy:
-                ClipboardManager  clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clipData = ClipData.newPlainText("key", selectedMessage.get(0).getMessage());
                 clipboardManager.setPrimaryClip(clipData);
 //                chatHistory.get(selectedMessage.get(0).).setChecked(false);
-                for(ChatMessage chatMessage:chatHistory){
-                    if(chatMessage.getId().equals(selectedMessage.get(0).getId())){
+                for (ChatMessage chatMessage : chatHistory) {
+                    if (chatMessage.getId().equals(selectedMessage.get(0).getId())) {
                         chatMessage.setChecked(false);
                         break;
                     }
@@ -1413,16 +1506,58 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 adapter.notifyDataSetChanged();
                 toolsLiner.setVisibility(View.GONE);
                 personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));                return true;
-//            case R.id.item2:
-//                Toast.makeText(getApplicationContext(),"Item 2 Selected",Toast.LENGTH_LONG).show();
-//                return true;
-//            case R.id.item3:
-//                Toast.makeText(getApplicationContext(),"Item 3 Selected",Toast.LENGTH_LONG).show();
-//                return true;
+                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+                return true;
+            case R.id.item_block:
+                AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+                dialog.setTitle(R.string.alert_block_user);
+                dialog.setPositiveButton(R.string.block,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+
+                                serverApi.block(user_id, userModel);
+                            }
+                        });
+                dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertDialog = dialog.create();
+                alertDialog.show();
+
+                break;
+
+
+            case R.id.item_unblock:
+                AlertDialog.Builder dialogUnBlock = new AlertDialog.Builder(this);
+                dialogUnBlock.setTitle(R.string.alert_unblock_user);
+                dialogUnBlock.setPositiveButton(R.string.Unblock,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+
+                                serverApi.unbBlockUser(user_id, userModel);
+                            }
+                        });
+                dialogUnBlock.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                AlertDialog alertUnBlockDialog = dialogUnBlock.create();
+                alertUnBlockDialog.show();
+
+                break;
             default:
                 return super.onOptionsItemSelected(item);
         }
+        return true;
     }
 
 
@@ -1450,7 +1585,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 toolsLiner.setVisibility(View.GONE);
                 personInformationLiner.setVisibility(View.VISIBLE);
                 toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
-
 
 
             }
@@ -1487,8 +1621,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private void setUpRecording() {
 
         mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT);
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
         File file = new File(this.getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath(), "memo/send/voiceRecord");
 //        Environment.DIRECTORY_DCIM+ File.separator+
@@ -2122,40 +2256,40 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                            String uriString = selectedMediaUri.toString();
 //                            System.out.println("this is Video"+uriString);
 //                            File myFile = new File(uriString);
-
+//
 //                            String path = myFile.getAbsolutePath();
-                        ////////////////////////////
-//                        File myFilee = new File(selectedMediaUriGallery.toString());
-//
-////                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-////                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
-//                        copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
-//
-//                        String displayNamee = null;
-//
-//                        if (selectedMediaUriGallery.toString().startsWith("content://")) {
-//                            Cursor cursor = null;
-//                            try {
-//                                cursor = this.getContentResolver().query(selectedMediaUriGallery, null, null, null, null);
-//                                if (cursor != null && cursor.moveToFirst()) {
-//                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-//                                    Log.d("nameeeee>>>>  ", displayNamee);
-//                                    System.out.println(displayNamee);
-//
-//                                    uploadVideo(displayNamee, selectedMediaUriGallery);
-//                                }
-//                            } finally {
-//                                cursor.close();
-//                            }
-//                        } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
-//                            displayNamee = myFilee.getName();
-//                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-//                            uploadVideo(displayNamee, selectedMediaUriGallery);
-//
-//
-//                            Log.d("nameeeee>>>>  ", displayNamee);
-//                        }
-//
+                        //////////////////////////
+                        File myFilee = new File(selectedMediaUriGallery.toString());
+
+//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
+//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+                        copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+
+                        String displayNamee = null;
+
+                        if (selectedMediaUriGallery.toString().startsWith("content://")) {
+                            Cursor cursor = null;
+                            try {
+                                cursor = this.getContentResolver().query(selectedMediaUriGallery, null, null, null, null);
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                                    Log.d("nameeeee>>>>  ", displayNamee);
+                                    System.out.println(displayNamee);
+
+                                    uploadVideo(displayNamee, selectedMediaUriGallery);
+                                }
+                            } finally {
+                                cursor.close();
+                            }
+                        } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
+                            displayNamee = myFilee.getName();
+                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
+                            uploadVideo(displayNamee, selectedMediaUriGallery);
+
+
+                            Log.d("nameeeee>>>>  ", displayNamee);
+                        }
+
                     }
                     break;
 
@@ -2890,7 +3024,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("on destroy");
-        myBase.getObserver().setInChat(chat_id, false);
+     chatRoomRepo.setInChat(chat_id, false);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(check);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);

@@ -260,6 +260,13 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
         list.addAll(listsearch);
         notifyDataSetChanged();
     }
+    public void updateList(ArrayList<ChatRoomModel> updateList){
+        list = updateList;
+        listsearch.clear();
+        listsearch.addAll(list);
+
+        notifyDataSetChanged();
+    }
 
 
     //class View_Holder extends RecyclerView.ViewHolder implements View.OnClickListener{

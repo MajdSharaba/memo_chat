@@ -19,8 +19,15 @@
         android:iconTint="@color/white"
         android:icon="@android:drawable/btn_plus"/>
 
-    <item  android:id="@+id/item2"
+    <item  android:id="@+id/item_block"
         android:title="@string/block"
+        android:visible="true"
+        app:showAsAction="withText"
+        android:iconTint="@color/white"
+        android:icon="@android:drawable/btn_plus"/>
+    <item android:id="@+id/item_unblock"
+        android:title="@string/Unblock"
+        android:visible="true"
         app:showAsAction="withText"
         android:iconTint="@color/white"
         android:icon="@android:drawable/btn_plus"/>

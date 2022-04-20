@@ -420,8 +420,12 @@ private void uploadImage(final String imageName, Uri pdfFile) {
         //"file:///storage/emulated/0/memo/1640514470604.3gp"
           inputData = getBytes(iStream);}
 
+//      String url = AllConstants.base_url+"uploadImgProfile";
+        String url = "http://192.168.1.9:3000/uploadImgProfile";
 
-        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.base_url+"uploadImgProfile",
+//              "http://192.168.1.7:3000/uploadImgProfile";
+//        AllConstants.base_url+"uploadImgProfile"
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
                 new Response.Listener<NetworkResponse>() {
                     @Override
                     public void onResponse(NetworkResponse response) {

@@ -157,6 +157,7 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
         }
         else{
             holder.lastMessage.setTextColor(context.getResources().getColor(R.color.green));
+            holder.imageType.setVisibility(View.GONE);
 
             holder.lastMessage.setText(context.getResources().getString(R.string.writing_now));
             holder.numUMessage.setVisibility(View.GONE);
@@ -232,6 +233,9 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
                             bundle.putString("fcm_token", list.get(position).fcmToken);
                             bundle.putString("special", list.get(position).getSpecialNumber());
                             bundle.putString("chat_id",list.get(position).getChatId());
+                            bundle.putString("blockedFor",list.get(position).blockedFor);
+
+
                             intent.putExtras(bundle);
                             view.getContext().startActivity(intent);
                             mDialog.dismiss();
@@ -255,6 +259,8 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
                             bundle.putString("name",list.get(position).getName());
                             bundle.putString("image",list.get(position).getImage());
                             bundle.putString("chat_id",list.get(position).getChatId());
+                            bundle.putString("blockedFor",list.get(position).blockedFor);
+
 
 
                             Intent intent = new Intent(context.getActivity(), ConversationActivity.class);
@@ -308,6 +314,13 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
             notifyDataSetChanged();
         }
     };
+    public void updateList(ArrayList<ChatRoomModel> updateList){
+        list = updateList;
+        listsearch.clear();
+        listsearch.addAll(list);
+
+        notifyDataSetChanged();
+    }
 
 //    public void filter(String charText) {
 //        System.out.println(charText+listsearch2.size());

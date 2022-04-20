@@ -2,7 +2,7 @@
 <resources>
     <color name="green">#19A15F</color>
     <color name="green_500">#F6F6F6</color>
-    <color name="green_700">#F6F6F6</color>
+    <color name="green_700">#075e54</color>
     <color name="colorPrimaryPix">#075e54</color>
     <color name="colorPrimaryLightPix">#80075e54</color>
     <color name="teal_200">#FF03DAC5</color>

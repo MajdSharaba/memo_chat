@@ -47,6 +47,7 @@ import com.yawar.memo.model.UserModel;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.VolleyMultipartRequest;
 import com.yawar.memo.views.ArchivedActivity;
+import com.yawar.memo.views.BlockedUsersActivity;
 import com.yawar.memo.views.DevicesLinkActivity;
 import com.yawar.memo.views.IntroActivity;
 import com.yawar.memo.views.RegisterActivity;
@@ -95,7 +96,7 @@ public class SettingsFragment extends Fragment {
     Uri imageUri ;
     CardView fontSize ;
     TextView fontSiz ;
-    CardView askMemoQuest ;
+    CardView blockList ;
     TextView askMemoQuesti ;
     CardView preference ;
     TextView preferene ;
@@ -155,11 +156,12 @@ public class SettingsFragment extends Fragment {
         phoneNumber =(TextView) view.findViewById(R.id.phoneNumber);
         phoneNumber.setTextSize(textSize);
         phoneNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-        String firstString = userModel.getSecretNumber().substring(0,3);
-        String secondString = userModel.getSecretNumber().substring(3,6);
-        String thirtyString = userModel.getSecretNumber().substring(6);
+        String firstString = userModel.getSecretNumber().substring(0,1);
+        String secondString = userModel.getSecretNumber().substring(1,4);
+        String thirtyString =  userModel.getSecretNumber().substring(4,7);
+        String lastString =userModel.getSecretNumber().substring(7);
 
-        phoneNumber.setText(firstString+"-"+secondString+"-"+thirtyString);
+        phoneNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
 
 
         setPhoto =(TextView) view.findViewById(R.id.selectImage);
@@ -200,7 +202,7 @@ public class SettingsFragment extends Fragment {
         fontSiz.setTextSize(textSize);
         fontSiz.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        askMemoQuest =(CardView) view.findViewById(R.id.askMemoQuestion);
+        blockList =(CardView) view.findViewById(R.id.contact_number_blocked);
         askMemoQuesti =(TextView) view.findViewById(R.id.askMemoQuesti);
         askMemoQuesti.setTextSize(textSize);
         askMemoQuesti.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
@@ -463,10 +465,11 @@ public class SettingsFragment extends Fragment {
 
             }
         });
-        askMemoQuest.setOnClickListener(new View.OnClickListener() {
+        blockList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "This Ask Memo Quest", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), BlockedUsersActivity.class);
+                startActivity(intent);
             }
         });
 
