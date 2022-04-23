@@ -723,6 +723,12 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
                 setAlignment(((LayoutTextViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
                 ((LayoutTextViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                if(chatMessage.getIsUpdate().equals("1")){
+                    ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.VISIBLE);
+
+                }
+                else {
+                ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.GONE);}
 
                 ((LayoutTextViewHolder) holder).txtMessage.setText(chatMessage.getMessage());
                 Linkify.addLinks( ((LayoutTextViewHolder) holder).txtMessage, Linkify.WEB_URLS);
@@ -1579,8 +1585,11 @@ class LayoutVoiceViewHolder
         private ImageView imageSeen;
         public TextView txtInfo;
         public TextView txtDate;
+        public TextView txtUpdate;
 
-//        float textSize = 14.0F ;
+
+
+        //        float textSize = 14.0F ;
         SharedPreferences sharedPreferences ;
 //        private Activity activity;
 
@@ -1612,6 +1621,7 @@ class LayoutVoiceViewHolder
 
 
             imageSeen = itemView.findViewById(R.id.iv_state);
+            txtUpdate = itemView.findViewById(R.id.text_update);
 
         }
     }

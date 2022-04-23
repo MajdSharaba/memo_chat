@@ -43,7 +43,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final int EVENT_TYPE_JOIN = 1, EVENT_TYPE_MESSAGE = 2,
             EVENT_TYPE_TYPING = 3,EVENT_TYPE_ENTER = 4,EVENT_TYPE_CHECK_CONNECT=5,
             EVENT_TYPE_ON_SEEN=6,EVENT_TYPE_Forward=7,EVENT_TYPE_ON_DELETE =8,
-            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11, EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13;
+            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11, EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13,EVENT_TYPE_ON_UPDATE_MESSAGE=14;
     public static final String EVENT_DELETE = "delete message";
     private static final String EVENT_MESSAGE = "new message";
     private static final String EVENT_CHANGE = "change";
@@ -53,6 +53,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String GET_QR= "getIdForUser";
     private static final String BLOCK_USER= "block";
     private static final String UNBLOCK_USER= "unblock";
+    private static final String UPDATE_MESSAGE= "editmsg";
+
 
 
 
@@ -84,6 +86,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_FORWARD_MESSAGE_PARAMTERS = "extra_fowrward_message_paramters";
     public static final String EXTRA_CHECK_QR_PARAMTERS = "extra_check_qr_paramters";
     public static final String EXTRA_GET_QR_PARAMTERS = "extra_get_qr_paramters";
+    public static final String EXTRA_ON_UPDTE_MESSAGE_PARAMTERS = "extra_update_message_paramters";
+
 
 
 
@@ -214,7 +218,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("getIdForUser", new SocketEventListener("getIdForUser", this));
         listenersMap.put("block", new SocketEventListener("block", this));
         listenersMap.put("unblock", new SocketEventListener("unblock", this));
-
+        listenersMap.put("editmsg", new SocketEventListener("editmsg", this));
 
 
 
@@ -380,6 +384,16 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         unBlockUser(unBlock_paramter);
                     }
                     break;
+                case EVENT_TYPE_ON_UPDATE_MESSAGE:
+                    System.out.println("EVENT_TYPE_ON_UPDATE_MESSAGE");
+
+                    String update_message_paramter = intent.getExtras().getString(EXTRA_ON_UPDTE_MESSAGE_PARAMTERS);
+
+                    if (isSocketConnected()) {
+                        System.out.println("unblocked is connect");
+                        updateMessage(update_message_paramter);
+                    }
+                    break;
 
 
             }
@@ -504,6 +518,19 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
 
     }
+    private void updateMessage(String messageObject) {
+        JSONObject chat = null;
+
+
+        try {
+            chat = new JSONObject(messageObject);
+
+        } catch (JSONException e) {
+            e.printStackTrace();}
+        mSocket.emit("editmsg",chat);
+    }
+
+
     private void deleteMessages(String messageObject) {
         JSONObject chat = null;
 
@@ -715,6 +742,12 @@ public void onTaskRemoved(Intent rootIntent) {
                 System.out.println(args[0].toString()+"NEW_GET_GR");
                 intent = new Intent(DevicesLinkActivity.GET_QR);
                 intent.putExtra("get qr", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+            case UPDATE_MESSAGE:
+                System.out.println(args[0].toString()+"Update_Messgae");
+                intent = new Intent(ConversationActivity.ON_MESSAGE_UPDATE);
+                intent.putExtra("updateMessage", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
 

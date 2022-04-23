@@ -202,6 +202,12 @@
     <string name="block_message"> لقد قمت بحظر هذا المستخدم </string>
     <string name="block_message2">لقد قام هذا المستخدم بحظرك </string>
     <string name="alert_block_user">هل تريد حظر هذا المستخدم؟  </string>
+    <string name="modified_message_text">رسالة معدلة</string>
+    <string name="update_message">تعديل الرسالة</string>
+    <string name="update_message_note">هل تريد تعديل الرسالة؟</string>
+
+
+
 
 
 

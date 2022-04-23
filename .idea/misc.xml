@@ -3,7 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/bottom_navigation_selector.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_conversation.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_dialog_forward.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/item_group_selector.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/list_item_chat_message.xml" value="0.25" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/pdf_item_chat_message.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/update_message_dialog.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/menu/basic_menu.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/menu/conversation_menu.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder/yawar/app/src/main/res/drawable-anydpi/ic_lock.xml" value="0.1" />

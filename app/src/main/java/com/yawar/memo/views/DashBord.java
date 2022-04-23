@@ -1,5 +1,6 @@
 package com.yawar.memo.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -9,8 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.yawar.memo.Api.ClassSharedPreferences;
 import com.yawar.memo.R;
@@ -33,7 +37,8 @@ public class DashBord extends AppCompatActivity implements Observer {
 
 
 
-    private ChipNavigationBar navigationBar;
+//    private ChipNavigationBar navigationBar;
+BottomNavigationView bottomNavigation;
     private Fragment fragment = null;
     BaseApp myBase;
     ChatRoomRepo chatRoomRepo;
@@ -235,7 +240,10 @@ public class DashBord extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
 //        getWindow().setFlags(WindowManager.LayoutParams.,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_dash_bord);
+
         connectSocket();
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, new IntentFilter(TYPING));
@@ -244,23 +252,20 @@ public class DashBord extends AppCompatActivity implements Observer {
         myId = classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
         chatRoomRepo= myBase.getChatRoomRepo();
+                        LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
 
-        setContentView(R.layout.activity_dash_bord);
-        navigationBar = findViewById(R.id.navigationChip);
-                LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
-
-
-        if (savedInstanceState == null) {
-            navigationBar.setItemSelected(R.id.chat, true);
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationChip);
+                if (savedInstanceState == null) {
+                    bottomNavigationView.setSelectedItemId(R.id.chat);
             getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, new ChatRoomFragment()).commit();
         }
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        navigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+
             @Override
-            public void onItemSelected(int i) {
-                switch (i) {
-
-                    case R.id.chat:
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case  R.id.chat:
                         fragment = new ChatRoomFragment();
                         break;
                     case  R.id.profile:
@@ -275,14 +280,54 @@ public class DashBord extends AppCompatActivity implements Observer {
                     case  R.id .calls:
 //                        fragment = new StoriesFragment();
                 }
-
                 if (fragment != null)
                     getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, fragment).commit();
+//            }
+                return true;
             }
         });
-
-
     }
+
+
+
+
+//        navigationBar = findViewById(R.id.navigationChip);
+//                LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
+//
+//
+//        if (savedInstanceState == null) {
+//            navigationBar.setItemSelected(R.id.chat, true);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, new ChatRoomFragment()).commit();
+//        }
+//
+//        navigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(int i) {
+//                switch (i) {
+//
+//                    case R.id.chat:
+//                        fragment = new ChatRoomFragment();
+//                        break;
+//                    case  R.id.profile:
+////                        fragment = new ProfileFragment();
+//                        break;
+//                    case R.id.searchSn:
+//                        fragment = new SearchFragment();
+//                        break;
+//                     case R.id.block:
+//                        fragment = new SettingsFragment();
+//                        break;
+//                    case  R.id .calls:
+////                        fragment = new StoriesFragment();
+//                }
+//
+//                if (fragment != null)
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, fragment).commit();
+//            }
+//        });
+//
+//
+
 
     @Override
     protected void onResume() {

@@ -44,6 +44,16 @@ public class ChatMessage {
     private  String fileName;
     private boolean isDownload = false;
 
+    public String getIsUpdate() {
+        return isUpdate;
+    }
+
+    public void setIsUpdate(String isUpdate) {
+        this.isUpdate = isUpdate;
+    }
+
+    private  String isUpdate;
+
 
 
     public boolean isDownload() {

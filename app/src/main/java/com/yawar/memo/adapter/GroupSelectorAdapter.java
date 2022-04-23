@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
+import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.SendContactNumberResponse;
 
 import java.util.ArrayList;
@@ -102,37 +103,17 @@ public class GroupSelectorAdapter extends RecyclerView.Adapter<com.yawar.memo.ad
                 }
             }
         });
-//            holder.button.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    System.out.println("majdno Erooooor");
-//                    Intent contactIntent = new Intent(ContactsContract.Intents.Insert.ACTION);
-//                    contactIntent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-//
-//                    contactIntent
-//                            .putExtra(ContactsContract.Intents.Insert.NAME, model.getName())
-//                            .putExtra(ContactsContract.Intents.Insert.PHONE, model.getPhone());
-//
-//
-//                }
-//            });
+
 
 
     }
-//        @Override
-//        protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-//            super.onActivityResult(requestCode, resultCode, intent);
-//
-//            if (requestCode == 1)
-//            {
-//                if (resultCode == Activity.RESULT_OK) {
-//                    Toast.makeText(this, "Added Contact", Toast.LENGTH_SHORT).show();
-//                }
-//                if (resultCode == Activity.RESULT_CANCELED) {
-//                    Toast.makeText(this, "Cancelled Added Contact", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        }
+    public void updateList(ArrayList<SendContactNumberResponse> updateList){
+        arrayList = updateList;
+
+
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public int getItemCount() {
