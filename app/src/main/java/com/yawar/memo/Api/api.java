@@ -21,5 +21,18 @@ public interface api {
 
     Single<String> getBlockKist(@Field("my_id") String user_id);
 
+    @FormUrlEncoded
+
+    @POST("APIS/signup.php")//endpoint
+
+    Single<String> getSpecialNumbers(@Field("phone") String phoneNumber);
+
+    @FormUrlEncoded
+
+    @POST("messagesbyusers")//endpoint
+
+    Single<String> getChatMessgeHistory(@Field("sender_id") String my_id
+            ,@Field("reciver_id") String anthor_user_id);
+
 
 }

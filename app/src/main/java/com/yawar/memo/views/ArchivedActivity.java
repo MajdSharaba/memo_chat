@@ -70,18 +70,18 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
      
         setContentView(R.layout.activity_archived);
 
-        sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//        sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
 
         toolbar = findViewById(R.id.toolbar);
 //        toolbar.setTitle("Memo");
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         recyclerView =  findViewById(R.id.recycler_view);
 
         archive =  findViewById(R.id.archived);

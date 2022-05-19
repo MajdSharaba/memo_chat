@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,6 +23,12 @@ import android.widget.Toast;
 import com.yawar.memo.Api.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
+import com.yawar.memo.model.UserModel;
+import com.yawar.memo.repositry.AuthRepo;
+import com.yawar.memo.utils.BaseApp;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +36,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class SplashScreen extends AppCompatActivity {
-    private static int SPLASH_SCREEN_TIME_OUT=2000;
+    private static int SPLASH_SCREEN_TIME_OUT=100;
     ClassSharedPreferences classSharedPreferences;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
@@ -39,6 +46,8 @@ public class SplashScreen extends AppCompatActivity {
     SharedPreferences sharedPreferences ;
     TextView text ;
     TextView powerd ;
+    AuthRepo authRepo;
+    BaseApp myBase;
 
 
 
@@ -52,31 +61,27 @@ public class SplashScreen extends AppCompatActivity {
                 .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
         // Comparing to see which preference is selected and applying those theme settings
         if (pref.equals(darkModeValues[0])){
-            System.out.println(darkModeValues[0]+"majdddddddddddddd"+pref);
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
         else if (pref.equals(darkModeValues[1])){
-            System.out.println(darkModeValues[0]+"ahmaaadddddddddddddddd"+pref);
 
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
-        ///// for dark modeee
-//        final String[] darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
-//        // The apps theme is decided depending upon the saved preferences on app startup
-//        String pref = PreferenceManager.getDefaultSharedPreferences(this)
-//                .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
-//        // Comparing to see which preference is selected and applying those theme settings
-//        if (pref.equals(darkModeValues[0])){
-//            System.out.println(darkModeValues[0]+"majdddddddddddddd"+pref);
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
-//        else if (pref.equals(darkModeValues[1])){
-//            System.out.println(darkModeValues[0]+"ahmaaadddddddddddddddd"+pref);
-//
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
+
         classSharedPreferences = new ClassSharedPreferences(this);
-        serverApi = new ServerApi(this);
-//        setContentView(R.layout.activity_splash_screen);
+//        serverApi = new ServerApi(this);
+
+
+        myBase = BaseApp.getInstance();
+
+
+        authRepo = myBase.getAuthRepo();
+
+
+
+//
+
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
         text = findViewById(R.id.text);
@@ -102,14 +107,69 @@ public class SplashScreen extends AppCompatActivity {
                     finish();
                 }
                 else if (classSharedPreferences.getVerficationNumber()==null){
-                //Intent is used to switch from one activity to another.
+
+                    //Intent is used to switch from one activity to another.
                 intent  = new Intent(SplashScreen.this,LoginActivity.class);
 
                     startActivity(intent);
                     finish();
                         }
                 else {
-                    serverApi.register();
+                    authRepo.getspecialNumbers(classSharedPreferences.getVerficationNumber());
+                    authRepo.jsonObjectMutableLiveData.observe(SplashScreen.this ,new androidx.lifecycle.Observer<JSONObject>() {
+                        @Override
+                        public void onChanged(JSONObject jsonObject) {
+                            Log.d("getUserrr", "all not null ");
+
+                            if(jsonObject!=null) {
+                                Log.d("getUserrr", "onChanged: "+jsonObject);
+                                authRepo.jsonObjectMutableLiveData.removeObserver(this);
+                                String sn="";
+                                String user_id="" ;
+                                String first_name="" ;
+                                String last_name="" ;
+                                String email="" ;
+                                String profile_image="";
+                                String secret_number="";
+                                String number="";
+                                String status="";
+
+
+                                try {
+                                    JSONObject userObject  = jsonObject.getJSONObject("user");
+                                    sn = userObject.getString("sn");
+                                    user_id = userObject.getString("id");
+                                     first_name = userObject.getString("first_name");
+                                     last_name = userObject.getString("last_name");
+                                    email = userObject.getString("email");
+                                    profile_image = userObject.getString("profile_image");
+                                     secret_number = userObject.getString("sn");
+                                     number = userObject.getString("phone");
+                                     status= userObject.getString("status");
+
+
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                if(sn.isEmpty()){
+
+                                Intent intent = new Intent(SplashScreen.this, RegisterActivity.class);
+
+                                startActivity(intent);
+                                finish();}
+                                else{
+                                    UserModel userModel = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
+                                    classSharedPreferences.setUser(userModel);
+                                    Intent intent = new Intent(SplashScreen.this, IntroActivity.class);
+                                    startActivity(intent);
+                                    finish();
+
+                                }
+                            }
+                        }
+                    });
 
                 }
 
@@ -120,7 +180,23 @@ public class SplashScreen extends AppCompatActivity {
                 //the current activity will get finished.
             }
         }, SPLASH_SCREEN_TIME_OUT);
+
+//        authRepo.jsonObjectMutableLiveData.observe(this ,new androidx.lifecycle.Observer<JSONObject>() {
+//            @Override
+//            public void onChanged(JSONObject jsonObject) {
+//                if(jsonObject!=null) {
+//                    System.out.println("SplashScreen");
+//                    authRepo.jsonObjectMutableLiveData.removeObserver(this);
+//
+//                    Intent intent = new Intent(SplashScreen.this, RegisterActivity.class);
+//
+//                    startActivity(intent);
+//                    finish();
+//                }
+//            }
+//        });
     }
+
 
     public void checkPermission(String permission, int requestCode)
     {

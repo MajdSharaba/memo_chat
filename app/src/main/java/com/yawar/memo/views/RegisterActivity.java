@@ -40,6 +40,7 @@ import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.FileUtil;
 import com.yawar.memo.utils.VolleyMultipartRequest;
@@ -87,6 +88,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private RequestQueue rQueue;
     BaseApp myBase;
     String displayNamee = "";
+    AuthRepo authRepo;
 
 
 
@@ -105,6 +107,8 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         image = findViewById(R.id.imageProfile);
         spennerItemChooser=getResources().getString(R.string.choose_special_number);
         myBase = BaseApp.getInstance();
+        authRepo = myBase.getAuthRepo();
+
 
 //        edEmail = findViewById(R.id.et_em);
         edFname = findViewById(R.id.et_fName);
@@ -117,29 +121,53 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         dropdown = findViewById(R.id.spinner1);
     }
     private void initAction() {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,spennerItem);
+
         spennerItem.add(getResources().getString(R.string.choose_special_number));
-        JSONObject jsonObject = classSharedPreferences.getSecretNumbers();
-        try {
-            JSONArray jsonArray = jsonObject.getJSONArray("numbers");
-            JSONObject userObject  = jsonObject.getJSONObject("user");
-            userId = userObject.getString("id");
-            System.out.println(userId+"userId");
+        authRepo.jsonObjectMutableLiveData.observe(this ,new androidx.lifecycle.Observer<JSONObject>() {
+            @Override
+            public void onChanged(JSONObject jsonObject) {
+                if(jsonObject!=null) {
+                    try {
+                        JSONArray jsonArray = jsonObject.getJSONArray("numbers");
+                        JSONObject userObject  = jsonObject.getJSONObject("user");
+                        userId = userObject.getString("id");
+                        System.out.println(userId+"userId");
 
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                String item = jsonArray.getString(i);
-                spennerItem.add(item);
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            String item = jsonArray.getString(i);
+                            spennerItem.add(item);
+                        }
+                        adapter.notifyDataSetChanged();
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
+        }});
+//        JSONObject jsonObject = classSharedPreferences.getSecretNumbers();
+//        try {
+//            JSONArray jsonArray = jsonObject.getJSONArray("numbers");
+//            JSONObject userObject  = jsonObject.getJSONObject("user");
+//            userId = userObject.getString("id");
+//            System.out.println(userId+"userId");
+//
+//
+//            for (int i = 0; i < jsonArray.length(); i++) {
+//                String item = jsonArray.getString(i);
+//                spennerItem.add(item);
+//            }
 
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,spennerItem);
             dropdown.setAdapter(adapter);
             dropdown.setOnItemSelectedListener(this);
 
 
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 //        System.out.println(jsonObject.toString()+"majjjjjjjjjjjjjjjjjd");
         ///// get image from gallery
         image.setOnClickListener(new View.OnClickListener() {
@@ -408,7 +436,7 @@ private void uploadImage(final String imageName, Uri pdfFile) {
 
 
 
-            ProgressDialog progressDialog = new ProgressDialog(this);
+        ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage(getResources().getString(R.string.prograss_message));
         progressDialog.show();
 
@@ -421,7 +449,7 @@ private void uploadImage(final String imageName, Uri pdfFile) {
           inputData = getBytes(iStream);}
 
 //      String url = AllConstants.base_url+"uploadImgProfile";
-        String url = "http://192.168.1.9:3000/uploadImgProfile";
+        String url = "http://192.168.0.107:3000/uploadImgProfile";
 
 //              "http://192.168.1.7:3000/uploadImgProfile";
 //        AllConstants.base_url+"uploadImgProfile"
@@ -452,8 +480,7 @@ private void uploadImage(final String imageName, Uri pdfFile) {
                             Intent intent = new Intent(RegisterActivity.this, IntroActivity.class);
                             startActivity(intent);
                             finish();
-                            UserModel userModel1 = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
-                            classSharedPreferences.setUser(userModel1);
+
 
 
 

@@ -22,6 +22,7 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.views.DashBord;
@@ -40,6 +41,7 @@ public class FirebaseMessageReceiver
         extends FirebaseMessagingService implements Observer {
     int id =1;
     BaseApp myBase;
+    ChatRoomRepo chatRoomRepo;
     String chat_id;
 
     private  int NOTIFICATION_ID = 237;
@@ -56,6 +58,7 @@ public class FirebaseMessageReceiver
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         myBase = (BaseApp) getApplication();
+        chatRoomRepo=myBase.getChatRoomRepo();
         myBase.getObserver().addObserver(this);
         String message = "";
         Map<String, String> data = remoteMessage.getData();
@@ -81,7 +84,7 @@ public class FirebaseMessageReceiver
             // Since the notification is received directly from
             // FCM, the title and the body can be fetched
             // directly as below.
-            if(!myBase.getObserver().checkInChat(remoteMessage.getData().get("chat_id"))){
+            if(!chatRoomRepo.checkInChat(remoteMessage.getData().get("chat_id"))){
                 switch (remoteMessage.getData().get("type")){
                     case "imageWeb":
                         message = getResources().getString(R.string.photo);

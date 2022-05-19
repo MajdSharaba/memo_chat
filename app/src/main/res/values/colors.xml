@@ -18,6 +18,9 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="background_editText_color">#EEEEEE</color>
+    <color name="memo_background_color">#00A79D</color>
+
+
 
 
 
@@ -29,7 +32,7 @@
     <color name="background_send_message">#E9E9EB</color>
 
 
-    <color name="background_recive_message">#19A15F</color>
+    <color name="background_recive_message">#00A79D</color>
     <color name="browser_actions_bg">#F5F5F5</color>
     <color name="background_chat_page">#FFFFFFFF</color>
     <color name="background_onLong_click">#e6e6fa</color>

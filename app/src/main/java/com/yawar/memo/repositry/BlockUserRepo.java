@@ -2,6 +2,7 @@ package com.yawar.memo.repositry;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -50,28 +51,33 @@ import io.reactivex.schedulers.Schedulers;
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
             observable.subscribe(s -> {
-                     System.out.println(s+"responeeeeeeee");
-                        JSONObject respObj = new JSONObject(s);
-                        JSONArray jsonArray = (JSONArray) respObj.get("data");
+                try {
 
-                for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    //System.out.println(jsonObject.getString("last_message"));
-                    String image = jsonObject.getString("profile_image");
 
-                    String special_number = jsonObject.getString("sn");
-                    String fName = jsonObject.getString("first_name");
-                    String lName = jsonObject.getString("last_name");
-                    String phone = jsonObject.getString("phone");
-                    String userId = jsonObject.getString("id");
-                    String email = jsonObject.getString("email");
-                    String blockedFor = jsonObject.getString("blocked_for");
+                    System.out.println(s + "responeeeeeeee");
+                    JSONObject respObj = new JSONObject(s);
+                    JSONArray jsonArray = (JSONArray) respObj.get("data");
 
-                    userBlockList.add(new UserModel(userId, fName, lName, email, phone, special_number, image, blockedFor));
+                    for (int i = 0; i <= jsonArray.length() - 1; i++) {
+                        JSONObject jsonObject = jsonArray.getJSONObject(i);
+                        //System.out.println(jsonObject.getString("last_message"));
+                        String image = jsonObject.getString("profile_image");
+
+                        String special_number = jsonObject.getString("sn");
+                        String fName = jsonObject.getString("first_name");
+                        String lName = jsonObject.getString("last_name");
+                        String phone = jsonObject.getString("phone");
+                        String userId = jsonObject.getString("id");
+                        String email = jsonObject.getString("email");
+                        String blockedFor = jsonObject.getString("blocked_for");
+
+                        userBlockList.add(new UserModel(userId, fName, lName, email, phone, special_number, image, blockedFor));
+                    }
+
+                    userBlockListMutableLiveData.setValue(userBlockList);
+                }catch (Exception e){
+                    Log.d("Error", "getUserBlock: "+e);
                 }
-
-                userBlockListMutableLiveData.setValue(userBlockList);
-
 
 
 

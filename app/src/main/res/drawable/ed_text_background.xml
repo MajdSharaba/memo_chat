@@ -3,7 +3,9 @@
     android:padding="10dp"
     android:shape="rectangle" >
 
-    <solid android:color="@color/background_search" />
+    <solid android:color="#EEEEEE"
+        />
+
 
 
 

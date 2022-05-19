@@ -8,7 +8,7 @@
     tools:context=".fragment.ChatRoomFragment">
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
-        android:background="@color/backgroundColor"
+        android:background="@color/memo_background_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
@@ -46,25 +46,41 @@
                     android:text="@string/chat"
 
                     android:fontFamily="@font/roboto_regular"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:textSize="25sp"
                     android:layout_gravity="center">
 
 
 
                 </TextView>
-
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/search"
+
                     android:background="@drawable/ed_text_background"
                     app:queryHint="@string/search"
-                    android:baselineAligned="true"
-                    android:nestedScrollingEnabled="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:baselineAligned="false"
+                    android:nestedScrollingEnabled="false"
+                    android:layout_margin="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_margin="20dp"
                     android:layout_marginBottom="30dp"
                     />
+
+<!--                <androidx.appcompat.widget.SearchView-->
+<!--                    android:id="@+id/search"-->
+
+<!--                    android:background="@drawable/ed_text_background"-->
+<!--                    app:queryHint="@string/search"-->
+
+<!--                    android:baselineAligned="true"-->
+<!--                    android:nestedScrollingEnabled="true"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="40dp"-->
+<!--                    android:layout_margin="20dp"-->
+<!--                    android:layout_marginBottom="30dp"-->
+<!--                    />-->
             </LinearLayout>
 
             <androidx.appcompat.widget.Toolbar
@@ -89,7 +105,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         android:layout_gravity="bottom|end"
-        android:backgroundTint="@color/green"
+        android:backgroundTint="@color/memo_background_color"
         android:src="@drawable/ic_add" />
     <!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
     <!--            android:id="@+id/fab"-->

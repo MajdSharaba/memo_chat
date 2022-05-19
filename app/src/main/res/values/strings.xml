@@ -165,6 +165,13 @@
     <string name="modified_message_text">Modified message</string>
     <string name="update_message">update message</string>
     <string name="update_message_note">Are you sure to update this message?</string>
+    <string name="alert_log_out">Are you sure to logout?</string>
+    <string name="delete_account">Delete Account </string>
+    <string name="alert_delete_account">Are you sure to delete your account, You will lose your account data.?</string>
+
+
+
+
 
 
 

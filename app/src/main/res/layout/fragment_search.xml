@@ -5,12 +5,17 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingTop="40dp"
             android:background="@color/backgroundColor"
             tools:context=".fragment.SearchFragment"
             android:orientation="vertical">
 
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:paddingTop="40dp"
+    android:layout_marginBottom="20dp"
+    android:layout_height="wrap_content"
+    android:background="@color/memo_background_color"
+    android:orientation="vertical">
     <TextView
         android:id="@+id/search"
         android:layout_width="wrap_content"
@@ -18,7 +23,7 @@
         android:layout_gravity="center"
         android:fontFamily="@font/roboto_regular"
         android:text="@string/search"
-        android:textColor="@color/textColor"
+        android:textColor="@color/white"
         android:textSize="25sp">
 
     </TextView>
@@ -63,9 +68,9 @@
 <!--            </com.google.android.material.appbar.AppBarLayout>-->
 
 
-
-    <include layout="@layout/item_divider"
-        />
+</LinearLayout>
+<!--    <include layout="@layout/item_divider"-->
+<!--        />-->
     <androidx.core.widget.NestedScrollView
 
         android:id="@+id/idNestedSV"

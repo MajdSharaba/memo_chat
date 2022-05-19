@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -108,7 +109,10 @@ import com.yawar.memo.fragment.ForwardDialogFragment;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.modelView.ArchivedActViewModel;
+import com.yawar.memo.modelView.ConversationModelView;
 import com.yawar.memo.repositry.BlockUserRepo;
+import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
@@ -171,6 +175,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     TextView textForBlock;
     boolean blockedForMe = false;
     ServerApi serverApi;
+    ConversationModelView conversationModelView;
 
 
 
@@ -192,6 +197,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private RelativeLayout container;
     LatLng locationLatLng;
 //    Calendar cal;
+    ChatMessageRepo chatMessageRepo;
 
 
     private CardView cardOpenItLocation;
@@ -434,9 +440,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                         if (anthor_user_id.equals(first_user_id) || anthor_user_id.equals(second_user_id)) {
 
-                                for (ChatMessage chatMessage : chatHistory) {
+                                for (ChatMessage chatMessage : adapter.chatMessages) {
+                                    System.out.println(chatMessage.getId()+"majdfadi"+message_id);
                                     if (chatMessage.getId().equals(message_id)) {
-                                        System.out.println(chatMessage.getId() + " " + message_id);
+                                        System.out.println(chatMessage.getId() + "mmk " + message_id);
                                         chatMessage.setMessage(updateMessage);
                                         chatMessage.setIsUpdate("1");
                                         break;
@@ -660,6 +667,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         chatMessage.setType(type);
                         chatMessage.setState(state);
                         chatMessage.setDate(MessageDate);
+                        chatMessage.setIsUpdate("0");
                         chatMessage.setMe(false);
                         try {
                             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -701,6 +709,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     ////// check connect
     private void checkConnect() {
+        System.out.println("myId="+user_id+"your_id="+anthor_user_id);
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject object = new JSONObject();
         try {
@@ -807,8 +816,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -821,7 +830,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         initViews();
         initAction();
         EnterRoom();
-//        checkConnect();
+        checkConnect();
         LocalBroadcastManager.getInstance(this).registerReceiver(check, new IntentFilter(CHEK));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, new IntentFilter(TYPING));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
@@ -835,7 +844,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     protected void onResume() {
         super.onResume();
         System.out.println("onResuuuuuuuuuuuumr");
-        checkConnect();
+//        checkConnect();
         adapter.notifyDataSetChanged();
 
     }
@@ -857,10 +866,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 //        cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         timeProperties = new TimeProperties();
+        conversationModelView =  new ViewModelProvider(this).get(ConversationModelView.class);
+
 //        moreOption = findViewById(R.id.image_button_Options);
         messageLiner = findViewById(R.id.liner);
 
         myBase = BaseApp.getInstance();
+
         textForBlock = findViewById(R.id.text_for_block);
         serverApi = new ServerApi(this);
 
@@ -888,6 +900,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             Glide.with(personImage).load(AllConstants.imageUrl + imageUrl).error(R.drawable.th).into(personImage);
         }
 
+        chatMessageRepo = myBase.getChatMessageRepo();
+        chatMessageRepo.getChatHistory(user_id,anthor_user_id);
 
 
         backImageBtn = findViewById(R.id.image_button_back);
@@ -962,6 +976,21 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
 
+        });
+        chatHistory = new ArrayList<ChatMessage>();
+
+        conversationModelView.getChatMessaheHistory().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
+            @Override
+            public void onChanged(ArrayList<ChatMessage> chatMessages) {
+                if(chatMessages!=null){
+                    chatHistory=chatMessages;
+                    adapter.add(chatHistory);
+                    scroll();
+
+                }
+                //adapter.notifyDataSetChanged();
+
+            }
         });
         adapter = new ChatAdapter(ConversationActivity.this, new ArrayList<ChatMessage>());
         messagesContainer.setAdapter(adapter);
@@ -1105,7 +1134,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         });
 
 ///// form get message history
-        loadDummyHistory();
+//        loadDummyHistory();
     }
 
     private void initAction() {
@@ -1231,11 +1260,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     chatMessage.setMessage(messageText);
                     chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
                     chatMessage.setMe(true);
+                    chatMessage.setUserId(user_id);
+
                     chatMessage.setType("text");
                     chatMessage.setState("0");
                     chatMessage.setChecked(false);
                     chatMessage.setId(message_id);
-                chatMessage.setIsUpdate("0");
+                   chatMessage.setIsUpdate("0");
 
 
                 messageET.setText("");
@@ -1509,9 +1540,19 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         else  if(selectedMessage.size()==1){
            if(selectedMessage.get(0).getType().equals("text")){
             copyItem.setVisible(true);
+            System.out.println(selectedMessage.get(0).getMessage()+"majddddd");
+            if(selectedMessage.get(0).getUserId().equals(user_id)){
                updateItem.setVisible(true);
+            }
+            else updateItem.setVisible(false);
 
            }
+           else {
+               updateItem.setVisible(false);
+               copyItem.setVisible(false);
+
+           }
+
 
         }
         else {
@@ -1925,120 +1966,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     }
 
     //// for get all message
-
-    private void loadDummyHistory() {
-
-        chatHistory = new ArrayList<ChatMessage>();
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage(getResources().getString(R.string.prograss_message));
-        progressDialog.show();
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.load_chat_message, new Response.Listener<String>() {
-
-
-            @Override
-            public void onResponse(String response) {
-                progressDialog.dismiss();
-                try {
-                    System.out.println(response + "responeeee");
-                    JSONArray jsonArray = new JSONArray(response);
-
-
-                    for (int i = 0; i < jsonArray.length(); i++) {
-
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        ChatMessage chatMessage = new ChatMessage();
-                        chatMessage.setUserId(jsonObject.getString("sender_id"));
-                        chatMessage.setState(jsonObject.getString("state"));
-                        chatMessage.setMe(jsonObject.getString("sender_id").equals(user_id));
-                        if (jsonObject.getString("message_type").equals("file") || jsonObject.getString("message_type").equals("voice") || jsonObject.getString("message_type").equals("video") || jsonObject.getString("message_type").equals("contact") || jsonObject.getString("message_type").equals("imageWeb")) {
-                            chatMessage.setFileName(jsonObject.getString("orginalName"));
-                            System.out.println(jsonObject.getString("message_type") + jsonObject.getString("message_id") + jsonObject.getString("orginalName") + "majjjjjjjjjjjjjjjjd");
-                        }
-//                            chatMessage.setFileName("orginalName");}
-
-
-                        chatMessage.setId(jsonObject.getString("message_id"));
-                        chatMessage.setChecked(false);
-                        if (!jsonObject.getString("message_type").equals("imageWeb")) {
-                            chatMessage.setMessage(jsonObject.getString("message"));
-
-                        } else {
-                            chatMessage.setImage(jsonObject.getString("message"));
-                        }
-                        chatMessage.setType(jsonObject.getString("message_type"));
-                        chatMessage.setDate(jsonObject.getString("created_at"));
-                        chatMessage.setIsUpdate(jsonObject.getString("edited"));
-
-
-                        chatHistory.add(chatMessage);
-
-
-                    }
-
-//                    for (JSONObject  jsonObject:
-//                            unSendMessage) {
-//
-//                        ChatMessage chatMessage = new ChatMessage();
-//                        chatMessage.setUserId(jsonObject.getString("sender_id"));
-//                        chatMessage.setState(jsonObject.getString("state"));
-//                        if(jsonObject.getString("message_type").equals("file")||jsonObject.getString("message_type").equals("voice")){
-//                            chatMessage.setFileName(jsonObject.getString("orginalName"));}
-//
-//
-//
-//                        chatMessage.setId(jsonObject.getString("message_id"));
-//                        chatMessage.setChecked(false);
-//                        chatMessage.setMe(jsonObject.getString("sender_id").equals(user_id));
-//                        System.out.println(jsonObject.getString("sender_id")+""+user_id+"knjkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk");
-//                        if(!jsonObject.getString("message_type").equals("image")){
-//                            chatMessage.setMessage(jsonObject.getString("message"));}
-//                        else{
-//                            chatMessage.setImage(jsonObject.getString("message"));
-//                        }
-//                        chatMessage.setType(jsonObject.getString("message_type"));
-//                        chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-//                        chatHistory.add(chatMessage);
-//                        newMeesage(jsonObject);
-//                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    progressDialog.dismiss();
-                }
-                // adapter = new ChatAdapter(ConversationActivity.this, chatHistory);
-                adapter.add(chatHistory);
-                adapter.notifyDataSetChanged();
-                scroll();
-
-
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                progressDialog.dismiss();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                // below line we are creating a map for
-                // storing our values in key and value pair.
-                Map<String, String> params = new HashMap<String, String>();
-                // on below line we are passing our key
-                // and value pair to our parameters.
-                params.put("sender_id", user_id);
-                params.put("reciver_id", anthor_user_id);
-                System.out.println(params);
-                // at last we are
-                // returning our params.
-                return params;
-            }
-
-        };
-        myBase.addToRequestQueue(request);
-
-    }
-
-
     @SuppressLint("Range")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -3490,25 +3417,26 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void onLongClick(int position, ChatMessage chatMessage, boolean isChecked) {
         System.out.println(isChecked);
-        System.out.println(chatMessage.getId() + "chatMessage.getId()");
         personInformationLiner.setVisibility(View.GONE);
-        toolbar.setBackgroundColor(getResources().getColor(R.color.green));
+        toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
 
 
         toolsLiner.setVisibility(View.VISIBLE);
 
         if (isChecked) {
-            System.out.println(chatMessage.getMessage() + "getMessage");
+            System.out.println(chatMessage.getMessage()+selectedMessage.size() + "getMessage");
             selectedMessage.add(chatMessage);
+            System.out.println(chatMessage.getUserId()+"mmmmhhhh"+selectedMessage.get(0).getUserId());
             deleteMessage.add( "\""+ chatMessage.getId()+"\"");
         } else {
             selectedMessage.remove(chatMessage);
+            System.out.println("selected message "+selectedMessage.size()+"lllll");
             deleteMessage.remove("\""+ chatMessage.getId()+"\"");
 
             if (selectedMessage.size() < 1) {
                 System.out.println("selectedMessage.size() < 1");
                 personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+                toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
                 toolsLiner.setVisibility(View.GONE);
             }
 

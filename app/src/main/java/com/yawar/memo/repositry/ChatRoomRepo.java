@@ -3,6 +3,7 @@ package com.yawar.memo.repositry;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Intent;
+import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -61,7 +62,7 @@ public class ChatRoomRepo {
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s ->{
         try {
-                        System.out.println(s.toString()+"dddddddddd");
+            Log.d("getUserrr", "callAPI: "+s);
                         JSONObject respObj = new JSONObject(s);
                         JSONArray dataArray = (JSONArray) respObj.get("data");
                         System.out.println(dataArray.toString()+"dataArray");
@@ -257,6 +258,9 @@ public class ChatRoomRepo {
 
     }
     public  boolean checkInChat(String chat_id) {
+        if(chatRoomsList==null){
+            return false;
+        }
         for (ChatRoomModel chatRoom : chatRoomsList) {
             if (chatRoom.chatId.equals(chat_id)) {
                 if (chatRoom.inChat) {

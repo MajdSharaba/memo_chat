@@ -157,7 +157,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //        IOOption.query = "public_key=" + new SessionManager(getApplicationContext()).getPublicKey();
         chatQueue = new LinkedList<>();
         classSharedPreferences = new ClassSharedPreferences(this);
-        my_id = classSharedPreferences.getUser().getUserId();
+//        if(!(classSharedPreferences.getUser() ==null)){
+//        my_id = classSharedPreferences.getUser().getUserId();}
         listenersMap = new ConcurrentHashMap<>();
         // background priority so CPU-intensive work will not disrupt our UI.
         HandlerThread thread = new HandlerThread(TAG + "Args",
@@ -188,10 +189,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.on("user left", new SocketEventListener("user left", this));
         mSocket.on("typing", new SocketEventListener("typing", this));
         mSocket.on("stop typing", new SocketEventListener("stop typing", this));*/
-        if (!isConnected && !mSocket.connected()) {
+        if (!isConnected && !mSocket.connected()&&!(classSharedPreferences.getUser() ==null)) {
             mSocket.connect();
             joinSocket();
-            System.out.println("Sockettttttttttt is connecttttttttttttttt");
+            Log.d("getUserrr", "Sockettttttttttt is connecttttttttttttttt ");
         }
         heartBeat = new HeartBeat(this);
 //        heartBeat.start();
@@ -253,7 +254,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
             switch (eventType) {
 
                 case EVENT_TYPE_JOIN:
-                    System.out.println("EVENT_TYPE_JOIN");
+                    Log.d("getUserrr", "EVENT_TYPE_JOIN");
 
 //                    room_id = intent.getStringExtra(EXTRA_ROOM_ID);
                     if (!mSocket.connected()) {
@@ -271,10 +272,9 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     }
                     break;
                 case EVENT_TYPE_DISCONNECT:
-                    System.out.println("EVENT_TYPE_MESSAGEEEEEEE");
+                    System.out.println("EVENT_TYPE_Disconnect");
 
                     if (isSocketConnected()) {
-                        System.out.println("Lowwwwwwwwwwww");
                         mSocket.disconnect();
 //                        heartBeat.stop();
 //                        for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
@@ -431,7 +431,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //        }
         JSONObject userId = new JSONObject();
         try {
-            userId.put("user_id",  my_id);
+            userId.put("user_id",  classSharedPreferences.getUser().getUserId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -466,7 +466,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     }
     private void checkConnect(String messageObject) {
         JSONObject chat = null;
-        joinSocket();
+//        joinSocket();
         try {
 
             chat = new JSONObject(messageObject);
@@ -548,7 +548,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     }
     private void checkQr(String messageObject) {
         JSONObject chat = null;
-        joinSocket();
+//        joinSocket();
         try {
 
             chat = new JSONObject(messageObject);
@@ -563,7 +563,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     }
     private void getQr(String messageObject) {
         JSONObject chat = null;
-        joinSocket();
+//        joinSocket();
         try {
 
             chat = new JSONObject(messageObject);
@@ -578,7 +578,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     }
     private void blockUser(String messageObject) {
         JSONObject chat = null;
-        joinSocket();
+//        joinSocket();
         try {
 
             chat = new JSONObject(messageObject);
@@ -591,7 +591,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     }
     private void unBlockUser(String messageObject) {
         JSONObject chat = null;
-        joinSocket();
+//        joinSocket();
         try {
 
             chat = new JSONObject(messageObject);
@@ -622,7 +622,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        System.out.println("Lowwwwwwwwwwww");
+        System.out.println("Lowwwwwwwwwwwwsssssss");
         mSocket.disconnect();
         heartBeat.stop();
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
@@ -768,10 +768,11 @@ public void onTaskRemoved(Intent rootIntent) {
                     special_number = jsonObject.getString("userDoBlockSpecialNumber");
                     image = jsonObject.getString("userDoBlockImage");
 
+                    System.out.println(args[0].toString()+"from here");
 
 
 
-                    if(userBlock.equals(my_id)){
+                    if(userBlock.equals(classSharedPreferences.getUser().getUserId())){
                         System.out.println("doooo it");
                         UserModel userModel = new UserModel(userDoBlock,name,"","","",special_number,image,blockedFor);
                         blockUserRepo.addBlockUser(userModel);
@@ -801,7 +802,7 @@ public void onTaskRemoved(Intent rootIntent) {
 
 
 
-                    if(userUnBlock.equals(my_id)){
+                    if(userUnBlock.equals(classSharedPreferences.getUser().getUserId())){
                         System.out.println("doooo it");
                         blockUserRepo.deleteBlockUser(userDoUnBlock,unBlockedFor);
                     }

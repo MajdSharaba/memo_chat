@@ -205,6 +205,13 @@
     <string name="modified_message_text">رسالة معدلة</string>
     <string name="update_message">تعديل الرسالة</string>
     <string name="update_message_note">هل تريد تعديل الرسالة؟</string>
+    <string name="alert_log_out">هل انت متأكد من تسجيل الخروج؟</string>
+    <string name="delete_account">حذف الحساب</string>
+    <string name="alert_delete_account">هل انت متأكد من حذف الحساب,ستفقد بيانات حسابك ؟</string>
+
+
+
+
 
 
 

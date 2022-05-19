@@ -92,7 +92,8 @@
         <activity
             android:name=".views.ArchivedActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/AppTheme"
+            />
         <activity
             android:name=".views.GroupPropertiesActivity"
             android:screenOrientation="portrait"
