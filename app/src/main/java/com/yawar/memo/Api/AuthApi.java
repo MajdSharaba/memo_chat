@@ -26,6 +26,7 @@ import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
+import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.views.RegisterActivity;
@@ -44,8 +45,9 @@ import org.json.JSONObject;
 /////this class for Api with firebase
 public class AuthApi implements Observer {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    BaseApp myBase;
+    BaseApp myBase = BaseApp.getInstance();
     ProgressDialog progressDialog;
+    AuthRepo authApi= myBase.getAuthRepo();
 
 
 
@@ -78,7 +80,8 @@ public class AuthApi implements Observer {
                             classSharedPreferences.setVerficationNumber(user.getPhoneNumber());
                             // if the code is correct and the task is successful
                             // we are sending our user to new activity.
-                            serverApi.register();
+//                            serverApi.register();
+                            authApi.getspecialNumbers(classSharedPreferences.getVerficationNumber());
 
                         } else {
                             // if the code is not correct then we are

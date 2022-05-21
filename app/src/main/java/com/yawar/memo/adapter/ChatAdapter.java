@@ -16,6 +16,7 @@ import android.provider.ContactsContract;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.text.util.Linkify;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -40,6 +42,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.adprogressbarlib.AdCircleProgress;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.hbisoft.pickit.PickiT;
+import com.hbisoft.pickit.PickiTCallbacks;
 import com.yawar.memo.BuildConfig;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
@@ -47,16 +51,22 @@ import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.utils.TimeProperties;
 
+
+
 import java.io.File;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class ChatAdapter  extends RecyclerView.Adapter {
+public class ChatAdapter  extends RecyclerView.Adapter  {
     public final List<ChatMessage> chatMessages;
     private Activity context;
     private ChatAdapter.CallbackInterface mCallback;
@@ -202,7 +212,6 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                     imageFile = new File(d, chatMessage.getFileName());
 
                 } else {
-//                    File d = Environment.getExternalStoragePublicDirectory("memo/recive/video");  // -> filename = maven.pdf
                     File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/video");  // -> filename = maven.pdf
 
                     imageFile = new File(d, chatMessage.getImage().toString());
@@ -212,8 +221,7 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                     Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(R.drawable.backgrounblack).centerCrop()
                             .into(((LayoutImageViewHolder) holder).imageView);
 
-//                    ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
-//                    ((LayoutImageViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+
                     ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.VISIBLE);
                     ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
@@ -278,60 +286,8 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                         }
                     });
 
-//                    ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
-//
-//                    ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.VISIBLE);
-//                    ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
-//                    Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", imageFile);
-//
-//                    Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(path).centerCrop()
-//                            .into(((LayoutVideoViewHolder) holder).imageVideo);
-//
-//                    ((LayoutVideoViewHolder) holder).videoImageButton.setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            if (mCallback != null) {
-//                                mCallback.playVideo(path);
-//                            }
-//
-//
-//                        }
-//                    });
+
                 }
-
-//                System.out.println("onBindViewHolder image");
-//                setAlignment((LayoutImageViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
-//
-//                Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(chatMessage.getImage()).centerCrop()
-//                        .into(((LayoutImageViewHolder) holder).imageView);
-//                ((LayoutImageViewHolder) holder).imageView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-////                        androidx.appcompat.app.AlertDialog.Builder mBuilder = new androidx.appcompat.app.AlertDialog.Builder(view.getContext());
-////                        View mView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_image_cht, null);
-////                        ImageView photoView =  mView.findViewById(R.id.photo_view);
-//////                        Glide.with(photoView.getContext()).load("https://th.bing.com/th/id/OIP.DP48uGkldTg01Wx5KTExXAHaE6?pid=ImgDet&rs=1").into(photoView);
-////                        photoView.setImageResource(R.drawable.ic_send_done);
-////                        mBuilder.setView(mView);
-//////                        androidx.appcompat.app.AlertDialog mDialog = mBuilder.create();
-////                        mBuilder.show();
-//                         Dialog dialog = new Dialog(context);
-//                        dialog.setContentView(R.layout.dialog_image_cht);
-//                        dialog.setTitle("Title...");
-//
-//                        // set the custom dialog components - text, image and button
-//                        dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
-//
-//
-//                        PhotoView image = (PhotoView) dialog.findViewById(R.id.photo_view);
-//                        Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+chatMessage.getImage()).centerCrop().into(image);
-//                        dialog.show();
-//
-//                    }
-//                });
-
-
-
 
                 break;
 
@@ -510,6 +466,30 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                     videoFile = new File(d, chatMessage.getMessage().toString());
 
                 }
+//                if(chatMessage.isDownload()){
+//                    ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
+//                    Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(R.drawable.backgrounblack).centerCrop()
+//                            .into(((LayoutVideoViewHolder) holder).imageVideo);
+//                    ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
+//                    ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+////                            ((LayoutVideoViewHolder) holder).adCircleProgress.animate();
+//                    final Timer t = new Timer();
+//                    t.scheduleAtFixedRate(new TimerTask() {
+//                        public void run() {
+//                            context.runOnUiThread(new Runnable() {
+//                                public void run() {
+//                                    System.out.println("download is trueeeeeeeeeeeeee");
+//
+//                                    ((LayoutVideoViewHolder) holder).adCircleProgress.setAdProgress( ((LayoutVideoViewHolder) holder).l);
+//
+//                                    ((LayoutVideoViewHolder) holder).l++;
+//                                }
+//                            });
+//                        }
+//                    }, 0, 100);
+//
+//
+//                }
                 if (!videoFile.exists()) {
                     ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
@@ -539,7 +519,7 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                                     });
                                 }
                             }, 0, 100);
-
+                            chatMessage.setDownload(true);
                             if (mCallback != null) {
                                 mCallback.downloadVideo(position, chatMessages.get(position), myMsg);
                             }
@@ -722,23 +702,7 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                 });
                 break;
             case "location":
-//                String[] latlong = chatMessage.getMessage().toString().split(",");
-//                double latitude = Double.parseDouble(latlong[0]);
-//                double longitude = Double.parseDouble(latlong[1]);
-//
-//                if (((LayoutLocationViewHolder) holder).map != null) {
-//                    // Initialise the MapView
-//                    ((LayoutLocationViewHolder) holder).map.onCreate(null);
-//                    ((LayoutLocationViewHolder) holder).map.onResume();
-//                    // Set the map ready callback to receive the GoogleMap object
-//                    ((LayoutLocationViewHolder) holder).map.getMapAsync(googleMap -> {
-//                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude,longitude), 16f));
-//                        googleMap.addMarker(new MarkerOptions().position(new LatLng(latitude,longitude)));
-//
-//                        googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-//                        googleMap.getUiSettings().setAllGesturesEnabled(false);
-//                    });
-//                }
+
                 setAlignment(((LayoutLocationViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
                 ((LayoutLocationViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
 
@@ -757,14 +721,23 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                 break;
             default:
 
-
                 setAlignment(((LayoutTextViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
                 ((LayoutTextViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                if(chatMessage.getIsUpdate().equals("1")){
+                    ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.VISIBLE);
 
+                }
+                else {
+                ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.GONE);}
 
                 ((LayoutTextViewHolder) holder).txtMessage.setText(chatMessage.getMessage());
+                Linkify.addLinks( ((LayoutTextViewHolder) holder).txtMessage, Linkify.WEB_URLS);
+                ( (LayoutTextViewHolder) holder).txtMessage.setLinkTextColor(ContextCompat.getColor(context,
+                        R.color.blue_200));
+
 
                 ((LayoutTextViewHolder) holder).txtMessage.setVisibility(View.VISIBLE);
+
 
                 break;
 
@@ -808,11 +781,7 @@ public class ChatAdapter  extends RecyclerView.Adapter {
 
 
                         }
-//                if (mCallback != null) {
-//                    System.out.println(chatMessages.get(position).getFileName());
-//
-//                    mCallback.onLongClick(position, chatMessages.get(position), true);
-//                }
+
 
                         return false;
                     }
@@ -1241,7 +1210,10 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                     layoutParams.gravity = Gravity.RIGHT;
                     ((LayoutTextViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
 
-                    ((LayoutTextViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                        ((LayoutTextViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+
+
+
                     ((LayoutTextViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
@@ -1270,7 +1242,10 @@ public class ChatAdapter  extends RecyclerView.Adapter {
                             (LinearLayout.LayoutParams) ((LayoutTextViewHolder)holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutTextViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
-                    ((LayoutTextViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.textColor));
+
+                        ((LayoutTextViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.textColor));
+
+
                     ((LayoutTextViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
@@ -1411,26 +1386,20 @@ class LayoutVoiceViewHolder
         contentWithBG = itemView.findViewById(R.id.contentWithBackground);
 
         textDate = itemView.findViewById(R.id.tv_date);
-//        textDate.setTextSize(textSize);
-//        textDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
         contentRecord = itemView.findViewById(R.id.Liner_record);
         imagePlayerPause = itemView.findViewById(R.id.image_play_pause);
 
         textCurrentTime = itemView.findViewById(R.id.text_current_time);
-//        textCurrentTime.setTextSize(textSize);
-//        textCurrentTime.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
         textTotalDouration = itemView.findViewById(R.id.text_total_duration);
-//        textTotalDouration.setTextSize(textSize);
-//        textTotalDouration.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         timeSeparator = itemView.findViewById(R.id.time_separator);
-//        timeSeparator.setTextSize(textSize);
-//        timeSeparator.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
         playerSeekBar = itemView.findViewById(R.id.player_seek_bar);
-//            contentDownload = itemView.findViewById(R.id.Liner_download);
         imageSeen = itemView.findViewById(R.id.iv_state);
 
         downloadRecordIB =  itemView.findViewById(R.id.image_download_audio);
@@ -1465,9 +1434,6 @@ class LayoutVoiceViewHolder
             contentWithBG = itemView.findViewById(R.id.contentWithBackground);
 
             textDate = itemView.findViewById(R.id.tv_date);
-//            textDate.setTextSize(textSize);
-//            textDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
 
             imageSeen = itemView.findViewById(R.id.iv_state);
             videoImageButton = itemView.findViewById(R.id.video_image_button);
@@ -1502,21 +1468,18 @@ class LayoutVoiceViewHolder
 
         public LayoutPdfViewHolder(@NonNull View itemView) {
             super(itemView);
-//            sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
             content = (LinearLayout) itemView.findViewById(R.id.content);
             contentWithBG = (LinearLayout) itemView.findViewById(R.id.contentWithBackground);
             contentFile = (LinearLayout) itemView.findViewById(R.id.liner_file);
 
             txtDate = itemView.findViewById(R.id.tv_date);
-//            txtDate.setTextSize(textSize);
-//            txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
             imageSeen = itemView.findViewById(R.id.iv_state);
 
             txtFile = itemView.findViewById(R.id.text_file);
-//            txtFile.setTextSize(textSize);
-//            txtFile.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
             imageFile = itemView.findViewById(R.id.image_file);
 
@@ -1558,34 +1521,24 @@ class LayoutVoiceViewHolder
             contentWithBG = (CardView) itemView.findViewById(R.id.card);
 
             txtDate   = itemView.findViewById(R.id.tv_date);
-//            txtDate.setTextSize(textSize);
-//            txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
             imageSeen = itemView.findViewById(R.id.iv_state);
 
             txtNumber = itemView.findViewById (R.id.phone);
-//            txtNumber.setTextSize(textSize);
-//            txtNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
             txtName = itemView.findViewById (R.id.name);
-//            txtName.setTextSize(textSize);
-//            txtName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
             imageProfile = itemView.findViewById(R.id.profile);
 
             addContact = itemView.findViewById(R.id.addContact);
-//            addContact.setTextSize(textSize);
-//            addContact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
 
             view1 = itemView.findViewById(R.id.view1);
-//            view1 = itemView.findViewById(R.id.view2);
-//            sendMessage = itemView.findViewById(R.id.sendMessage);
-//            view1 = itemView.findViewById(R.id.view2);
-//
-//            sendMessage = itemView.findViewById(R.id.sendMessage);
-//            sendMessage.setTextSize(textSize);
-//            sendMessage.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
 
 
@@ -1632,8 +1585,11 @@ class LayoutVoiceViewHolder
         private ImageView imageSeen;
         public TextView txtInfo;
         public TextView txtDate;
+        public TextView txtUpdate;
 
-//        float textSize = 14.0F ;
+
+
+        //        float textSize = 14.0F ;
         SharedPreferences sharedPreferences ;
 //        private Activity activity;
 
@@ -1648,27 +1604,24 @@ class LayoutVoiceViewHolder
 
         public LayoutTextViewHolder(@NonNull View itemView) {
             super(itemView);
-//            sharedPreferences = activity.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
 
             txtMessage = (TextView) itemView.findViewById(R.id.txtMessage);
-//            txtMessage.setTextSize(textSize);
-//            txtMessage.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
             content = (LinearLayout) itemView.findViewById(R.id.content);
             contentWithBG = (RelativeLayout) itemView.findViewById(R.id.contentWithBackground);
 
 
             txtInfo = (TextView) itemView.findViewById(R.id.txtInfo);
-//            txtInfo.setTextSize(textSize);
-//            txtInfo.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
 
             txtDate = itemView.findViewById(R.id.tv_date);
-//            txtDate.setTextSize(textSize);
-//            txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
             imageSeen = itemView.findViewById(R.id.iv_state);
+            txtUpdate = itemView.findViewById(R.id.text_update);
 
         }
     }

@@ -3,6 +3,7 @@ package com.yawar.memo.fragment;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -15,9 +16,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,13 +43,15 @@ import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.language.BottomSheetFragment;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.repositry.AuthRepo;
+import com.yawar.memo.repositry.BlockUserRepo;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.VolleyMultipartRequest;
-import com.yawar.memo.views.ArchivedActivity;
+import com.yawar.memo.views.BlockedUsersActivity;
 import com.yawar.memo.views.DevicesLinkActivity;
-import com.yawar.memo.views.IntroActivity;
-import com.yawar.memo.views.RegisterActivity;
 import com.yawar.memo.views.SettingsActivity;
+import com.yawar.memo.views.SplashScreen;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -95,13 +96,13 @@ public class SettingsFragment extends Fragment {
     Uri imageUri ;
     CardView fontSize ;
     TextView fontSiz ;
-    CardView askMemoQuest ;
+    CardView blockList ;
     TextView askMemoQuesti ;
-    CardView preference ;
+    CardView deleteAccount;
     TextView preferene ;
     CardView tellafriend ;
     TextView tellafri ;
-    CardView help ;
+    CardView logOut;
     TextView hel ;
     int progressNew = 0 ;
     float textSize = 14.0F ;
@@ -111,6 +112,9 @@ public class SettingsFragment extends Fragment {
     String imageString = "";
     String firstName = "";
     String lastName = "";
+    AuthRepo authRepo;
+    ChatRoomRepo chatRoomRepo;
+    BlockUserRepo blockUserRepo;
 
 
 
@@ -127,6 +131,9 @@ public class SettingsFragment extends Fragment {
         userModel = classSharedPreferences.getUser();
         serverApi = new ServerApi(getActivity());
         myBase = BaseApp.getInstance();
+        chatRoomRepo=myBase.getChatRoomRepo();
+        blockUserRepo = myBase.getBlockUserRepo();
+        authRepo = myBase.getAuthRepo();
 
 
 
@@ -149,13 +156,18 @@ public class SettingsFragment extends Fragment {
 
         userName =(TextView) view.findViewById(R.id.username);
         userName.setTextSize(textSize);
-        userName.setText(userModel.getUserName()+userModel.getLastName());
+        userName.setText(userModel.getUserName()+" "+userModel.getLastName());
         userName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         phoneNumber =(TextView) view.findViewById(R.id.phoneNumber);
         phoneNumber.setTextSize(textSize);
         phoneNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-        phoneNumber.setText(userModel.getSecretNumber());
+        String firstString = userModel.getSecretNumber().substring(0,1);
+        String secondString = userModel.getSecretNumber().substring(1,4);
+        String thirtyString =  userModel.getSecretNumber().substring(4,7);
+        String lastString =userModel.getSecretNumber().substring(7);
+
+        phoneNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
 
 
         setPhoto =(TextView) view.findViewById(R.id.selectImage);
@@ -196,12 +208,12 @@ public class SettingsFragment extends Fragment {
         fontSiz.setTextSize(textSize);
         fontSiz.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        askMemoQuest =(CardView) view.findViewById(R.id.askMemoQuestion);
+        blockList =(CardView) view.findViewById(R.id.contact_number_blocked);
         askMemoQuesti =(TextView) view.findViewById(R.id.askMemoQuesti);
         askMemoQuesti.setTextSize(textSize);
         askMemoQuesti.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        preference =(CardView) view.findViewById(R.id.preference);
+        deleteAccount =(CardView) view.findViewById(R.id.delete_accont);
         preferene =(TextView) view.findViewById(R.id.preferene);
         preferene.setTextSize(textSize);
         preferene.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
@@ -211,7 +223,7 @@ public class SettingsFragment extends Fragment {
         tellafri.setTextSize(textSize);
         tellafri.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        help =(CardView) view.findViewById(R.id.help);
+        logOut =(CardView) view.findViewById(R.id.log_out);
         hel =(TextView) view.findViewById(R.id.hel);
         hel.setTextSize(textSize);
         hel.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
@@ -292,7 +304,6 @@ public class SettingsFragment extends Fragment {
 
                         }
                         if(!txt_inputLastName.getText().toString().isEmpty()){
-                            System.out.println("last Name is"+txt_inputLastName);
                             lastName= txt_inputLastName.getText().toString();
 
                         }
@@ -305,7 +316,7 @@ public class SettingsFragment extends Fragment {
 
                         serverApi.updateProfile(firstName,lastName,"","",userModel.getUserId());
 
-                        userName.setText(firstName+lastName);
+                        userName.setText(firstName+" "+lastName);
                         userModel.setUserName(firstName);
                         userModel.setLastName(lastName);
 //                        classSharedPreferences.setUser(userModel);
@@ -460,19 +471,40 @@ public class SettingsFragment extends Fragment {
 
             }
         });
-        askMemoQuest.setOnClickListener(new View.OnClickListener() {
+        blockList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "This Ask Memo Quest", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), BlockedUsersActivity.class);
+                startActivity(intent);
             }
         });
 
-        preference.setOnClickListener(new View.OnClickListener() {
+        deleteAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "This Preference", Toast.LENGTH_SHORT).show();
+                android.app.AlertDialog.Builder dialog=new android.app.AlertDialog.Builder(getActivity());
+                dialog.setTitle(R.string.alert_delete_account);
+                dialog.setPositiveButton(R.string.delete_account,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                serverApi.deleteAccount();
+
+                            }
+                        });
+                dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                android.app.AlertDialog alertDialog=dialog.create();
+                alertDialog.show();
+
             }
         });
+
         tellafriend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -489,10 +521,35 @@ public class SettingsFragment extends Fragment {
 
             }
         });
-        help.setOnClickListener(new View.OnClickListener() {
+        logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "This Help", Toast.LENGTH_SHORT).show();
+                android.app.AlertDialog.Builder dialog=new android.app.AlertDialog.Builder(getActivity());
+                dialog.setTitle(R.string.alert_log_out);
+                dialog.setPositiveButton(R.string.logout,
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                classSharedPreferences.setUser(null);
+                                classSharedPreferences.setVerficationNumber(null);
+                                authRepo.jsonObjectMutableLiveData.setValue(null);
+                                chatRoomRepo.chatRoomListMutableLiveData.setValue(null);
+                                blockUserRepo.userBlockListMutableLiveData.setValue(null);
+                                Intent intent = new Intent(getContext(), SplashScreen.class);
+                                startActivity(intent);
+                                getActivity().finish();
+                            }
+                        });
+                dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+                android.app.AlertDialog alertDialog=dialog.create();
+                alertDialog.show();
+
             }
         });
 

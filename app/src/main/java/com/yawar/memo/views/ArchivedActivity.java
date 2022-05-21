@@ -3,6 +3,7 @@ package com.yawar.memo.views;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.app.ProgressDialog;
@@ -29,6 +30,9 @@ import com.yawar.memo.adapter.ArchivedAdapter;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.modelView.ArchivedActViewModel;
+import com.yawar.memo.modelView.ChatRoomViewModel;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.Globale;
 
 import java.util.ArrayList;
@@ -40,7 +44,7 @@ import java.util.Observer;
 
 import com.yawar.memo.utils.BaseApp;
 
-public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapter.CallbackInterfac, Observer {
+public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapter.CallbackInterfac{
 
     SwipeableRecyclerView recyclerView;
     List<ChatRoomModel> data;
@@ -49,6 +53,8 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
     ArchivedAdapter itemAdapter;
     SearchView searchView;
     Toolbar toolbar;
+    ArchivedActViewModel archivedActViewModel;
+    ChatRoomRepo chatRoomRepo;
     ClassSharedPreferences classSharedPreferences;
     ServerApi serverApi;
     UserModel userModel;
@@ -64,17 +70,18 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
      
         setContentView(R.layout.activity_archived);
 
-        sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//        sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+
 
         toolbar = findViewById(R.id.toolbar);
 //        toolbar.setTitle("Memo");
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         recyclerView =  findViewById(R.id.recycler_view);
 
         archive =  findViewById(R.id.archived);
@@ -83,18 +90,37 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
         globale = new Globale();
         classSharedPreferences= new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
+        archivedActViewModel = new ViewModelProvider(this).get(ArchivedActViewModel.class);
         myBase = (BaseApp) getApplication();
-        myBase.getObserver().addObserver(this);
+        chatRoomRepo = myBase.getChatRoomRepo();
+
+//        myBase.getObserver().addObserver(this);
         recyclerView.setHasFixedSize(true);
 //        recyclerView.setAdapter(itemAdapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        // itemAdapter = new ChatRoomAdapter(postList, getApplicationContext(), listener);
 
-          for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()){
-              if (chatRoomModel.getState().equals("0")||chatRoomModel.getState().equals(myId))
-            archived.add(chatRoomModel);}
+        archivedActViewModel.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
+            @Override
+            public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
+                if(chatRoomModels!=null){
+                    archived.clear();
+                    for(ChatRoomModel chatRoomModel:chatRoomModels) {
+                        if (chatRoomModel.getState().equals("0")||chatRoomModel.getState().equals(myId)) {
+//                            System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
+                            archived.add(chatRoomModel);
+                        }
+                    }
+                    itemAdapter.updateList((ArrayList<ChatRoomModel>) archived);
+                if(archived.size()<1){
+                  chatRoomRepo.setArchived(false);
+                }
+                }
+                //adapter.notifyDataSetChanged();
+
+            }
+        });
         itemAdapter = new ArchivedAdapter(archived,this);
         recyclerView.setAdapter(itemAdapter);
         recyclerView.setListener(new SwipeLeftRightCallback.Listener() {
@@ -105,16 +131,16 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
             @Override
             public void onSwipedRight(int position) {
-                System.out.println(position);
                 removeFromArchived(archived.get(position));
 //                if(archived.size()<1){
 //                    myBase.getObserver().setArchived(false);
 //                }
-                itemAdapter.notifyDataSetChanged();}
+//                itemAdapter.notifyDataSetChanged();
+            }
         });
        // GetData();
 
-        itemAdapter.notifyDataSetChanged();
+//        itemAdapter.notifyDataSetChanged();
         searchView = findViewById(R.id.search);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -255,12 +281,12 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
             public void onResponse(String response) {
                 progressDialo.dismiss();
                 System.out.println("Data added to API+"+response);
-                myBase.getObserver().setState(chatRoomModel.chatId,"null");
-                archived.remove(chatRoomModel);
-                itemAdapter.notifyDataSetChanged();
-                if(archived.size()<1){
-                    myBase.getObserver().setArchived(false);
-                }
+              chatRoomRepo.setState(chatRoomModel.chatId,"null");
+//                archived.remove(chatRoomModel);
+//                itemAdapter.notifyDataSetChanged();
+//                if(archived.size()<1){
+//                    myBase.getObserver().setArchived(false);
+//                }
 
 
 
@@ -296,16 +322,16 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
         myBase.addToRequestQueue(request);
     }
 
-    @Override
-    public void update(Observable observable, Object o) {
-        itemAdapter = new ArchivedAdapter(archived,this);
-        recyclerView.setAdapter(itemAdapter);
-
-//        archived.clear();
-//        for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()){
-//            if(chatRoomModel.getState().equals("1"))
-//                System.out.println(chatRoomModel.lastMessage);
-//                archived.add(chatRoomModel);}
+//    @Override
+//    public void update(Observable observable, Object o) {
+////        itemAdapter = new ArchivedAdapter(archived,this);
+////        recyclerView.setAdapter(itemAdapter);
 //
-    }
+////        archived.clear();
+////        for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()){
+////            if(chatRoomModel.getState().equals("1"))
+////                System.out.println(chatRoomModel.lastMessage);
+////                archived.add(chatRoomModel);}
+////
+//    }
 }

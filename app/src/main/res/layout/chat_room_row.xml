@@ -5,10 +5,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="75dp"
-    app:cardElevation="5dp"
+    app:cardElevation="0dp"
     app:cardCornerRadius="5dp"
     app:cardBackgroundColor="@color/backgroundColor"
+    android:foreground="?attr/selectableItemBackground"
     app:cardMaxElevation="5dp"
+    android:padding="5dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="false"
     android:orientation="vertical">
@@ -30,9 +32,9 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/image"
-        android:layout_width="45dp"
+        android:layout_width="50dp"
 
-        android:layout_height="45dp"
+        android:layout_height="50dp"
         android:layout_margin="5dp"
             android:src="@drawable/th" />
 
@@ -55,6 +57,7 @@
         <LinearLayout
         android:layout_width="0dp"
         android:layout_weight="5"
+            android:layout_marginStart="5dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         >
@@ -64,6 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxLines="1"
+
         android:maxLength="30"
         android:fontFamily="@font/roboto_bold"
         android:textColor="@color/textColor"
@@ -131,15 +135,15 @@
 
     </LinearLayout>
 
-        <include layout="@layout/item_divider"
-            android:layout_gravity="end"
-            android:layout_height="0dp"
-            android:layout_marginStart="50dp"
-            android:layout_weight="0.01"
-            android:layout_width="wrap_content"
-            >
+<!--        <include layout="@layout/item_divider"-->
+<!--            android:layout_gravity="end"-->
+<!--            android:layout_height="0dp"-->
+<!--            android:layout_marginStart="50dp"-->
+<!--            android:layout_weight="0.01"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            >-->
 
-        </include>
+<!--        </include>-->
 
     </LinearLayout>
 

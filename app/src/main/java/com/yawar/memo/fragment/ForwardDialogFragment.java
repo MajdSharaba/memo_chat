@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,6 +23,8 @@ import com.yawar.memo.adapter.GroupSelectorAdapter;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.SendContactNumberResponse;
+import com.yawar.memo.modelView.ChatRoomViewModel;
+import com.yawar.memo.modelView.ForwardDialogViewModel;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.ConversationActivity;
@@ -87,6 +90,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
     String id="";
     ClassSharedPreferences classSharedPreferences;
     String my_id;
+    ForwardDialogViewModel forwardDialogViewModel;
 
     TextView select_title2 ;
     float textSize = 14.0F ;
@@ -143,6 +147,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
         classSharedPreferences = new ClassSharedPreferences(getContext());
         my_id= classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
+        forwardDialogViewModel =  new ViewModelProvider(this).get(ForwardDialogViewModel.class);
 
 //        myBase.getContactNumberObserve().addObserver(this);
         myBase.getObserver().addObserver(this);
@@ -156,26 +161,33 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
             id=id+chatMessage.getId()+",";
 
         }
-//        chatMessageListId2.addAll(chatMessageListId);
-//        System.out.println(chatMessageListId2.toString()+id+"chatMessageListId.toString(");
+
 
 
         recyclerView = view.findViewById(R.id.recycler_view);
-//        for(SendContactNumberResponse sendContactNumberResponse:myBase.getContactNumberObserve().getContactNumberResponseList()){
-//            if(!sendContactNumberResponse.getState().equals("false")){
-//                sendContactNumberResponses.add(sendContactNumberResponse);
-//            }
-//        }
-        for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()) {
-            if (!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(my_id)&&!chatRoomModel.getUserId().equals(my_id)) {
-                System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
-                sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.userId,chatRoomModel.name,chatRoomModel.getSpecialNumber(),chatRoomModel.image,"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
+
+        mainAdapter = new GroupSelectorAdapter(this,sendContactNumberResponses);
+
+        forwardDialogViewModel.loadData().observe(getActivity(), new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
+            @Override
+            public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
+                if(chatRoomModels!=null){
+                    sendContactNumberResponses.clear();
+                    for(ChatRoomModel chatRoomModel:chatRoomModels) {
+                                        sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.userId,chatRoomModel.name,chatRoomModel.getSpecialNumber(),chatRoomModel.image,"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
+
+                    }
+                    mainAdapter.updateList((ArrayList<SendContactNumberResponse>) sendContactNumberResponses);
+
+                }
+                //adapter.notifyDataSetChanged();
+
             }
-        }
+        });
+
 
 //        sendContactNumberResponses = myBase.getContactNumberObserve().getContactNumberResponseList();
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mainAdapter = new GroupSelectorAdapter(this,sendContactNumberResponses);
         recyclerView.setAdapter(mainAdapter);
 
         send = view.findViewById(R.id.send);

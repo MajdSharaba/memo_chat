@@ -3,9 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/settings"
+        android:id="@+id/block"
         android:icon="@drawable/ic_setting"
-        android:title="Siting"
+        android:title="@string/block"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/unBlock"
+        android:icon="@drawable/ic_setting"
+        android:title="@string/Unblock"
+        android:visible="false"
         app:showAsAction="ifRoom" />
 
 </menu>

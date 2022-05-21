@@ -195,4 +195,31 @@
     <string name="laststatus">اخر حالة</string>
     <string name="title">العنوان</string>
     <string name="selectFontSize">اختر حجم الخط</string>
+    <string name="block">حظر</string>
+    <string name="contact_number_blocked">جهات الاتصال المحظوره</string>
+    <string name="Unblock">فك الحظر</string>
+    <string name="alert_unblock_user">هل تريد فك الحظر عن المستخدم؟ </string>
+    <string name="block_message"> لقد قمت بحظر هذا المستخدم </string>
+    <string name="block_message2">لقد قام هذا المستخدم بحظرك </string>
+    <string name="alert_block_user">هل تريد حظر هذا المستخدم؟  </string>
+    <string name="modified_message_text">رسالة معدلة</string>
+    <string name="update_message">تعديل الرسالة</string>
+    <string name="update_message_note">هل تريد تعديل الرسالة؟</string>
+    <string name="alert_log_out">هل انت متأكد من تسجيل الخروج؟</string>
+    <string name="delete_account">حذف الحساب</string>
+    <string name="alert_delete_account">هل انت متأكد من حذف الحساب,ستفقد بيانات حسابك ؟</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </resources>

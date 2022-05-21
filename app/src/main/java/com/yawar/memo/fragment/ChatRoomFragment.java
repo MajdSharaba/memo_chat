@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -41,6 +42,9 @@ import com.yawar.memo.Api.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.modelView.ChatRoomViewModel;
+import com.yawar.memo.modelView.IntroActModelView;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.Globale;
 import com.yawar.memo.views.ArchivedActivity;
@@ -62,14 +66,16 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.yawar.memo.utils.BaseApp;
+import com.yawar.memo.views.DashBord;
 import com.yawar.memo.views.GroupSelectorActivity;
+import com.yawar.memo.views.IntroActivity;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ChatRoomFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.CallbackInterfac, Observer {
+public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.CallbackInterfac {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -104,7 +110,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     List<ChatRoomModel> archived = new ArrayList<>();
     String myId;
     BaseApp myBase;
-
+    ChatRoomViewModel chatRoomViewModel;
     ChatRoomAdapter itemAdapter;
     SearchView searchView;
     Toolbar toolbar;
@@ -113,6 +119,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     UserModel userModel;
     Globale globale;
     ImageButton iBAddArchived;
+    ChatRoomRepo chatRoomRepo;
     LinearLayout linerArchived;
     boolean isArchived;
 
@@ -183,7 +190,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
                 if(!state.equals("3")){
                     System.out.println("set Last Messageeeeeeeeeeeeeeeee");
-            myBase.getObserver().setLastMessage(text,chatId,myId,anthor_id,type,state,dateTime);
+            chatRoomRepo.setLastMessage(text,chatId,myId,anthor_id,type,state,dateTime);
                 }
             }
 
@@ -214,11 +221,11 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
                         e.printStackTrace();
                     }
                     if(isTyping.equals("true")){
-                        myBase.getObserver().setTyping(chat_id,true);
+                       chatRoomRepo.setTyping(chat_id,true);
 
                     }
                     else{
-                        myBase.getObserver().setTyping(chat_id,false);
+                        chatRoomRepo.setTyping(chat_id,false);
                     }
 
 
@@ -373,7 +380,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 //        resources.updateConfiguration(config, resources.getDisplayMetrics());
         myBase = BaseApp.getInstance();
 
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
         classSharedPreferences = new ClassSharedPreferences(getContext());
 
         myId = classSharedPreferences.getUser().getUserId();
@@ -385,7 +392,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
         ////////////for toolbar
         toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle("Memo");
+        toolbar.setTitle("");
         AppCompatActivity activity = (AppCompatActivity) getActivity();
 
         activity.setSupportActionBar(toolbar);
@@ -412,21 +419,54 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        isArchived = myBase.getObserver().isArchived();
-        System.out.println("isArchived"+isArchived);
+//        isArchived = myBase.getObserver().isArchived();
+        chatRoomViewModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
 
-        if(isArchived){
-            System.out.println(isArchived);
-            linerArchived.setVisibility(View.VISIBLE);
+        chatRoomRepo = myBase.getChatRoomRepo();
+        chatRoomRepo.isArchivedMutableLiveData.observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    linerArchived.setVisibility(View.VISIBLE);
+                }
+                else{
+                    linerArchived.setVisibility(View.GONE);
+                }
+            }
+        });
 
-        }
-          for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()) {
-              if (!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(myId)) {
-                  System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
-                  postList.add(chatRoomModel);
-              }
-          }
+//        if(isArchived){
+//            System.out.println(isArchived);
+//            linerArchived.setVisibility(View.VISIBLE);
+//
+//        }
+//          for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()) {
+//              if (!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(myId)) {
+//                  System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
+//                  postList.add(chatRoomModel);
+//              }
+//          }
         itemAdapter = new ChatRoomAdapter(postList, this);
+
+        chatRoomViewModel.loadData().observe(getActivity(), new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
+            @Override
+            public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
+                if(chatRoomModels!=null){
+                    postList.clear();
+                    for(ChatRoomModel chatRoomModel:chatRoomModels) {
+                        if (!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(myId)) {
+//                            System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
+                            postList.add(chatRoomModel);
+                        }
+                    }
+                    itemAdapter.updateList((ArrayList<ChatRoomModel>) postList);
+
+                }
+                //adapter.notifyDataSetChanged();
+
+            }
+        });
+//        itemAdapter = new ChatRoomAdapter(postList, this);
         recyclerView.setAdapter(itemAdapter);
         recyclerView.setListener(new SwipeLeftRightCallback.Listener() {
             @Override
@@ -438,9 +478,10 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             @Override
             public void onSwipedRight(int position) {
                 addToArchived(postList.get(position));
-                myBase.getObserver().setArchived(true);
+//                myBase.getObserver().setArchived(true);
+                chatRoomRepo.setArchived(true);
 
-                linerArchived.setVisibility(View.VISIBLE);
+//                linerArchived.setVisibility(View.VISIBLE);
 
             }
         });
@@ -505,9 +546,9 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     @Override
     public void onDestroy() {
         super.onDestroy();
-        System.out.println("on destrooyyyyyyyyyy");
+//        System.out.println("on destrooyyyyyyyyyy");
 //        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(onSocketConnect);
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(reciveNwMessage);
+//        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(reciveNwMessage);
 //        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(reciveNewChat);
 
 
@@ -604,6 +645,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         bundle.putString("image",chatRoomModel.getImage());
         bundle.putString("chat_id",chatRoomModel.getChatId());
         bundle.putString("special", chatRoomModel.getSpecialNumber());
+        bundle.putString("blockedFor",chatRoomModel.blockedFor);
+
 
         ///////////////////////
 
@@ -634,8 +677,9 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             public void onResponse(String response) {
                 progressDialo.dismiss();
                 System.out.println("Data added to API+"+response);
-                myBase.getObserver().setState(chatRoomModel.chatId,myId);
-                itemAdapter.notifyDataSetChanged();
+                chatRoomRepo.setState(chatRoomModel.chatId,myId);
+//                myBase.getObserver().setState(chatRoomModel.chatId,myId);
+//                itemAdapter.notifyDataSetChanged();
 
 
 
@@ -683,8 +727,9 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             public void onResponse(String response) {
                 progressDialo.dismiss();
                 System.out.println("Data added to API+"+response);
-                myBase.getObserver().deleteChatRoom(chatRoomModel.chatId);
-                itemAdapter.notifyDataSetChanged();
+//                myBase.getObserver().deleteChatRoom(chatRoomModel.chatId);
+//                itemAdapter.notifyDataSetChanged();
+                chatRoomRepo.deleteChatRoom(chatRoomModel.chatId);
 
 
             }
@@ -717,33 +762,33 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     }
 
 
-    @Override
-    public void update(Observable observable, Object o) {
-        System.out.println("outttttttttttttttt");
-        postList.clear();
-        for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()){
-            if(!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(myId))
-                postList.add(chatRoomModel);}
-//        postList=myBase.getObserver().getChatRoomModelList();
-        isArchived=myBase.getObserver().isArchived();
-        if(isArchived){
-            linerArchived.setVisibility(View.VISIBLE);
-
-        }
-        else{
-            linerArchived.setVisibility(View.GONE);
-
-        }
-
-         System.out.println("frommmmmmmmmmmmmmmmmm herrrrrrrrrrrrrrr");
-//        itemAdapter.notifyDataSetChanged();
-        itemAdapter = new ChatRoomAdapter(postList, this);
-
-
-        recyclerView.setAdapter(itemAdapter);
-
-
-
-    }
+//    @Override
+//    public void update(Observable observable, Object o) {
+////        System.out.println("outttttttttttttttt");
+////        postList.clear();
+////        for(ChatRoomModel chatRoomModel:myBase.getObserver().getChatRoomModelList()){
+////            if(!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(myId))
+////                postList.add(chatRoomModel);}
+//////        postList=myBase.getObserver().getChatRoomModelList();
+////        isArchived=myBase.getObserver().isArchived();
+////        if(isArchived){
+////            linerArchived.setVisibility(View.VISIBLE);
+////
+////        }
+////        else{
+////            linerArchived.setVisibility(View.GONE);
+////
+////        }
+////
+////         System.out.println("frommmmmmmmmmmmmmmmmm herrrrrrrrrrrrrrr");
+//////        itemAdapter.notifyDataSetChanged();
+////        itemAdapter = new ChatRoomAdapter(postList, this);
+////
+////
+////        recyclerView.setAdapter(itemAdapter);
+//
+//
+//
+//    }
 
 }

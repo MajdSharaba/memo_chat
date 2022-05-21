@@ -123,12 +123,6 @@
     <string name="yesterdayAt">yesterday at </string>
 
 
-
-
-
-
-
-
     <string name="name">  Name</string>
     <string name="username">  User Name</string>
     <string name="SetphotoOrVideo">  Set photo Or Video</string>
@@ -161,5 +155,33 @@
     <string name="laststatus">last status</string>
     <string name="title">Title</string>
     <string name="selectFontSize">Select Your Text Size</string>
+    <string name="block">Block</string>
+    <string name="contact_number_blocked">Contact Blocked</string>
+    <string name="Unblock">Unblock</string>
+    <string name="alert_unblock_user">Are you sure to Unblock the user? </string>
+    <string name="block_message">You blocked this user </string>
+    <string name="block_message2">This user has blocked you </string>
+    <string name="alert_block_user">Are you sure to block the user? </string>
+    <string name="modified_message_text">Modified message</string>
+    <string name="update_message">update message</string>
+    <string name="update_message_note">Are you sure to update this message?</string>
+    <string name="alert_log_out">Are you sure to logout?</string>
+    <string name="delete_account">Delete Account </string>
+    <string name="alert_delete_account">Are you sure to delete your account, You will lose your account data.?</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </resources>

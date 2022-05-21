@@ -76,14 +76,12 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
 
     TextView contact_number ;
 
-    float textSize = 14.0F ;
+    float textSize = 25F ;
     SharedPreferences sharedPreferences ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_contact_number);
         serverApi = new ServerApi(this);
         permissions = new Permissions();
@@ -98,7 +96,7 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
 //        bottomNavigationView.setSelectedItemId(R.id.calls);
         recyclerView = findViewById(R.id.recycler_view);
         contact_number = findViewById(R.id.contact_number);
-        contact_number.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        contact_number.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 //        toolbar = findViewById(R.id.toolbar);

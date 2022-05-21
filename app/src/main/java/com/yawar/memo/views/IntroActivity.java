@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.annotation.TargetApi;
@@ -41,6 +42,9 @@ import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.modelView.IntroActModelView;
+import com.yawar.memo.repositry.BlockUserRepo;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.Globale;
 import com.yawar.memo.permissions.Permissions;
 
@@ -67,11 +71,15 @@ public class IntroActivity extends AppCompatActivity implements Observer {
     ProgressDialog progressDialog;
     BaseApp myBase;
     String myId;
+    IntroActModelView introActModelView;
+    ChatRoomRepo chatRoomRepo;
+    BlockUserRepo blockUserRepo;
+
 
     boolean isResponeSucces = false;
     private static final int STORAGE_PERMISSION_CODE = 101;
     private Permissions permissions;
-    ServerApi serverApi;
+//    ServerApi serverApi;
 
 
     @Override
@@ -80,10 +88,12 @@ public class IntroActivity extends AppCompatActivity implements Observer {
         setContentView(R.layout.activity_intro);
         classSharedPreferences = new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
-        serverApi = new ServerApi(this);
+//        serverApi = new ServerApi(this);
        myBase = BaseApp.getInstance();
         myBase.getObserver().addObserver(this);
-        globale = new Globale();
+        chatRoomRepo=myBase.getChatRoomRepo();
+        blockUserRepo = myBase.getBlockUserRepo();
+        introActModelView = new ViewModelProvider(this).get(IntroActModelView.class);
         permissions = new Permissions();
         System.out.println(classSharedPreferences.getFcmToken() + "classSharedPreferences.getFcmToken()");
 
@@ -108,10 +118,36 @@ public class IntroActivity extends AppCompatActivity implements Observer {
                         }
                     });
         }
+
+        introActModelView.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
+            @Override
+            public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
+                if(chatRoomModels!=null){
+                    introActModelView.loadData().removeObserver(this);
+                    blockUserRepo.getUserBlock(myId);
+
+                }
+
+            }
+        });
+        introActModelView.getUserBlock().observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
+            @Override
+            public void onChanged(ArrayList<UserModel> userModels) {
+                if(userModels!=null){
+                    introActModelView.getUserBlock().removeObserver(this);
+               Intent intent = new Intent(IntroActivity.this, DashBord.class);
+
+                    startActivity(intent);
+                    finish();
+
+                }
+
+            }
+        });
+
+
+
         checkPermission();
-//       checkContactpermission();
-//        requestPermission();
-//   new GetDataAsync().execute();
 
     }
 
@@ -244,8 +280,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
                 createDirectory("memo/recive/voiceRecord");
                 createDirectory("memo/send/video");
                 createDirectory("memo/recive/video");
-                serverApi.getChatRoom();
-
+                chatRoomRepo.callAPI(myId);
             }
         } else {
             checkPermission();
@@ -263,8 +298,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
             createDirectory("memo/recive/voiceRecord");
             createDirectory("memo/send/video");
             createDirectory("memo/recive/video");
-            serverApi.getChatRoom();
-
+            chatRoomRepo.callAPI(myId);
 
         } else permissions.requestStorage(IntroActivity.this);
 //        if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -315,7 +349,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
                     createDirectory("memo/recive/voiceRecord");
                     createDirectory("memo/send/video");
                     createDirectory("memo/recive/video");
-                    serverApi.getChatRoom();
+                    chatRoomRepo.callAPI(myId);
                 } else
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE))
                 showPermissionDialog(getResources().getString(R.string.write_premission),2000);
@@ -489,7 +523,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
                     createDirectory("memo/recive/voiceRecord");
                     createDirectory("memo/send/video");
                     createDirectory("memo/recive/video");
-                    serverApi.getChatRoom();
+                    chatRoomRepo.callAPI(myId);
                 }
                 break;
 
@@ -533,7 +567,14 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
 
         }
+
+    @Override
+    protected void onDestroy() {
+
+
+    super.onDestroy();
     }
+}
 
 //    public class GetDataAsync extends AsyncTask<Void, Void, Void> {
 //        @Override

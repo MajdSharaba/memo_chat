@@ -1,17 +1,9 @@
 package com.yawar.memo.Api;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.ContactsContract;
 import android.widget.Toast;
-
-import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -22,15 +14,16 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.yawar.memo.R;
-import com.yawar.memo.adapter.ContactNumberAdapter;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.ContactModel;
 import com.yawar.memo.model.SendContactNumberResponse;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.repositry.AuthRepo;
+import com.yawar.memo.repositry.BlockUserRepo;
+import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.utils.Globale;
-import com.yawar.memo.views.ContactNumberActivity;
 import com.yawar.memo.views.DashBord;
 import com.yawar.memo.views.IntroActivity;
 import com.yawar.memo.views.RegisterActivity;
@@ -52,6 +45,11 @@ public class ServerApi {
     BaseApp myBase =BaseApp.getInstance() ;
       boolean isArchived ;
      boolean isResponeSucess;
+    ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
+    BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
+    AuthRepo authRepo =myBase.getAuthRepo();
+
+
 
 
 
@@ -547,9 +545,12 @@ public class ServerApi {
                         String lastMessageType = "text";
 //                        if(jsonObject.getString("message_type")!=null){
                          lastMessageType =  jsonObject.getString("message_type");
-//                    }
                         String lastMeesageState = jsonObject.getString("mstate");
                         String lastMeesageTime = jsonObject.getString("created_at");
+                        boolean isBlocked = jsonObject.getBoolean("blocked");
+
+
+
 
 
 
@@ -572,6 +573,7 @@ public class ServerApi {
                                 ,lastMeesageState
                                 ,lastMeesageTime
                                 ,false
+                                ,"null"
 
 //                                "https://th.bing.com/th/id/OIP.2s7VxdmHEoDKji3gO_i-5QHaHa?pid=ImgDet&rs=1"
 
@@ -627,6 +629,250 @@ public class ServerApi {
         myBase.addToRequestQueue(request);
         return  isResponeSucess;
     }
+
+
+    //block user
+    ///////////////////////////////
+    public void block(String my_id,UserModel userModel) {
+        System.out.println("block User");
+
+
+        classSharedPreferences = new ClassSharedPreferences(context);
+
+                ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
+        progressDialog.show();
+
+
+
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.107:3000/addtoblock", new Response.Listener<String>() {
+
+
+
+            @Override
+            public void onResponse(String response) {
+
+
+                progressDialog.dismiss();
+                System.out.println(response+"respone block");
+                String blokedFor = "";
+                boolean blocked =false;
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    blokedFor = jsonObject.getString("blocked_for");
+                    blocked= jsonObject.getBoolean("blocked");
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                userModel.setStatus(blokedFor);
+//                blockUserRepo.addBlockUser(blokedFor);
+                blockUserRepo.addBlockUser(userModel);
+                Intent service = new Intent(context, SocketIOService.class);
+                JSONObject userBlocked = new JSONObject();
+                JSONObject item = new JSONObject();
+
+                try {
+                    item.put("blocked_for",blokedFor);
+                    item.put("Block",blocked);
+                    userBlocked.put("my_id", my_id);
+                    userBlocked.put("user_id",userModel.getUserId() );
+                    userBlocked.put("blocked_for",blokedFor);
+//"item :blockedFor,Block"
+                    userBlocked.put("userDoBlockName",classSharedPreferences.getUser().getUserName());
+                    userBlocked.put("userDoBlockSpecialNumber",classSharedPreferences.getUser().getSecretNumber());
+                    userBlocked.put("userDoBlockImage",classSharedPreferences.getUser().getImage());
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                service.putExtra(SocketIOService.EXTRA_BLOCK_PARAMTERS, userBlocked.toString());
+                service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_BLOCK);
+                context.startService(service);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // progressDialog.dismiss();
+//                Toast.makeText(UserInformationActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("my_id", my_id);
+                params.put("user_id",userModel.getUserId());
+//                params.put("email", email);
+//                params.put("first_name", firstName);
+//                params.put("last_name", lastName);
+//                params.put("picture", imageString);
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+
+        };
+        myBase.addToRequestQueue(request);
+    }
+    //unBlock user
+    ///////////////////////////////
+    public void unbBlockUser(String my_id,UserModel userModel) {
+
+        ProgressDialog progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
+        progressDialog.show();
+
+
+
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.107:3000/deleteblock", new Response.Listener<String>() {
+
+
+
+            @Override
+            public void onResponse(String response) {
+                progressDialog.dismiss();
+                System.out.println("Responeee"+response);
+
+                String blokedFor = "";
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    blokedFor = jsonObject.getString("blocked_for");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                blockUserRepo.deleteBlockUser(userModel.getUserId(),blokedFor);
+
+                Intent service = new Intent(context, SocketIOService.class);
+                JSONObject userUnBlocked = new JSONObject();
+
+                try {
+                    userUnBlocked.put("my_id", my_id);
+                    userUnBlocked.put("user_id",userModel.getUserId() );
+                    userUnBlocked.put("blocked_for",blokedFor);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                service.putExtra(SocketIOService.EXTRA_UN_BLOCK_PARAMTERS, userUnBlocked.toString());
+                service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_UN_BLOCK);
+                context.startService(service);
+
+
+
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("errorrrrrrrr"+error);
+
+                // progressDialog.dismiss();
+//                Toast.makeText(UserInformationActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("my_id", my_id);
+                params.put("user_id",userModel.getUserId());
+//                params.put("email", email);
+//                params.put("first_name", firstName);
+//                params.put("last_name", lastName);
+//                params.put("picture", imageString);
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+
+        };
+        myBase.addToRequestQueue(request);
+    }
+    public void deleteAccount() {
+        classSharedPreferences = new ClassSharedPreferences(context);
+        final ProgressDialog progressDialo = new ProgressDialog(context);
+        // url to post our data
+        progressDialo.setMessage(context.getResources().getString(R.string.prograss_message));
+        progressDialo.show();
+        // creating a new variable for our request queue
+        RequestQueue queue = Volley.newRequestQueue(context);
+        // on below line we are calling a string
+        // request method to post the data to our API
+        // in this we are calling a post method.
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url+"APIS/delete_my_account.php", new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                progressDialo.dismiss();
+                System.out.println("Data respone+"+response);
+                boolean data = false;
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    data = jsonObject.getBoolean("data");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                if(data){
+                classSharedPreferences.setUser(null);
+                classSharedPreferences.setVerficationNumber(null);
+                authRepo.jsonObjectMutableLiveData.setValue(null);
+                chatRoomRepo.chatRoomListMutableLiveData.setValue(null);
+                blockUserRepo.userBlockListMutableLiveData.setValue(null);
+
+                Intent intent = new Intent(context, SplashScreen.class);
+                context.startActivity(intent);
+                    context.finish();
+                }
+
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // method to handle errors.
+//                Toast.makeText(getContext(), "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("sn",classSharedPreferences.getUser().getSecretNumber() );
+                params.put("user_id",classSharedPreferences.getUser().getUserId());
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+        };
+        // below line is to make
+        // a json object request.
+        queue.add(request);
+    }
+
 
 
 }

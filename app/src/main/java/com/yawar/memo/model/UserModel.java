@@ -11,6 +11,7 @@ package com.yawar.memo.model;
    String status;
 
 
+
       public UserModel(String userId, String userName, String lastName, String email, String phone,String secretNumber,String image,String status) {
           this.userId = userId;
           this.userName = userName;

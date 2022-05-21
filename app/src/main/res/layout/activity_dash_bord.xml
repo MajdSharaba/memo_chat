@@ -8,23 +8,23 @@
 
 
 
-    <com.ismaeldivita.chipnavigation.ChipNavigationBar
-        android:id="@+id/navigationChip"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/background_bottom_navigation"
-        app:cnb_unselectedColor="@color/textColor"
-        app:cnb_menuResource="@menu/bottom_nav_menu" />
-<!--    <com.google.android.material.bottomnavigation.BottomNavigationView-->
+<!--    <com.ismaeldivita.chipnavigation.ChipNavigationBar-->
 <!--        android:id="@+id/navigationChip"-->
 <!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:background="@color/background_bottom_navigation"-->
-<!--        app:itemIconTint="@drawable/bottom_navigation_selector"-->
-<!--        app:itemTextColor="#007DFF"-->
+<!--        android:layout_height="wrap_content"-->
 <!--        android:layout_alignParentBottom="true"-->
-<!--        app:menu="@menu/bottom_nav_menu" />-->
+<!--        android:background="@color/background_bottom_navigation"-->
+<!--        app:cnb_unselectedColor="@color/textColor"-->
+<!--        app:cnb_menuResource="@menu/bottom_nav_menu" />-->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/navigationChip"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/background_bottom_navigation"
+        app:itemIconTint="@drawable/bottom_navigation_selector"
+        app:itemTextColor="@color/memo_background_color"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/bottom_nav_menu" />
 
     <FrameLayout
         android:id="@+id/dashboardContainer"

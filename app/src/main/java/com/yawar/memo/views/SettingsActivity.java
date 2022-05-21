@@ -13,9 +13,6 @@ import androidx.preference.PreferenceFragmentCompat;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
@@ -37,8 +34,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.settings_activity);
         getSupportActionBar().setTitle(R.string.appearance);
 
@@ -50,7 +46,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.settings, new SettingsFragment())
+                .replace(R.id.block, new SettingsFragment())
                 .commit();
 
         ActionBar supportActionBar = getSupportActionBar();

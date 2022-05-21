@@ -1,5 +1,6 @@
 package com.yawar.memo.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -9,16 +10,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.WindowManager;
+import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.yawar.memo.Api.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.ChatRoomFragment;
-import com.yawar.memo.fragment.ProfileFragment;
 import com.yawar.memo.fragment.SearchFragment;
 import com.yawar.memo.fragment.SettingsFragment;
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 
@@ -32,9 +36,12 @@ import java.util.Observer;
 public class DashBord extends AppCompatActivity implements Observer {
 
 
-    private ChipNavigationBar navigationBar;
+
+//    private ChipNavigationBar navigationBar;
+BottomNavigationView bottomNavigation;
     private Fragment fragment = null;
     BaseApp myBase;
+    ChatRoomRepo chatRoomRepo;
     ClassSharedPreferences classSharedPreferences;
     String myId;
     public static final String NEW_MESSAGE ="new Message" ;
@@ -83,7 +90,7 @@ public class DashBord extends AppCompatActivity implements Observer {
 
 
                 if(!user.getString("id").equals(myId)) {
-                    myBase.getObserver().addChatRoom(new ChatRoomModel(
+                    chatRoomRepo.addChatRoom(new ChatRoomModel(
                             user.getString("first_name"),
                             user.getString("id"),
                             text,
@@ -103,7 +110,8 @@ public class DashBord extends AppCompatActivity implements Observer {
                             message.getString("message_type"),
                             message.getString("state"),
                             message.getString("created_at"),
-                             false
+                             false,
+                               "null"
 
 
 
@@ -190,7 +198,7 @@ public class DashBord extends AppCompatActivity implements Observer {
 
             if(!state.equals("3")){
                 System.out.println("set Last Messageeeeeeeeeeeeeeeee");
-                myBase.getObserver().setLastMessage(text,chatId,myId,anthor_id,type,state,dateTime);
+                chatRoomRepo.setLastMessage(text,chatId,myId,anthor_id,type,state,dateTime);
             }
         }
 
@@ -221,18 +229,21 @@ public class DashBord extends AppCompatActivity implements Observer {
                 e.printStackTrace();
             }
             if (isTyping.equals("true")) {
-                myBase.getObserver().setTyping(chat_id, true);
+                chatRoomRepo.setTyping(chat_id, true);
 
             } else {
-                myBase.getObserver().setTyping(chat_id, false);
+                chatRoomRepo.setTyping(chat_id, false);
             }
         }
     };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_dash_bord);
+
         connectSocket();
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, new IntentFilter(TYPING));
@@ -240,23 +251,21 @@ public class DashBord extends AppCompatActivity implements Observer {
         classSharedPreferences = new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
+        chatRoomRepo= myBase.getChatRoomRepo();
+                        LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
 
-        setContentView(R.layout.activity_dash_bord);
-        navigationBar = findViewById(R.id.navigationChip);
-                LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
-
-
-        if (savedInstanceState == null) {
-            navigationBar.setItemSelected(R.id.chat, true);
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationChip);
+                if (savedInstanceState == null) {
+                    bottomNavigationView.setSelectedItemId(R.id.chat);
             getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, new ChatRoomFragment()).commit();
         }
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
 
-        navigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+
             @Override
-            public void onItemSelected(int i) {
-                switch (i) {
-
-                    case R.id.chat:
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case  R.id.chat:
                         fragment = new ChatRoomFragment();
                         break;
                     case  R.id.profile:
@@ -265,20 +274,60 @@ public class DashBord extends AppCompatActivity implements Observer {
                     case R.id.searchSn:
                         fragment = new SearchFragment();
                         break;
-                     case R.id.settings:
+                     case R.id.block:
                         fragment = new SettingsFragment();
                         break;
                     case  R.id .calls:
 //                        fragment = new StoriesFragment();
                 }
-
                 if (fragment != null)
                     getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, fragment).commit();
+//            }
+                return true;
             }
         });
-
-
     }
+
+
+
+
+//        navigationBar = findViewById(R.id.navigationChip);
+//                LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
+//
+//
+//        if (savedInstanceState == null) {
+//            navigationBar.setItemSelected(R.id.chat, true);
+//            getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, new ChatRoomFragment()).commit();
+//        }
+//
+//        navigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(int i) {
+//                switch (i) {
+//
+//                    case R.id.chat:
+//                        fragment = new ChatRoomFragment();
+//                        break;
+//                    case  R.id.profile:
+////                        fragment = new ProfileFragment();
+//                        break;
+//                    case R.id.searchSn:
+//                        fragment = new SearchFragment();
+//                        break;
+//                     case R.id.block:
+//                        fragment = new SettingsFragment();
+//                        break;
+//                    case  R.id .calls:
+////                        fragment = new StoriesFragment();
+//                }
+//
+//                if (fragment != null)
+//                    getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, fragment).commit();
+//            }
+//        });
+//
+//
+
 
     @Override
     protected void onResume() {
@@ -298,6 +347,7 @@ public class DashBord extends AppCompatActivity implements Observer {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        System.out.println("on Destroyyyyyyyyyyyyyy");
                 LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);
