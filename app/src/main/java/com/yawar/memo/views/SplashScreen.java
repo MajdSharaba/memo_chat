@@ -36,13 +36,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class SplashScreen extends AppCompatActivity {
-    private static int SPLASH_SCREEN_TIME_OUT=100;
+    private static int SPLASH_SCREEN_TIME_OUT=3000;
     ClassSharedPreferences classSharedPreferences;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
     ServerApi serverApi;
 
-//    float textSize = 14.0F ;
+     float textSize = 14.0F ;
     SharedPreferences sharedPreferences ;
     TextView text ;
     TextView powerd ;
@@ -85,12 +85,12 @@ public class SplashScreen extends AppCompatActivity {
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
         text = findViewById(R.id.text);
-//        text.setTextSize(textSize);
-//        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        text.setTextSize(textSize);
+        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         powerd = findViewById(R.id.powerd);
-//        powerd.setTextSize(textSize);
-//        powerd.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        powerd.setTextSize(textSize);
+        powerd.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 

@@ -133,12 +133,12 @@ public class GroupSelectorAdapter extends RecyclerView.Adapter<com.yawar.memo.ad
             super(itemView);
             ////Assign variable
             tvName = itemView.findViewById(R.id.tv_name);
-//            tvName.setTextSize(textSize);
-//            tvName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            tvName.setTextSize(textSize);
+            tvName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
             tvNumber = itemView.findViewById(R.id.tv_status);
-//            tvNumber.setTextSize(textSize);
-//            tvNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            tvNumber.setTextSize(textSize);
+            tvNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
             imageView = itemView.findViewById(R.id.image);

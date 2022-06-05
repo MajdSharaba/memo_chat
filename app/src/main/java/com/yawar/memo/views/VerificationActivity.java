@@ -43,7 +43,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
 
     TextView text ;
     TextView orText ;
-//    float textSize = 14.0F ;
+     float textSize = 14.0F ;
     SharedPreferences sharedPreferences ;
 
 
@@ -60,12 +60,12 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
         virvectbtn = findViewById(R.id.btn_verification);
 
         text = findViewById(R.id.text);
-//        text.setTextSize(textSize);
-//        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        text.setTextSize(textSize);
+        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         orText = findViewById(R.id.orText);
-//        orText.setTextSize(textSize);
-//        orText.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        orText.setTextSize(textSize);
+        orText.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         myBase = BaseApp.getInstance();
         authRepo = myBase.getAuthRepo();
