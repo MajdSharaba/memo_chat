@@ -649,22 +649,25 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                         builder.setView(dialogView);
                         final AlertDialog dialogadd = builder.create();
 
-//                        sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+
+                        float textSize = 14.0F ;
+                        SharedPreferences sharedPreferences ;
+                         sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
                         final TextView name = dialogView.findViewById(R.id.name);
-//                        name.setTextSize(textSize);
-//                        name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+                        name.setTextSize(textSize);
+                        name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 
                         final TextView nameAddContact = dialogView.findViewById(R.id.nameAddContact);
-//                        nameAddContact.setTextSize(textSize);
-//                        nameAddContact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+                         nameAddContact.setTextSize(textSize);
+                        nameAddContact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
                         nameAddContact.setText(chatMessage.getFileName());
 
                         final TextView numberAddContact = dialogView.findViewById(R.id.numberAddContact);
-//                        numberAddContact.setTextSize(textSize);
-//                        numberAddContact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+                         numberAddContact.setTextSize(textSize);
+                        numberAddContact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
                         numberAddContact.setText(chatMessage.getMessage());
 
                         Button btnAddContact = dialogView.findViewById(R.id.btnAddContact);
@@ -1335,8 +1338,12 @@ class LayoutImageViewHolder
     AdCircleProgress  adCircleProgress;
 
 
+    float textSize = 14.0F ;
+    SharedPreferences sharedPreferences ;
+
     public LayoutImageViewHolder(@NonNull View itemView) {
         super(itemView);
+
 
         // Find the Views
         imageView = itemView.findViewById(R.id.imgMessage);
@@ -1344,8 +1351,8 @@ class LayoutImageViewHolder
         contentwithB = itemView.findViewById(R.id.contentWithBackground);
 
         txtDate = itemView.findViewById(R.id.tv_date);
-//        txtDate.setTextSize(textSize);
-//        txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        txtDate.setTextSize(textSize);
+        txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         imageSeen = itemView.findViewById(R.id.iv_state);
         downloadImage = itemView.findViewById(R.id.image_download);
@@ -1377,10 +1384,13 @@ class LayoutVoiceViewHolder
 
 
 
+    float textSize = 14.0F ;
+    SharedPreferences sharedPreferences ;
 
     public LayoutVoiceViewHolder(@NonNull View itemView) {
         super(itemView);
-//        sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+
+        sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
         content = itemView.findViewById(R.id.content);
         contentWithBG = itemView.findViewById(R.id.contentWithBackground);
@@ -1511,7 +1521,7 @@ class LayoutVoiceViewHolder
         public  View view2;
 
 
-//        float textSize = 14.0F ;
+        float textSize = 14.0F ;
         SharedPreferences sharedPreferences ;
 
         public LayoutContactViewHolder(@NonNull View itemView) {
@@ -1589,7 +1599,7 @@ class LayoutVoiceViewHolder
 
 
 
-        //        float textSize = 14.0F ;
+                 float textSize = 14.0F ;
         SharedPreferences sharedPreferences ;
 //        private Activity activity;
 

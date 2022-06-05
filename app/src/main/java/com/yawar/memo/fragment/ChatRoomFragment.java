@@ -534,8 +534,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
         chat = view.findViewById(R.id.chat);
-//        chat.setTextSize(textSize);
-//        chat.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        chat.setTextSize(textSize);
+        chat.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 

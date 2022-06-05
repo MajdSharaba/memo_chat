@@ -151,13 +151,13 @@ public class ContactNumberAdapter extends RecyclerView.Adapter<ContactNumberAdap
             super(itemView);
             ////Assign variable
             tvName = itemView.findViewById(R.id.tv_name);
-//            tvName.setTextSize(textSize);
-//            tvName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            tvName.setTextSize(textSize);
+            tvName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
             tvNumber = itemView.findViewById(R.id.tv_number);
-//            tvNumber.setTextSize(textSize);
-//            tvNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            tvNumber.setTextSize(textSize);
+            tvNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
             imageView = itemView.findViewById(R.id.iv_image);
             button = itemView.findViewById(R.id.btn_share);

@@ -88,8 +88,8 @@ public class UserAdapter extends RecyclerView.Adapter<com.yawar.memo.adapter.Use
             super(itemView);
             //mListener = listener;
             name = (TextView) itemView.findViewById(R.id.name);
-//            name.setTextSize(textSize);
-//            name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            name.setTextSize(textSize);
+            name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
             ///  itemView.setOnClickListener(this);
