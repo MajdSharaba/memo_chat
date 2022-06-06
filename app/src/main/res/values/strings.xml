@@ -168,19 +168,12 @@
     <string name="alert_log_out">Are you sure to logout?</string>
     <string name="delete_account">Delete Account </string>
     <string name="alert_delete_account">Are you sure to delete your account, You will lose your account data.?</string>
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <string name="hold">Hold</string>
+    <string name="memo">Memo</string>
+    <string name="speaker">Speaker</string>
+    <string name="call_from">Call Come From</string>
+    <string name="calling">Calling...</string>
+    <string name="rining">...Rining</string>
 
 
 

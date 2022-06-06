@@ -449,7 +449,7 @@ private void uploadImage(final String imageName, Uri pdfFile) {
           inputData = getBytes(iStream);}
 
 //      String url = AllConstants.base_url+"uploadImgProfile";
-        String url = "http://192.168.0.107:3000/uploadImgProfile";
+        String url = "http://192.168.0.108:3000/uploadImgProfile";
 
 //              "http://192.168.1.7:3000/uploadImgProfile";
 //        AllConstants.base_url+"uploadImgProfile"

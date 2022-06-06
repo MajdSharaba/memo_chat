@@ -208,6 +208,18 @@
     <string name="alert_log_out">هل انت متأكد من تسجيل الخروج؟</string>
     <string name="delete_account">حذف الحساب</string>
     <string name="alert_delete_account">هل انت متأكد من حذف الحساب,ستفقد بيانات حسابك ؟</string>
+    <string name="hold">ايقاف</string>
+    <string name="memo">ميمو</string>
+    <string name="speaker">مكبر الصوت</string>
+    <string name="call_from">مكالمة واردة من</string>
+    <string name="calling">يتصل...</string>
+    <string name="rining">يرن...</string>
+
+
+
+
+
+
 
 
 

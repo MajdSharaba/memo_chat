@@ -39,6 +39,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     BlockUserRepo blockUserRepo;
     AuthRepo authRepo;
     ChatMessageRepo chatMessageRepo;
+    String peerId = null;
 
 
 
@@ -143,7 +144,14 @@ public class BaseApp extends Application implements LifecycleObserver {
         }
         return chatMessageRepo;
     }
-
+    public void setPeerId(String peer_id) {
+        if(peerId== null){
+            this.peerId = peer_id;
+        }
+    }
+    public String getPeerId() {
+    return  peerId;
+    }
 
     public <T> void addToRequestQueue(Request<T> req, String tag) {
         req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);

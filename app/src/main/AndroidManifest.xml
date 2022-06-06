@@ -19,7 +19,10 @@
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
         tools:ignore="CoarseFineLocation" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:name=".utils.BaseApp"
@@ -35,9 +38,19 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:theme">
         <activity
-            android:name=".views.BlockedUsersActivity"
+            android:name=".call.CallNotificationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".call.RequestCallActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
-             />
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".call.CallMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.BlockedUsersActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".views.DevicesLinkActivity"
             android:screenOrientation="portrait"
@@ -92,8 +105,7 @@
         <activity
             android:name=".views.ArchivedActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".views.GroupPropertiesActivity"
             android:screenOrientation="portrait"

@@ -167,6 +167,7 @@ public class FirebaseMessageReceiver
                 = new NotificationCompat
                 .Builder(getApplicationContext(),
                 channel_id)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
                 .setNumber(id++)
 //               .setLargeIcon(CircleImage.getCircleBitmap())
 //                .setLargeIcon(Glide)
@@ -307,8 +308,9 @@ public class FirebaseMessageReceiver
                         = new NotificationCompat
                         .Builder(getApplicationContext(),
                         channel_id)
-                        .setNumber(id++).
-                          setContentTitle(title)
+                        .setNumber(id++)
+                        .setPriority(NotificationCompat.PRIORITY_MAX).
+                         setContentTitle(title)
                         .setContentText(message)
                         .setLargeIcon(ImageProperties.getCircleBitmap(bitmap))
 

@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".call.RequestCallActivity">
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/audio_only_Layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#316565"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:gravity="center_vertical"
+            android:padding="20dp"
+            android:text="user name"
+            android:textColor="@color/white"
+            android:textSize="35dp"
+            android:textStyle="bold"
+            tools:text="user name" />
+
+        <TextView
+            android:id="@+id/txt_view_call_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/user_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="1dp"
+            android:gravity="center_vertical"
+            android:padding="20dp"
+            android:text="@string/calling"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:textStyle="bold"
+             />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/btx_custom"
+                    android:gravity="center_vertical"
+                    android:padding="20dp"
+                    android:src="@drawable/ic_baseline_mic_off_24"
+                    android:textColor="@color/white"
+                    android:textSize="35dp"
+                    android:textStyle="bold"
+                    tools:text="user name" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/mute"
+                    android:textColor="@color/white">
+
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/btx_custom"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="27dp"
+                    android:paddingRight="27dp"
+                    android:paddingTop="22dp"
+                    android:paddingBottom="22dp"
+
+
+                    android:src="@drawable/ic_pause_call"
+                    android:textColor="@color/white"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/hold"
+                    android:textColor="@color/white">
+
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/btx_custom"
+                    android:gravity="center_vertical"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:src="@drawable/ic_memo_icon"
+                    android:textColor="@color/white"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/memo"
+                    android:textColor="@color/white">
+
+                </TextView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="50dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/btx_custom"
+                    android:gravity="center_vertical"
+                    android:padding="20dp"
+                    android:src="@drawable/ic_add_call"
+
+                    tools:text="user name"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/add"
+                    android:textColor="@color/white">
+
+                </TextView>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/liner_video"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/open_close_video"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/btx_custom"
+                    android:gravity="center_vertical"
+                    android:paddingTop="27dp"
+                    android:paddingBottom="27dp"
+                    android:paddingRight="22dp"
+                    android:paddingLeft="22dp"
+                    android:src="@drawable/ic_video_call"
+                   />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/video"
+                    android:textColor="@color/white">
+
+                </TextView>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:background="@drawable/btx_custom"
+                    android:gravity="center_vertical"
+                    android:padding="20dp"
+
+                    android:src="@drawable/audio_speaker"
+                    android:textColor="@color/white"
+                    android:textSize="35dp"
+                    android:textStyle="bold"
+                    tools:text="user name" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/speaker"
+                    android:textColor="@color/white">
+
+                </TextView>
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/biv_call"
+            android:padding="15dp"
+            android:id="@+id/img_button_stop_call"
+            android:layout_gravity="center"
+            tools:src="@drawable/ic_call_stop"
+            android:src="@drawable/ic_call_stop"
+           />
+    </LinearLayout>
+
+    <include layout="@layout/layout_call_properties">
+
+    </include>
+
+
+<!--    <LinearLayout-->
+<!--        android:id="@+id/video_btn"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:background="@color/green"-->
+<!--        android:orientation="horizontal"-->
+<!--        android:visibility="visible">-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/image_vide_call"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:background="@drawable/btx_custom"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:paddingLeft="22dp"-->
+<!--            android:paddingTop="27dp"-->
+<!--            android:paddingRight="22dp"-->
+<!--            android:paddingBottom="27dp"-->
+<!--            android:src="@drawable/ic_video_call" />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/close_call"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="15dp"-->
+<!--            android:background="@drawable/biv_call"-->
+<!--            android:padding="15dp"-->
+<!--            android:src="@drawable/ic_call_stop" />-->
+
+<!--        <ImageButton-->
+<!--            android:id="@+id/image_audio_call"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="15dp"-->
+<!--            android:background="@drawable/btx_custom"-->
+<!--            android:gravity="center_vertical"-->
+<!--            android:padding="20dp"-->
+<!--            android:src="@drawable/ic_baseline_mic_off_24" />-->
+
+
+<!--    </LinearLayout>-->
+
+
+
+</RelativeLayout>

@@ -7,6 +7,11 @@
     android:layout_height="match_parent"
     android:layoutDirection="locale"
     android:orientation="vertical">
+    <WebView
+        android:id="@+id/webView"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="600dp" />
     <RelativeLayout
         android:id="@+id/relativeMaps"
         android:visibility="gone"
@@ -124,6 +129,7 @@
 
                 </LinearLayout>
                 <ImageView
+                    android:id="@+id/video_call"
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
                     android:layout_gravity="center"
@@ -137,6 +143,7 @@
                 </ImageView>
 
                 <ImageView
+                    android:id="@+id/audio_call"
                     android:layout_width="0dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"

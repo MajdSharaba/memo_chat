@@ -1,11 +1,9 @@
 package com.yawar.memo.views;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
-
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -25,7 +23,6 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -47,11 +44,9 @@ import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.Globale;
 import com.yawar.memo.permissions.Permissions;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,7 +57,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-
 import com.yawar.memo.utils.BaseApp;
 
 public class IntroActivity extends AppCompatActivity implements Observer {
@@ -148,6 +142,8 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
 
         checkPermission();
+
+
 
     }
 
@@ -432,7 +428,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
             @Override
             public void onResponse(String response) {
 //                progressDialo.dismiss();
-                System.out.println("Data added to API+" + response);
+                System.out.println("Data added to API+ for token" + response);
                 classSharedPreferences.setFcmToken(token);
 
             }

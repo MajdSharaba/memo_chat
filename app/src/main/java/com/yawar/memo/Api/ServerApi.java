@@ -645,7 +645,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.107:3000/addtoblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.106:3000/addtoblock", new Response.Listener<String>() {
 
 
 
@@ -732,7 +732,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.107:3000/deleteblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.106:3000/deleteblock", new Response.Listener<String>() {
 
 
 

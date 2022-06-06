@@ -35,7 +35,7 @@
     <color name="background_recive_message">#00A79D</color>
     <color name="browser_actions_bg">#F5F5F5</color>
     <color name="background_chat_page">#FFFFFFFF</color>
-    <color name="background_onLong_click">#e6e6fa</color>
+    <color name="background_onLong_click">#00A79D</color>
     <color name="light_blue_600">#FF039BE5</color>
     <color name="light_blue_900">#FF01579B</color>
     <color name="light_blue_A200">#FF40C4FF</color>
