@@ -54,6 +54,13 @@
                     android:visibility="gone"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_download_audio"/>
+                <ImageView
+                    android:id="@+id/choose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:src="@drawable/ic_down"
+                    />
                 <com.app.adprogressbarlib.AdCircleProgress
                     android:id="@+id/pgb_progress"
                     android:layout_width="60dp"
@@ -85,6 +92,7 @@
                         android:text="11:45"
                         android:layout_gravity="end"
                         android:gravity="end"
+                        android:visibility="gone"
                         android:textColor="@color/textColor"
                         android:textSize="11sp" />
 
