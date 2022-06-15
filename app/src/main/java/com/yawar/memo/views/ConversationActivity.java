@@ -1089,30 +1089,30 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         fowordImageBtn = findViewById(R.id.image_button_foword);
 
         tv_name = findViewById(R.id.name);
-//        tv_name.setTextSize(textSize);
-//        tv_name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        tv_name.setTextSize(textSize);
+        tv_name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         tv_state = findViewById(R.id.state);
-//        tv_state.setTextSize(textSize);
-//        tv_state.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        tv_state.setTextSize(textSize);
+        tv_state.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         gallery = findViewById(R.id.gallery);
-//        gallery.setTextSize(textSize);
-//        gallery.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        gallery.setTextSize(textSize);
+        gallery.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         pdf = findViewById(R.id.pdf);
-//        pdf.setTextSize(textSize);
-//        pdf.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        pdf.setTextSize(textSize);
+        pdf.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         contact = findViewById(R.id.contact);
-//        contact.setTextSize(textSize);
-//        contact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        contact.setTextSize(textSize);
+        contact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         location = findViewById(R.id.location);
-//        location.setTextSize(textSize);
-//        location.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        location.setTextSize(textSize);
+        location.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         CharSequence charSequence = searchView.getQuery();

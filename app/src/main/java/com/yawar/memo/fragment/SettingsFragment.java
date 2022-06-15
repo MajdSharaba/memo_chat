@@ -9,8 +9,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
@@ -75,8 +77,8 @@ public class SettingsFragment extends Fragment {
     String currentLanguage = "en", currentLang;
     public static final String TAG = "bottom_sheet";
 
-
-    //    TextView name ;
+    int seekValue = 2;
+//  TextView name ;
     TextView userName ;
     TextView phoneNumber ;
     TextView setPhoto ;
@@ -131,11 +133,9 @@ public class SettingsFragment extends Fragment {
         userModel = classSharedPreferences.getUser();
         serverApi = new ServerApi(getActivity());
         myBase = BaseApp.getInstance();
-        chatRoomRepo=myBase.getChatRoomRepo();
+        chatRoomRepo = myBase.getChatRoomRepo();
         blockUserRepo = myBase.getBlockUserRepo();
         authRepo = myBase.getAuthRepo();
-
-
 
         getFindViewById(view);
 
@@ -148,11 +148,11 @@ public class SettingsFragment extends Fragment {
         if(!userModel.getImage().isEmpty()){
             Glide.with(imageView.getContext()).load(AllConstants.imageUrl+userModel.getImage()).error(getResources().getDrawable(R.drawable.th)).into(imageView);}
 
-
+//
 //        name =(TextView) view.findViewById(R.id.name);
 //        name.setTextSize(textSize);
 //        name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
+//
 
         userName =(TextView) view.findViewById(R.id.username);
         userName.setTextSize(textSize);
@@ -364,6 +364,7 @@ public class SettingsFragment extends Fragment {
 
             }
         });
+/*
 
         fontSize.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -459,6 +460,133 @@ public class SettingsFragment extends Fragment {
 
 
                 resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+
+
+
+
+                dialogadd.show();
+
+
+
+
+            }
+        });
+*/
+
+        fontSize.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "This Font Size", Toast.LENGTH_SHORT).show();
+
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = LayoutInflater.from(getActivity());
+                View dialogView = inflater.inflate(R.layout.fon_size_layout, null);
+                builder.setView(dialogView);
+                AlertDialog dialogadd = builder.create();
+
+
+                TextView textViewFont , resultFontSize ;
+
+                Button btnChange  ;
+                SharedPreferences sharedPreferences ;
+                SeekBar seekBar ;
+
+
+//              textViewFont   = dialogView.findViewById(R.id.textViewFont);
+                resultFontSize = dialogView.findViewById(R.id.resultFontSize);
+//              btnChange   = dialogView.findViewById(R.id.btnChange);
+                sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+                seekBar = dialogView.findViewById(R.id.seekbar);
+
+//              textViewFont.setTextSize(textSize); // size 20sp
+                resultFontSize.setTextSize(seekValue);
+
+
+                resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+                        seekValue = progress;
+
+                        resultFontSize.setText("Memo Font Size");
+                        resultFontSize.setTextSize(seekValue);
+                        //   name.setTextSize(seekValue);
+                        userName.setTextSize(seekValue);
+                        phoneNumber.setTextSize(seekValue);
+                        setUserName.setTextSize(seekValue);
+                        setPhoto.setTextSize(seekValue);
+                        dev.setTextSize(seekValue);
+                        recentCall.setTextSize(seekValue);
+                        notificationAnd.setTextSize(seekValue);
+                        Appearanc.setTextSize(seekValue);
+                        languag.setTextSize(seekValue);
+                        fontSiz.setTextSize(seekValue);
+                        askMemoQuesti.setTextSize(seekValue);
+                        preferene.setTextSize(seekValue);
+                        tellafri.setTextSize(seekValue);
+                        hel.setTextSize(seekValue);
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                        String temp = "Processing...";
+                        resultFontSize.setText(temp);
+
+                    }
+
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        //textViewSize.setText(progressNew + "/" + seekBar.getMax());
+
+                        seekBar.getAccessibilityTraversalAfter();
+                        //   seekBar.get
+
+                        resultFontSize.setText("Memo Font Size");
+                        resultFontSize.setTextSize(seekValue);
+                        //    name.setTextSize(seekValue);
+                        userName.setTextSize(seekValue);
+                        phoneNumber.setTextSize(seekValue);
+                        setUserName.setTextSize(seekValue);
+                        setPhoto.setTextSize(seekValue);
+                        dev.setTextSize(seekValue);
+                        recentCall.setTextSize(seekValue);
+                        notificationAnd.setTextSize(seekValue);
+                        Appearanc.setTextSize(seekValue);
+                        languag.setTextSize(seekValue);
+                        fontSiz.setTextSize(seekValue);
+                        askMemoQuesti.setTextSize(seekValue);
+                        preferene.setTextSize(seekValue);
+                        tellafri.setTextSize(seekValue);
+                        hel.setTextSize(seekValue);
+
+
+                        SharedPreferences.Editor editor  = sharedPreferences.edit();
+                        editor.putString("txtFontSize", String.valueOf(seekValue));
+                        editor.commit();
+
+                        resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+                    }
+                });
+
+//                btnChange.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View view) {
+////                        String  txtFontSize = String.valueOf(textViewFont.getTextSize());
+//                        SharedPreferences.Editor editor  = sharedPreferences.edit();
+////                        editor.putString("txtFontSize", txtFontSize);
+//                        editor.commit();
+//                        Toast.makeText(getActivity(), "Information Saved", Toast.LENGTH_SHORT).show();
+//                        resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//                    }
+//                });
+
+
+                //    resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 

@@ -282,12 +282,12 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
             super(itemView);
 
             name = (TextView) itemView.findViewById(R.id.name);
-//            name.setTextSize(textSize);
-//            name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            name.setTextSize(textSize);
+            name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
             lastMessage = (TextView) itemView.findViewById(R.id.lastMessage);
-//            lastMessage.setTextSize(textSize);
-//            lastMessage.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            lastMessage.setTextSize(textSize);
+            lastMessage.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
             imageView = (ImageView) itemView.findViewById(R.id.image);
@@ -297,11 +297,11 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
             imageType = itemView.findViewById(R.id.img_type);
             textTime = itemView.findViewById(R.id.time);
 
-//            numUMessage.setTextSize(textSize);
-//            numUMessage.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            numUMessage.setTextSize(textSize);
+            numUMessage.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-//            textTime.setTextSize(textSize);
-//            textTime.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+            textTime.setTextSize(textSize);
+            textTime.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 

@@ -35,7 +35,7 @@ import java.util.Observer;
 
 public class DashBord extends AppCompatActivity implements Observer {
 
-
+// test //
 
 //    private ChipNavigationBar navigationBar;
 BottomNavigationView bottomNavigation;
@@ -268,16 +268,16 @@ BottomNavigationView bottomNavigation;
                     case  R.id.chat:
                         fragment = new ChatRoomFragment();
                         break;
-                    case  R.id.profile:
+               //     case  R.id.profile:
 //                        fragment = new ProfileFragment();
-                        break;
+                    //    break;
                     case R.id.searchSn:
                         fragment = new SearchFragment();
                         break;
                      case R.id.block:
                         fragment = new SettingsFragment();
                         break;
-                    case  R.id .calls:
+               //     case  R.id .calls:
 //                        fragment = new StoriesFragment();
                 }
                 if (fragment != null)

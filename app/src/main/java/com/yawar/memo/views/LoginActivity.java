@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private GoogleSignInOptions gso;
     String idToken;
     ClassSharedPreferences classSharedPreferences;
-//    float textSize = 14.0F ;
+    float textSize = 14.0F ;
     SharedPreferences sharedPreferences ;
 
 
@@ -73,8 +73,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
         text =(TextView) findViewById(R.id.text);
-//        text.setTextSize(textSize);
-//        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        text.setTextSize(textSize);
+        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         classSharedPreferences= new ClassSharedPreferences(this);
         firebaseAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
