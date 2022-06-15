@@ -10,5 +10,9 @@ class JavascriptInterface(val CallMainActivity: CallMainActivity) {
     public fun onPeerConnected(string: String) {
         CallMainActivity.onPeerConnected(string)
     }
+    @JavascriptInterface
+    public fun print() {
+       println("this is javaScript code")
+    }
 
 }

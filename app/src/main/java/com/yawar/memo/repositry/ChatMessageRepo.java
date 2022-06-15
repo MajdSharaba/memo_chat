@@ -71,7 +71,9 @@ public class ChatMessageRepo {
                             }
                             chatMessage.setType(jsonObject.getString("message_type"));
                             chatMessage.setDate(jsonObject.getString("created_at"));
-                            chatMessage.setIsUpdate(jsonObject.getString("edited"));
+//                            chatMessage.setIsUpdate(jsonObject.getString("edited"));
+                                                        chatMessage.setIsUpdate("0");
+
 
 
                             chatMessageList.add(chatMessage);

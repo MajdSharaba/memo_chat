@@ -347,8 +347,7 @@ BottomNavigationView bottomNavigation;
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        System.out.println("on Destroyyyyyyyyyyyyyy");
-                LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);
 

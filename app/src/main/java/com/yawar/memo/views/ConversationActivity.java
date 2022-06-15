@@ -791,7 +791,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false, "null"));
         }
 
-        sendNotification(message, type);
+        serverApi.sendNotification(message, type,fcmToken,chat_id);
         Intent service = new Intent(this, SocketIOService.class);
         service.putExtra(SocketIOService.EXTRA_NEW_MESSAGE_PARAMTERS, chatMessage.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_MESSAGE);
@@ -1307,6 +1307,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 intent.putExtra("anthor_user_id", anthor_user_id);
                 intent.putExtra("user_name", userName);
                 intent.putExtra("isVideo", true);
+                intent.putExtra("fcm_token", fcmToken);
+
+
 
 
                 startActivity(intent);
@@ -1322,6 +1325,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 intent.putExtra("anthor_user_id", anthor_user_id);
                 intent.putExtra("user_name", userName);
                 intent.putExtra("isVideo", false);
+                intent.putExtra("fcm_token", fcmToken);
 
 
                 startActivity(intent);
@@ -3564,55 +3568,55 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     }
 
-    public void sendNotification(String message, String type) {
-
-        try {
-            RequestQueue queue = Volley.newRequestQueue(ConversationActivity.this);
-
-
-            System.out.println("fcmTokennn" + fcmToken + "message" + message);
-
-            JSONObject data = new JSONObject();
-            data.put("title", classSharedPreferences.getUser().getUserName());
-            data.put("body", message);
-            data.put("image", classSharedPreferences.getUser().getImage());
-            data.put("chat_id", chat_id);
-            data.put("type", type);
-
-            JSONObject notification_data = new JSONObject();
-            notification_data.put("data", data);
-            notification_data.put("to", fcmToken);
-            notification_data.put("content_available", true);
-            notification_data.put("priority", "high");
-
-
-            JsonObjectRequest request = new JsonObjectRequest(AllConstants.fcm_send_notification_url, notification_data, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    System.out.println("responeeeeeeeeeeeeeeeeeeeeeeeeee" + message + fcmToken);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("Content-Type", "application/json");
-                    headers.put("Authorization", AllConstants.api_key_fcm_token_header_value);
-                    return headers;
-                }
-            };
-
-//      queue.add(request);
-            myBase.addToRequestQueue(request);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    public void sendNotification(String message, String type) {
+//
+//        try {
+//            RequestQueue queue = Volley.newRequestQueue(ConversationActivity.this);
+//
+//
+//            System.out.println("fcmTokennn" + fcmToken + "message" + message);
+//
+//            JSONObject data = new JSONObject();
+//            data.put("title", classSharedPreferences.getUser().getUserName());
+//            data.put("body", message);
+//            data.put("image", classSharedPreferences.getUser().getImage());
+//            data.put("chat_id", chat_id);
+//            data.put("type", type);
+//
+//            JSONObject notification_data = new JSONObject();
+//            notification_data.put("data", data);
+//            notification_data.put("to", fcmToken);
+//            notification_data.put("content_available", true);
+//            notification_data.put("priority", "high");
+//
+//
+//            JsonObjectRequest request = new JsonObjectRequest(AllConstants.fcm_send_notification_url, notification_data, new Response.Listener<JSONObject>() {
+//                @Override
+//                public void onResponse(JSONObject response) {
+//                    System.out.println("responeeeeeeeeeeeeeeeeeeeeeeeeee" + message + fcmToken);
+//                }
+//            }, new Response.ErrorListener() {
+//                @Override
+//                public void onErrorResponse(VolleyError error) {
+//
+//                }
+//            }) {
+//                @Override
+//                public Map<String, String> getHeaders() {
+//                    Map<String, String> headers = new HashMap<>();
+//                    headers.put("Content-Type", "application/json");
+//                    headers.put("Authorization", AllConstants.api_key_fcm_token_header_value);
+//                    return headers;
+//                }
+//            };
+//
+////      queue.add(request);
+//            myBase.addToRequestQueue(request);
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     @Override
     public void PickiTonUriReturned() {

@@ -8,6 +8,8 @@ localVideo.onplaying = () => { localVideo.style.opacity = 1 }
 remoteVideo.onplaying = () => { remoteVideo.style.opacity = 1 }
 
 let peer
+let runningCall;
+let shouldFaceUser = true;
 function init(b) {
     peer = new Peer(undefined, {
         host: 'mypeerjs3002.herokuapp.com',
@@ -38,9 +40,9 @@ function listen(b) {
                     localStream.getVideoTracks()[0].enabled = false
                 }
 
-
-            call.answer(stream)
-            call.on('stream', (remoteStream) => {
+            runningCall = call
+            runningCall.answer(stream)
+            runningCall.on('stream', (remoteStream) => {
 //            var newRemoteStream=new MediaStream(remoteStream.getAudioTracks())
                 remoteVideo.srcObject = remoteStream
 
@@ -69,8 +71,8 @@ function startCall(otherUserId,b) {
         localStream.getVideoTracks()[0].enabled = false
     }
 
-        const call = peer.call(otherUserId, stream)
-        call.on('stream', (remoteStream) => {
+        runningCall = peer.call(otherUserId, stream)
+        runningCall.on('stream', (remoteStream) => {
 //                    var newRemoteStream=new MediaStream(localStream.getAudioTracks())
 
             remoteVideo.srcObject = remoteStream
@@ -98,4 +100,33 @@ function toggleAudio(b) {
     } else {
         localStream.getAudioTracks()[0].enabled = false
     }
-} 
+}
+async function toggleCamera() {
+
+   // const currentTrack = localStream.getVideoTracks()
+    let senders = runningCall.peerConnection.getSenders();
+    shouldFaceUser = !shouldFaceUser
+    navigator.getUserMedia({
+    audio: true,
+    video: {
+      facingMode: shouldFaceUser ? 'user' : 'environment'
+    }
+  }, (stream) => {
+//    Android.print()
+//   Android.messageHandlers.bridge.postMessage("senders[0] = "+ JSON.stringify(senders[0]))
+
+      localVideo.srcObject = stream
+      localStream = stream
+      localVideo.playsInline = true;
+      let video_track = stream.getVideoTracks()[0];
+//      let video_track = stream.getVideoTracks();
+
+      senders[1].replaceTrack(video_track);
+//            senders.replaceTrack(video_track);
+
+//      localStream.removeTrack(currentTrack[0])
+//      localStream.addTrack(stream.getVideoTracks()[0])
+    // peer.replaceTrack(localStream.getVideoTracks()[0])
+    })
+
+}

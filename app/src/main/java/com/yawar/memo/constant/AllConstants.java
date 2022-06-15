@@ -18,7 +18,7 @@ public interface AllConstants {
     int CONTACTS_REQUEST_CODE = 2000;
     int RECORDING_REQUEST_CODE = 3000;
     int Read_Write_Storage_CODE = 5000;
-    String ip="106";
+    String ip="109";
     public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
 //     public String base_url = "https://memoback.herokuapp.com/";
     String delet_from_archived_url = "http://192.168.0."+ip+":3000/deletearchive";

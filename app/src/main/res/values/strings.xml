@@ -174,7 +174,8 @@
     <string name="call_from">Call Come From</string>
     <string name="calling">Calling...</string>
     <string name="rining">...Rining</string>
-
+    <string name="reject">reject</string>
+    <string name="answer">answer</string>
 
 
 </resources>

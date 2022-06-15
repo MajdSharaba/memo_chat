@@ -1,4 +1,6 @@
 package com.yawar.memo.views;
+import static android.service.notification.Condition.SCHEME;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +11,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -80,6 +83,18 @@ public class IntroActivity extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+        goToNotificationSettings(this);
+
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
+            System.out.println("notification is not granted");
+            goToNotificationSettings(this);
+        }
+        else {
+            System.out.println("notification is  granted");
+
+        }
+//        goToNotificationSettings(this);
         classSharedPreferences = new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
 //        serverApi = new ServerApi(this);
@@ -91,7 +106,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
         permissions = new Permissions();
         System.out.println(classSharedPreferences.getFcmToken() + "classSharedPreferences.getFcmToken()");
 
-        if (classSharedPreferences.getFcmToken().equals("empty")) {
+//        if (classSharedPreferences.getFcmToken().equals("empty")) {
             System.out.println(classSharedPreferences.getFcmToken() + "classSharedPreferences.getFcmToken()");
             FirebaseMessaging.getInstance().getToken()
                     .addOnCompleteListener(new OnCompleteListener<String>() {
@@ -111,7 +126,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 //                            Toast.makeText(IntroActivity.this, token, Toast.LENGTH_SHORT).show();
                         }
                     });
-        }
+//        }
 
         introActModelView.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
             @Override
@@ -569,6 +584,34 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
 
     super.onDestroy();
+    }
+    public static void goToNotificationSettings(Context context) {
+//        Intent intent = new Intent();
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).
+//            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                    .putExtra(Settings.EXTRA_APP_PACKAGE, context.getPackageName());;
+//        } else if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+//            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+//            intent.putExtra("app_package", context.getPackageName());
+//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+//            intent.putExtra("app_package", context.getPackageName());
+//            intent.putExtra("app_uid", context.getApplicationInfo().uid);
+//        } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+//            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//            intent.addCategory(Intent.CATEGORY_DEFAULT);
+//            intent.setData(Uri.parse("package:" + context.getPackageName()));
+//        } else {
+//            return;
+//        }
+//        context.startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
+        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + context.getPackageName()));
+        intent.addCategory(Intent.CATEGORY_DEFAULT);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+
     }
 }
 

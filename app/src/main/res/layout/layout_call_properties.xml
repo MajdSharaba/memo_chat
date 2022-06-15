@@ -4,12 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/video_rl"
         android:layout_width="match_parent"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:layout_margin="5dp"
+        android:gravity="center"
+        android:orientation="horizontal"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
@@ -18,43 +20,55 @@
         <ImageButton
             android:id="@+id/image_video_call_layout"
             android:layout_gravity="start"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_margin="2dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
             android:background="@drawable/btx_custom"
             android:gravity="center_vertical"
-            android:paddingLeft="22dp"
-            android:paddingTop="27dp"
-            android:paddingRight="22dp"
-            android:paddingBottom="27dp"
-            android:src="@drawable/ic_video_call" />
+            android:padding="20dp"
+            android:src="@drawable/ic_baseline_videocam_off_24" />
 
         <ImageButton
             android:id="@+id/close_call_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_margin="2dp"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-
-            android:layout_marginStart="15dp"
             android:background="@drawable/biv_call"
             android:padding="15dp"
             android:src="@drawable/ic_call_stop" />
 
         <ImageButton
             android:id="@+id/image_audio_call_layout"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="2"
             android:layout_gravity="end"
-            android:layout_alignParentEnd="true"
-
+            android:layout_margin="2dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
             android:background="@drawable/btx_custom"
             android:gravity="center_vertical"
             android:padding="20dp"
             android:src="@drawable/ic_baseline_mic_off_24" />
+        <ImageButton
+            android:id="@+id/image_switch_camera"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_gravity="end"
+            android:layout_margin="2dp"
+
+            android:layout_height="wrap_content"
+            android:background="@drawable/btx_custom"
+            android:gravity="center_vertical"
+            android:padding="20dp"
+            android:src="@drawable/ic_switch_camera" />
 
 
-    </RelativeLayout>
+    </LinearLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+    <!--            android:paddingLeft="22dp"-->
+    <!--            android:paddingTop="27dp"-->
+    <!--            android:paddingRight="22dp"-->
+    <!--            android:paddingBottom="27dp"-->

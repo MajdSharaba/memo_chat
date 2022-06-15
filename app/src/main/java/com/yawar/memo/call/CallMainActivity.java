@@ -2,6 +2,7 @@ package com.yawar.memo.call;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.content.BroadcastReceiver;
@@ -9,8 +10,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -19,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +34,8 @@ import com.yawar.memo.service.SocketIOService;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.UUID;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class CallMainActivity extends AppCompatActivity {
     String username = "";
@@ -57,11 +64,13 @@ public class CallMainActivity extends AppCompatActivity {
     TextView incomingCallTxt;
     RelativeLayout callLayout;
     RelativeLayout inputLayout;
-    RelativeLayout layoutCallProperties;
+    LinearLayout layoutCallProperties;
     ImageButton imgBtnStopCallLp;
     ImageButton imgBtnOpenCameraCallLp;
     ImageButton imgBtnOpenAudioCallLp;
+    ImageButton imgBtnSwitchCamera;
     ClassSharedPreferences classSharedPreferences;
+    CircleImageView imageCallUser;
     String callString = null;
 
         private BroadcastReceiver reciveStopCalling = new BroadcastReceiver() {
@@ -71,19 +80,19 @@ public class CallMainActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String stopCallString = intent.getExtras().getString("get stopCalling");
+                    finish();
                     JSONObject message = null;
-                    try {
-                        message = new JSONObject(stopCallString);
-                        boolean isStop = message.getBoolean("close_call");
-                        if(isStop){
-                            finish();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+//                    try {
+////                        message = new JSONObject(stopCallString);
+////                        boolean isStop = message.getBoolean("close_call");
+////                        if(isStop){
+//                            finish();
+////                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
 
                     ///////////
-
 
                 }
             });
@@ -107,6 +116,7 @@ public class CallMainActivity extends AppCompatActivity {
                         if(videoSetting){
                             if(webView.getVisibility()==View.GONE){
                                 webView.setVisibility(View.VISIBLE);
+                                imageCallUser.setVisibility(View.GONE);
                             }
 
                         }
@@ -130,8 +140,6 @@ public class CallMainActivity extends AppCompatActivity {
         try {
             message = new JSONObject(object);
             message.put("peerId", peer_id);
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -166,9 +174,9 @@ public class CallMainActivity extends AppCompatActivity {
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
         try {
-            data.put("close_call", true);
-            data.put("rcv_id",anotherUserId );
-            data.put("snd_id", classSharedPreferences.getUser().getUserId());
+//            data.put("close_call", true);
+            data.put("id",anotherUserId );
+//            data.put("snd_id", classSharedPreferences.getUser().getUserId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -182,10 +190,14 @@ public class CallMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        showWhenLockedAndTurnScreenOn();
         setContentView(R.layout.activity_call_main);
         if (!isPermissionGranted()) {
             askPermissions();
         }
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancel(0);
+
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveStopCalling, new IntentFilter(ON_STOP_CALLING_REQUEST));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveSettingsCalling, new IntentFilter(ON_RECIVED_SETTINGS_CALL));
 
@@ -199,40 +211,47 @@ public class CallMainActivity extends AppCompatActivity {
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
         imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);
         imgBtnOpenAudioCallLp = findViewById(R.id.image_audio_call_layout);
+        imgBtnSwitchCamera = findViewById(R.id.image_switch_camera);
+        imageCallUser = findViewById(R.id.image_user_calling);
 
 //        inputLayout = findViewById(R.id.audio_only_Layout);
         layoutCallProperties = findViewById(R.id.video_rl);
+        layoutCallProperties.setVisibility(View.VISIBLE);
+
 //        callBtn = findViewById(R.id.callBtn);
         Bundle bundle = getIntent().getExtras();
 
         callString = bundle.getString("callRequest", "code");
+        System.out.println("call string is that"+callString);
+        setupWebView();
 
         JSONObject message = null;
         JSONObject userObject;
         JSONObject typeObject;
 
-        try {
-            message = new JSONObject(callString);
-            userObject = new JSONObject(message.getString("user"));
-            typeObject = new JSONObject(message.getString("type"));
-            isVideo = typeObject.getBoolean("video");
-            System.out.println("this is user object"+userObject.toString()+"lll"+isVideo);
-            username = userObject.getString("name");
-            anotherUserId = message.getString("snd_id");
-
-            if(isVideo){
-                webView.setVisibility(View.VISIBLE);
-            }
-            else {
-                webView.setVisibility(View.GONE);
-
-            }
-
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            message = new JSONObject(callString);
+//            userObject = new JSONObject(message.getString("user"));
+//            typeObject = new JSONObject(message.getString("type"));
+//            isVideo = typeObject.getBoolean("video");
+//            System.out.println("this is user object"+userObject.toString()+"lll"+isVideo);
+//            username = userObject.getString("name");
+//            anotherUserId = message.getString("snd_id");
+//
+//            if(isVideo){
+//                webView.setVisibility(View.VISIBLE);
+//            }
+//            else {
+//                webView.setVisibility(View.GONE);
+//
+//
+//            }
+//
+//
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
         incomingCallTxt.setText(getResources().getString(R.string.call_from)+" "+username);
 
 //        callBtn.setOnClickListener(new View.OnClickListener() {
@@ -277,9 +296,16 @@ public class CallMainActivity extends AppCompatActivity {
                 if(callString!=null){
                     System.out.println("call Request"+callString);
                     if(peerId!=null){
-                    sendPeerId(callString,peerId);
+//                    sendPeerId(callString,peerId);
                     callLayout.setVisibility(View.GONE);
                     layoutCallProperties.setVisibility(View.VISIBLE);
+                    if(isVideo){
+                        imageCallUser.setVisibility(View.GONE);
+                    }
+                    else{
+                        imageCallUser.setVisibility(View.GONE);
+
+                    }
 
 
 
@@ -297,7 +323,7 @@ public class CallMainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 callLayout.setVisibility(View.GONE);
 //                closeCall();
-                sendPeerId(callString,"null");
+//                sendPeerId(callString,"null");
 
                 finish();
 
@@ -323,12 +349,20 @@ public class CallMainActivity extends AppCompatActivity {
         imgBtnOpenAudioCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                closeOpenAudio();
+
+            }
+        });
+        imgBtnSwitchCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callJavascriptFunction("javascript:toggleCamera()");
 
             }
         });
         //////////////////////////////
 
-     setupWebView();
+//     setupWebView();
 
     }
 
@@ -461,8 +495,10 @@ public class CallMainActivity extends AppCompatActivity {
         if (caller == null) return;
 
 //                callLayout.visibility = View.VISIBLE
-        callLayout.setVisibility(View.VISIBLE);
+//        callLayout.setVisibility(View.VISIBLE);
         incomingCallTxt.setText("$caller is calling...");
+        layoutCallProperties.setVisibility(View.VISIBLE);
+
     }
 
 
@@ -502,6 +538,14 @@ private String getUniqueID() {
     public void onPeerConnected( String string) {
         System.out.println("the key is"+string);
         peerId= string;
+        if(string!=null){
+            Log.i("FirebaseMessageReceiver", "sendPeerId(callString,peerId); "+callString);
+        sendPeerId(callString,peerId);
+        layoutCallProperties.setVisibility(View.VISIBLE);}
+        else{
+            callJavascriptFunction("javascript:init(\"" + isVideo + "\")");
+
+        }
 //        isPeerConnected = true;
     }
 
@@ -543,12 +587,49 @@ private String getUniqueID() {
         if(webView.getVisibility()==View.GONE){
             webView.setVisibility(View.VISIBLE);
             layoutCallProperties.setVisibility(View.VISIBLE);
+            imageCallUser.setVisibility(View.GONE);
+
             sendSettingsCall(isVideo,true);
 
         }
         callJavascriptFunction("javascript:toggleVideo(\"" + isVideo + "\")");
+        if (isVideo) {
+            imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
+        } else {
+            imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_24);
+        }
+
 
 //        toggleVideoBtn.setImageResource(if (isVideo) R.drawable.ic_baseline_videocam_24 else R.drawable.ic_baseline_videocam_off_24 )
 
+    }
+    public void closeOpenAudio(){
+        isAudio = !isAudio;
+        callJavascriptFunction("javascript:toggleAudio(\"" + isAudio + "\")");
+//        callJavascriptFunction("javascript:toggleAudio(\"${isAudio}\")");
+        if (isAudio) {
+            imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_off_24);
+        } else {
+            imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
+        }
+
+    }
+    private void showWhenLockedAndTurnScreenOn() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true);
+            setTurnScreenOn(true);
+        } else {
+//            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
+                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN |
+                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+//            window.addFlags(
+//                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+//                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+//            )
+        }
     }
 }

@@ -612,7 +612,7 @@ public class SettingsFragment extends Fragment {
                final byte[] inputData = getBytes(iStream);
 
 
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.base_url+"upadteImageProfile",
+            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.base_node_url+"upadteImageProfile",
                     new Response.Listener<NetworkResponse>() {
                         @Override
                         public void onResponse(NetworkResponse response) {

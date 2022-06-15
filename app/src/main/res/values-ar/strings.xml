@@ -214,6 +214,8 @@
     <string name="call_from">مكالمة واردة من</string>
     <string name="calling">يتصل...</string>
     <string name="rining">يرن...</string>
+    <string name="reject">رفض</string>
+    <string name="answer">رد</string>
 
 
 

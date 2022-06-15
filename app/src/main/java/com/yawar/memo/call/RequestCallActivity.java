@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.service.SocketIOService;
@@ -37,12 +38,14 @@ import java.util.UUID;
 public class RequestCallActivity extends AppCompatActivity {
 
     Boolean isPeerConnected = false;
+    ServerApi serverApi;
     private int requestcode = 1;
     public static final String ON_STOP_CALLING_REQUEST = "RequestCallActivity.ON_STOP_CALLING_REQUEST";
     public static final String ON_RINING_REQUEST = "RequestCallActivity.ON_RINING_REQUEST";
 
     TextView userNameTv;
     UserModel userModel;
+    String fcm_token;
 
 
 //    var firebaseRef = Firebase.database.getReference("users")
@@ -52,7 +55,7 @@ public class RequestCallActivity extends AppCompatActivity {
     Button callBtn;
     String uniqueId = "";
     ImageView toggleAudioBtn;
-    RelativeLayout layoutCallProperties;
+    LinearLayout layoutCallProperties;
     ImageButton acceptBtn;
     ImageButton openCloseIb;
     ImageView rejectBtn;
@@ -61,6 +64,8 @@ public class RequestCallActivity extends AppCompatActivity {
     ImageButton imgBtnStopCallLp;
     ImageButton imgBtnOpenCameraCallLp;
     ImageButton imgBtnOpenAudioCallLp;
+    ImageButton imgBtnSwitchCamera;
+
 
 
 
@@ -159,8 +164,10 @@ public class RequestCallActivity extends AppCompatActivity {
                     JSONObject message = null;
                     ///////////
                     try {
+
                         message = new JSONObject(callString);
-                        PeerIdRecived = message.getString("peerId");
+                        if(message.getString("peerId")!=null){
+                        PeerIdRecived = message.getString("peerId");}
 
 
                     } catch (JSONException e) {
@@ -181,7 +188,7 @@ public class RequestCallActivity extends AppCompatActivity {
                         }
                     }
                     else {
-                        finish();
+//                        finish();
                     }
                 }
             });
@@ -195,15 +202,17 @@ public class RequestCallActivity extends AppCompatActivity {
                 public void run() {
                     String stopCallString = intent.getExtras().getString("get stopCalling");
                     JSONObject message = null;
-                    try {
-                        message = new JSONObject(stopCallString);
-                        boolean isStop = message.getBoolean("close_call");
-                        if(isStop){
-                            finish();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    finish();
+
+//                    try {
+//                        message = new JSONObject(stopCallString);
+//                        boolean isStop = message.getBoolean("close_call");
+////                        if(isStop){
+//                            finish();
+////                        }
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
 
                     ///////////
 
@@ -218,6 +227,11 @@ public class RequestCallActivity extends AppCompatActivity {
         JSONObject data = new JSONObject();
         JSONObject type = new JSONObject();
         JSONObject userObject = new JSONObject();
+        System.out.println("this is notification"+userModel.getUserName()+fcm_token+anthor_user_id);
+//        serverApi.sendNotification(userModel.getUserName(), "call",fcm_token,my_id);
+
+        ////
+
         try {
             type.put("video", isVideo);
             type.put("audio", true);
@@ -231,6 +245,7 @@ public class RequestCallActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+//        serverApi.sendNotification(data.toString(), "call",fcm_token,my_id);
         System.out.println("call");
         service.putExtra(SocketIOService.EXTRA_CALL_PARAMTERS, data.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_CALLING);
@@ -243,9 +258,9 @@ public class RequestCallActivity extends AppCompatActivity {
         JSONObject type = new JSONObject();
         JSONObject userObject = new JSONObject();
         try {
-            data.put("close_call", true);
-            data.put("rcv_id", anthor_user_id);
-            data.put("snd_id", my_id);
+//            data.put("close_call", true);
+            data.put("id", anthor_user_id);
+//            data.put("snd_id", my_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -293,8 +308,10 @@ public class RequestCallActivity extends AppCompatActivity {
 
 
         Bundle bundle = getIntent().getExtras();
+        serverApi = new ServerApi(this);
         anthor_user_id = bundle.getString("anthor_user_id", null);
         userName = bundle.getString("user_name", null);
+        fcm_token = bundle.getString("fcm_token", null);
         isVideo = bundle.getBoolean("isVideo", true);
         classSharedPreferences = new ClassSharedPreferences(this);
         my_id = classSharedPreferences.getUser().getUserId();
@@ -322,6 +339,7 @@ public class RequestCallActivity extends AppCompatActivity {
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
         imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);
         imgBtnOpenAudioCallLp = findViewById(R.id.image_audio_call_layout);
+        imgBtnSwitchCamera = findViewById(R.id.image_switch_camera);
 
 
         btnImageOpenCamera.setOnClickListener(new View.OnClickListener() {
@@ -369,6 +387,15 @@ public class RequestCallActivity extends AppCompatActivity {
         imgBtnOpenAudioCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                closeOpenAudio();
+
+            }
+        });
+        imgBtnSwitchCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                callJavascriptFunction("javascript:toggleCamera()");
+
 
             }
         });
@@ -379,20 +406,7 @@ public class RequestCallActivity extends AppCompatActivity {
         setupWebView();
     }
 
-    public void closeOpenVideo() {
-        isVideo = !isVideo;
-        sendSettingsCall(isVideo,true);
-        if(webView.getVisibility()==View.GONE){
-            webView.setVisibility(View.VISIBLE);
-            callLayout.setVisibility(View.GONE);
-            layoutCallProperties.setVisibility(View.VISIBLE);
 
-        }
-        callJavascriptFunction("javascript:toggleVideo(\"" + isVideo + "\")");
-
-//        toggleVideoBtn.setImageResource(if (isVideo) R.drawable.ic_baseline_videocam_24 else R.drawable.ic_baseline_videocam_off_24 )
-
-    }
 
 
     private void sendCallRequest() {
@@ -525,5 +539,36 @@ public class RequestCallActivity extends AppCompatActivity {
         finish();
 
         super.onBackPressed();
+    }
+    public void closeOpenVideo() {
+        isVideo = !isVideo;
+        sendSettingsCall(isVideo,true);
+        if(webView.getVisibility()==View.GONE){
+            webView.setVisibility(View.VISIBLE);
+            callLayout.setVisibility(View.GONE);
+            layoutCallProperties.setVisibility(View.VISIBLE);
+
+        }
+
+        callJavascriptFunction("javascript:toggleVideo(\"" + isVideo + "\")");
+        if (isVideo) {
+            imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
+        } else {
+            imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_24);
+        }
+
+
+//        toggleVideoBtn.setImageResource(if (isVideo) R.drawable.ic_baseline_videocam_24 else R.drawable.ic_baseline_videocam_off_24 )
+
+    }
+   public void closeOpenAudio(){
+       isAudio = !isAudio;
+       callJavascriptFunction("javascript:toggleAudio(\"" + isAudio + "\")");
+                if (isAudio) {
+                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_off_24);
+                } else {
+                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
+                }
+
     }
 }

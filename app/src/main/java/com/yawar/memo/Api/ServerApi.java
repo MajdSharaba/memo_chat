@@ -24,6 +24,7 @@ import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
+import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.views.DashBord;
 import com.yawar.memo.views.IntroActivity;
 import com.yawar.memo.views.RegisterActivity;
@@ -645,7 +646,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.106:3000/addtoblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.104:3000/addtoblock", new Response.Listener<String>() {
 
 
 
@@ -732,7 +733,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.106:3000/deleteblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.104:3000/deleteblock", new Response.Listener<String>() {
 
 
 
@@ -872,7 +873,78 @@ public class ServerApi {
         // a json object request.
         queue.add(request);
     }
+    public void sendNotification(String message, String type,String fcmToken, String chat_id) {
+        classSharedPreferences = new ClassSharedPreferences(context);
 
+
+        try {
+//            RequestQueue queue = Volley.newRequestQueue(ConversationActivity.this);
+
+
+
+            JSONObject data = new JSONObject();
+            data.put("title", classSharedPreferences.getUser().getUserName());
+            data.put("body", message);
+            data.put("image", classSharedPreferences.getUser().getImage());
+            data.put("chat_id", chat_id);
+            data.put("type", type);
+
+            JSONObject notification_data = new JSONObject();
+            notification_data.put("data", data);
+            notification_data.put("to", fcmToken);
+            notification_data.put("content_available", true);
+            notification_data.put("priority", "high");
+
+
+            JsonObjectRequest request = new JsonObjectRequest(AllConstants.fcm_send_notification_url, notification_data, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    System.out.println("responeeeeeeeeeeeeeeeeeeeeeeeeee" + message + fcmToken);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    headers.put("Authorization", AllConstants.api_key_fcm_token_header_value);
+                    return headers;
+                }
+            };
+
+//      queue.add(request);
+            myBase.addToRequestQueue(request);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void sendPeerId(String object,String peer_id) {
+        System.out.println(object + "this is object ");
+        JSONObject message = null;
+        /////////
+
+
+        try {
+            message = new JSONObject(object);
+            message.put("peerId", peer_id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(message.toString() + "peeeeeeeeeeeId object");
+
+
+        Intent service = new Intent(context, SocketIOService.class);
+
+        service.putExtra(SocketIOService.EXTRA_SEND_PEER_ID_PARAMTERS, message.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_PEER_ID);
+       context.startService(service);
+
+    }
 
 
 }
