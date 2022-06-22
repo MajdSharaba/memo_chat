@@ -11,7 +11,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -19,20 +18,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ChatRoomFragment;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.views.ConversationActivity;
-import com.yawar.memo.views.UserDetailsActivity;
 import com.yawar.memo.views.UserInformationActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
         import java.util.List;
-import java.util.Locale;
 
 public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_Holder> implements Filterable {
 //    final private ListItemClickListener mOnClickListener;

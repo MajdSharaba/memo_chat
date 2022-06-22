@@ -1,43 +1,41 @@
 package com.yawar.memo.views;
-import static android.service.notification.Condition.SCHEME;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
 import android.Manifest;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.telecom.PhoneAccount;
+import android.telecom.PhoneAccountHandle;
+import android.telecom.TelecomManager;
+import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
-import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.darkhorse.videocalltest.ConnService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.messaging.FirebaseMessaging;
-import com.yawar.memo.Api.ClassSharedPreferences;
-import com.yawar.memo.Api.ServerApi;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
@@ -47,16 +45,13 @@ import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.Globale;
 import com.yawar.memo.permissions.Permissions;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -83,7 +78,9 @@ public class IntroActivity extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
-        goToNotificationSettings(this);
+//        askCallPermission();
+
+//        goToNotificationSettings(this);
 
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
@@ -95,11 +92,13 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
         }
 //        goToNotificationSettings(this);
+//        askCallPermission();
+
         classSharedPreferences = new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
 //        serverApi = new ServerApi(this);
        myBase = BaseApp.getInstance();
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
         chatRoomRepo=myBase.getChatRoomRepo();
         blockUserRepo = myBase.getBlockUserRepo();
         introActModelView = new ViewModelProvider(this).get(IntroActModelView.class);
@@ -613,40 +612,34 @@ public class IntroActivity extends AppCompatActivity implements Observer {
         context.startActivity(intent);
 
     }
+    public void askCallPermission() {
+        System.out.println("call notification");
+        TelecomManager telecomManager;
+        TelephonyManager telephonyManager;
+        PhoneAccountHandle phoneAccountHandle;
+
+        telecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
+        telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+
+        ComponentName componentName = new ComponentName(this, ConnService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            phoneAccountHandle = new PhoneAccountHandle(componentName, "com.darkhorse.videocalltest");
+
+            PhoneAccount phoneAccount = PhoneAccount.builder(phoneAccountHandle, "com.darkhorse.videocalltest").setCapabilities(
+                    PhoneAccount.CAPABILITY_CONNECTION_MANAGER
+            ).setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER).build();
+            try {
+                telecomManager.registerPhoneAccount(phoneAccount);
+                Intent intent = new Intent();
+                intent.setComponent(new ComponentName(
+                        "com.android.server.telecom",
+                        "com.android.server.telecom.settings.EnableAccountPreferenceActivity"
+                ));
+                startActivity(intent);
+
+            } catch (Exception e) {
+                Log.e("main activity register", e.toString());
+            }
+        }
+    }
 }
-
-//    public class GetDataAsync extends AsyncTask<Void, Void, Void> {
-//        @Override
-//        protected Void doInBackground(Void... params) {
-//
-//            isResponeSucces = serverApi.getChatRoom();
-////            System.out.println(isResponeSucces+""+serverApi.getChatRoom()+"majdddddddddddd");
-//            return  null;
-//        }
-//
-//        @Override
-//        protected void onPreExecute() {
-//            progressDialog = new ProgressDialog(IntroActivity.this);
-//        progressDialog.setMessage("Loading...");
-//        progressDialog.show();
-//            super.onPreExecute();
-//        }
-//
-//
-//        @Override
-//        protected void onPostExecute(Void aVoid) {
-////            if(isResponeSucces){
-//            progressDialog.dismiss();
-////            Intent intent = new Intent(IntroActivity.this, DashBord.class);
-////            startActivity(intent);
-////            IntroActivity.this.finish();
-//            super.onPostExecute(aVoid);
-//        }
-//    }
-//
-//
-//    }
-
-
-
-

@@ -10,10 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -34,15 +31,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
-import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.utils.FileUtil;
 import com.yawar.memo.utils.VolleyMultipartRequest;
 
 import org.json.JSONArray;
@@ -55,11 +49,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 
 public class RegisterActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
@@ -449,7 +441,7 @@ private void uploadImage(final String imageName, Uri pdfFile) {
           inputData = getBytes(iStream);}
 
 //      String url = AllConstants.base_url+"uploadImgProfile";
-        String url = "http://192.168.0.106:3000/uploadImgProfile";
+        String url = "http://192.168.0.109:3000/uploadImgProfile";
 
 //              "http://192.168.1.7:3000/uploadImgProfile";
 //        AllConstants.base_url+"uploadImgProfile"

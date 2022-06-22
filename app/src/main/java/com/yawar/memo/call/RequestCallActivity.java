@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.PermissionRequest;
@@ -25,7 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
@@ -38,6 +39,7 @@ import java.util.UUID;
 public class RequestCallActivity extends AppCompatActivity {
 
     Boolean isPeerConnected = false;
+    boolean isRining = false;
     ServerApi serverApi;
     private int requestcode = 1;
     public static final String ON_STOP_CALLING_REQUEST = "RequestCallActivity.ON_STOP_CALLING_REQUEST";
@@ -46,6 +48,7 @@ public class RequestCallActivity extends AppCompatActivity {
     TextView userNameTv;
     UserModel userModel;
     String fcm_token;
+    String TAG = "RequestCallActivity";
 
 
 //    var firebaseRef = Firebase.database.getReference("users")
@@ -87,7 +90,7 @@ public class RequestCallActivity extends AppCompatActivity {
     String anthor_user_id;
     String userName;
     String my_id;
-    String PeerIdRecived = "null";
+    String PeerIdRecived = "no connect";
 
 
 
@@ -97,11 +100,11 @@ public class RequestCallActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    String stopCallString = intent.getExtras().getString("get rining");
+                    String reciveCallString = intent.getExtras().getString("get rining");
                     JSONObject message = null;
                     try {
-                        message = new JSONObject(stopCallString);
-                        boolean isRining = message.getBoolean("call");
+                        message = new JSONObject(reciveCallString);
+                         isRining = message.getBoolean("state");
                         if(isRining){
                             callStatusTV.setText(getResources().getString(R.string.rining));
                         }
@@ -160,6 +163,7 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String callString = intent.getExtras().getString("fetchPeer");
+                    isRining = false;
                     System.out.println("FETCH_PEER_ID" + callString);
                     JSONObject message = null;
                     ///////////
@@ -174,7 +178,13 @@ public class RequestCallActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     System.out.println(PeerIdRecived + "reciveeeePeeer");
-                    if (!PeerIdRecived.equals("null")) {
+                    if(PeerIdRecived.equals("null")){
+                        finish();
+                    }
+                    else if(PeerIdRecived.equals("no connect")){
+                        Log.i(TAG, "run: not connected");
+                    }
+                    else {
                         callStatusTV.setText("تم الرد");
                         callJavascriptFunction("javascript:startCall(\"" + PeerIdRecived + "\"," + "\"" + isVideo + "\")");
                         if (isVideo) {
@@ -187,9 +197,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
                         }
                     }
-                    else {
-//                        finish();
-                    }
+
                 }
             });
         }
@@ -201,6 +209,7 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String stopCallString = intent.getExtras().getString("get stopCalling");
+                    System.out.println("stopCallString");
                     JSONObject message = null;
                     finish();
 
@@ -227,7 +236,6 @@ public class RequestCallActivity extends AppCompatActivity {
         JSONObject data = new JSONObject();
         JSONObject type = new JSONObject();
         JSONObject userObject = new JSONObject();
-        System.out.println("this is notification"+userModel.getUserName()+fcm_token+anthor_user_id);
 //        serverApi.sendNotification(userModel.getUserName(), "call",fcm_token,my_id);
 
         ////
@@ -238,7 +246,8 @@ public class RequestCallActivity extends AppCompatActivity {
             userObject.put("name", userModel.getUserName());
             userObject.put("image_profile", userModel.getImage());
             data.put("rcv_id", anthor_user_id);
-            data.put("user", userObject.toString());
+            data.put("typeCall", "call");
+            data.put("user", userObject);
             data.put("type", type);
             data.put("message", "");
             data.put("snd_id", my_id);
@@ -287,6 +296,33 @@ public class RequestCallActivity extends AppCompatActivity {
         startService(service);
 
     }
+    private void SendMissingCall() {
+        Intent service = new Intent(this, SocketIOService.class);
+        JSONObject data = new JSONObject();
+        JSONObject type = new JSONObject();
+        JSONObject userObject = new JSONObject();
+//        serverApi.sendNotification(userModel.getUserName(), "call",fcm_token,my_id);
+
+        ////
+
+        try {
+
+            userObject.put("name", userModel.getUserName());
+            userObject.put("image_profile", userModel.getImage());
+            data.put("rcv_id", anthor_user_id);
+            data.put("typeCall", "missingCall");
+            data.put("user", userObject);
+            data.put("snd_id", my_id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+//        serverApi.sendNotification(data.toString(), "call",fcm_token,my_id);
+        System.out.println("call");
+        service.putExtra(SocketIOService.EXTRA_CALL_PARAMTERS, data.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_CALLING);
+        startService(service);
+
+    }
 
 
 
@@ -330,10 +366,13 @@ public class RequestCallActivity extends AppCompatActivity {
         }
 
         callLayout = findViewById(R.id.audio_only_Layout);
+
         userNameTv = findViewById(R.id.user_name);
         userNameTv.setText(userName);
         layoutCallProperties = findViewById(R.id.video_rl);
         callStatusTV = findViewById(R.id.txt_view_call_status);
+        callStatusTV.setText(getResources().getString(R.string.calling));
+
 //        openCloseIb = findViewById(R.id.image_video_call_layout);
         btnImageOpenCamera = findViewById(R.id.open_close_video);
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
@@ -361,8 +400,13 @@ public class RequestCallActivity extends AppCompatActivity {
         imageStopCalling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                closeCall();
-                finish();
+//                closeCall();
+                if(isRining){
+                    SendMissingCall();
+                    finish();
+                }
+                else {
+                finish();}
             }
         });
 

@@ -2,7 +2,6 @@ package com.yawar.memo.Api;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -10,11 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
@@ -25,22 +19,16 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.yawar.memo.R;
-import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.repositry.AuthRepo;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.views.ConversationActivity;
-import com.yawar.memo.views.RegisterActivity;
 import com.yawar.memo.views.VerificationActivity;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.TimeUnit;
 
 import static android.content.Context.MODE_PRIVATE;
-
-import org.json.JSONObject;
 
 /////this class for Api with firebase
 public class AuthApi implements Observer {

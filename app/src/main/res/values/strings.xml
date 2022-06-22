@@ -176,6 +176,9 @@
     <string name="rining">...Rining</string>
     <string name="reject">reject</string>
     <string name="answer">answer</string>
+    <string name="missing_call">Missing Call</string>
+
+
 
 
 </resources>

@@ -9,6 +9,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.yawar.memo.call.CallMainActivity;
+import com.yawar.memo.call.CallNotificationActivity;
+import com.yawar.memo.call.RequestCallActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,7 +25,7 @@ public class NotificationReceiver extends BroadcastReceiver {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         Bundle bundle = intent.getExtras();
         String callString = bundle.getString("callRequest", "code");
-        Log.d("Here", "I am here+"+callString);
+        String id = bundle.getString("id","0");
 
         JSONObject message = null;
             /////////
@@ -32,19 +37,22 @@ public class NotificationReceiver extends BroadcastReceiver {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            System.out.println(message.toString() + "peeeeeeeeeeeId object");
 
-
+/////////////// for send peer Id
             Intent service = new Intent(context, SocketIOService.class);
 
             service.putExtra(SocketIOService.EXTRA_SEND_PEER_ID_PARAMTERS, message.toString());
             service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_PEER_ID);
-        context.startService(service);
+            context.startService(service);
+
+//////////////for cancel full Screen intent
+        Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
+
+        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeIntent);
 
 
 
-
-        notificationManager.cancel(0);
+        notificationManager.cancel(Integer.parseInt(id));
 
 
     }

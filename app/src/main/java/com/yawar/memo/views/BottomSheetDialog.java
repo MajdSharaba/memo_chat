@@ -60,7 +60,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment implements Obse
 //        postList.add(new UserSeen("sh"));
 
         myBase = (BaseApp) getActivity().getApplication();
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
         postList =  myBase.getStoriesObserve().getMyStatus().getStatusList().get(counter).getUserSeens();
 
         System.out.println(postList.size()+"postList");

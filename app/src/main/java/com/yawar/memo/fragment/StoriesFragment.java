@@ -48,7 +48,7 @@ package com.yawar.memo.fragment;
 //import com.gowtham.library.utils.LogMessage;
 //import com.gowtham.library.utils.TrimType;
 //import com.gowtham.library.utils.TrimVideo;
-//import com.yawar.memo.Api.ClassSharedPreferences;
+//import com.yawar.memo.sessionManger.ClassSharedPreferences;
 //import com.yawar.memo.R;
 //import com.yawar.memo.StoriesActivity;
 //import com.yawar.memo.adapter.StatusAdapter;

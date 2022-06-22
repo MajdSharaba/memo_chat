@@ -28,7 +28,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.videocallapp.JavascriptInterface;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.service.SocketIOService;
 import org.json.JSONException;
@@ -42,6 +42,7 @@ public class CallMainActivity extends AppCompatActivity {
     String friendsUsername = "";
     String peerId = null;
     Boolean isPeerConnected = false;
+    String id ="0";
     private int requestcode = 1;
     public static final String ON_CALL_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
     public static final String ON_STOP_CALLING_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
@@ -175,12 +176,11 @@ public class CallMainActivity extends AppCompatActivity {
         JSONObject data = new JSONObject();
         try {
 //            data.put("close_call", true);
-            data.put("id",anotherUserId );
-//            data.put("snd_id", classSharedPreferences.getUser().getUserId());
+            data.put("id",anotherUserId );//            data.put("snd_id", classSharedPreferences.getUser().getUserId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println("call");
+        System.out.println("close Call");
         service.putExtra(SocketIOService.EXTRA_STOP_CALL_PARAMTERS, data.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_STOP_CALLING);
         startService(service);
@@ -195,12 +195,13 @@ public class CallMainActivity extends AppCompatActivity {
         if (!isPermissionGranted()) {
             askPermissions();
         }
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancel(0);
+
 
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveStopCalling, new IntentFilter(ON_STOP_CALLING_REQUEST));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveSettingsCalling, new IntentFilter(ON_RECIVED_SETTINGS_CALL));
+        Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
 
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
 
         classSharedPreferences = new ClassSharedPreferences(this);
         webView = findViewById(R.id.webView);
@@ -220,7 +221,7 @@ public class CallMainActivity extends AppCompatActivity {
 
 //        callBtn = findViewById(R.id.callBtn);
         Bundle bundle = getIntent().getExtras();
-
+         id = bundle.getString("id", "0");
         callString = bundle.getString("callRequest", "code");
         System.out.println("call string is that"+callString);
         setupWebView();
@@ -229,29 +230,31 @@ public class CallMainActivity extends AppCompatActivity {
         JSONObject userObject;
         JSONObject typeObject;
 
-//        try {
-//            message = new JSONObject(callString);
-//            userObject = new JSONObject(message.getString("user"));
-//            typeObject = new JSONObject(message.getString("type"));
-//            isVideo = typeObject.getBoolean("video");
-//            System.out.println("this is user object"+userObject.toString()+"lll"+isVideo);
-//            username = userObject.getString("name");
-//            anotherUserId = message.getString("snd_id");
-//
+        try {
+            message = new JSONObject(callString);
+            userObject = new JSONObject(message.getString("user"));
+            typeObject = new JSONObject(message.getString("type"));
+            isVideo = typeObject.getBoolean("video");
+            System.out.println("this is user object"+userObject.toString()+"lll"+isVideo);
+            username = userObject.getString("name");
+            anotherUserId = message.getString("snd_id");
+
 //            if(isVideo){
 //                webView.setVisibility(View.VISIBLE);
 //            }
 //            else {
 //                webView.setVisibility(View.GONE);
-//
-//
+
+
 //            }
-//
-//
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancel(Integer.parseInt(id));
         incomingCallTxt.setText(getResources().getString(R.string.call_from)+" "+username);
 
 //        callBtn.setOnClickListener(new View.OnClickListener() {
@@ -373,46 +376,12 @@ public class CallMainActivity extends AppCompatActivity {
             return;
         }
 
-//        firebaseRef.child(friendsUsername).child("incoming").setValue(username)
-//        firebaseRef.child(friendsUsername).child("isAvailable").addValueEventListener(object: ValueEventListener {
-//            override fun onCancelled(error: DatabaseError) {}
-//
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//
-//                if (snapshot.value.toString() == "true") {
-//                    listenForConnId()
-//                }
-//
-//            }
-
-//        })
 
     }
 
-    //    private void setupWebView() {
-//
-////        webView.webChromeClient = object: WebChromeClient() {
-//        webView.setWebChromeClient(new WebChromeClient(){
-//            @Override
-//            public void onPermissionRequest(final PermissionRequest request) {
-//                request.grant(request.getResources());
-//
-//            }
-//
-////            override fun onPermissionRequest(request: PermissionRequest?) {
-////                request?.grant(request.resources)
-////            }
-//        });
-//
-//        webView.getSettings().setJavaScriptEnabled(true);
-//        webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-////        webView.addJavascriptInterface(new JavascriptInterface(CallMainActivity.this), "Android");
-//
-//        loadVideoCall();
-//    }
+
     private void setupWebView() {
 
-//        webView.webChromeClient = object: WebChromeClient() {
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onPermissionRequest(final PermissionRequest request) {
@@ -432,35 +401,13 @@ public class CallMainActivity extends AppCompatActivity {
         loadVideoCall();
     }
 
-    //    private void loadVideoCall() {
-//        String filePath = "file:android_asset/call.html";
-//        webView.loadUrl(filePath);
-//
-////        webView.webViewClient = object: WebViewClient() {
-////            override fun onPageFinished(view: WebView?, url: String?) {
-////                initializePeer()
-////            }
-////        }
-//        webView.setWebViewClient(new WebViewClient(){
-//
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                super.onPageFinished(view, url);
-//                                initializePeer();
-//
-//            }
-//        });
-//    }
+
     private void loadVideoCall() {
         String filePath = "file:android_asset/call.html";
         System.out.println("load videooooooooooooooo" + filePath);
         webView.loadUrl(filePath);
 
-//        webView.webViewClient = object: WebViewClient() {
-//            override fun onPageFinished(view: WebView?, url: String?) {
-//                initializePeer()
-//            }
-//        }
+
         webView.setWebViewClient(new WebViewClient() {
 
             @Override
@@ -476,18 +423,10 @@ public class CallMainActivity extends AppCompatActivity {
     private void initializePeer() {
 
         String uniqueId = getUniqueID();
-//        System.out.println(uniqueId+"uniqueId");
+
 
         callJavascriptFunction("javascript:init(\"" + isVideo + "\")");
-//        firebaseRef.child(username).child("incoming").addValueEventListener(object: ValueEventListener {
-//            override fun onCancelled(error: DatabaseError) {}
-//
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                println("value is "+snapshot.value)
-//                onCallRequest(snapshot.value as? String)
-//            }
 
-//        })
 
     }
 
@@ -505,25 +444,7 @@ public class CallMainActivity extends AppCompatActivity {
 
 
 
-    private void switchToControls() {
-        inputLayout.setVisibility(View.GONE);
-        layoutCallProperties.setVisibility(View.VISIBLE);
-    }
-//    private String getUniqueID() {
-//        return UUID.randomUUID().toString();
-//    }
-//    private void callJavascriptFunction(String functionString) {
-//        webView.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                webView.evaluateJavascript(functionString, null);
-//            }
-//        });
-//    }
-//   public void onPeerConnected( String string) {
-//        System.out.println("the key is"+string);
-//        isPeerConnected = true;
-//    }
+
 private String getUniqueID() {
     return UUID.randomUUID().toString();
 }

@@ -17,25 +17,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.GroupSelectorAdapter;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.SendContactNumberResponse;
-import com.yawar.memo.modelView.ChatRoomViewModel;
 import com.yawar.memo.modelView.ForwardDialogViewModel;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.views.ConversationActivity;
-import com.yawar.memo.views.GroupSelectorActivity;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -150,7 +145,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
         forwardDialogViewModel =  new ViewModelProvider(this).get(ForwardDialogViewModel.class);
 
 //        myBase.getContactNumberObserve().addObserver(this);
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
 
         System.out.println(chatMessageArrayList.toString());
         for(ChatMessage chatMessage :chatMessageArrayList){

@@ -12,7 +12,7 @@ let runningCall;
 let shouldFaceUser = true;
 function init(b) {
     peer = new Peer(undefined, {
-        host: 'mypeerjs3002.herokuapp.com',
+        host: 'peerfadi.herokuapp.com',
         port: 443,
         secure:true
     })

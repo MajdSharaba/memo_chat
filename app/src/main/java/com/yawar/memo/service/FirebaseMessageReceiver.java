@@ -7,19 +7,28 @@ import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Person;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
+import android.telecom.PhoneAccountHandle;
+import android.telecom.TelecomManager;
 import android.util.Log;
 import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.darkhorse.videocalltest.ConnService;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.yawar.memo.R;
@@ -27,6 +36,7 @@ import com.yawar.memo.call.CallMainActivity;
 import com.yawar.memo.call.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.views.SplashScreen;
@@ -45,36 +55,17 @@ import java.util.Observer;
 
 public class FirebaseMessageReceiver
         extends FirebaseMessagingService implements Observer {
-//    private void sendPeerId(String object,String peer_id) {
-//        System.out.println(object + "this is object ");
-//        JSONObject message = null;
-//        /////////
-//
-//
-//        try {
-//            message = new JSONObject(object);
-//            message.put("peerId", peer_id);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println(message.toString() + "peeeeeeeeeeeId object");
-//
-//
-//        Intent service = new Intent(this, SocketIOService.class);
-//
-//        service.putExtra(SocketIOService.EXTRA_SEND_PEER_ID_PARAMTERS, message.toString());
-//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_PEER_ID);
-//        startService(service);
-//
-//    }
+
+
     int id =1;
     String TAG = "FirebaseMessageReceiver";
     BaseApp myBase;
     ChatRoomRepo chatRoomRepo;
     String chat_id;
+    ClassSharedPreferences classSharedPreferences;
 
     private  int NOTIFICATION_ID = 237;
-    Notification.InboxStyle inboxStyle = new Notification.InboxStyle();
+//    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
     String GROUP_KEY_WORK_EMAIL = "com.android.example.WORK_EMAIL";
 
 
@@ -90,8 +81,9 @@ public class FirebaseMessageReceiver
         Log.i(TAG, "onMessageReceived: "+remoteMessage.getData().toString());
         myBase = (BaseApp) getApplication();
         chatRoomRepo=myBase.getChatRoomRepo();
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
         String message = "";
+        classSharedPreferences = new ClassSharedPreferences(this);
         Map<String, String> data = remoteMessage.getData();
         String myCustomKey = data.get("body");
         // First case when notifications are received via
@@ -101,23 +93,104 @@ public class FirebaseMessageReceiver
         // attributes. Since here we do not have any data
         // payload, This section is commented out. It is
         // here only for reference purposes.
-//		if(remoteMessage.getData().size()>0){
-//			showNotification(remoteMessage.getData().get("title"),
-//						remoteMessage.getData().get("message"));
-//		}
+
 
         // Second case when notification payload is
         // received.
         if(remoteMessage.getData().size()>0){
-            System.out.println(myCustomKey.toString()+"jjjjjjjjjjjjjjjjjjjjjjj");
             boolean isCall = false;
 
 
             // Since the notification is received directly from
             // FCM, the title and the body can be fetched
             // directly as below.
-            if(!chatRoomRepo.checkInChat(remoteMessage.getData().get("chat_id"))){
-                switch (remoteMessage.getData().get("type")){
+
+                switch (remoteMessage.getData().get("type")) {
+                    case "call":
+                        isCall = true;
+                        JSONObject messagebody = null;
+                        JSONObject userObject;
+                        JSONObject typeObject;
+                        String username="";
+                        String anthorUserCallId="";
+                        String image ="";
+
+                        try {
+                            System.out.println("not call");
+                            messagebody = new JSONObject(remoteMessage.getData().get("body"));
+                            userObject = new JSONObject(messagebody.getString("user"));
+                            typeObject = new JSONObject(messagebody.getString("type"));
+                            anthorUserCallId = messagebody.getString("snd_id");
+//            isVideo = typeObject.getBoolean("video");
+                            username = userObject.getString("name");
+                            image = userObject.getString("image_profile");
+//            anotherUserId = message.getString("snd_id");
+
+
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        callRecived(classSharedPreferences.getUser().getUserId(),anthorUserCallId);
+
+//                showNotification( username, image, remoteMessage.getData().get("body"));
+                        new showCallNotification(this).execute(username,image,remoteMessage.getData().get("body"),anthorUserCallId);
+//                        try {
+//                            Bundle callInfo = new Bundle();
+//                            PhoneAccountHandle phoneAccountHandle;
+//                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                                ComponentName componentName = new ComponentName(this, ConnService.class);
+//
+//                                phoneAccountHandle = new PhoneAccountHandle(componentName, "com.darkhorse.videocalltest");
+//
+//
+//                                callInfo.putString("from", "test");
+//                                callInfo.putString("callRequest",remoteMessage.getData().get("body"));
+//                                TelecomManager telecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
+//
+//                                telecomManager.addNewIncomingCall(phoneAccountHandle, callInfo);
+//
+//                            }} catch(Exception e){
+//                            Log.e("main activity incoming", e.toString());
+//                        }
+                        break;
+                    case "missingCall":
+
+
+                        isCall = true;
+                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+                        JSONObject messageMissingCall = null;
+                        JSONObject userMessCallObject;
+//                        JSONObject typeObject;
+                        String userMissCallName="";
+                        String channelId="";
+                        String userMissCallimage ="";
+
+                        try {
+                            System.out.println("not call");
+                            messageMissingCall = new JSONObject(remoteMessage.getData().get("body"));
+                            userMessCallObject = new JSONObject(messageMissingCall.getString("user"));
+                            channelId = messageMissingCall.getString("snd_id");
+                            userMissCallName = userMessCallObject.getString("name");
+                            userMissCallimage = userMessCallObject.getString("image_profile");
+
+
+                            notificationManager.cancel(Integer.parseInt(channelId));
+                            Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
+
+                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
+                            new showNotification(this).execute(userMissCallName, userMissCallimage, getResources().getString(R.string.missing_call), channelId);
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
                     case "imageWeb":
                         message = getResources().getString(R.string.photo);
                         break;
@@ -131,56 +204,30 @@ public class FirebaseMessageReceiver
                         message = getResources().getString(R.string.file);
                         break;
                     case "contact":
-                         message = getResources().getString(R.string.contact_number);
+                        message = getResources().getString(R.string.contact_number);
                         break;
                     case "location":
                         message = getResources().getString(R.string.location);
                         break;
-                    case "call":
-                        isCall = true;
-                        break;
+
                     default:
-                            message = remoteMessage.getData().get("body") ;
-
-            }
-            if(isCall){
-                System.out.println(remoteMessage.getData().get("body").toString()+"jjjjjjjjjjjjjjjjjjjjjjjllllllllllllll");
-                JSONObject messagebody = null;
-                JSONObject userObject;
-                JSONObject typeObject;
-                String username="";
-                String image ="";
-
-        try {
-            messagebody = new JSONObject(remoteMessage.getData().get("body"));
-            userObject = new JSONObject(messagebody.getString("user"));
-            typeObject = new JSONObject(messagebody.getString("type"));
-//            isVideo = typeObject.getBoolean("video");
-            username = userObject.getString("name");
-            image = userObject.getString("image_profile");
-//            anotherUserId = message.getString("snd_id");
+                        message = remoteMessage.getData().get("body");
+                }
 
 
+                 if(!isCall)
 
+                if (!chatRoomRepo.checkInChat(remoteMessage.getData().get("sender_id"))) {
 
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-//                showNotification( username, image, remoteMessage.getData().get("body"));
-                new showCallNotification(this).execute(username,image,remoteMessage.getData().get("body"));
-            }
-            else {
-
-               new showNotification(this).execute( remoteMessage.getData().get("title"), remoteMessage.getData().get("image"),message,remoteMessage.getData().get("chat_id"));}
+                    new showNotification(this).execute(remoteMessage.getData().get("title"), remoteMessage.getData().get("image"), message, remoteMessage.getData().get("sender_id"));
+                }
 
         }}
-    }
+
 
     // Method to get the custom Design for the display of
     // notification.
-    private RemoteViews getCustomDesign(String title,
+    private RemoteViews getCustomDesign(String anthor_user_id,String title,
                                         String message,Bitmap image) {
         @SuppressLint("RemoteViewLayout") RemoteViews remoteViews = new RemoteViews(
                 getApplicationContext().getPackageName(),
@@ -193,6 +240,8 @@ public class FirebaseMessageReceiver
                 = new Intent(this, CallMainActivity.class);
         System.out.println("message in getCustomDesign is"+message);
         intent.putExtra("callRequest",message );
+        intent.putExtra("id",anthor_user_id);
+
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 intent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -208,6 +257,8 @@ public class FirebaseMessageReceiver
                 = new Intent(this, NotificationReceiver.class);
 
         intentCancel.putExtra("callRequest",message );
+        intentCancel.putExtra("id",anthor_user_id);
+
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(this, 0,
                 intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
@@ -240,7 +291,7 @@ public class FirebaseMessageReceiver
                 .Builder(getApplicationContext(),
                 channel_id)
 //                .setNumber(id++)
-                .setPriority(NotificationCompat.PRIORITY_MAX).
+                .setPriority(Notification.PRIORITY_MAX).
                         setContentTitle(title)
                 .setContentText(message)
 
@@ -298,7 +349,7 @@ public class FirebaseMessageReceiver
         Context ctx;
         String message;
         String title;
-        String chat_id;
+        String sender_id;
 
         public showNotification(Context context) {
             super();
@@ -311,7 +362,7 @@ public class FirebaseMessageReceiver
             InputStream in;
            message = params[2] ;
            title = params[0];
-           chat_id = params[3];
+           sender_id = params[3];
 
             try {
                 if(!params[1].equals("")){
@@ -380,7 +431,7 @@ public class FirebaseMessageReceiver
 
 
                         .setSmallIcon(R.drawable.ic_memo_logo)
-                        .setAutoCancel(true)
+                        .setAutoCancel(false)
                         .setSound((RingtoneManager. getDefaultUri (RingtoneManager. TYPE_NOTIFICATION)))
                         .setGroup(GROUP_KEY_WORK_EMAIL)
 
@@ -391,7 +442,7 @@ public class FirebaseMessageReceiver
                         //set this notification as the summary for the group
                         .setVibrate(new long[]{1000, 1000, 1000,
                                 1000, 1000})
-                        .setOnlyAlertOnce(true)
+//                        .setOnlyAlertOnce(true)
                         .setContentIntent(pendingIntent)
                         .setGroupSummary(true);
 
@@ -442,7 +493,8 @@ public class FirebaseMessageReceiver
 
                 }
 
-                notificationManager.notify(Integer.parseInt(chat_id), builder.build());
+
+                notificationManager.notify(Integer.parseInt(sender_id), builder.build());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -455,7 +507,7 @@ public class FirebaseMessageReceiver
         Context ctx;
         String message;
         String title;
-        String chat_id;
+        String anthor_user_id;
 
         public showCallNotification(Context context) {
             super();
@@ -469,7 +521,7 @@ public class FirebaseMessageReceiver
             message = params[2] ;
             System.out.println("message message"+message);
             title = params[0];
-//            chat_id = params[3];
+           anthor_user_id = params[3];
 
             try {
                 if(!params[1].equals("")){
@@ -506,32 +558,80 @@ public class FirebaseMessageReceiver
                 else {
                     bitmap= result;
                 }
-               System.out.println("this is  messageeeeeeeeeeeeeeeee"+message);
+                /////////intent for lock screen
                 Intent intent
                         = new Intent(FirebaseMessageReceiver.this, CallNotificationActivity.class);
-                intent.putExtra("callRequest",message );
+                intent.putExtra("callRequest",message);
+                intent.putExtra("id",anthor_user_id);
 
 
-                String channel_id = "notification_channel";
+
+                String channel_id = "channel";
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
                         intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                /////////intent for answare
+                Intent intentAnsware
+                        = new Intent(FirebaseMessageReceiver.this, CallMainActivity.class);
+                intentAnsware.putExtra("callRequest",message);
+                intentAnsware.putExtra("id",anthor_user_id);
 
+                intentAnsware.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent answarePendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
+                        intentAnsware, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                /////////intent for reject
+                Intent intentCancel
+                        = new Intent(FirebaseMessageReceiver.this, NotificationReceiver.class);
+
+                intentCancel.putExtra("callRequest",message );
+                intentCancel.putExtra("id",anthor_user_id);
+
+                intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(FirebaseMessageReceiver.this, 0,
+                        intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
+                /////////////////
+
+                Uri alarmSound =
+                        RingtoneManager. getDefaultUri (RingtoneManager.TYPE_RINGTONE );
+
+//                MediaPlayer mp = MediaPlayer.create (getApplicationContext(), alarmSound);
+//                mp.start();
                 NotificationCompat.Builder builder
                         = new NotificationCompat
                         .Builder(getApplicationContext(),
                         channel_id)
-                        .setPriority(NotificationCompat.PRIORITY_MAX).
-                                setContentTitle(title)
+                        .setPriority(Notification.PRIORITY_HIGH)
+
+
+//                        .setLargeIcon(ImageProperties.getCircleBitmap(bitmap))
+
+
 //                        .setContentText(message)
                         .setFullScreenIntent(pendingIntent, true)
 
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setCategory(NotificationCompat.CATEGORY_CALL)
-                        .setTimeoutAfter(10000)
-                        .setSmallIcon(R.drawable.ic_memo_logo)
-                        .setCustomContentView(getCustomDesign(title, message,ImageProperties.getCircleBitmap(bitmap)));
+//                        .setTimeoutAfter(10000)
+//                        .setSound(alarmSound, AudioManager.STREAM_VOICE_CALL)
+                        .setVibrate(new long[] { 10000, 10000})
+                        .setTicker("Call_STATUS")
 
+                        .setColorized(true)
+                        .setSmallIcon(R.drawable.ic_memo_logo);
+                if (Build.VERSION.SDK_INT
+                        > Build.VERSION_CODES.Q) {
+                    builder.setCustomContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
+                    builder.setCustomBigContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
+                    builder.setCustomHeadsUpContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
+
+                }
+                else {
+                    builder.addAction(R.drawable.biv_call, "Receive Call", answarePendingIntent);
+                    builder.setLargeIcon(ImageProperties.getCircleBitmap(bitmap));
+                    builder.addAction(R.drawable.biv_call, "Cancel call", pendingIntentCancell);
+                    builder.setContentTitle(getResources().getString(R.string.call_from));
+                    builder.setContentText(title);}
 
 
                 NotificationManager notificationManager
@@ -542,23 +642,53 @@ public class FirebaseMessageReceiver
                         >= Build.VERSION_CODES.O) {
                     NotificationChannel notificationChannel
                             = new NotificationChannel(
-                            channel_id, "Memo",
+                            channel_id, "channel_id",
 
                             NotificationManager.IMPORTANCE_HIGH);
                     notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
+//                    notificationChannel.setLightColor(Color.GREEN);
+//                    notificationChannel.enableLights(true);
+//                      notificationChannel.enableVibration(true);
+                    notificationChannel.setDescription("Call Notifications");
+                    AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                            .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                            .setLegacyStreamType(AudioManager.STREAM_RING)
+                            .build();
+                    notificationChannel.setSound(alarmSound, audioAttributes);
+
                     notificationManager.createNotificationChannel(
                             notificationChannel);
-                    notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
+//                    notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
 
                 }
-                notificationManager.notify(0,builder.build());
+                Notification note = builder.build();
+                note.flags |= Notification.FLAG_INSISTENT;
+                notificationManager.notify(Integer.parseInt(anthor_user_id),note);
 ////////////////////////////////
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
+    private void callRecived(String my_id,String anthor_user_id) {
 
+        Intent service = new Intent(this, SocketIOService.class);
+        JSONObject userEnter = new JSONObject();
+        System.out.println("call Recived");
+
+        try {
+            userEnter.put("my_id", my_id);
+            userEnter.put("your_id", anthor_user_id);
+            userEnter.put("state", "true");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        service.putExtra(SocketIOService.EXTRA_RECIVED_CALL_PARAMTERS, userEnter.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_RECIVED_CALL);
+        startService(service);
+    }
 }
 

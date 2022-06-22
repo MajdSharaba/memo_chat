@@ -1,12 +1,17 @@
 package com.yawar.memo.call;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.KeyguardManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -18,10 +23,28 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class CallNotificationActivity extends AppCompatActivity {
+    public static final String ON_CLOSE_CALL_FROM_NOTIFICATION = "CallNotificationActivity.ON_RINING_REQUEST";
+
 
     ImageView acceptBtn;
     ImageView rejectBtn;
     String callString;
+    String id;
+    private BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i("CallNotificatio", "run: close ");
+                 finish();
+                    ///////////
+
+
+                }
+            });
+        }
+    };
     private void sendPeerId(String object,String peer_id) {
         System.out.println(object + "this is object ");
         JSONObject message = null;
@@ -49,8 +72,10 @@ public class CallNotificationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         showWhenLockedAndTurnScreenOn();
         setContentView(R.layout.activity_call_notification);
-        Bundle bundle = getIntent().getExtras();
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION));
 
+        Bundle bundle = getIntent().getExtras();
+        id = bundle.getString("id","0");
         callString = bundle.getString("callRequest", "code");
         acceptBtn = findViewById(R.id.acceptBtn);
         rejectBtn = findViewById(R.id.rejectBtn);
@@ -60,6 +85,8 @@ public class CallNotificationActivity extends AppCompatActivity {
 //                System.out.println("acceptBtn" + callString)
                 Intent intent = new Intent(CallNotificationActivity.this,CallMainActivity.class);
                 intent.putExtra("callRequest",callString);
+                intent.putExtra("id",id);
+
                 startActivity(intent);
                 finish();
 
@@ -72,6 +99,8 @@ public class CallNotificationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sendPeerId(callString,"null");
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallNotificationActivity.this);
+                notificationManager.cancel(Integer.parseInt(id));
 
                 finish();
 
@@ -82,13 +111,16 @@ public class CallNotificationActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true);
             setTurnScreenOn(true);
-            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
-            keyguardManager.requestDismissKeyguard(this, null);
+            this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+//            KeyguardManager keyguardManager = (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+//            keyguardManager.requestDismissKeyguard(this, null);
         } else {
 //            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
             this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON |
                             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
-                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
                     WindowManager.LayoutParams.FLAG_FULLSCREEN |
                             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
                             WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
@@ -97,5 +129,12 @@ public class CallNotificationActivity extends AppCompatActivity {
 //                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 //            )
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveCloseCallFromNotification);
+
+        super.onDestroy();
     }
 }

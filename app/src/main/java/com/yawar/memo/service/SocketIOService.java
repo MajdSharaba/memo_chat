@@ -12,7 +12,7 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.call.CallMainActivity;
 import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
@@ -49,7 +49,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
             EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13,EVENT_TYPE_ON_UPDATE_MESSAGE=14
             , EVENT_TYPE_CALLING=15, EVENT_TYPE_SEND_PEER_ID=16,
             EVENT_TYPE_STOP_CALLING=17,
-            EVENT_TYPE_SETTING_CALL=18;
+            EVENT_TYPE_SETTING_CALL=18,
+            EVENT_TYPE_RECIVED_CALL =19,
+            EVENT_TYPE_MISSING_CALL = 20
+
+                    ;
     public static final String EVENT_DELETE = "delete message";
     private static final String EVENT_MESSAGE = "new message";
     private static final String EVENT_CALLING = "sendPeerId";
@@ -120,6 +124,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_EVENT_CALL = "extra_event_call";
     public static final String EXTRA_STOP_CALL_PARAMTERS = "extra_stop_call_paramters";
     public static final String EXTRA_SETTINGS_CALL_PARAMTERS = "extra_settings_call_paramters";
+    public static final String EXTRA_RECIVED_CALL_PARAMTERS = "extra_recived_call_paramters";
+    public static final String EXTRA_MISSING_CALL_PARAMTERS = "extra_missing_call_paramters";
+
+
 
 
 
@@ -199,7 +207,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mServiceHandler = new ServiceHandler(mServiceLooper);
         myBase = (BaseApp) getApplication();
         blockUserRepo = myBase.getBlockUserRepo();
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
 
 
 
@@ -477,8 +485,30 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         sendSettingsCalling(settings_calling_paramter);
                     }
                     break;
+                case EVENT_TYPE_RECIVED_CALL:
 
+                    String recived_calling_paramter = intent.getExtras().getString(EXTRA_RECIVED_CALL_PARAMTERS);
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "EVENT_TYPE_Stop_calling: ");
+                        recivedCall(recived_calling_paramter);
 
+                    }
+                    else{
+                        recivedCall(recived_calling_paramter);
+                    }
+
+                    break;
+
+                case EVENT_TYPE_MISSING_CALL:
+
+                    String recived_missing_paramter = intent.getExtras().getString(EXTRA_RECIVED_CALL_PARAMTERS);
+                    if (isSocketConnected()) {
+                        sendMissingCall(recived_missing_paramter);
+                    }
+
+                    break;
 
             }
         }
@@ -742,21 +772,44 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("settingsCall", chat);
 
     }
-//    sendSettingsCalling(settings_calling_paramter);
+    private void recivedCall(String messageObject) {
+        JSONObject chat = null;
+//        joinSocket();
+        try {
 
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("call_recived", chat);
+
+    }
+    private void sendMissingCall(String messageObject) {
+        JSONObject chat = null;
+//        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("closeCall", chat);
+
+    }
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        System.out.println("destroyyyyyyyyyyyyyyyy");
+//        System.out.println("destroyyyyyyyyyyyyyyyy");
         mSocket.disconnect();
         mSocket.close();
         heartBeat.stop();
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.off(entry.getKey(), entry.getValue());
         }
+        Log.i(TAG, "onDestroy: ");
 //        stopService(getSystemService("name"));
 
 
@@ -977,7 +1030,7 @@ public void onTaskRemoved(Intent rootIntent) {
                 }
                 break;
             case EVENT_RECIVE_STOP_CALLING:
-
+                  System.out.println("EVENT_RECIVE_STOP_CALLING");
                 intent = new Intent(CallMainActivity.ON_STOP_CALLING_REQUEST);
                 intent.putExtra("get stopCalling", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);

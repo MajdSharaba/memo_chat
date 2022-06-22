@@ -55,7 +55,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.WindowManager;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -77,7 +76,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -87,7 +85,6 @@ import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordPermissionHandler;
 import com.devlomi.record_view.RecordView;
 
-import com.example.videocallapp.JavascriptInterface;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -104,19 +101,17 @@ import com.google.android.gms.tasks.Task;
 
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.BuildConfig;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.ChatAdapter;
-import com.yawar.memo.call.CallMainActivity;
 import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ForwardDialogFragment;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
-import com.yawar.memo.modelView.ArchivedActViewModel;
 import com.yawar.memo.modelView.ConversationModelView;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepo;
@@ -153,15 +148,13 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.socket.client.Socket;
 
 
-public class ConversationActivity extends AppCompatActivity implements ChatAdapter.CallbackInterface, Observer, PickiTCallbacks {
+public class ConversationActivity extends AppCompatActivity implements ChatAdapter.CallbackInterface, PickiTCallbacks {
 
     private EditText messageET;
     private TextView tv_name;
@@ -826,54 +819,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         startService(service);
 
     }
-//    private void startCall() {
-//        Intent service = new Intent(this, SocketIOService.class);
-//        JSONObject data = new JSONObject();
-//        JSONObject type = new JSONObject();
-//        try {
-//            type.put("video",true);
-//            type.put("audio",true);
-//            data.put("rcv_id", anthor_user_id);
-//            data.put("type", type.toString());
-//            data.put("message", "");
-//            data.put("snd_id", user_id);
-//
-//
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        System.out.println("call");
-//        service.putExtra(SocketIOService.EXTRA_CALL_PARAMTERS, data.toString());
-//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_CALLING);
-//        startService(service);
-//
-//    }
-//    private void sendPeerId(String object) {
-//        System.out.println(object+"this is object ");
-//        JSONObject message = null;
-//        /////////
-//
-//
-//
-//                    try {
-//                        message = new JSONObject(object);
-//                        message.put("peerId",peerId);
-//
-//
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//                    System.out.println(message.toString()+"peeeeeeeeeeeId object");
-//
-//
-//        Intent service = new Intent(this, SocketIOService.class);
-//
-//        service.putExtra(SocketIOService.EXTRA_SEND_PEER_ID_PARAMTERS, message.toString());
-//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_PEER_ID);
-//        startService(service);
-//
-//    }
+
     ///////////////end
 
     float textSize = 14.0F;
@@ -907,8 +853,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveDeleteMessage, new IntentFilter(ON_MESSAGE_DELETED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveUpdateMessage, new IntentFilter(ON_MESSAGE_UPDATE));
-//        LocalBroadcastManager.getInstance(this).registerReceiver(recivecallRequest, new IntentFilter(ON_CALL_REQUEST));
-//        LocalBroadcastManager.getInstance(this).registerReceiver(recivePeerId, new IntentFilter(FETCH_PEER_ID));
 
 
     }
@@ -916,7 +860,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("onResuuuuuuuuuuuumr");
 //        checkConnect();
         adapter.notifyDataSetChanged();
 
@@ -925,7 +868,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     protected void onStop() {
         super.onStop();
-        System.out.println("OnStop");
     }
 
     @Override
@@ -1147,7 +1089,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
 
 
-        chatRoomRepo.setInChat(chat_id, true);
+        chatRoomRepo.setInChat(anthor_user_id, true);
         container = (RelativeLayout) findViewById(R.id.container);
         openMaps = (LinearLayout) findViewById(R.id.pick_location);
         sendLocation = (Button) findViewById(R.id.sendLocation);
@@ -1202,10 +1144,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             }
         });
-        setupWebView();
 
-///// form get message history
-//        loadDummyHistory();
     }
 
     private void initAction() {
@@ -1474,16 +1413,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         recordButton.setOnClickListener(view -> {
 
-//            recordButton.setListenForRecord(true);
-
-//            recordButton.setListenForRecord(true);
-//            recordButton.setListenForRecord(true);
-
-//            if (permissions.isRecordingOk(ConversationActivity.this))
-//                if (permissions.isStorageReadOk(ConversationActivity.this))
-//                    recordButton.setListenForRecord(true);
-//                else permissions.requestStorage(ConversationActivity.this);
-//            else permissions.requestRecording(ConversationActivity.this);
         });
         recordView.setLessThanSecondAllowed(false);
         recordView.setRecordPermissionHandler(new RecordPermissionHandler() {
@@ -1500,12 +1429,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         return true;
                     else permissions.requestStorage(ConversationActivity.this);
                 else permissions.requestRecording(ConversationActivity.this);
-//
-//
-//                ActivityCompat.
-//                        requestPermissions(MainActivity.this,
-//                                new String[]{Manifest.permission.RECORD_AUDIO},
-//                                0);
+
 
                 return false;
 
@@ -1922,8 +1846,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 } else
                     showPermissionDialog(getResources().getString(R.string.record_voice_premission), 1888);
-//                    this.permissions.requestRecording(ConversationActivity.this);
-//                    Toast.makeText(this, "Recording permission denied", Toast.LENGTH_SHORT).show();}
+
                 break;
             }
             case AllConstants.STORAGE_REQUEST_CODE:
@@ -2042,15 +1965,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     }
 
-    //    @Override
-//    public void onBackPressed() {
-//
-//        if (binding.dataLayout.getVisibility() == View.VISIBLE)
-//            hideLayout();
-//        else
-//            super.onBackPressed();
-//    }
-///// for scroll to end of list
+
     private void scroll() {
         messagesContainer.post(new Runnable() {
             @Override
@@ -2164,15 +2079,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                     String uriString = uri.toString();
-//                    copyFileOrDirectory( FilePath.getPath(this,pathUri), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
-
-//                    Uri pathUri = Uri.fromFile(new File(pathh));
-
-
-//                    System.out.println(uri+"ppppp"+FilePath.getPath(this,Uri.parse(pathUri.toString()))+"firsssssssssst");
-
-//                    copyFileOrDirectory( FilePath.getPath(this,Uri.parse(uriString),, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath()));
 
 
                     String displayName = null;
@@ -2205,8 +2112,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         Uri pathImage = Uri.fromFile(new File(selectedMediaUri.toString()));
                         File myFileImage = new File(pathImage.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, pathImage), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
 
@@ -2234,27 +2140,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         }
 
                     } else {
-//                        System.out.println(selectedMediaUri.toString()+"selectedMediaUri.toString()");
-//                                                Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
-//
-//                        TrimVideo.activity(pathhh.toString())
-//                                .setTrimType(TrimType.MIN_MAX_DURATION)
-//                                .setLocal("ar")
-//                                .setMinToMax(1, 15) //seconds
-//                                .start(ConversationActivity.this, startForResult);
-//            }
 
-//                            String uriString = selectedMediaUri.toString();
-//                            System.out.println("this is Video"+uriString);
-//                            File myFile = new File(uriString);
-
-//                            String path = myFile.getAbsolutePath();
                         ////////////////////////////
                         Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
                         File myFilee = new File(pathhh.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, pathhh), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
                         String displayNamee = null;
@@ -2306,8 +2197,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                        Uri pathImage = Uri.fromFile(new File(selectedMediaUriGallery.toString()));
                         File myFileImage = new File(selectedMediaUriGallery.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
 
@@ -2336,32 +2226,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                     } else if (mimeType.startsWith("video")) {
-//                        TrimVideo.activity(String.valueOf(selectedMediaUriGallery))
-////        .setCompressOption(new CompressOption()) //empty constructor for default compress option
-//                                .setHideSeekBar(true)
-//                                .setTrimType(TrimType.MIN_MAX_DURATION)
-//                                .setMinToMax(1, 60)  //seconds
-//                                .start(this);
-//                        System.out.println(selectedMediaUri.toString()+"selectedMediaUri.toString()");
-//                                                Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
-//
-//                        TrimVideo.activity(pathhh.toString())
-//                                .setTrimType(TrimType.MIN_MAX_DURATION)
-//                                .setLocal("ar")
-//                                .setMinToMax(1, 15) //seconds
-//                                .start(ConversationActivity.this, startForResult);
-//            }
 
-//                            String uriString = selectedMediaUri.toString();
-//                            System.out.println("this is Video"+uriString);
-//                            File myFile = new File(uriString);
-//
-//                            String path = myFile.getAbsolutePath();
                         //////////////////////////
                         File myFilee = new File(selectedMediaUriGallery.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
                         String displayNamee = null;
@@ -2400,61 +2269,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                    }}}
 ////////////////////////
     }
-//        @SuppressLint("Range")
-//        ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
-//            new ActivityResultContracts.StartActivityForResult(),
-//            result -> {
-//                System.out.println("uri is uriiiiiiiiiiiiiiiiiiii");
-//                if (result.getResultCode() == Activity.RESULT_OK &&
-//                        result.getData() != null) {
-//                    Uri uri = Uri.parse(TrimVideo.getTrimmedVideoPath(result.getData()));
-//                     Uri pathhh = Uri.fromFile(new File(uri.toString()));
-//
-//                    String uriSt = uri.toString();
-//                   System.out.println("uri is uri"+uriSt);
-////                    String selectedFilePath = FilePath.getPath(getContext(), uri);
-//
-//                    File myFile = new File(uriSt);
-//                    String uriString =Uri.fromFile(myFile).toString();
-//                    copyFileOrDirectory(FileUtil.getPath(this, pathhh), this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/send/video").getAbsolutePath());
-//
-//
-//
-//                    System.out.println("   Uri uri = Uri.parse(TrimVideo.getTrimmedVideoPath(result.getData()));"+uriString);
-//
-//                    String displayName = null;
-//
-//                    if (uriString.startsWith("content://")) {
-//                        System.out.println("uriString.startsWith(\"content://\")");
-//                        Cursor cursor = null;
-//                        try {
-//                            cursor = this.getContentResolver().query(uri, null, null, null, null);
-//                            if (cursor != null && cursor.moveToFirst()) {
-//                                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-//                                Log.d("nameeeee>>>>  ", displayName);
-//                                uploadVideo(displayName, Uri.parse(uriString));
-//
-////                                upload(displayName, Uri.parse(uriString),"video");
-//                            }
-//                        } finally {
-//                            cursor.close();
-//                        }
-//                    } else if (uriString.startsWith("file://")) {
-//
-//                        displayName = myFile.getName();
-//                        uploadVideo(displayName, Uri.parse(uriString));
-//
-//                        Log.d("nameeeee>>>>  ", displayName);
-//                    }
-//                    else {
-////                        upload("video", uri,"video");
-//
-//                    }
-//                    Log.d(TAG, "Trimmed path:: " + uri);
-//
-//                } else
-//                    Toast.makeText(this, "Failed ", Toast.LENGTH_SHORT).show();
-//            });
+
 
 
     @SuppressLint("Range")
@@ -2550,25 +2365,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                 JSONObject jsonObject = new JSONObject(new String(response.data));
 
 
-//                                String text = "";
-//                                String type = "";
-//                                String state = "";
-//                                String senderId = "";
-//                                String reciverId = "";
-//                                String id = "";
-//
-//                                    /// JSONObject jsonObject= (JSONObject) messageJson.get("data");
-//                                    text = jsonObject.getString("message");
-//                                    type = jsonObject.getString("message_type");
-//                                    state = jsonObject.getString("state");
-//                                    senderId = jsonObject.getString("sender_id");
-//                                    id = jsonObject.getString("id");
-//
-//                                    reciverId = jsonObject.getString("reciver_id");
-//                                    System.out.println(text+type+state+senderId+reciverId+id);
-////                                    jsonObject.put("file name",pdfname );
-//
-//                                newMeesage(jsonObject);
+
                                 System.out.println(jsonObject.getString("orginalName") + pdfname);
 
                                 JSONObject sendObject = new JSONObject();
@@ -2592,20 +2389,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
 
-//                                newMeesage(sendObject);
 
-//                                ChatMessage chatMessage = new ChatMessage();
-//                                chatMessage.setId(message_id);//dummy
-//                                chatMessage.setMessage(jsonObject.getString("message"));
-//                                chatMessage.setFileName(pdfname);
-//
-//                                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-//                                chatMessage.setMe(true);
-//                                chatMessage.setType("file");
-//                                chatMessage.setState("0");
-//                                messageET.setText("");
-//                                chatMessage.setChecked(false);
-//                                displayMessage(chatMessage);
                                 newMeesage(sendObject);
 
 
@@ -2919,16 +2703,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     private void uploadImage(final String imageName, Uri pdfFile) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
-        //                        ChatMessage chatMessage = new ChatMessage();
-//                        chatMessage.setImage(String.valueOf(selectedMediaUri));
-//                        chatMessage.setType("image");
-//                        chatMessage.setState("0");
-//                        chatMessage.setId(message_id);
-//                        chatMessage.setFileName(displayNamee);
-//
-//                        chatMessage.setDate(String.valueOf(cal.getTimeInMillis()));
-//                        chatMessage.setMe(true);
-//                        displayMessage(chatMessage);
+
 
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(message_id);//dummy
@@ -3123,7 +2898,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("on destroy");
-        chatRoomRepo.setInChat(chat_id, false);
+        chatRoomRepo.setInChat(anthor_user_id, false);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(check);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);
@@ -3269,9 +3044,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (!audioFile.exists()) {
                     System.out.println(chatMessage.message.toString() + "kkkkkkkkkk");
 
-//            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
-                    //new DownloadFile().execute("http://192.168.1.9:8080/src/yawar_chat/uploads/files/" + chatMessage.getMessage().toString(), chatMessage.getFileName(),"send");
-//                    new DownloadFile().execute(AllConstants.download_url + "audio/" + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/voiceRecord");
+
                     new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/voiceRecord");
 
 
@@ -3556,67 +3329,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         startActivity(intent);
     }
 
-    @Override
-    public void update(Observable observable, Object o) {
-        System.out.println("prevvvvvvvvvvvvvObserrrrrrrrrrrrrrrrrrv");
-//        if(chat_id.equals(user_id+anthor_user_id)){
-//            System.out.println("afterrrrrrrrrrrrrrrrObserrrrrrrrrrrrrrrrrrv");
-//
-//            chat_id = myBase.getObserver().getChatId(anthor_user_id);
-//
-//        }
 
-    }
 
-//    public void sendNotification(String message, String type) {
-//
-//        try {
-//            RequestQueue queue = Volley.newRequestQueue(ConversationActivity.this);
-//
-//
-//            System.out.println("fcmTokennn" + fcmToken + "message" + message);
-//
-//            JSONObject data = new JSONObject();
-//            data.put("title", classSharedPreferences.getUser().getUserName());
-//            data.put("body", message);
-//            data.put("image", classSharedPreferences.getUser().getImage());
-//            data.put("chat_id", chat_id);
-//            data.put("type", type);
-//
-//            JSONObject notification_data = new JSONObject();
-//            notification_data.put("data", data);
-//            notification_data.put("to", fcmToken);
-//            notification_data.put("content_available", true);
-//            notification_data.put("priority", "high");
-//
-//
-//            JsonObjectRequest request = new JsonObjectRequest(AllConstants.fcm_send_notification_url, notification_data, new Response.Listener<JSONObject>() {
-//                @Override
-//                public void onResponse(JSONObject response) {
-//                    System.out.println("responeeeeeeeeeeeeeeeeeeeeeeeeee" + message + fcmToken);
-//                }
-//            }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//
-//                }
-//            }) {
-//                @Override
-//                public Map<String, String> getHeaders() {
-//                    Map<String, String> headers = new HashMap<>();
-//                    headers.put("Content-Type", "application/json");
-//                    headers.put("Authorization", AllConstants.api_key_fcm_token_header_value);
-//                    return headers;
-//                }
-//            };
-//
-////      queue.add(request);
-//            myBase.addToRequestQueue(request);
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public void PickiTonUriReturned() {
@@ -4108,90 +3822,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         return true;
     }
 
-    private void setupWebView() {
 
-//        webView.webChromeClient = object: WebChromeClient() {
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onPermissionRequest(final PermissionRequest request) {
-                request.grant(request.getResources());
-
-            }
-
-//            override fun onPermissionRequest(request: PermissionRequest?) {
-//                request?.grant(request.resources)
-//            }
-        });
-
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-//        webView.addJavascriptInterface(new JavascriptInterface(this), "Android");
-
-        loadVideoCall();
-    }
-
-    private void loadVideoCall() {
-        String filePath = "file:android_asset/call.html";
-        System.out.println("load videooooooooooooooo" + filePath);
-        webView.loadUrl(filePath);
-
-//        webView.webViewClient = object: WebViewClient() {
-//            override fun onPageFinished(view: WebView?, url: String?) {
-//                initializePeer()
-//            }
-//        }
-        webView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                initializePeer();
-
-            }
-        });
-    }
-
-    private void initializePeer() {
-
-        String uniqueId = getUniqueID();
-//        System.out.println(uniqueId+"uniqueId");
-
-//        callJavascriptFunction("javascript:init(\""+uniqueId+"\")");
-//        firebaseRef.child(username).child("incoming").addValueEventListener(object: ValueEventListener {
-//            override fun onCancelled(error: DatabaseError) {}
-//
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                println("value is "+snapshot.value)
-//                onCallRequest(snapshot.value as? String)
-//            }
-
-//        })
-
-    }
-
-    private void switchToControls() {
-//        inputLayout.setVisibility(View.GONE);
-//        callControlLayout.setVisibility(View.VISIBLE);
-    }
-
-    private String getUniqueID() {
-        return UUID.randomUUID().toString();
-    }
-
-    private void callJavascriptFunction(String functionString) {
-        webView.post(new Runnable() {
-            @Override
-            public void run() {
-                webView.evaluateJavascript(functionString, null);
-            }
-        });
-    }
-
-    public void onPeerConnected(String string) {
-        System.out.println("the key is" + string);
-        peerId = string;
-//        isPeerConnected = true;
-    }
 
 
 }

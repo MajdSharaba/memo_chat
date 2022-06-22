@@ -6,14 +6,15 @@
     android:layout_width="match_parent"
     android:padding="5dp"
     android:layout_height="150dp"
-    android:background="@color/white"
+    android:background="@color/backgroundColor"
     android:orientation="vertical"
    >
 
     <!-- Parent Layout of ImageView -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         >
         <LinearLayout
             android:layout_width="wrap_content"
@@ -28,8 +29,9 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 tools:text="@string/user_name"
-                android:textColor="@color/black"
-                android:padding="5dp"/>
+                android:textColor="@color/textColor"
+                android:padding="5dp"
+                style="@style/TextAppearance.Compat.Notification.Title"/>
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
@@ -37,7 +39,8 @@
                 android:layout_marginTop="1dp"
                 android:text="@string/call_from"
                 android:textSize="15sp"
-                android:textColor="@color/black"
+                style="@style/TextAppearance.Compat.Notification"
+                android:textColor="@color/textColor"
                 android:padding="5dp"/>
 
         </LinearLayout>
@@ -51,6 +54,7 @@
             android:layout_alignParentEnd="true"
             android:src="@drawable/th"
             tools:src="@drawable/th"
+            style="@style/TextAppearance.Compat.Notification.Media"
             android:visibility="visible"
             />
     </RelativeLayout>
@@ -58,7 +62,8 @@
     <!-- Parent layout for holding the Title and the Body-->
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="horizontal"
         android:paddingStart="5dp"
         android:padding="5dp">
@@ -87,23 +92,23 @@
         </Button>
 
         <!-- TextView for Title -->
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/title"
-            android:visibility="gone"
-            android:textColor="#000"
-            android:textStyle="bold" />
+<!--        <TextView-->
+<!--            android:id="@+id/title"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/title"-->
+<!--            android:visibility="gone"-->
+<!--            android:textColor="#000"-->
+<!--            android:textStyle="bold" />-->
 
-        <!-- TextView for Body -->
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/message"
-            android:visibility="gone"
-            android:textSize="15sp" />
+<!--        &lt;!&ndash; TextView for Body &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/message"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/message"-->
+<!--            android:visibility="gone"-->
+<!--            android:textSize="15sp" />-->
 
     </LinearLayout>
 

@@ -231,9 +231,9 @@ public class ChatRoomRepo {
         chatRoomListMutableLiveData.setValue(chatRoomsList);
     }
 
-    public void setInChat(String chat_id,boolean state){
+    public void setInChat(String user_id,boolean state){
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chat_id)){
+            if(chatRoom.getUserId().equals(user_id)){
                 chatRoom.setInChat(state);
                 if(state){
                     chatRoom.setNumberUnRMessage("0");}
@@ -257,12 +257,12 @@ public class ChatRoomRepo {
         return "";
 
     }
-    public  boolean checkInChat(String chat_id) {
+    public  boolean checkInChat(String anthor_user_id) {
         if(chatRoomsList==null){
             return false;
         }
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
+            if (chatRoom.getUserId().equals(anthor_user_id)) {
                 if (chatRoom.inChat) {
                     return true;
                 } else {

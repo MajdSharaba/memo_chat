@@ -14,17 +14,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.DeviceLinkAdapter;
-import com.yawar.memo.adapter.GroupSelectorAdapter;
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.DeviceLinkModel;
-import com.yawar.memo.model.SendContactNumberResponse;
 import com.yawar.memo.service.SocketIOService;
 
 import org.json.JSONException;

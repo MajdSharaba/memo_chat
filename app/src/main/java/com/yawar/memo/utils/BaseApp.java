@@ -17,7 +17,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.yawar.memo.observe.ChatRoomObserve;
 import com.yawar.memo.observe.ContactNumberObserve;
 import com.yawar.memo.observe.FireBaseTokenObserve;
 import com.yawar.memo.observe.StoriesObserve;
@@ -28,7 +27,7 @@ import com.yawar.memo.repositry.ChatRoomRepo;
 
 public class BaseApp extends Application implements LifecycleObserver {
 
-    ChatRoomObserve observeClass;
+//    ChatRoomObserve observeClass;
     FireBaseTokenObserve fireBaseTokenObserve;
     StoriesObserve storiesObserve;
     ContactNumberObserve contactNumberObserve;
@@ -88,13 +87,13 @@ public class BaseApp extends Application implements LifecycleObserver {
 
 
 
-    public ChatRoomObserve getObserver() {
-       if(observeClass== null){
-           observeClass = new ChatRoomObserve();
-       }
-
-        return observeClass;
-    }
+//    public ChatRoomObserve getObserver() {
+//       if(observeClass== null){
+//           observeClass = new ChatRoomObserve();
+//       }
+//
+//        return observeClass;
+//    }
     public FireBaseTokenObserve getForceResendingToken() {
         if(fireBaseTokenObserve== null){
             fireBaseTokenObserve = new FireBaseTokenObserve();

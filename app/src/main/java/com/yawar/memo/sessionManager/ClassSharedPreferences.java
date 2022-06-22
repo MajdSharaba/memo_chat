@@ -1,13 +1,10 @@
-package com.yawar.memo.Api;
+package com.yawar.memo.sessionManager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.UserModel;
 
 import org.json.JSONException;

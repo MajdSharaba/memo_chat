@@ -23,8 +23,8 @@ import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.views.DashBord;
 import com.yawar.memo.views.IntroActivity;
 import com.yawar.memo.views.RegisterActivity;
@@ -581,12 +581,12 @@ public class ServerApi {
                         ));
 //                        System.out.println(AllConstants.base_url + "uploads/profile/" + jsonObject.getString("image"));
                     }
-                    if (isArchived) {
-
-                        myBase.getObserver().setArchived(true);
-                    }
-                    System.out.println("postListttttttttttttttt" + postList.size());
-                    myBase.getObserver().setChatRoomModelList(postList);
+//                    if (isArchived) {
+//
+//                        myBase.getObserver().setArchived(true);
+//                    }
+//                    System.out.println("postListttttttttttttttt" + postList.size());
+//                    myBase.getObserver().setChatRoomModelList(postList);
                     Intent intent = new Intent(context, DashBord.class);
 
                     context.startActivity(intent);
@@ -596,7 +596,7 @@ public class ServerApi {
 //
 //                    startActivity(intent);
 //                    IntroActivity.this.finish();
-                    System.out.println("myBase.getObserver().getChatRoomModelList().size()" + myBase.getObserver().getChatRoomModelList().size());
+//                    System.out.println("myBase.getObserver().getChatRoomModelList().size()" + myBase.getObserver().getChatRoomModelList().size());
 
 
 //                    else {
@@ -646,7 +646,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.104:3000/addtoblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.109:3000/addtoblock", new Response.Listener<String>() {
 
 
 
@@ -733,7 +733,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.104:3000/deleteblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.109:3000/deleteblock", new Response.Listener<String>() {
 
 
 
@@ -887,6 +887,8 @@ public class ServerApi {
             data.put("body", message);
             data.put("image", classSharedPreferences.getUser().getImage());
             data.put("chat_id", chat_id);
+            data.put("sender_id", classSharedPreferences.getUser().getUserId());
+
             data.put("type", type);
 
             JSONObject notification_data = new JSONObject();
