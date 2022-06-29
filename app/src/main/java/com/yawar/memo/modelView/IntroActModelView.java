@@ -36,9 +36,7 @@ public class IntroActModelView extends ViewModel {
 
     public  MutableLiveData<ArrayList<ChatRoomModel>> chatRoomListMutableLiveData= new MutableLiveData<>();
     public final ArrayList<ChatRoomModel> chatRoomsList = new ArrayList<>();
-    public final MutableLiveData<ArrayList<UserModel>> userBlockListMutableLiveData= new MutableLiveData<>();;
-
-
+    public final MutableLiveData<ArrayList<UserModel>> userBlockListMutableLiveData= new MutableLiveData<>();
 
 
 //    public IntroActModelView(@NonNull Application application) {

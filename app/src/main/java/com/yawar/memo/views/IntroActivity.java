@@ -18,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.provider.Settings;
 import android.telecom.PhoneAccount;
@@ -31,7 +32,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.darkhorse.videocalltest.ConnService;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import com.yawar.memo.utils.BaseApp;
+import com.yawar.memo.videocalltest.ConnService;
 
 public class IntroActivity extends AppCompatActivity implements Observer {
     ClassSharedPreferences classSharedPreferences;
@@ -78,6 +79,9 @@ public class IntroActivity extends AppCompatActivity implements Observer {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
+        System.out.println( android.os.Build.MANUFACTURER+"String deviceMan = android.os.Build.MANUFACTURER;\n");
+//        if(android.os.Build.MANUFACTURER.equals("xhaomi")){
+//        openAppPermission();}
 //        askCallPermission();
 
 //        goToNotificationSettings(this);
@@ -612,8 +616,10 @@ public class IntroActivity extends AppCompatActivity implements Observer {
         context.startActivity(intent);
 
     }
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void askCallPermission() {
-        System.out.println("call notification");
+
+
         TelecomManager telecomManager;
         TelephonyManager telephonyManager;
         PhoneAccountHandle phoneAccountHandle;
@@ -626,7 +632,8 @@ public class IntroActivity extends AppCompatActivity implements Observer {
             phoneAccountHandle = new PhoneAccountHandle(componentName, "com.darkhorse.videocalltest");
 
             PhoneAccount phoneAccount = PhoneAccount.builder(phoneAccountHandle, "com.darkhorse.videocalltest").setCapabilities(
-                    PhoneAccount.CAPABILITY_CONNECTION_MANAGER
+                    PhoneAccount.CAPABILITY_SELF_MANAGED
+
             ).setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER).build();
             try {
                 telecomManager.registerPhoneAccount(phoneAccount);
@@ -641,5 +648,22 @@ public class IntroActivity extends AppCompatActivity implements Observer {
                 Log.e("main activity register", e.toString());
             }
         }
+    }
+  void openAppPermission(){
+      Intent intent = new Intent();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+          intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+          intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+          intent.putExtra("app_package", this.getPackageName());
+          intent.putExtra("app_uid", this.getApplicationInfo().uid);
+      } else {
+          intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//          intent.addCategory(Intent.CATEGORY_DEFAULT);
+          intent.setData(Uri.parse("package:" + this.getPackageName()));
+      }
+      this.startActivity(intent);
+
     }
 }

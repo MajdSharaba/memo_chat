@@ -75,7 +75,7 @@ public class DevicesLinkActivity extends AppCompatActivity {
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_GET_QR);
         startService(service);
     }
-    private BroadcastReceiver recivecheckQr = new BroadcastReceiver() {
+    private final BroadcastReceiver recivecheckQr = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -107,7 +107,7 @@ public class DevicesLinkActivity extends AppCompatActivity {
 //
 //
     };
-    private BroadcastReceiver reciveGetQr = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveGetQr = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -177,7 +177,7 @@ public class DevicesLinkActivity extends AppCompatActivity {
                 } else {
 ////                    deviceLinkModels.add(new DeviceLinkModel(result.getContents(),""));
 //                    mainAdapter.notifyDataSetChanged();
-                    resultQr=result.getContents().toString();
+                    resultQr= result.getContents();
                     checkQr();
 //                    Toast.makeText(DevicesLinkActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 }

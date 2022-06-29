@@ -48,7 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserInformationActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
+    private final ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
     ServerApi serverApi;
     CircleImageView circleImageView;
     LinearLayout linerMore;
@@ -336,7 +336,7 @@ public class UserInformationActivity extends AppCompatActivity {
                 progressDialog.dismiss();
 
                 try {
-                    System.out.println(response.toString());
+                    System.out.println(response);
                     JSONArray jsonArray = new JSONArray(response);
 //                    System.out.println(respObj + "");
 //                    JSONArray jsonArray = (JSONArray) respObj.get();

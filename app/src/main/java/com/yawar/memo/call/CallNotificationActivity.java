@@ -16,21 +16,32 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.yawar.memo.R;
+import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CallNotificationActivity extends AppCompatActivity {
     public static final String ON_CLOSE_CALL_FROM_NOTIFICATION = "CallNotificationActivity.ON_RINING_REQUEST";
-
 
     ImageView acceptBtn;
     ImageView rejectBtn;
     String callString;
     String id;
-    private BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
+    JSONObject message = null;
+    JSONObject data = new JSONObject();
+    JSONObject type = new JSONObject();
+    JSONObject userObject = new JSONObject();
+    private final BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -98,9 +109,11 @@ public class CallNotificationActivity extends AppCompatActivity {
         rejectBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendPeerId(callString,"null");
+
+//                sendPeerId(callString,"null");
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallNotificationActivity.this);
                 notificationManager.cancel(Integer.parseInt(id));
+                reject(callString);
 
                 finish();
 
@@ -136,5 +149,71 @@ public class CallNotificationActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveCloseCallFromNotification);
 
         super.onDestroy();
+    }
+    public void reject(String callParamters) {
+        BaseApp myBase;
+        myBase = BaseApp.getInstance();
+
+        /////////
+
+
+        try {
+            message = new JSONObject(callParamters);
+//            data = message.getJSONObject("data");
+            type = message.getJSONObject("type");
+            userObject = message.getJSONObject("user");
+
+            message.put("peerId", "null");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // creating a new variable for our request queue
+        // on below line we are calling a string
+        // request method to post the data to our API
+        // in this we are calling a post method.
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"reject", new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                try {
+
+
+                    params.put("rcv_id", message.getString("rcv_id"));
+
+                    params.put("typeCall", "call");
+
+                    params.put("user", userObject.toString());
+                    params.put("type", type.toString());
+                    params.put("message", "");
+                    params.put("peerId", "null");
+                    params.put("snd_id",message.getString("snd_id") );
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+        };
+        // below line is to make
+        // a json object request.
+        myBase.addToRequestQueue(request);
     }
 }

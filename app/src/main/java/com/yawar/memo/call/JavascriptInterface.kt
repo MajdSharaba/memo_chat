@@ -7,11 +7,11 @@ import com.yawar.memo.views.ConversationActivity
 class JavascriptInterface(val CallMainActivity: CallMainActivity) {
 
     @JavascriptInterface
-    public fun onPeerConnected(string: String) {
+    fun onPeerConnected(string: String) {
         CallMainActivity.onPeerConnected(string)
     }
     @JavascriptInterface
-    public fun print() {
+    fun print() {
        println("this is javaScript code")
     }
 

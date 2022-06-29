@@ -177,6 +177,16 @@
     <string name="reject">reject</string>
     <string name="answer">answer</string>
     <string name="missing_call">Missing Call</string>
+    <string name="replied">Replied</string>
+    <string name="call_ended">Call Ended</string>
+    <string name="alert_switch_to_video_message">do you want to switch to video call?</string>
+    <string name="alert_switch_to_video_from_anthor_message">want to switch to video call do you want to switch too?</string>
+
+    <string name="switch_to_video">switch to video</string>
+
+
+
+
 
 
 

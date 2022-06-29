@@ -32,7 +32,7 @@ import static android.content.Context.MODE_PRIVATE;
 
 /////this class for Api with firebase
 public class AuthApi implements Observer {
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     BaseApp myBase = BaseApp.getInstance();
     ProgressDialog progressDialog;
     AuthRepo authApi= myBase.getAuthRepo();
@@ -117,7 +117,7 @@ public class AuthApi implements Observer {
     }
     //"+9647510487448"
 ///7517863790
-    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
+    private final PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
             // initializing our callbacks for on
             // verification callback method.

@@ -70,7 +70,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment implements Obse
         recyclerView.setAdapter(itemAdapter);
         itemAdapter.notifyDataSetChanged();
 
-        userseenstory =(TextView) v.findViewById(R.id.userseenstory);
+        userseenstory = v.findViewById(R.id.userseenstory);
         userseenstory.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 

@@ -60,7 +60,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
                                 userBlockeds.add(user);}
 
                     }
-                    blockUserAdapter.updateList((ArrayList<UserModel>) userBlockeds);
+                    blockUserAdapter.updateList(userBlockeds);
 
                 }
                 //adapter.notifyDataSetChanged();

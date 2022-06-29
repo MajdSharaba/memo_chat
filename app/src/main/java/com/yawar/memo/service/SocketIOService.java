@@ -584,7 +584,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat.toString());
+            System.out.println(chat);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -596,7 +596,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             typingObject = new JSONObject(messageObject);
-            System.out.println(typingObject.toString());
+            System.out.println(typingObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -666,7 +666,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat.toString()+"qr paramterssssssssss");
+            System.out.println(chat +"qr paramterssssssssss");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -681,7 +681,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat.toString()+"getIdForUser paramterssssssssss");
+            System.out.println(chat +"getIdForUser paramterssssssssss");
         } catch (JSONException e) {
             e.printStackTrace();
         }

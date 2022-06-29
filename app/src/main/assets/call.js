@@ -130,3 +130,44 @@ async function toggleCamera() {
     })
 
 }
+async function toggleStream(b) {
+ if (b == "true") {
+    remoteVideo.className = "primary-video"
+    localVideo.className = "secondary-video"
+      } else {
+      remoteVideo.className = "secondary-video"
+      localVideo.className = "primary-video"
+    }
+
+
+
+}
+//async function replaceStream() {
+//
+//   // const currentTrack = localStream.getVideoTracks()
+//    let senders = runningCall.peerConnection.getSenders();
+//    shouldFaceUser = !shouldFaceUser
+//    navigator.getUserMedia({
+//    audio: true,
+//    video: {
+//      facingMode: shouldFaceUser ? 'user' : 'environment'
+//    }
+//  }, (stream) => {
+////    Android.print()
+////   Android.messageHandlers.bridge.postMessage("senders[0] = "+ JSON.stringify(senders[0]))
+//
+//      localVideo.srcObject = stream
+//      localStream = stream
+//      localVideo.playsInline = true;
+//      let video_track = stream.getVideoTracks()[0];
+////      let video_track = stream.getVideoTracks();
+//
+//      senders[1].replaceTrack(video_track);
+////            senders.replaceTrack(video_track);
+//
+////      localStream.removeTrack(currentTrack[0])
+////      localStream.addTrack(stream.getVideoTracks()[0])
+//    // peer.replaceTrack(localStream.getVideoTracks()[0])
+//    })
+//
+//}

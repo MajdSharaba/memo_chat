@@ -1,6 +1,7 @@
 package com.yawar.memo.service;
 
 import android.annotation.SuppressLint;
+import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -19,6 +20,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.telecom.PhoneAccountHandle;
 import android.telecom.TelecomManager;
 import android.util.Log;
@@ -28,9 +30,14 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.darkhorse.videocalltest.ConnService;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.call.CallMainActivity;
 import com.yawar.memo.call.CallNotificationActivity;
@@ -39,6 +46,7 @@ import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
+import com.yawar.memo.videocalltest.ConnService;
 import com.yawar.memo.views.SplashScreen;
 
 import org.json.JSONException;
@@ -49,6 +57,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
@@ -61,10 +70,11 @@ public class FirebaseMessageReceiver
     String TAG = "FirebaseMessageReceiver";
     BaseApp myBase;
     ChatRoomRepo chatRoomRepo;
+    ServerApi serverApi;
     String chat_id;
     ClassSharedPreferences classSharedPreferences;
 
-    private  int NOTIFICATION_ID = 237;
+    private final int NOTIFICATION_ID = 237;
 //    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
     String GROUP_KEY_WORK_EMAIL = "com.android.example.WORK_EMAIL";
 
@@ -77,9 +87,11 @@ public class FirebaseMessageReceiver
     @SuppressLint("WrongThread")
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-//        System.out.println(remoteMessage.getData().toString()+"jjjjjjjjjjjjjjjjjjjjjjj");
-        Log.i(TAG, "onMessageReceived: "+remoteMessage.getData().toString());
+
+        wackLock();
+        Log.i(TAG, "onMessageReceived: "+ remoteMessage.getPriority()+"getPriority"+remoteMessage.getPriority());
         myBase = (BaseApp) getApplication();
+
         chatRoomRepo=myBase.getChatRoomRepo();
 //        myBase.getObserver().addObserver(this);
         String message = "";
@@ -99,6 +111,7 @@ public class FirebaseMessageReceiver
         // received.
         if(remoteMessage.getData().size()>0){
             boolean isCall = false;
+            System.out.println(remoteMessage.getPriority()+"getPriority"+remoteMessage.getPriority());
 
 
             // Since the notification is received directly from
@@ -116,7 +129,6 @@ public class FirebaseMessageReceiver
                         String image ="";
 
                         try {
-                            System.out.println("not call");
                             messagebody = new JSONObject(remoteMessage.getData().get("body"));
                             userObject = new JSONObject(messagebody.getString("user"));
                             typeObject = new JSONObject(messagebody.getString("type"));
@@ -125,19 +137,16 @@ public class FirebaseMessageReceiver
                             username = userObject.getString("name");
                             image = userObject.getString("image_profile");
 //            anotherUserId = message.getString("snd_id");
-
-
-
-
-
+//
+//
+//
+//
+//
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
-                        callRecived(classSharedPreferences.getUser().getUserId(),anthorUserCallId);
-
-//                showNotification( username, image, remoteMessage.getData().get("body"));
-                        new showCallNotification(this).execute(username,image,remoteMessage.getData().get("body"),anthorUserCallId);
-//                        try {
+//                        callRecived(classSharedPreferences.getUser().getUserId(),anthorUserCallId);
+//                                                try {
 //                            Bundle callInfo = new Bundle();
 //                            PhoneAccountHandle phoneAccountHandle;
 //                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -147,14 +156,21 @@ public class FirebaseMessageReceiver
 //
 //
 //                                callInfo.putString("from", "test");
-//                                callInfo.putString("callRequest",remoteMessage.getData().get("body"));
+//                                callInfo.putString("callRequest",remoteMessage.getData().get("body")) ;
+//
 //                                TelecomManager telecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
 //
-//                                telecomManager.addNewIncomingCall(phoneAccountHandle, callInfo);
-//
+//                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                                    telecomManager.addNewIncomingCall(phoneAccountHandle, callInfo);
+//                                }
 //                            }} catch(Exception e){
-//                            Log.e("main activity incoming", e.toString());
-//                        }
+//                                Log.e("main activity incoming", e.toString());
+//                            }
+
+
+//                showNotification( username, image, remoteMessage.getData().get("body"));
+                        new showCallNotification(this).execute(username,image,remoteMessage.getData().get("body"),anthorUserCallId);
+
                         break;
                     case "missingCall":
 
@@ -170,7 +186,6 @@ public class FirebaseMessageReceiver
                         String userMissCallimage ="";
 
                         try {
-                            System.out.println("not call");
                             messageMissingCall = new JSONObject(remoteMessage.getData().get("body"));
                             userMessCallObject = new JSONObject(messageMissingCall.getString("user"));
                             channelId = messageMissingCall.getString("snd_id");
@@ -291,7 +306,7 @@ public class FirebaseMessageReceiver
                 .Builder(getApplicationContext(),
                 channel_id)
 //                .setNumber(id++)
-                .setPriority(Notification.PRIORITY_MAX).
+                .setPriority(NotificationCompat.PRIORITY_MAX).
                         setContentTitle(title)
                 .setContentText(message)
 
@@ -399,7 +414,7 @@ public class FirebaseMessageReceiver
                else {
                    bitmap= result;
                }
-                Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.record_start);
+                Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.incomingcall);
                 Intent intent
                         = new Intent(FirebaseMessageReceiver.this, SplashScreen.class);
                 // Assign channel ID
@@ -566,7 +581,7 @@ public class FirebaseMessageReceiver
 
 
 
-                String channel_id = "channel";
+                String channelCall = "call_channel";
 
                 PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
                         intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -592,16 +607,16 @@ public class FirebaseMessageReceiver
                         intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
                 /////////////////
 
-                Uri alarmSound =
-                        RingtoneManager. getDefaultUri (RingtoneManager.TYPE_RINGTONE );
+//                Uri alarmSound =
+//                        RingtoneManager. getDefaultUri (RingtoneManager.TYPE_RINGTONE );
 
 //                MediaPlayer mp = MediaPlayer.create (getApplicationContext(), alarmSound);
 //                mp.start();
                 NotificationCompat.Builder builder
                         = new NotificationCompat
                         .Builder(getApplicationContext(),
-                        channel_id)
-                        .setPriority(Notification.PRIORITY_HIGH)
+                        channelCall)
+                        .setPriority(NotificationCompat.PRIORITY_MAX)
 
 
 //                        .setLargeIcon(ImageProperties.getCircleBitmap(bitmap))
@@ -613,7 +628,10 @@ public class FirebaseMessageReceiver
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                         .setCategory(NotificationCompat.CATEGORY_CALL)
 //                        .setTimeoutAfter(10000)
-//                        .setSound(alarmSound, AudioManager.STREAM_VOICE_CALL)
+                        .setSound(null)
+                        .setOngoing(true)
+
+
                         .setVibrate(new long[] { 10000, 10000})
                         .setTicker("Call_STATUS")
 
@@ -642,7 +660,7 @@ public class FirebaseMessageReceiver
                         >= Build.VERSION_CODES.O) {
                     NotificationChannel notificationChannel
                             = new NotificationChannel(
-                            channel_id, "channel_id",
+                            channelCall, "call Channel",
 
                             NotificationManager.IMPORTANCE_HIGH);
                     notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -653,10 +671,13 @@ public class FirebaseMessageReceiver
                     notificationChannel.setDescription("Call Notifications");
                     AudioAttributes audioAttributes = new AudioAttributes.Builder()
                             .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                             .setLegacyStreamType(AudioManager.STREAM_RING)
                             .build();
-                    notificationChannel.setSound(alarmSound, audioAttributes);
+//                    notificationChannel.setSound(alarmSound, null);
+                    notificationChannel.setSound(Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.incomingcall),audioAttributes);
+
 
                     notificationManager.createNotificationChannel(
                             notificationChannel);
@@ -665,30 +686,80 @@ public class FirebaseMessageReceiver
                 }
                 Notification note = builder.build();
                 note.flags |= Notification.FLAG_INSISTENT;
+//                note.flags |= Notification.FLAG_NO_CLEAR;
+
                 notificationManager.notify(Integer.parseInt(anthor_user_id),note);
+                isRining(anthor_user_id);
+
 ////////////////////////////////
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
-    private void callRecived(String my_id,String anthor_user_id) {
+//    private void callRecived(String my_id,String anthor_user_id) {
+//
+//        Intent service = new Intent(this, SocketIOService.class);
+//        JSONObject userEnter = new JSONObject();
+//        System.out.println("call Recived");
+//
+//        try {
+//            userEnter.put("my_id", my_id);
+//            userEnter.put("your_id", anthor_user_id);
+//            userEnter.put("state", "true");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        service.putExtra(SocketIOService.EXTRA_RECIVED_CALL_PARAMTERS, userEnter.toString());
+//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_RECIVED_CALL);
+//        startService(service);
+//    }
+public void isRining(String yout_id) {
 
-        Intent service = new Intent(this, SocketIOService.class);
-        JSONObject userEnter = new JSONObject();
-        System.out.println("call Recived");
+    // creating a new variable for our request queue
+    RequestQueue queue = Volley.newRequestQueue(FirebaseMessageReceiver.this);
+    // on below line we are calling a string
+    // request method to post the data to our API
+    // in this we are calling a post method.
+    StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
+        @Override
+        public void onResponse(String response) {
 
-        try {
-            userEnter.put("my_id", my_id);
-            userEnter.put("your_id", anthor_user_id);
-            userEnter.put("state", "true");
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
+    }, new com.android.volley.Response.ErrorListener() {
+        @Override
+        public void onErrorResponse(VolleyError error) {
+        }
+    }) {
+        @Override
+        protected Map<String, String> getParams() {
+            // below line we are creating a map for
+            // storing our values in key and value pair.
+            Map<String, String> params = new HashMap<String, String>();
 
-        service.putExtra(SocketIOService.EXTRA_RECIVED_CALL_PARAMTERS, userEnter.toString());
-        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_RECIVED_CALL);
-        startService(service);
-    }
+            // on below line we are passing our key
+            // and value pair to our parameters.
+            params.put("my_id", classSharedPreferences.getUser().getUserId());
+            params.put("your_id", yout_id);
+            params.put("state", "true");
+
+            // at last we are
+            // returning our params.
+            return params;
+        }
+    };
+    // below line is to make
+    // a json object request.
+    myBase.addToRequestQueue(request);
+}
+void wackLock(){
+            PowerManager powerManager = (PowerManager) this.getSystemService(this.POWER_SERVICE);
+        PowerManager.WakeLock  wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+                PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                PowerManager.ON_AFTER_RELEASE, "appname::WakeLock");
+            wakeLock.acquire(1*60*1000L);
+
+}
 }
 

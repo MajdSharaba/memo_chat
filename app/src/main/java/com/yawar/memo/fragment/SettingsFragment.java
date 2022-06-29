@@ -144,7 +144,7 @@ public class SettingsFragment extends Fragment {
 
     private void getFindViewById(View view) {
 
-        imageView =(CircleImageView) view.findViewById(R.id.imageView);
+        imageView = view.findViewById(R.id.imageView);
         if(!userModel.getImage().isEmpty()){
             Glide.with(imageView.getContext()).load(AllConstants.imageUrl+userModel.getImage()).error(getResources().getDrawable(R.drawable.th)).into(imageView);}
 
@@ -154,12 +154,12 @@ public class SettingsFragment extends Fragment {
 //        name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 //
 
-        userName =(TextView) view.findViewById(R.id.username);
+        userName = view.findViewById(R.id.username);
         userName.setTextSize(textSize);
         userName.setText(userModel.getUserName()+" "+userModel.getLastName());
         userName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        phoneNumber =(TextView) view.findViewById(R.id.phoneNumber);
+        phoneNumber = view.findViewById(R.id.phoneNumber);
         phoneNumber.setTextSize(textSize);
         phoneNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
         String firstString = userModel.getSecretNumber().substring(0,1);
@@ -170,61 +170,61 @@ public class SettingsFragment extends Fragment {
         phoneNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
 
 
-        setPhoto =(TextView) view.findViewById(R.id.selectImage);
+        setPhoto = view.findViewById(R.id.selectImage);
         setPhoto.setTextSize(textSize);
         setPhoto.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        setUserName =(TextView) view.findViewById(R.id.setUserName);
+        setUserName = view.findViewById(R.id.setUserName);
         setUserName.setTextSize(textSize);
         setUserName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        devises =(CardView) view.findViewById(R.id.devices);
-        dev =(TextView) view.findViewById(R.id.dev);
+        devises = view.findViewById(R.id.devices);
+        dev = view.findViewById(R.id.dev);
         dev.setTextSize(textSize);
         dev.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        recentCalls =(CardView) view.findViewById(R.id.recentCalls);
-        recentCall =(TextView) view.findViewById(R.id.recentCall);
+        recentCalls = view.findViewById(R.id.recentCalls);
+        recentCall = view.findViewById(R.id.recentCall);
         recentCall.setTextSize(textSize);
         recentCall.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        notificationAndSounds =(CardView) view.findViewById(R.id.notificationAndSound);
-        notificationAnd =(TextView) view.findViewById(R.id.notificationAnd);
+        notificationAndSounds = view.findViewById(R.id.notificationAndSound);
+        notificationAnd = view.findViewById(R.id.notificationAnd);
         notificationAnd.setTextSize(textSize);
         notificationAnd.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        appearance =(CardView) view.findViewById(R.id.Appearance);
-        Appearanc =(TextView) view.findViewById(R.id.Appearanc);
+        appearance = view.findViewById(R.id.Appearance);
+        Appearanc = view.findViewById(R.id.Appearanc);
         Appearanc.setTextSize(textSize);
         Appearanc.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        language =(CardView) view.findViewById(R.id.language);
-        languag =(TextView) view.findViewById(R.id.languag);
+        language = view.findViewById(R.id.language);
+        languag = view.findViewById(R.id.languag);
         languag.setTextSize(textSize);
         languag.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        fontSize =(CardView) view.findViewById(R.id.fontSize);
-        fontSiz =(TextView) view.findViewById(R.id.fontSiz);
+        fontSize = view.findViewById(R.id.fontSize);
+        fontSiz = view.findViewById(R.id.fontSiz);
         fontSiz.setTextSize(textSize);
         fontSiz.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        blockList =(CardView) view.findViewById(R.id.contact_number_blocked);
-        askMemoQuesti =(TextView) view.findViewById(R.id.askMemoQuesti);
+        blockList = view.findViewById(R.id.contact_number_blocked);
+        askMemoQuesti = view.findViewById(R.id.askMemoQuesti);
         askMemoQuesti.setTextSize(textSize);
         askMemoQuesti.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        deleteAccount =(CardView) view.findViewById(R.id.delete_accont);
-        preferene =(TextView) view.findViewById(R.id.preferene);
+        deleteAccount = view.findViewById(R.id.delete_accont);
+        preferene = view.findViewById(R.id.preferene);
         preferene.setTextSize(textSize);
         preferene.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        tellafriend =(CardView) view.findViewById(R.id.tellAFriend);
-        tellafri =(TextView) view.findViewById(R.id.tellafri);
+        tellafriend = view.findViewById(R.id.tellAFriend);
+        tellafri = view.findViewById(R.id.tellafri);
         tellafri.setTextSize(textSize);
         tellafri.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        logOut =(CardView) view.findViewById(R.id.log_out);
-        hel =(TextView) view.findViewById(R.id.hel);
+        logOut = view.findViewById(R.id.log_out);
+        hel = view.findViewById(R.id.hel);
         hel.setTextSize(textSize);
         hel.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
@@ -276,13 +276,13 @@ public class SettingsFragment extends Fragment {
             public void onClick(View v) {
                 final AlertDialog.Builder alert = new AlertDialog.Builder(getActivity());
                 View mView = getLayoutInflater().inflate(R.layout.input_name_dialog,null);
-                final EditText txt_inputFirstName = (EditText)mView.findViewById(R.id.ed_first_name);
-                final EditText txt_inputLastName = (EditText)mView.findViewById(R.id.ed_last_name);
+                final EditText txt_inputFirstName = mView.findViewById(R.id.ed_first_name);
+                final EditText txt_inputLastName = mView.findViewById(R.id.ed_last_name);
                 txt_inputFirstName.setHint(userModel.getUserName());
                 txt_inputLastName.setHint(userModel.getLastName());
 
-                Button btn_cancel = (Button)mView.findViewById(R.id.btn_cancel);
-                Button btn_okay = (Button)mView.findViewById(R.id.btn_add);
+                Button btn_cancel = mView.findViewById(R.id.btn_cancel);
+                Button btn_okay = mView.findViewById(R.id.btn_add);
                 alert.setView(mView);
                 final AlertDialog alertDialog = alert.create();
                 alertDialog.setCanceledOnTouchOutside(false);

@@ -51,7 +51,7 @@ BottomNavigationView bottomNavigation;
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
         this.startService(service);
     }
-    private BroadcastReceiver reciveNewChat = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveNewChat = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -145,7 +145,7 @@ BottomNavigationView bottomNavigation;
 //
 //
     };
-    private BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             System.out.println("newMessssssssssssssssssssssssssssssssssssssssssssge");
@@ -204,7 +204,7 @@ BottomNavigationView bottomNavigation;
 
 
     };
-    private BroadcastReceiver reciveTyping = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveTyping = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -225,12 +225,7 @@ BottomNavigationView bottomNavigation;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if (isTyping.equals("true")) {
-                chatRoomRepo.setTyping(chat_id, true);
-
-            } else {
-                chatRoomRepo.setTyping(chat_id, false);
-            }
+            chatRoomRepo.setTyping(chat_id, isTyping.equals("true"));
         }
     };
     @Override
@@ -251,7 +246,7 @@ BottomNavigationView bottomNavigation;
         chatRoomRepo= myBase.getChatRoomRepo();
                         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
 
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigationChip);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.navigationChip);
                 if (savedInstanceState == null) {
                     bottomNavigationView.setSelectedItemId(R.id.chat);
             getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, new ChatRoomFragment()).commit();

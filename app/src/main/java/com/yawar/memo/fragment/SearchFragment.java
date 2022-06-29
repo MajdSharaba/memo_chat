@@ -162,7 +162,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         //     recyclerView.setAdapter(searchAdapter);
 
         toolbar = view.findViewById(R.id.toolbar);
-        search = (TextView) view.findViewById(R.id.search);
+        search = view.findViewById(R.id.search);
 
         search.setTextSize(textSize);
         search.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));

@@ -65,7 +65,7 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
         this.list = data;
         this.context = context;
         try {
-            mCallback = (ChatRoomAdapter.CallbackInterfac) context;
+            mCallback = context;
         } catch (ClassCastException ex) {
             //.. should log the error or throw and exception
         }
@@ -286,7 +286,7 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
     public Filter getFilter() {
         return exampleFilter;
     }
-    private Filter exampleFilter = new Filter() {
+    private final Filter exampleFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             List<ChatRoomModel> filteredList = new ArrayList<>();
@@ -352,9 +352,9 @@ public class ChatRoomAdapter extends RecyclerView.Adapter<ChatRoomAdapter.View_H
 
      View_Holder(View itemView) {
          super(itemView);
-         name = (TextView) itemView.findViewById(R.id.name);
-         lastMessage = (TextView) itemView.findViewById(R.id.lastMessage);
-         imageView = (ImageView) itemView.findViewById(R.id.image);
+         name = itemView.findViewById(R.id.name);
+         lastMessage = itemView.findViewById(R.id.lastMessage);
+         imageView = itemView.findViewById(R.id.image);
          linearLayout = itemView.findViewById(R.id.liner_chat_room_row);
          numUMessage = itemView.findViewById(R.id.num_message);
          imageType = itemView.findViewById(R.id.img_type);

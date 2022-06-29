@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
-        text =(TextView) findViewById(R.id.text);
+        text = findViewById(R.id.text);
         text.setTextSize(textSize);
         text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
@@ -117,7 +117,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
         sendBtn = findViewById(R.id.btn_send_code);
-        ccp = (CountryCodePicker) findViewById(R.id.ccp);
+        ccp = findViewById(R.id.ccp);
 
         edtPhone = findViewById(R.id.editTextPhone);
         sendBtn.setOnClickListener(new View.OnClickListener() {

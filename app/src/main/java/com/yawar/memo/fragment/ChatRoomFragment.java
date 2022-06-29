@@ -122,14 +122,14 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 //        Intent starter = new Intent(context, BasicActivity.class);
 //        context.startActivity(starter);
 //    }
-    private BroadcastReceiver onSocketConnect = new BroadcastReceiver() {
+    private final BroadcastReceiver onSocketConnect = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isConnected = intent.getExtras().getBoolean("status");
 
         }
     };
-    private BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             System.out.println("newMessssssssssssssssssssssssssssssssssssssssssssge");
@@ -184,7 +184,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
 
     };
-    private BroadcastReceiver reciveTyping = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveTyping = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -205,12 +205,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            if (isTyping.equals("true")) {
-                chatRoomRepo.setTyping(chat_id, true);
-
-            } else {
-                chatRoomRepo.setTyping(chat_id, false);
-            }
+            chatRoomRepo.setTyping(chat_id, isTyping.equals("true"));
 
 
 //                    if(anthor_user_id.equals(anthor_id)){

@@ -410,7 +410,7 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
     @Override
     public void onHandleSelection(int position, SendContactNumberResponse sendContactNumberResponse) {
         Bundle bundle = new Bundle();
-        System.out.println(sendContactNumberResponse.getChat_id()+sendContactNumberResponse.getFcmToken().toString()+"memooooooooo");
+        System.out.println(sendContactNumberResponse.getChat_id()+ sendContactNumberResponse.getFcmToken() +"memooooooooo");
 
 
         bundle.putString("reciver_id",sendContactNumberResponse.getId());

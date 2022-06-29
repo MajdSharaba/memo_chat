@@ -58,7 +58,7 @@ import java.util.ArrayList;
             this.activity = activity;
             this.arrayList = arrayList;
             try{
-                mCallback = (CallbackInterface) searchFragment;
+                mCallback = searchFragment;
             }catch(ClassCastException ex){
                 //.. should log the error or throw and exception
             }

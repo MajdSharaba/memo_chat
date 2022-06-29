@@ -68,7 +68,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatAdapter  extends RecyclerView.Adapter  {
     public final List<ChatMessage> chatMessages;
-    private Activity context;
+    private final Activity context;
     private ChatAdapter.CallbackInterface mCallback;
 
 
@@ -202,8 +202,8 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
         switch (chatMessage.getType()) {
             case "imageWeb":
-                setAlignment((LayoutImageViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutImageViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutImageViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
 
                 File imageFile;
                 if (myMsg) {
@@ -214,7 +214,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 } else {
                     File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/video");  // -> filename = maven.pdf
 
-                    imageFile = new File(d, chatMessage.getImage().toString());
+                    imageFile = new File(d, chatMessage.getImage());
 
                 }
                 if (!imageFile.exists()) {
@@ -279,7 +279,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                             dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
 
 
-                            PhotoView image = (PhotoView) dialog.findViewById(R.id.photo_view);
+                            PhotoView image = dialog.findViewById(R.id.photo_view);
                             Glide.with(image.getContext()).load(path).centerCrop().into(image);
                             dialog.show();
 
@@ -292,10 +292,10 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 break;
 
             case "voice":
-                setAlignment((LayoutVoiceViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
 
                 ((LayoutVoiceViewHolder) holder).contentRecord.setVisibility(View.VISIBLE);
-                ((LayoutVoiceViewHolder) holder).textDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                ((LayoutVoiceViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
 
 
                 ((LayoutVoiceViewHolder) holder).mediaPlayer = new MediaPlayer();
@@ -310,7 +310,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
                 } else {
                     File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/voiceRecord");  // -> filename = maven.pdf
-                    voiceFile = new File(d, chatMessage.getMessage().toString());
+                    voiceFile = new File(d, chatMessage.getMessage());
 
                 }
                 if (!voiceFile.exists()) {
@@ -452,8 +452,8 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 break;
             //// voice end
             case "video":
-                setAlignment((LayoutVideoViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutVideoViewHolder) holder).textDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutVideoViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
 
                 File videoFile;
                 if (myMsg) {
@@ -463,7 +463,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
                 } else {
                     File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/video");  // -> filename = maven.pdf
-                    videoFile = new File(d, chatMessage.getMessage().toString());
+                    videoFile = new File(d, chatMessage.getMessage());
 
                 }
 //                if(chatMessage.isDownload()){
@@ -553,8 +553,8 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
             ///////////////////////
             //// file begin
             case "file":
-                setAlignment((LayoutPdfViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutPdfViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutPdfViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
 
 
                 File pdfFile;
@@ -564,7 +564,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
                 } else {
                     File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive");  // -> filename = maven.pdf
-                    pdfFile = new File(d, chatMessage.getMessage().toString());
+                    pdfFile = new File(d, chatMessage.getMessage());
 
                 }
 
@@ -631,9 +631,9 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
                 break;
             case "contact":
-                setAlignment(((LayoutContactViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
 
-                ((LayoutContactViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                ((LayoutContactViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
 
                 ((LayoutContactViewHolder) holder).txtNumber.setText(chatMessage.getMessage());
 
@@ -706,8 +706,8 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 break;
             case "location":
 
-                setAlignment(((LayoutLocationViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutLocationViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutLocationViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
 
                 ((LayoutLocationViewHolder) holder).cardOpenLocation.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -724,8 +724,8 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 break;
             default:
 
-                setAlignment(((LayoutTextViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutTextViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutTextViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
                 if(chatMessage.getIsUpdate().equals("1")){
                     ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.VISIBLE);
 
@@ -1272,11 +1272,11 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
     public void filter(String charText) {
         for (ChatMessage wp : chatMessages) {
             if (wp.getMessage() != null) {
-                System.out.println(wp.getMessage().toString());
-                if (wp.getMessage().toString().toLowerCase(Locale.getDefault()).contains(charText)) {
-                    int index = wp.getMessage().toString().toLowerCase(Locale.getDefault()).indexOf(charText);
+                System.out.println(wp.getMessage());
+                if (wp.getMessage().toLowerCase(Locale.getDefault()).contains(charText)) {
+                    int index = wp.getMessage().toLowerCase(Locale.getDefault()).indexOf(charText);
 
-                    Spannable WordtoSpan = new SpannableString(wp.getMessage().toString());
+                    Spannable WordtoSpan = new SpannableString(wp.getMessage());
                     WordtoSpan.setSpan(new ForegroundColorSpan(Color.BLUE), index, index + charText.length(),
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     //wp.setMessage(WordtoSpan);
@@ -1327,13 +1327,13 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 class LayoutImageViewHolder
         extends RecyclerView.ViewHolder {
 
-    private ImageView imageView;
-    private ImageButton downloadImage;
+    private final ImageView imageView;
+    private final ImageButton downloadImage;
     int l =0;
 
-    private LinearLayout content;
-    private LinearLayout contentwithB;
-    private ImageView imageSeen;
+    private final LinearLayout content;
+    private final LinearLayout contentwithB;
+    private final ImageView imageSeen;
     public TextView txtDate;
     AdCircleProgress  adCircleProgress;
 
@@ -1351,8 +1351,8 @@ class LayoutImageViewHolder
         contentwithB = itemView.findViewById(R.id.contentWithBackground);
 
         txtDate = itemView.findViewById(R.id.tv_date);
-        txtDate.setTextSize(textSize);
-        txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        txtDate.setTextSize(textSize);
+//        txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         imageSeen = itemView.findViewById(R.id.iv_state);
         downloadImage = itemView.findViewById(R.id.image_download);
@@ -1365,10 +1365,10 @@ class LayoutImageViewHolder
 class LayoutVoiceViewHolder
         extends RecyclerView.ViewHolder {
 
-    private LinearLayout content;
+    private final LinearLayout content;
     int l =0;
-    private LinearLayout contentWithBG;
-    private ImageView imageSeen;
+    private final LinearLayout contentWithBG;
+    private final ImageView imageSeen;
     public TextView textDate;
     public LinearLayout contentRecord;
     ImageView imagePlayerPause;
@@ -1422,9 +1422,9 @@ class LayoutVoiceViewHolder
     class LayoutVideoViewHolder
             extends RecyclerView.ViewHolder {
 
-        private LinearLayout content;
-        private LinearLayout contentWithBG;
-        private ImageView imageSeen;
+        private final LinearLayout content;
+        private final LinearLayout contentWithBG;
+        private final ImageView imageSeen;
         public TextView textDate;
         FrameLayout contentVideo;
         ImageButton videoImageButton;
@@ -1457,7 +1457,7 @@ class LayoutVoiceViewHolder
     }
     public static class LayoutPdfViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageSeen;
+        private final ImageView imageSeen;
 
         public TextView txtDate;
         public TextView txtFile;
@@ -1479,9 +1479,9 @@ class LayoutVoiceViewHolder
         public LayoutPdfViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            content = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (LinearLayout) itemView.findViewById(R.id.contentWithBackground);
-            contentFile = (LinearLayout) itemView.findViewById(R.id.liner_file);
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.contentWithBackground);
+            contentFile = itemView.findViewById(R.id.liner_file);
 
             txtDate = itemView.findViewById(R.id.tv_date);
 
@@ -1504,7 +1504,7 @@ class LayoutVoiceViewHolder
     }
     public static class LayoutContactViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageSeen;
+        private final ImageView imageSeen;
 
         public TextView txtDate;
         public CircleImageView imageProfile ;
@@ -1527,8 +1527,8 @@ class LayoutVoiceViewHolder
         public LayoutContactViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            content       = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (CardView) itemView.findViewById(R.id.card);
+            content       = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.card);
 
             txtDate   = itemView.findViewById(R.id.tv_date);
 
@@ -1558,7 +1558,7 @@ class LayoutVoiceViewHolder
     }
     public static class LayoutLocationViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageSeen;
+        private final ImageView imageSeen;
 
         public TextView txtDate;
         public LinearLayout content;
@@ -1577,8 +1577,8 @@ class LayoutVoiceViewHolder
         public LayoutLocationViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            content = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (LinearLayout) itemView.findViewById(R.id.contentWithBackground);
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.contentWithBackground);
             txtDate = itemView.findViewById(R.id.tv_date);
             imageSeen = itemView.findViewById(R.id.iv_state);
             cardOpenLocation = itemView.findViewById(R.id.cardOpenItLocation);
@@ -1592,7 +1592,7 @@ class LayoutVoiceViewHolder
     }
     public static class LayoutTextViewHolder extends RecyclerView.ViewHolder {
         public TextView txtMessage;
-        private ImageView imageSeen;
+        private final ImageView imageSeen;
         public TextView txtInfo;
         public TextView txtDate;
         public TextView txtUpdate;
@@ -1616,14 +1616,14 @@ class LayoutVoiceViewHolder
             super(itemView);
 
 
-            txtMessage = (TextView) itemView.findViewById(R.id.txtMessage);
+            txtMessage = itemView.findViewById(R.id.txtMessage);
 
 
-            content = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (RelativeLayout) itemView.findViewById(R.id.contentWithBackground);
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.contentWithBackground);
 
 
-            txtInfo = (TextView) itemView.findViewById(R.id.txtInfo);
+            txtInfo = itemView.findViewById(R.id.txtInfo);
 
 
 

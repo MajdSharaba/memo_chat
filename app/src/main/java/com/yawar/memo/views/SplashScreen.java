@@ -35,7 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class SplashScreen extends AppCompatActivity {
-    private static int SPLASH_SCREEN_TIME_OUT=3000;
+    private static final int SPLASH_SCREEN_TIME_OUT=3000;
     ClassSharedPreferences classSharedPreferences;
     private static final int STORAGE_PERMISSION_CODE = 101;
 

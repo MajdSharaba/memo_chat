@@ -4,6 +4,9 @@
     package="com.yawar.memo">
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET" />
+<!--    <uses-permission android:name="" />-->
+
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -63,7 +66,7 @@
         <activity
             android:name=".call.CallMainActivity"
             android:exported="false"
-            android:showOnLockScreen="true"
+            android:showOnLockScreen="false"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
             />
@@ -112,9 +115,9 @@
         </service>
         <receiver android:name=".service.NotificationReceiver" />
         <service
-            android:name="com.darkhorse.videocalltest.ConnService"
+            android:name="com.yawar.memo.videocalltest.ConnService"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.telecom.ConnectionService" />
             </intent-filter>

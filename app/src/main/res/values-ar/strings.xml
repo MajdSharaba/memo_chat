@@ -217,6 +217,15 @@
     <string name="reject">رفض</string>
     <string name="answer">رد</string>
     <string name="missing_call">مكالمة فائتة</string>
+    <string name="replied">تم الرد</string>
+    <string name="call_ended">تم انهاء المكالمة</string>
+    <string name="alert_switch_to_video_message">هل تريد الانتقال الى مكالمة فيديو؟</string>
+    <string name="alert_switch_to_video_from_anthor_message">يريد الانتقال الى مكالمة فيديو هل تريد الانتقال ايضا؟</string>
+
+    <string name="switch_to_video">الانتقال الى الفيديو</string>
+
+
+
 
 
 

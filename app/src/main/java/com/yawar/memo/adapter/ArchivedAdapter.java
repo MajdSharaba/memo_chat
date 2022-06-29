@@ -280,16 +280,16 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
         View_Holder(View itemView ) {
             super(itemView);
 
-            name = (TextView) itemView.findViewById(R.id.name);
+            name = itemView.findViewById(R.id.name);
             name.setTextSize(textSize);
             name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-            lastMessage = (TextView) itemView.findViewById(R.id.lastMessage);
+            lastMessage = itemView.findViewById(R.id.lastMessage);
             lastMessage.setTextSize(textSize);
             lastMessage.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
-            imageView = (ImageView) itemView.findViewById(R.id.image);
+            imageView = itemView.findViewById(R.id.image);
             linearLayout = itemView.findViewById(R.id.liner_chat_room_row);
 
             numUMessage = itemView.findViewById(R.id.num_message);

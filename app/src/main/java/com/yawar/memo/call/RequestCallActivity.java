@@ -4,12 +4,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,15 +43,24 @@ import com.yawar.memo.service.SocketIOService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.UUID;
 public class RequestCallActivity extends AppCompatActivity {
 
     Boolean isPeerConnected = false;
     boolean isRining = false;
+    boolean isVideoForMe = true;
+    boolean isVideoForYou = true;
+    boolean isVideoCall = true;
     ServerApi serverApi;
-    private int requestcode = 1;
+    private final int requestcode = 1;
     public static final String ON_STOP_CALLING_REQUEST = "RequestCallActivity.ON_STOP_CALLING_REQUEST";
     public static final String ON_RINING_REQUEST = "RequestCallActivity.ON_RINING_REQUEST";
+    private MediaPlayer mMediaPlayer;
+    private AudioManager mAudioManager;
+    CountDownTimer countDownTimer;
+    AlertDialog.Builder dialog ;
+
 
     TextView userNameTv;
     UserModel userModel;
@@ -54,7 +71,7 @@ public class RequestCallActivity extends AppCompatActivity {
 //    var firebaseRef = Firebase.database.getReference("users")
 
     Boolean isAudio = true;
-    Boolean isVideo = true;
+//    Boolean isVideo = true;
     Button callBtn;
     String uniqueId = "";
     ImageView toggleAudioBtn;
@@ -68,6 +85,8 @@ public class RequestCallActivity extends AppCompatActivity {
     ImageButton imgBtnOpenCameraCallLp;
     ImageButton imgBtnOpenAudioCallLp;
     ImageButton imgBtnSwitchCamera;
+    final Handler handler = new Handler();
+
 
 
 
@@ -94,7 +113,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
 
 
-    private BroadcastReceiver reciveRining = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveRining = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -106,7 +125,19 @@ public class RequestCallActivity extends AppCompatActivity {
                         message = new JSONObject(reciveCallString);
                          isRining = message.getBoolean("state");
                         if(isRining){
+//                            Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.record_start);
+
                             callStatusTV.setText(getResources().getString(R.string.rining));
+                            mMediaPlayer.release();
+                                mMediaPlayer = MediaPlayer.create(RequestCallActivity.this, R.raw.ring);
+                            mMediaPlayer.setLooping(true);
+
+                            mMediaPlayer.start();
+                                countDownTimer.cancel();
+                                countDownTimer.start();
+
+
+
                         }
                         else {
                             callStatusTV.setText(getResources().getString(R.string.calling));
@@ -122,7 +153,7 @@ public class RequestCallActivity extends AppCompatActivity {
             });
         }
     };
-    private BroadcastReceiver reciveSettingsCalling = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveSettingsCalling = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -134,15 +165,25 @@ public class RequestCallActivity extends AppCompatActivity {
                     JSONObject message = null;
                     try {
                         message = new JSONObject(stopCallString);
-                        boolean videoSetting = message.getBoolean("camera");
+                         isVideoForYou = message.getBoolean("camera");
                         boolean audioSetting = message.getBoolean("microphone");
+                        callJavascriptFunction("javascript:toggleStream(\"" +isVideoForYou  + "\")");
+                        if(isVideoForYou){
 
-                        if(videoSetting){
                             if(webView.getVisibility()==View.GONE){
+                                String mess=userName.concat(getResources().getString(R.string.alert_switch_to_video_from_anthor_message));
                                 webView.setVisibility(View.VISIBLE);
                                 callLayout.setVisibility(View.GONE);
                                 layoutCallProperties.setVisibility(View.VISIBLE);
-                            }
+                            }}
+                            else {
+                                if(!isVideoForMe){
+                                    webView.setVisibility(View.GONE);
+                                    callLayout.setVisibility(View.VISIBLE);
+                                    layoutCallProperties.setVisibility(View.GONE);
+                                }
+
+
 
                         }
                     } catch (JSONException e) {
@@ -156,7 +197,7 @@ public class RequestCallActivity extends AppCompatActivity {
             });
         }
     };
-    private BroadcastReceiver recivePeerId = new BroadcastReceiver() {
+    private final BroadcastReceiver recivePeerId = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -164,6 +205,7 @@ public class RequestCallActivity extends AppCompatActivity {
                 public void run() {
                     String callString = intent.getExtras().getString("fetchPeer");
                     isRining = false;
+                    String call_peer_id = "no connect";
                     System.out.println("FETCH_PEER_ID" + callString);
                     JSONObject message = null;
                     ///////////
@@ -171,23 +213,32 @@ public class RequestCallActivity extends AppCompatActivity {
 
                         message = new JSONObject(callString);
                         if(message.getString("peerId")!=null){
-                        PeerIdRecived = message.getString("peerId");}
+                            call_peer_id = message.getString("peerId");}
 
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    System.out.println(PeerIdRecived + "reciveeeePeeer");
-                    if(PeerIdRecived.equals("null")){
-                        finish();
+                    System.out.println(call_peer_id + "reciveeeePeeer");
+                    if(call_peer_id.equals("null")){
+                        PeerIdRecived= call_peer_id;
+
+                        finishCall();
+
                     }
-                    else if(PeerIdRecived.equals("no connect")){
+                    else if(call_peer_id.equals("no connect")){
                         Log.i(TAG, "run: not connected");
+
                     }
                     else {
-                        callStatusTV.setText("تم الرد");
-                        callJavascriptFunction("javascript:startCall(\"" + PeerIdRecived + "\"," + "\"" + isVideo + "\")");
-                        if (isVideo) {
+                        PeerIdRecived= call_peer_id;
+                        callStatusTV.setText(R.string.replied);
+                        countDownTimer.cancel();
+                        mMediaPlayer.release();
+
+
+                        callJavascriptFunction("javascript:startCall(\"" + PeerIdRecived + "\"," + "\"" + isVideoForMe + "\")");
+                        if (isVideoForMe) {
                             callLayout.setVisibility(View.GONE);
                             layoutCallProperties.setVisibility(View.VISIBLE);
                         } else {
@@ -202,7 +253,10 @@ public class RequestCallActivity extends AppCompatActivity {
             });
         }
     };
-    private BroadcastReceiver reciveStopCalling = new BroadcastReceiver() {
+
+
+
+    private final BroadcastReceiver reciveStopCalling = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -211,7 +265,7 @@ public class RequestCallActivity extends AppCompatActivity {
                     String stopCallString = intent.getExtras().getString("get stopCalling");
                     System.out.println("stopCallString");
                     JSONObject message = null;
-                    finish();
+                    finishCall();
 
 //                    try {
 //                        message = new JSONObject(stopCallString);
@@ -232,6 +286,7 @@ public class RequestCallActivity extends AppCompatActivity {
     };
 
     private void startCall() {
+        startCounter();
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
         JSONObject type = new JSONObject();
@@ -241,7 +296,7 @@ public class RequestCallActivity extends AppCompatActivity {
         ////
 
         try {
-            type.put("video", isVideo);
+            type.put("video", isVideoForMe);
             type.put("audio", true);
             userObject.put("name", userModel.getUserName());
             userObject.put("image_profile", userModel.getImage());
@@ -261,6 +316,23 @@ public class RequestCallActivity extends AppCompatActivity {
         startService(service);
 
     }
+
+    private void startCounter() {
+        int i=0;
+        countDownTimer = new CountDownTimer(30000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
+
+            public void onTick(long millisUntilFinished) {
+                System.out.println(i+1);
+            }
+            public void onFinish() {
+                SendMissingCall();
+                finishCall ();
+
+            }
+        }.start();
+
+    }
+
     private void closeCall() {
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
@@ -282,6 +354,7 @@ public class RequestCallActivity extends AppCompatActivity {
     private void sendSettingsCall(boolean video, boolean mic) {
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
+        System.out.println("isVideosetting"+video);
         try {
             data.put("snd_id", my_id);
             data.put("rcv_id", anthor_user_id);
@@ -348,17 +421,33 @@ public class RequestCallActivity extends AppCompatActivity {
         anthor_user_id = bundle.getString("anthor_user_id", null);
         userName = bundle.getString("user_name", null);
         fcm_token = bundle.getString("fcm_token", null);
-        isVideo = bundle.getBoolean("isVideo", true);
+        isVideoForMe = bundle.getBoolean("isVideo", true);
+        isVideoForYou = isVideoForMe;
         classSharedPreferences = new ClassSharedPreferences(this);
         my_id = classSharedPreferences.getUser().getUserId();
         userModel = classSharedPreferences.getUser();
-
+        dialog = new AlertDialog.Builder(this);
 
         startCall();
+        mMediaPlayer = MediaPlayer.create(this, R.raw.outputcall);
+
+        mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+
+
+        mAudioManager.setSpeakerphoneOn(false);
+        mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+//
+        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
+                mAudioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
+                AudioManager.FX_KEY_CLICK);
+
+        mMediaPlayer.setLooping(true);
+
+        mMediaPlayer.start();
 
 
         webView = findViewById(R.id.webView);
-        if (isVideo) {
+        if (isVideoForMe) {
             webView.setVisibility(View.VISIBLE);
         } else {
             webView.setVisibility(View.GONE);
@@ -384,8 +473,12 @@ public class RequestCallActivity extends AppCompatActivity {
         btnImageOpenCamera.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (!PeerIdRecived.equals("null")) {
-                    closeOpenVideo();}
+                    System.out.println(" closeOpenVideo()"+PeerIdRecived);
+
+                    if (!PeerIdRecived.equals("no connect")) {
+//                    closeOpenVideo();
+                        showSwitchToVideoDialog(getResources().getString(R.string.alert_switch_to_video_message));
+                    }
                 }
             });
 
@@ -400,13 +493,18 @@ public class RequestCallActivity extends AppCompatActivity {
         imageStopCalling.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                closeCall();
                 if(isRining){
                     SendMissingCall();
-                    finish();
+                    finishCall ();
                 }
-                else {
-                finish();}
+                else  if (!PeerIdRecived.equals("null")) {
+
+                    closeCall();
+                    finishCall();
+                }
+                else{
+                    finishCall ();
+                }
             }
         });
 
@@ -422,7 +520,6 @@ public class RequestCallActivity extends AppCompatActivity {
         imgBtnOpenCameraCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("callinggggggggggg");
                 closeOpenVideo();
 
             }
@@ -507,6 +604,8 @@ public class RequestCallActivity extends AppCompatActivity {
         String uniqueId = getUniqueID();
 
         callJavascriptFunction("javascript:init(\"" + uniqueId + "\")");
+//        callJavascriptFunction("javascript:init(\"" + uniqueId + "\","+"\"" + my_id + "\")");
+
 
 
     }
@@ -569,9 +668,12 @@ public class RequestCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveRining);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveSettingsCalling);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveStopCalling);
+        mMediaPlayer.release();
 
+        countDownTimer.cancel();
 
-
+        mAudioManager.setSpeakerphoneOn(false);
+        mAudioManager.setMode(AudioManager.MODE_NORMAL);
 
 
 
@@ -585,17 +687,25 @@ public class RequestCallActivity extends AppCompatActivity {
         super.onBackPressed();
     }
     public void closeOpenVideo() {
-        isVideo = !isVideo;
-        sendSettingsCall(isVideo,true);
+        isVideoForMe = !isVideoForMe;
+        sendSettingsCall(isVideoForMe,true);
+
         if(webView.getVisibility()==View.GONE){
             webView.setVisibility(View.VISIBLE);
             callLayout.setVisibility(View.GONE);
             layoutCallProperties.setVisibility(View.VISIBLE);
 
         }
+        else{
+              if(!isVideoForMe&&!isVideoForYou) {
+                  webView.setVisibility(View.GONE);
+                  callLayout.setVisibility(View.VISIBLE);
+                  layoutCallProperties.setVisibility(View.GONE);
+              }
+        }
 
-        callJavascriptFunction("javascript:toggleVideo(\"" + isVideo + "\")");
-        if (isVideo) {
+        callJavascriptFunction("javascript:toggleVideo(\"" + isVideoForMe + "\")");
+        if (isVideoForMe) {
             imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
         } else {
             imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_24);
@@ -615,4 +725,42 @@ public class RequestCallActivity extends AppCompatActivity {
                 }
 
     }
-}
+    private void finishCall() {
+        countDownTimer.cancel();
+        callStatusTV.setText(R.string.call_ended);
+//        mMediaPlayer.release();
+
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // Do something after 5s = 5000ms
+                finish();
+            }
+        }, 500);
+    }
+
+    void showSwitchToVideoDialog(String message){
+//        dialog.setMessage(getString(R.string.alert_delete_message));
+
+        dialog.setTitle(message);
+        dialog.setPositiveButton(R.string.switch_to_video,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,
+                                        int which) {
+                        closeOpenVideo();
+
+                    }
+                });
+        dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+    }
+    }
+

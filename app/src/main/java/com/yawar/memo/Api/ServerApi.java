@@ -391,7 +391,7 @@ public class ServerApi {
             @Override
             public void onResponse(String response) {
                 progressDialog.dismiss();
-                System.out.println(response.toString());
+                System.out.println(response);
 
                 // on below line we are passing our response
                 // to json object to extract data from it.
@@ -441,7 +441,7 @@ public class ServerApi {
                 // on below line we are passing our key
                 // and value pair to our parameters.
                 String data = new Gson().toJson(arrayList);
-                params.put("data", data.toString());
+                params.put("data", data);
                 params.put("id",myId);
 //                params.put("email", email);
 //                params.put("first_name", firstName);
@@ -946,6 +946,49 @@ public class ServerApi {
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_PEER_ID);
        context.startService(service);
 
+    }
+
+    public void isRining(String yout_id) {
+        classSharedPreferences = new ClassSharedPreferences(context);
+
+        // creating a new variable for our request queue
+        RequestQueue queue = Volley.newRequestQueue(context);
+        // on below line we are calling a string
+        // request method to post the data to our API
+        // in this we are calling a post method.
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // method to handle errors.
+//                Toast.makeText(getContext(), "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("my_id", classSharedPreferences.getUser().getUserId());
+                params.put("your_id", yout_id);
+                params.put("state", "true");
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+        };
+        // below line is to make
+        // a json object request.
+        queue.add(request);
     }
 
 

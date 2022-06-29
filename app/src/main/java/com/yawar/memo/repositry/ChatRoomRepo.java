@@ -65,7 +65,7 @@ public class ChatRoomRepo {
             Log.d("getUserrr", "callAPI: "+s);
                         JSONObject respObj = new JSONObject(s);
                         JSONArray dataArray = (JSONArray) respObj.get("data");
-                        System.out.println(dataArray.toString()+"dataArray");
+                        System.out.println(dataArray +"dataArray");
 
 
 
@@ -263,11 +263,7 @@ public class ChatRoomRepo {
         }
         for (ChatRoomModel chatRoom : chatRoomsList) {
             if (chatRoom.getUserId().equals(anthor_user_id)) {
-                if (chatRoom.inChat) {
-                    return true;
-                } else {
-                    return false;
-                }
+                return chatRoom.inChat;
 
             }
         }

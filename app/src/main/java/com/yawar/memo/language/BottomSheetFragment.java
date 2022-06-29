@@ -45,9 +45,9 @@ public class BottomSheetFragment extends BottomSheetDialogFragment{
         main = new SettingsFragment();
 
         //removing all tick mark from the layout
-        tickEnglish = (ImageView) view.findViewById(R.id.tick_english);
+        tickEnglish = view.findViewById(R.id.tick_english);
         tickEnglish.setVisibility(View.GONE);
-        tickEgy = (ImageView) view.findViewById(R.id.tick_egy);
+        tickEgy = view.findViewById(R.id.tick_egy);
         tickEgy.setVisibility(View.GONE);
 
 
@@ -109,7 +109,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment{
         }
 
         //close icon of bottom sheet
-        ImageView imageViewClose = (ImageView) view.findViewById(R.id.imageView);
+        ImageView imageViewClose = view.findViewById(R.id.imageView);
         imageViewClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,7 +120,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment{
         });
 
         //onclick on english language
-        ImageView flagEnglish = (ImageView) view.findViewById(R.id.flagView_english);
+        ImageView flagEnglish = view.findViewById(R.id.flagView_english);
         flagEnglish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -131,7 +131,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment{
         });
 
         //onclick on arabic language
-       ImageView flagEgypt = (ImageView) view.findViewById(R.id.flagView_egy);
+       ImageView flagEgypt = view.findViewById(R.id.flagView_egy);
         flagEgypt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

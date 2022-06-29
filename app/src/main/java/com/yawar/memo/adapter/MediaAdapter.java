@@ -21,8 +21,8 @@ import java.util.ArrayList;
 
 public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerViewHolder> {
 
-    private ArrayList<MediaModel> courseDataArrayList;
-    private Context mcontext;
+    private final ArrayList<MediaModel> courseDataArrayList;
+    private final Context mcontext;
 
     public MediaAdapter(ArrayList<MediaModel> recyclerDataArrayList, Context mcontext) {
         this.courseDataArrayList = recyclerDataArrayList;
@@ -63,7 +63,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerView
                     dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
 
 
-                    PhotoView image = (PhotoView) dialog.findViewById(R.id.photo_view);
+                    PhotoView image = dialog.findViewById(R.id.photo_view);
                     Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().into(image);
                     dialog.show();
 
@@ -83,7 +83,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerView
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView courseIV;
+        private final ImageView courseIV;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);

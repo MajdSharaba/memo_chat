@@ -19,7 +19,7 @@
         android:layout_centerInParent="true"
         android:background="@color/memo_background_color"
         android:src="@drawable/th"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <RelativeLayout
         android:layout_width="match_parent"

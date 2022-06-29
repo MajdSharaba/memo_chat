@@ -168,7 +168,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private ImageView audioCallBtn;
 
     WebView webView;
-    private int requestcode = 1;
+    private final int requestcode = 1;
     String peerId = null;
 
 
@@ -244,13 +244,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     ArrayList<String> returnValue = new ArrayList<>();
     private boolean isCoonect;
     private ArrayList<ChatMessage> chatHistory;
-    private ArrayList<ChatMessage> selectedMessage = new ArrayList<>();
+    private final ArrayList<ChatMessage> selectedMessage = new ArrayList<>();
     private ArrayList<JSONObject> unSendMessage = new ArrayList<>();
-    private ArrayList<String> deleteMessage = new ArrayList<>();
+    private final ArrayList<String> deleteMessage = new ArrayList<>();
 
 
     SearchView searchView;
-    private Boolean hasConnection = false;
+    private final Boolean hasConnection = false;
     private Socket socket;
     private Timer timer = new Timer();
     private final long DELAY = 1000;
@@ -307,7 +307,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     /////////start recive from socket
 ///// for check if anthor user is connect
-    private BroadcastReceiver check = new BroadcastReceiver() {
+    private final BroadcastReceiver check = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String check = intent.getExtras().getString("check");
@@ -346,7 +346,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
     };
 
-    private BroadcastReceiver reciveTyping = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveTyping = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -386,7 +386,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     };
 
 
-    private BroadcastReceiver reciveDeleteMessage = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveDeleteMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -430,7 +430,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             });
         }
     };
-    private BroadcastReceiver reciveUpdateMessage = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveUpdateMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -438,7 +438,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 public void run() {
                     String deleteString = intent.getExtras().getString("updateMessage");
                     JSONObject message = null;
-                    System.out.println(deleteString.toString() + "deleteRespone");
+                    System.out.println(deleteString + "deleteRespone");
 
                     try {
                         JSONObject jsonObject = new JSONObject(deleteString);
@@ -475,7 +475,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             });
         }
     };
-    private BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -834,7 +834,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
@@ -932,7 +932,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         messagesContainer.setLayoutManager(linearLayoutManager);
 
         ///// block when anthor user do
-        ;
         blockUserRepo.userBlockListMutableLiveData.observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
             @Override
             public void onChanged(ArrayList<UserModel> userModelArrayList) {
@@ -1024,7 +1023,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         });
 
-        messageET = (EditText) findViewById(R.id.messageEdit);
+        messageET = findViewById(R.id.messageEdit);
         sendMessageBtn = findViewById(R.id.btn_send_message_text);
         sendImageBtn = findViewById(R.id.btn_send_message_image);
         searchView = findViewById(R.id.search_con);
@@ -1074,8 +1073,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         client = LocationServices.getFusedLocationProviderClient(this);
 
 
-        recordView = (RecordView) findViewById(R.id.recordView);
-        recordButton = (RecordButton) findViewById(R.id.recordButton);
+        recordView = findViewById(R.id.recordView);
+        recordButton = findViewById(R.id.recordButton);
         deletImageBtn = findViewById(R.id.image_button_delete);
         recordButton.setRecordView(recordView);
 
@@ -1090,11 +1089,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
         chatRoomRepo.setInChat(anthor_user_id, true);
-        container = (RelativeLayout) findViewById(R.id.container);
-        openMaps = (LinearLayout) findViewById(R.id.pick_location);
-        sendLocation = (Button) findViewById(R.id.sendLocation);
-        relativeMaps = (RelativeLayout) findViewById(R.id.relativeMaps);
-        cardOpenItLocation = (CardView) findViewById(R.id.cardOpenItLocation);
+        container = findViewById(R.id.container);
+        openMaps = findViewById(R.id.pick_location);
+        sendLocation = findViewById(R.id.sendLocation);
+        relativeMaps = findViewById(R.id.relativeMaps);
+        cardOpenItLocation = findViewById(R.id.cardOpenItLocation);
 
         openMaps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1569,9 +1568,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             if (selectedMessage.get(0).getType().equals("text")) {
                 copyItem.setVisible(true);
                 System.out.println(selectedMessage.get(0).getMessage() + "majddddd");
-                if (selectedMessage.get(0).getUserId().equals(user_id)) {
-                    updateItem.setVisible(true);
-                } else updateItem.setVisible(false);
+                updateItem.setVisible(selectedMessage.get(0).getUserId().equals(user_id));
 
             } else {
                 updateItem.setVisible(false);
@@ -1700,7 +1697,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private void deleteMessage() {
         final ProgressDialog progressDialo = new ProgressDialog(this);
         JSONArray jsonArray = new JSONArray(deleteMessage);
-        ;
         progressDialo.setMessage(getResources().getString(R.string.prograss_message));
         progressDialo.show();
         // creating a new variable for our request queue
@@ -1816,7 +1812,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           String[] permissions, int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         //
@@ -2849,7 +2845,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             if (src.isDirectory()) {
 
-                String files[] = src.list();
+                String[] files = src.list();
                 int filesLength = files.length;
                 for (int i = 0; i < filesLength; i++) {
                     String src1 = (new File(src, files[i]).getPath());
@@ -2932,7 +2928,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 pdfFile = new File(d, chatMessage.getFileName());
             } else {
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo" + File.separator + "recive");  // -> filename = maven.pdf
-                pdfFile = new File(d, chatMessage.getMessage().toString());
+                pdfFile = new File(d, chatMessage.getMessage());
             }
 
             Log.v(TAG, "view() Method pdfFile " + pdfFile.getAbsolutePath());
@@ -2991,7 +2987,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "files/" + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send");
-                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getFileName(), "send");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3001,12 +2997,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive");
 
-                pdfFile = new File(d, chatMessage.getMessage().toString());
+                pdfFile = new File(d, chatMessage.getMessage());
                 if (!pdfFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "files/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive");
-                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getMessage(), "recive");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3042,10 +3038,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 audioFile = new File(d, chatMessage.getFileName());
                 if (!audioFile.exists()) {
-                    System.out.println(chatMessage.message.toString() + "kkkkkkkkkk");
+                    System.out.println(chatMessage.message + "kkkkkkkkkk");
 
 
-                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/voiceRecord");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getFileName(), "send/voiceRecord");
 
 
                 } else {
@@ -3059,12 +3055,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/voiceRecord");
 
-                audioFile = new File(d, chatMessage.getMessage().toString());
+                audioFile = new File(d, chatMessage.getMessage());
                 if (!audioFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "audio/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/voiceRecord");
-                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/voiceRecord");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getMessage(), "recive/voiceRecord");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3103,7 +3099,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (!videoFile.exists()) {
 
 //                    new DownloadFile().execute(AllConstants.download_url + "video/" + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/video");
-                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/video");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getFileName(), "send/video");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3113,12 +3109,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                videoFile = new File(d, chatMessage.getMessage().toString());
+                videoFile = new File(d, chatMessage.getMessage());
                 if (!videoFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "video/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/video");
-                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/video");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getMessage(), "recive/video");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3156,7 +3152,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 imageFile = new File(d, chatMessage.getFileName());
                 if (!imageFile.exists()) {
 
-                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage().toString(), chatMessage.getFileName(), "send/video");
+                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage(), chatMessage.getFileName(), "send/video");
                 } else {
                     Log.v(TAG, "File already download ");
 
@@ -3165,11 +3161,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                imageFile = new File(d, chatMessage.getImage().toString());
+                imageFile = new File(d, chatMessage.getImage());
                 if (!imageFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
-                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage().toString(), chatMessage.getImage().toString(), "recive/video");
+                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage(), chatMessage.getImage(), "recive/video");
                 } else {
                     Log.v(TAG, "File already download ");
 
@@ -3190,8 +3186,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             sendLocation.setVisibility(View.GONE);
         }
 
-        String[] latlong = chatMessage.getMessage().toString().split(",");
-        System.out.println(chatMessage.getMessage().toString() + " chatMessage.getMessage().toString()");
+        String[] latlong = chatMessage.getMessage().split(",");
+        System.out.println(chatMessage.getMessage() + " chatMessage.getMessage().toString()");
 //        5.967120
         double latitude = Double.parseDouble(latlong[0]);
         double longitude = Double.parseDouble(latlong[1]);
@@ -3424,7 +3420,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         final View dialogView = inflater.inflate(R.layout.update_message_dialog, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
+        final EditText edt = dialogView.findViewById(R.id.edit1);
         edt.setText(chatMessage.getMessage());
 
         dialogBuilder.setTitle(R.string.update_message_note);
@@ -3618,7 +3614,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         File imageFile;
                         File d = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                        imageFile = new File(d, chatMessage.getImage().toString());
+                        imageFile = new File(d, chatMessage.getImage());
                         if (!imageFile.exists()) {
                             try {
                                 imageFile.createNewFile();
@@ -3631,7 +3627,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                             }
-                            FileDownloader.downloadFile(AllConstants.imageUrlInConversation + chatMessage.getImage().toString(), imageFile);
+                            FileDownloader.downloadFile(AllConstants.imageUrlInConversation + chatMessage.getImage(), imageFile);
                             Log.v(TAG, "doInBackground() file download completed");
 
 
@@ -3648,7 +3644,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         System.out.println("image weeeeeeeeeeeeeeeeeeeeeeeb");
                         File dV = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/voiceRecord");
 
-                        voiceFile = new File(dV, chatMessage.getMessage().toString());
+                        voiceFile = new File(dV, chatMessage.getMessage());
                         if (!voiceFile.exists()) {
                             try {
                                 voiceFile.createNewFile();
@@ -3662,7 +3658,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                             }
 //                            FileDownloader.downloadFile(AllConstants.download_url+"audio/"+chatMessage.getMessage().toString(), voiceFile);
-                            FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage().toString(), voiceFile);
+                            FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage(), voiceFile);
 
                             Log.v(TAG, "doInBackground() file download completed");
 
@@ -3678,7 +3674,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         System.out.println("image weeeeeeeeeeeeeeeeeeeeeeeb");
                         File dVideo = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                        videoFile = new File(dVideo, chatMessage.getMessage().toString());
+                        videoFile = new File(dVideo, chatMessage.getMessage());
                         if (!videoFile.exists()) {
                             try {
                                 videoFile.createNewFile();
@@ -3692,7 +3688,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                             }
 //                            FileDownloader.downloadFile(AllConstants.download_url+"video/"+chatMessage.getMessage().toString(), videoFile);
-                            FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage().toString(), videoFile);
+                            FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage(), videoFile);
 
                             Log.v(TAG, "doInBackground() file download completed");
 
@@ -3720,7 +3716,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                             File dFile = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive");
 
-                            pdfFile = new File(dFile, chatMessage.getMessage().toString());
+                            pdfFile = new File(dFile, chatMessage.getMessage());
                             if (!pdfFile.exists()) {
                                 try {
                                     pdfFile.createNewFile();
@@ -3734,7 +3730,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                                 }
 //                                    FileDownloader.downloadFile(AllConstants.download_url+"files/"+chatMessage.getMessage().toString(), pdfFile);
-                                FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage().toString(), pdfFile);
+                                FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage(), pdfFile);
 
                                 Log.v(TAG, "doInBackground() file download completed");
 

@@ -133,7 +133,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
 
         sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
-        select_title2 =(TextView) view.findViewById(R.id.select_title2);
+        select_title2 = view.findViewById(R.id.select_title2);
         select_title2.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
@@ -172,7 +172,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
                                         sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.userId,chatRoomModel.name,chatRoomModel.getSpecialNumber(),chatRoomModel.image,"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
 
                     }
-                    mainAdapter.updateList((ArrayList<SendContactNumberResponse>) sendContactNumberResponses);
+                    mainAdapter.updateList(sendContactNumberResponses);
 
                 }
                 //adapter.notifyDataSetChanged();
