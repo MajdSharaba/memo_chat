@@ -100,15 +100,19 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
             @Override
             public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
                 if(chatRoomModels!=null){
+                    ArrayList<ChatRoomModel> list = new ArrayList<>();
+
                     archived.clear();
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
                         if (chatRoomModel.getState().equals("0")||chatRoomModel.getState().equals(myId)) {
-//                            System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
+                            list.add(chatRoomModel.clone());
                             archived.add(chatRoomModel);
                         }
                     }
-                    itemAdapter.updateList((ArrayList<ChatRoomModel>) archived);
-                if(archived.size()<1){
+//                    itemAdapter.updateList((ArrayList<ChatRoomModel>) archived);
+                    itemAdapter.setData((ArrayList<ChatRoomModel>) list);
+
+                    if(archived.size()<1){
                   chatRoomRepo.setArchived(false);
                 }
                 }
@@ -116,7 +120,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
             }
         });
-        itemAdapter = new ArchivedAdapter(archived,this);
+        itemAdapter = new ArchivedAdapter(this);
         recyclerView.setAdapter(itemAdapter);
         recyclerView.setListener(new SwipeLeftRightCallback.Listener() {
             @Override
@@ -146,7 +150,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                itemAdapter.filter(newText);
+                itemAdapter.getFilter().filter(newText);
                 return false;
             }
         });
@@ -232,16 +236,16 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     @Override
     public void onHandleSelection(int position, ChatRoomModel chatRoomModel) {
-        Toast.makeText(this, "Position " + chatRoomModel.lastMessage, Toast.LENGTH_SHORT).show();
-        System.out.println(chatRoomModel.name);
+        Toast.makeText(this, "Position " + chatRoomModel.getLastMessage(), Toast.LENGTH_SHORT).show();
+        System.out.println(chatRoomModel.getName());
         Bundle bundle = new Bundle();
-        bundle.putString("reciver_id",chatRoomModel.userId);
+        bundle.putString("reciver_id",chatRoomModel.getUserId());
 
         bundle.putString("sender_id", myId);
-        bundle.putString("fcm_token",chatRoomModel.fcmToken );
+        bundle.putString("fcm_token",chatRoomModel.getFcmToken() );
 
 //        bundle.putString("reciver_id",chatRoomModel.reciverId);
-        bundle.putString("name",chatRoomModel.name);
+        bundle.putString("name",chatRoomModel.getName());
         bundle.putString("image",chatRoomModel.getImage());
         bundle.putString("chat_id",chatRoomModel.getChatId());
         bundle.putString("special", chatRoomModel.getSpecialNumber());
@@ -260,7 +264,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     }
     private void removeFromArchived(ChatRoomModel chatRoomModel) {
-        System.out.println(chatRoomModel.lastMessage);
+        System.out.println(chatRoomModel.getLastMessage());
         final ProgressDialog progressDialo = new ProgressDialog(this);
         // url to post our data
 
@@ -276,7 +280,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
             public void onResponse(String response) {
                 progressDialo.dismiss();
                 System.out.println("Data added to API+"+response);
-              chatRoomRepo.setState(chatRoomModel.chatId,"null");
+              chatRoomRepo.setState(chatRoomModel.getChatId(),"null");
 //                archived.remove(chatRoomModel);
 //                itemAdapter.notifyDataSetChanged();
 //                if(archived.size()<1){
@@ -304,7 +308,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
                 // on below line we are passing our key
                 // and value pair to our parameters.
                 params.put("my_id",myId );
-                params.put("your_id", chatRoomModel.userId);
+                params.put("your_id", chatRoomModel.getUserId());
 
                 // at last we are
                 // returning our params.

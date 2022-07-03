@@ -152,7 +152,7 @@ public class ChatRoomRepo {
     }
     public  void deleteChatRoom(String chatId){
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chatId)){
+            if(chatRoom.getChatId().equals(chatId)){
                 chatRoomsList.remove(chatRoom);
                 break;
             }}
@@ -166,7 +166,7 @@ public class ChatRoomRepo {
     public void setLastMessage(String message , String chatId,String senderId, String reciverId,String type,String state,String dateTime){
         boolean inList=false;
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chatId)){
+            if(chatRoom.getChatId().equals(chatId)){
                 chatRoom.setLastMessage(message);
                 chatRoom.setLastMessageType(type);
                 chatRoom.setLastMessageState(state);
@@ -178,7 +178,7 @@ public class ChatRoomRepo {
 
                 inList=true;
 
-                if(!chatRoom.inChat){
+                if(!chatRoom.isInChat()){
                     chatRoom.setNumberUnRMessage(String.valueOf(Integer.parseInt(chatRoom.getNumberUnRMessage())+1));
                 }
 
@@ -190,10 +190,10 @@ public class ChatRoomRepo {
 
         if(!inList){
             for(ChatRoomModel chatRoom:chatRoomsList){
-                if(chatRoom.chatId.equals(senderId+reciverId)){
+                if(chatRoom.getChatId().equals(senderId+reciverId)){
                     chatRoomsList.remove(chatRoom);
                     System.out.println("chatRoom.setLastMessage(message)outtttttttttttttt chatrommmmmmmmmmm");
-                    if(!chatRoom.inChat){
+                    if(!chatRoom.isInChat()){
                         chatRoom.setNumberUnRMessage(String.valueOf(Integer.parseInt(chatRoom.getNumberUnRMessage())+1));
                     }
                     chatRoom.setChatId(chatId);
@@ -222,7 +222,7 @@ public class ChatRoomRepo {
     /// state 1 for Archived ChatRoom
     public void setState(String chatId,String state) {
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chatId)){
+            if(chatRoom.getChatId().equals(chatId)){
                 chatRoom.setState(state);
 
                 break;
@@ -247,9 +247,9 @@ public class ChatRoomRepo {
     public String getChatId(String anthorUserId){
         System.out.println("getChatId"+anthorUserId);
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.userId.equals(anthorUserId)){
+            if(chatRoom.getUserId().equals(anthorUserId)){
 
-                return chatRoom.chatId;
+                return chatRoom.getChatId();
             }
 
 
@@ -263,7 +263,7 @@ public class ChatRoomRepo {
         }
         for (ChatRoomModel chatRoom : chatRoomsList) {
             if (chatRoom.getUserId().equals(anthor_user_id)) {
-                return chatRoom.inChat;
+                return chatRoom.isInChat();
 
             }
         }
@@ -272,7 +272,7 @@ public class ChatRoomRepo {
     }
     public  void setTyping(String chat_id,boolean isTyping) {
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
+            if (chatRoom.getChatId().equals(chat_id)) {
                 chatRoom.setTyping(isTyping);
                 break;
 
@@ -282,7 +282,7 @@ public class ChatRoomRepo {
     }
     public  void setBlockedState(String chat_id,String blockedFor) {
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
+            if (chatRoom.getChatId().equals(chat_id)) {
                 chatRoom.setBlockedFor(blockedFor);
                 break;
 
@@ -292,7 +292,7 @@ public class ChatRoomRepo {
     }
     public void getChatRoom(String chat_id){
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
+            if (chatRoom.getChatId().equals(chat_id)) {
                 chatRoomModelMutableLiveData.setValue(chatRoom);
                 break;
 

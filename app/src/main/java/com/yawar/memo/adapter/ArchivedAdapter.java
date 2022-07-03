@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +27,7 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.views.UserInformationActivity;
@@ -33,15 +37,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_Holder> {
+public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.View_Holder>implements Filterable {
 //    final private ListItemClickListener mOnClickListener;
     float textSize = 14.0F ;
     SharedPreferences sharedPreferences ;
 
 
-    List<ChatRoomModel> list = Collections.emptyList();
     List<ChatRoomModel> listsearch = new ArrayList<ChatRoomModel>();
-    List<ChatRoomModel> listsearch2= new ArrayList<ChatRoomModel>();
     public ArchivedAdapter.CallbackInterfac mCallback;
     TimeProperties timeProperties=new TimeProperties();
     Activity context;
@@ -61,16 +63,15 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
 
 
     //public ChatRoomAdapter(List<ChatRoomModel> data, Activity context,  ListItemClickListener mOnClickListener) {
-    public ArchivedAdapter(List<ChatRoomModel> data, Activity context) {
-        this.list = data;
+    public ArchivedAdapter( Activity context) {
+        super(new MyDiffUtilCallBack());
         this.context = context;
         try {
             mCallback = (ArchivedAdapter.CallbackInterfac) context;
         } catch (ClassCastException ex) {
             //.. should log the error or throw and exception
         }
-        this.listsearch2.addAll(list);
-        notifyDataSetChanged();
+        this.listsearch.addAll(getCurrentList());
 
 
     }
@@ -91,12 +92,14 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
     @Override
     public void onBindViewHolder(@NonNull ArchivedAdapter.View_Holder holder, int position) {
         String lastMessage = "";
+        ChatRoomModel chatRoomModel = getItem(position);
+
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-        holder.name.setText(list.get(position).name);
-        holder.textTime.setText(timeProperties.getFormattedDate(context,Long.parseLong(list.get(position).lastMessageTime)));
+        holder.name.setText(chatRoomModel.getName());
+        holder.textTime.setText(timeProperties.getFormattedDate(context,Long.parseLong(chatRoomModel.getLastMessageTime())));
 
-        switch (list.get(position).lastMessageType){
+        switch (chatRoomModel.getLastMessage()){
             case "imageWeb":
                 lastMessage = context.getResources().getString(R.string.photo);
                 holder.imageType.setVisibility(View.VISIBLE);
@@ -141,18 +144,18 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
             default:
                 holder.imageType.setVisibility(View.GONE);
 
-                lastMessage = list.get(position).lastMessage ;
+                lastMessage = chatRoomModel.getLastMessage() ;
 
         }
         holder.lastMessage.setText(lastMessage);
-        if(list.get(position).numberUnRMessage.equals("0"))
+        if(chatRoomModel.getNumberUnRMessage().equals("0"))
             holder.numUMessage.setVisibility(View.GONE);
         else {
             holder.numUMessage.setVisibility(View.VISIBLE);
-            holder.numUMessage.setText(list.get(position).numberUnRMessage);}
-        if(!list.get(position).getImage().isEmpty()){
+            holder.numUMessage.setText(chatRoomModel.getNumberUnRMessage());}
+        if(!chatRoomModel.getImage().isEmpty()){
             System.out.println("not freeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
-            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl +list.get(position).getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(holder.imageView);
+            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl +chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(holder.imageView);
         }
         else {
             holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.th));
@@ -163,7 +166,7 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
             @Override
             public void onClick(View view) {
                 if (mCallback != null) {
-                    mCallback.onHandleSelection(position, list.get(position));
+                    mCallback.onHandleSelection(position, chatRoomModel);
 
                 }}
         });
@@ -176,8 +179,8 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(view.getContext());
                 View mView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_user_image_layout, null);
                 PhotoView photoView = mView.findViewById(R.id.imageView);
-                if(!list.get(position).getImage().isEmpty()){
-                    Glide.with(photoView.getContext()).load(AllConstants.imageUrl+list.get(position).getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(photoView);}
+                if(!chatRoomModel.getImage().isEmpty()){
+                    Glide.with(photoView.getContext()).load(AllConstants.imageUrl+chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(photoView);}
                 mBuilder.setView(mView);
                 AlertDialog mDialog = mBuilder.create();
                 mDialog.show();
@@ -187,12 +190,12 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
                     public void onClick(View view) {
                         Intent intent = new Intent(view.getContext(), UserInformationActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putString("user_id", list.get(position).getUserId());
-                        bundle.putString("name", list.get(position).getName());
-                        bundle.putString("image", list.get(position).getImage());
-                        bundle.putString("fcm_token", list.get(position).fcmToken);
-                        bundle.putString("special", list.get(position).getSpecialNumber());
-                        bundle.putString("chat_id",list.get(position).getChatId());
+                        bundle.putString("user_id", chatRoomModel.getUserId());
+                        bundle.putString("name", chatRoomModel.getName());
+                        bundle.putString("image", chatRoomModel.getImage());
+                        bundle.putString("fcm_token", chatRoomModel.getFcmToken());
+                        bundle.putString("special", chatRoomModel.getSpecialNumber());
+                        bundle.putString("chat_id",chatRoomModel.getChatId());
                         intent.putExtras(bundle);
                         view.getContext().startActivity(intent);
                         mDialog.dismiss();
@@ -209,14 +212,14 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
                         Bundle bundle = new Bundle();
 
 
-                        bundle.putString("reciver_id",list.get(position).getUserId());
+                        bundle.putString("reciver_id",chatRoomModel.getUserId());
 
                         bundle.putString("sender_id", my_id);
-                        bundle.putString("fcm_token",list.get(position).fcmToken );
+                        bundle.putString("fcm_token",chatRoomModel.getFcmToken() );
 
-                        bundle.putString("name",list.get(position).getName());
-                        bundle.putString("image",list.get(position).getImage());
-                        bundle.putString("chat_id",list.get(position).getChatId());
+                        bundle.putString("name",chatRoomModel.getName());
+                        bundle.putString("image",chatRoomModel.getImage());
+                        bundle.putString("chat_id",chatRoomModel.getChatId());
 
 
                         Intent intent = new Intent(context, ConversationActivity.class);
@@ -237,34 +240,49 @@ public class ArchivedAdapter extends RecyclerView.Adapter<ArchivedAdapter.View_H
     }
 
     @Override
-    public int getItemCount() {
-        return list.size();
+    public Filter getFilter() {
+        return exampleFilter;
     }
+    private Filter exampleFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<ChatRoomModel> filteredList = new ArrayList<>();
+//            listsearch = getCurrentList();
+            System.out.println(listsearch.size()+"listsearch.size()");
 
-    public void filter(String charText) {
-        System.out.println(charText+listsearch2.size());
-        charText = charText.toLowerCase(Locale.getDefault());
-        listsearch.clear();
-        if (charText.length() == 0) {
-
-            listsearch.addAll(listsearch2);
-        } else {
-            for (ChatRoomModel wp : listsearch2) {
-                if (wp.getName().toLowerCase(Locale.getDefault()).contains(charText)) {
-                    listsearch.add(wp);
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(listsearch);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+                for (ChatRoomModel item : listsearch) {
+                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
                 }
             }
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+            return results;
         }
-        list.clear();
-        list.addAll(listsearch);
-        notifyDataSetChanged();
-    }
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+//            list.clear();
+//            list.addAll((List) results.values);
+            submitList((List)results.values);
+//            notifyDataSetChanged();
+        }
+    };
     public void updateList(ArrayList<ChatRoomModel> updateList){
-        list = updateList;
-        listsearch.clear();
-        listsearch.addAll(list);
+//        list = updateList;
+//        listsearch.clear();
+//        listsearch.addAll(list);
 
-        notifyDataSetChanged();
+//        notifyDataSetChanged();
+    }
+    public void setData(ArrayList<ChatRoomModel> newData) {
+        listsearch = newData;
+
+        submitList(newData);
     }
 
 

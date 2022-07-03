@@ -25,7 +25,7 @@ public interface AllConstants {
     String download_url = "https://storage.googleapis.com/memoback-ea9c4.appspot.com/";
     String socket_url = base_node_url;
     String delete_message =base_url+"deletemessage2";
-    String add_to_archived_url = base_url+"archivechat";
+    String add_to_archived_url = base_node_url+"archivechat";
     String add_token = base_node_url+"addtoken";
 
     String api_key_fcm_token_header_value = "Key=AAAA4428f68:APA91bGmEQZqZESoHenOQGETIbiOWS9N3r7e_BkHs1KFXi6ThD81FPkIHWp4dCsksTALD9IxaeHySy8ORraWmpjwvGh7Zls7Sc75NZQ0qTEwqIkWQZlMFdDC6OEGRNI22VfnkTu8LjP6";

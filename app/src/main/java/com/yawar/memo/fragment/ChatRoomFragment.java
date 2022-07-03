@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -13,8 +14,10 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.os.Environment;
 import android.view.LayoutInflater;
 
 import android.view.Menu;
@@ -35,13 +38,14 @@ import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
 import com.tsuryo.swipeablerv.SwipeableRecyclerView;
-import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ChatRoomViewModel;
+import com.yawar.memo.modelView.IntroActModelView;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.Globale;
 import com.yawar.memo.views.ArchivedActivity;
 import com.yawar.memo.views.ContactNumberActivity;
@@ -53,13 +57,18 @@ import com.yawar.memo.model.ChatRoomModel;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.yawar.memo.utils.BaseApp;
+import com.yawar.memo.views.DashBord;
 import com.yawar.memo.views.GroupSelectorActivity;
+import com.yawar.memo.views.IntroActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -89,7 +98,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     public static final String ON_MESSAGE_RECEIVED = "ConversationActivity.ON_MESSAGE_RECEIVED";
     public static final String TYPING = "ConversationActivity.ON_TYPING";
 
-    public static final String NEW_MESSAGE = "new Message";
+    public static final String NEW_MESSAGE ="new Message" ;
+
 
 
 //    private static final String TAG = BasicActivity.class.getSimpleName();
@@ -113,23 +123,24 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     LinearLayout linerArchived;
     boolean isArchived;
 
-    TextView chat;
-    float textSize = 14.0F;
-    SharedPreferences sharedPreferences;
+    TextView chat ;
+    float textSize = 14.0F ;
+    SharedPreferences sharedPreferences ;
+
 
 
     //    public static void start(Context context) {
 //        Intent starter = new Intent(context, BasicActivity.class);
 //        context.startActivity(starter);
 //    }
-    private final BroadcastReceiver onSocketConnect = new BroadcastReceiver() {
+    private BroadcastReceiver onSocketConnect = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             boolean isConnected = intent.getExtras().getBoolean("status");
 
         }
     };
-    private final BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
+    private BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             System.out.println("newMessssssssssssssssssssssssssssssssssssssssssssge");
@@ -161,7 +172,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
                 senderId = message.getString("sender_id");
 //                        id = message.getString("message_id");
                 reciverId = message.getString("reciver_id");
-                chatId = message.getString("chat_id");
+                chatId =  message.getString("chat_id");
                 dateTime = message.getString("dateTime");
 //                        fileName = message.getString("orginalName");
 
@@ -169,22 +180,26 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            String anthor_id = "";
-            if (senderId.equals(myId)) {
-                anthor_id = reciverId;
-            } else {
+            String anthor_id="";
+            if(senderId.equals(myId)){
+                anthor_id= reciverId;
+            }
+            else {
                 anthor_id = senderId;
             }
 
-            if (!state.equals("3")) {
+            if(!state.equals("3")){
                 System.out.println("set Last Messageeeeeeeeeeeeeeeee");
-                chatRoomRepo.setLastMessage(text, chatId, myId, anthor_id, type, state, dateTime);
+                chatRoomRepo.setLastMessage(text,chatId,myId,anthor_id,type,state,dateTime);
             }
         }
 
 
+
+
+
     };
-    private final BroadcastReceiver reciveTyping = new BroadcastReceiver() {
+    private BroadcastReceiver reciveTyping = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -193,7 +208,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             JSONObject message = null;
             String isTyping = "false";
             String anthor_id = "";
-            String chat_id = "";
+            String chat_id= "";
 
             try {
                 message = new JSONObject(typingString);
@@ -205,7 +220,13 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            chatRoomRepo.setTyping(chat_id, isTyping.equals("true"));
+            if(isTyping.equals("true")){
+                chatRoomRepo.setTyping(chat_id,true);
+
+            }
+            else{
+                chatRoomRepo.setTyping(chat_id,false);
+            }
 
 
 //                    if(anthor_user_id.equals(anthor_id)){
@@ -363,7 +384,6 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         classSharedPreferences = new ClassSharedPreferences(getContext());
 
         myId = classSharedPreferences.getUser().getUserId();
-        System.out.println("the key in chatRoom Fragment" + myBase.getPeerId());
 
 
 //        SharedPreferences prefs = getSharedPreferences("languag", MODE_PRIVATE);
@@ -378,6 +398,9 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         activity.setSupportActionBar(toolbar);
 
 
+
+
+
 //        };
         linerArchived = view.findViewById(R.id.liner_archived);
         linerArchived.setOnClickListener(new View.OnClickListener() {
@@ -390,7 +413,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             }
         });
 
-        recyclerView = view.findViewById(R.id.recycler);
+        recyclerView =  view.findViewById(R.id.recycler);
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -403,9 +426,10 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         chatRoomRepo.isArchivedMutableLiveData.observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                if (aBoolean) {
+                if(aBoolean){
                     linerArchived.setVisibility(View.VISIBLE);
-                } else {
+                }
+                else{
                     linerArchived.setVisibility(View.GONE);
                 }
             }
@@ -422,27 +446,34 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 //                  postList.add(chatRoomModel);
 //              }
 //          }
-        itemAdapter = new ChatRoomAdapter(postList, this);
+//        postList =  chatRoomViewModel.loadData().getValue();
+//        itemAdapter = new ChatRoomAdapter(postList, this);
 
         chatRoomViewModel.loadData().observe(getActivity(), new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
             @Override
             public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
-                if (chatRoomModels != null) {
+                if(chatRoomModels!=null){
+                    ArrayList<ChatRoomModel> list = new ArrayList<>();
                     postList.clear();
-                    for (ChatRoomModel chatRoomModel : chatRoomModels) {
-                        if (!chatRoomModel.getState().equals("0") && !chatRoomModel.getState().equals(myId)) {
+                    for(ChatRoomModel chatRoomModel:chatRoomModels) {
+                        if (!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(myId)) {
 //                            System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
+                            list.add(chatRoomModel.clone());
                             postList.add(chatRoomModel);
+                            System.out.println(postList.size()+"this is size");
                         }
                     }
-                    itemAdapter.updateList((ArrayList<ChatRoomModel>) postList);
+
+//                    itemAdapter.setData((ArrayList<ChatRoomModel>) list);
+                                        itemAdapter.setData((ArrayList<ChatRoomModel>) list);
+
 
                 }
                 //adapter.notifyDataSetChanged();
 
             }
         });
-//        itemAdapter = new ChatRoomAdapter(postList, this);
+        itemAdapter = new ChatRoomAdapter( this);
         recyclerView.setAdapter(itemAdapter);
         recyclerView.setListener(new SwipeLeftRightCallback.Listener() {
             @Override
@@ -462,14 +493,13 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             }
         });
 
-
 //        postList =serverApi.getChatRoom(recyclerView,listener);
 //         itemAdapter = new ChatRoomAdapter(postList,BasicActivity.this, listener);
 ////                itemAdapter=new ChatRoomAdapter(getApplicationContext(),postList);
 //        recyclerView.setAdapter(itemAdapter);
 //        itemAdapter.notifyDataSetChanged();
 //        //        itemAdapter.notifyDataSetChanged(); recyclerView.setAdapter(itemAdapter);
-        itemAdapter.notifyDataSetChanged();
+//        itemAdapter.notifyDataSetChanged();
 
 
         ////////////////FloatingActionButton
@@ -515,6 +545,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         chat.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
+
         return view;
 
     }
@@ -528,13 +559,15 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 //        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(reciveNewChat);
 
 
+
     }
+
 
 
     @Override
     public void onResume() {
-
-        itemAdapter.notifyDataSetChanged();
+//         itemAdapter.updateList(postList);
+//        itemAdapter.notifyDataSetChanged();
 //        connectSocket();
 
 
@@ -565,11 +598,10 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
         getContext().startService(service);
     }
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         getActivity().getMenuInflater().inflate(R.menu.basic_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu,inflater);
     }
 
     //    @Override
@@ -581,19 +613,24 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        switch (id) {
+        switch (id){
             case R.id.group:
                 Intent intent = new Intent(getActivity(), GroupSelectorActivity.class);
                 startActivity(intent);
 
                 return true;
             case R.id.item2:
-                Toast.makeText(getActivity(), "Item 2 Selected", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(),"Item 2 Selected",Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
+
+
+
 
 
     @Override
@@ -605,20 +642,21 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         Bundle bundle = new Bundle();
 
 
-        bundle.putString("reciver_id", chatRoomModel.userId);
+        bundle.putString("reciver_id",chatRoomModel.userId);
 
         bundle.putString("sender_id", myId);
-        bundle.putString("fcm_token", chatRoomModel.fcmToken);
+        bundle.putString("fcm_token",chatRoomModel.fcmToken );
 
 //        bundle.putString("reciver_id",chatRoomModel.reciverId);
-        bundle.putString("name", chatRoomModel.name);
-        bundle.putString("image", chatRoomModel.getImage());
-        bundle.putString("chat_id", chatRoomModel.getChatId());
+        bundle.putString("name",chatRoomModel.name);
+        bundle.putString("image",chatRoomModel.getImage());
+        bundle.putString("chat_id",chatRoomModel.getChatId());
         bundle.putString("special", chatRoomModel.getSpecialNumber());
-        bundle.putString("blockedFor", chatRoomModel.blockedFor);
+        bundle.putString("blockedFor",chatRoomModel.blockedFor);
 
 
         ///////////////////////
+
 
 
         Intent intent = new Intent(getContext(), ConversationActivity.class);
@@ -645,10 +683,11 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             @Override
             public void onResponse(String response) {
                 progressDialo.dismiss();
-                System.out.println("Data added to API+" + response);
-                chatRoomRepo.setState(chatRoomModel.chatId, myId);
+                System.out.println("Data added to API+"+response);
+                chatRoomRepo.setState(chatRoomModel.chatId,myId);
 //                myBase.getObserver().setState(chatRoomModel.chatId,myId);
 //                itemAdapter.notifyDataSetChanged();
+
 
 
             }
@@ -667,7 +706,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
                 // on below line we are passing our key
                 // and value pair to our parameters.
-                params.put("my_id", myId);
+                params.put("my_id",myId );
                 params.put("your_id", chatRoomModel.userId);
 
                 // at last we are
@@ -679,9 +718,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         // a json object request.
         queue.add(request);
     }
-
     private void delete(ChatRoomModel chatRoomModel) {
-        System.out.println(chatRoomModel.userId + "hatRoomModel.reciverId" + myId);
+        System.out.println(chatRoomModel.userId+"hatRoomModel.reciverId"+myId);
         final ProgressDialog progressDialo = new ProgressDialog(getContext());
         // url to post our data
         progressDialo.setMessage(getResources().getString(R.string.prograss_message));
@@ -695,7 +733,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             @Override
             public void onResponse(String response) {
                 progressDialo.dismiss();
-                System.out.println("Data added to API+" + response);
+                System.out.println("Data added to API+"+response);
 //                myBase.getObserver().deleteChatRoom(chatRoomModel.chatId);
 //                itemAdapter.notifyDataSetChanged();
                 chatRoomRepo.deleteChatRoom(chatRoomModel.chatId);
@@ -717,7 +755,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
                 // on below line we are passing our key
                 // and value pair to our parameters.
-                params.put("my_id", myId);
+                params.put("my_id",myId );
                 params.put("your_id", chatRoomModel.userId);
 
                 // at last we are

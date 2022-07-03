@@ -1,6 +1,6 @@
 package com.yawar.memo.model;
 
-public class ChatRoomModel {
+public class ChatRoomModel implements Comparable, Cloneable {
     public String name;
     public String userId;
     public String lastMessage;
@@ -180,5 +180,29 @@ public class ChatRoomModel {
 
     public void setBlockedFor(String blockedFor) {
         this.blockedFor = blockedFor;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        ChatRoomModel compare = (ChatRoomModel) o;
+
+        if (compare.getUserId().equals(this.getUserId()) && compare.lastMessage.equals(this.lastMessage) && compare.isTyping == (this.isTyping)) {
+            return 0;
+        }
+        return 1;
+    }
+
+    @Override
+    public ChatRoomModel clone() {
+
+        ChatRoomModel clone;
+        try {
+            clone = (ChatRoomModel) super.clone();
+
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e); //should not happen
+        }
+
+        return clone;
     }
 }

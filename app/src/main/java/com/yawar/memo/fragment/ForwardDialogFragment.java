@@ -169,7 +169,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
                 if(chatRoomModels!=null){
                     sendContactNumberResponses.clear();
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
-                                        sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.userId,chatRoomModel.name,chatRoomModel.getSpecialNumber(),chatRoomModel.image,"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
+                                        sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.getUserId(),chatRoomModel.getName(),chatRoomModel.getSpecialNumber(),chatRoomModel.getImage(),"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
 
                     }
                     mainAdapter.updateList(sendContactNumberResponses);

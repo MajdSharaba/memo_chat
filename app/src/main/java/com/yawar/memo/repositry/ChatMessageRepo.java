@@ -25,6 +25,7 @@ public class ChatMessageRepo {
     public ArrayList<ChatMessage> chatMessageList;
 
 
+
     public ChatMessageRepo(Application application) { //application is subclass of context
 
         //cant call abstract func but since instance is there we can do this
