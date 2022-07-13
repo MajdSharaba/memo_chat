@@ -150,13 +150,25 @@ public class ChatRoomRepo {
 //        this.chatRoomsList = chatRoomModelList;
         chatRoomListMutableLiveData.setValue(chatRoomModelList);
     }
-    public  void deleteChatRoom(String chatId){
+    @SuppressLint("CheckResult")
+    public  void deleteChatRoom(String my_id, String your_id){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().deleteChatRoom(my_id,your_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.getChatId().equals(chatId)){
+            if(chatRoom.getUserId().equals(your_id)){
                 chatRoomsList.remove(chatRoom);
                 break;
             }}
         chatRoomListMutableLiveData.setValue(chatRoomsList);
+
+
+        },s-> {
+            System.out.println("Errorrrrrrrr" + s);
+        });
+
     }
     public  void addChatRoom(ChatRoomModel chatRoomModel){
 //        System.out.println("addddddddddddddddddddddddddddddddddd");
@@ -220,9 +232,9 @@ public class ChatRoomRepo {
 //        chatRoomListMutableLiveData.setValue(chatRoomsList);
     }
     /// state 1 for Archived ChatRoom
-    public void setState(String chatId,String state) {
+    public void setState(String anthor_user_id,String state) {
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.getChatId().equals(chatId)){
+            if(chatRoom.getUserId().equals(anthor_user_id)){
                 chatRoom.setState(state);
 
                 break;
@@ -299,5 +311,34 @@ public class ChatRoomRepo {
 
             }
         }
+    }
+    @SuppressLint("CheckResult")
+    public void addToArchived(String my_id, String your_id){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().addToArchived(my_id,your_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+            setState(your_id,my_id);
+            setArchived(true);
+
+
+
+        },s-> {
+            System.out.println("Errorrrrrrrr" + s);
+        });
+    }
+    @SuppressLint("CheckResult")
+    public void removeFromArchived(String my_id, String your_id){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().removeFromArchived(my_id,your_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+            setState(your_id,"null");
+
+
+
+        },s-> {
+            System.out.println("Errorrrrrrrr" + s);
+        });
     }
 }

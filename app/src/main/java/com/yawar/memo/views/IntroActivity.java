@@ -70,7 +70,10 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
 
     boolean isResponeSucces = false;
-    private static final int STORAGE_PERMISSION_CODE = 101;
+    private static final int STORAGE_PERMISSION_CODE = 2000;
+    private static final int Contact_PERMISSION_CODE = 1000;
+
+
     private Permissions permissions;
 //    ServerApi serverApi;
 
@@ -122,7 +125,8 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
                             // Get new FCM registration token
                             String token = task.getResult();
-                            sendToken(token);
+//                            sendToken(token);
+                            introActModelView.sendFcmToken(myId,token);
 
                             // Log and toast
                             Log.d("jjj", token);
@@ -366,7 +370,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
                     chatRoomRepo.callAPI(myId);
                 } else
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE))
-                showPermissionDialog(getResources().getString(R.string.write_premission),2000);
+                showPermissionDialog(getResources().getString(R.string.write_premission),STORAGE_PERMISSION_CODE);
 
                 break;
             case AllConstants.CONTACTS_REQUEST_CODE:
@@ -376,7 +380,7 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
                 } else{
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
-                        showPermissionDialog(getResources().getString(R.string.contact_permission),1000);
+                        showPermissionDialog(getResources().getString(R.string.contact_permission),Contact_PERMISSION_CODE);
 
                         // Comment 2.
 //                        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
@@ -432,51 +436,52 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
     }
 
-    void sendToken(String token) {
-        final ProgressDialog progressDialo = new ProgressDialog(IntroActivity.this);
-        // url to post our data
-//        progressDialo.setMessage("Uploading, please wait...");
-//        progressDialo.show();
-        // creating a new variable for our request queue
-        RequestQueue queue = Volley.newRequestQueue(IntroActivity.this);
-        // on below line we are calling a string
-        // request method to post the data to our API
-        // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.add_token, new com.android.volley.Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-//                progressDialo.dismiss();
-                System.out.println("Data added to API+ for token" + response);
-                classSharedPreferences.setFcmToken(token);
 
-            }
-        }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // method to handle errors.
-                Toast.makeText(IntroActivity.this, "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                // below line we are creating a map for
-                // storing our values in key and value pair.
-                Map<String, String> params = new HashMap<String, String>();
-
-                // on below line we are passing our key
-                // and value pair to our parameters.
-                params.put("users_id", myId);
-                params.put("token", token);
-
-                // at last we are
-                // returning our params.
-                return params;
-            }
-        };
-        // below line is to make
-        // a json object request.
-        myBase.addToRequestQueue(request);
-    }
+//    void sendToken(String token) {
+//        final ProgressDialog progressDialo = new ProgressDialog(IntroActivity.this);
+//        // url to post our data
+////        progressDialo.setMessage("Uploading, please wait...");
+////        progressDialo.show();
+//        // creating a new variable for our request queue
+//        RequestQueue queue = Volley.newRequestQueue(IntroActivity.this);
+//        // on below line we are calling a string
+//        // request method to post the data to our API
+//        // in this we are calling a post method.
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.add_token, new com.android.volley.Response.Listener<String>() {
+//            @Override
+//            public void onResponse(String response) {
+////                progressDialo.dismiss();
+//                System.out.println("Data added to API+ for token" + response);
+//                classSharedPreferences.setFcmToken(token);
+//
+//            }
+//        }, new com.android.volley.Response.ErrorListener() {
+//            @Override
+//            public void onErrorResponse(VolleyError error) {
+//                // method to handle errors.
+//                Toast.makeText(IntroActivity.this, "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
+//            }
+//        }) {
+//            @Override
+//            protected Map<String, String> getParams() {
+//                // below line we are creating a map for
+//                // storing our values in key and value pair.
+//                Map<String, String> params = new HashMap<String, String>();
+//
+//                // on below line we are passing our key
+//                // and value pair to our parameters.
+//                params.put("users_id", myId);
+//                params.put("token", token);
+//
+//                // at last we are
+//                // returning our params.
+//                return params;
+//            }
+//        };
+//        // below line is to make
+//        // a json object request.
+//        myBase.addToRequestQueue(request);
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -484,9 +489,9 @@ public class IntroActivity extends AppCompatActivity implements Observer {
 
 //        if (requestCode == 1000 ) {
         switch (requestCode){
-            case 1000:
+            case Contact_PERMISSION_CODE:
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
-                            showPermissionDialog(getResources().getString(R.string.contact_permission),1000);
+                            showPermissionDialog(getResources().getString(R.string.contact_permission),Contact_PERMISSION_CODE);
 //                            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
 //                            alertBuilder.setCancelable(true);
 //                            alertBuilder.setTitle(getResources().getString(R.string.permission_necessary));
@@ -509,9 +514,9 @@ public class IntroActivity extends AppCompatActivity implements Observer {
                             checkPermission();
                         }
                         break;
-            case 2000:
+            case STORAGE_PERMISSION_CODE:
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                    showPermissionDialog(getResources().getString(R.string.write_premission),2000);
+                    showPermissionDialog(getResources().getString(R.string.write_premission),STORAGE_PERMISSION_CODE);
 //                            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
 //                            alertBuilder.setCancelable(true);
 //                            alertBuilder.setTitle(getResources().getString(R.string.permission_necessary));
@@ -616,54 +621,54 @@ public class IntroActivity extends AppCompatActivity implements Observer {
         context.startActivity(intent);
 
     }
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void askCallPermission() {
-
-
-        TelecomManager telecomManager;
-        TelephonyManager telephonyManager;
-        PhoneAccountHandle phoneAccountHandle;
-
-        telecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
-        telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
-
-        ComponentName componentName = new ComponentName(this, ConnService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            phoneAccountHandle = new PhoneAccountHandle(componentName, "com.darkhorse.videocalltest");
-
-            PhoneAccount phoneAccount = PhoneAccount.builder(phoneAccountHandle, "com.darkhorse.videocalltest").setCapabilities(
-                    PhoneAccount.CAPABILITY_SELF_MANAGED
-
-            ).setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER).build();
-            try {
-                telecomManager.registerPhoneAccount(phoneAccount);
-                Intent intent = new Intent();
-                intent.setComponent(new ComponentName(
-                        "com.android.server.telecom",
-                        "com.android.server.telecom.settings.EnableAccountPreferenceActivity"
-                ));
-                startActivity(intent);
-
-            } catch (Exception e) {
-                Log.e("main activity register", e.toString());
-            }
-        }
-    }
-  void openAppPermission(){
-      Intent intent = new Intent();
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-          intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-          intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-          intent.putExtra("app_package", this.getPackageName());
-          intent.putExtra("app_uid", this.getApplicationInfo().uid);
-      } else {
-          intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//          intent.addCategory(Intent.CATEGORY_DEFAULT);
-          intent.setData(Uri.parse("package:" + this.getPackageName()));
-      }
-      this.startActivity(intent);
-
-    }
+//    @RequiresApi(api = Build.VERSION_CODES.M)
+//    public void askCallPermission() {
+//
+//
+//        TelecomManager telecomManager;
+//        TelephonyManager telephonyManager;
+//        PhoneAccountHandle phoneAccountHandle;
+//
+//        telecomManager = (TelecomManager) this.getSystemService(Context.TELECOM_SERVICE);
+//        telephonyManager = (TelephonyManager) this.getSystemService(Context.TELEPHONY_SERVICE);
+//
+//        ComponentName componentName = new ComponentName(this, ConnService.class);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            phoneAccountHandle = new PhoneAccountHandle(componentName, "com.darkhorse.videocalltest");
+//
+//            PhoneAccount phoneAccount = PhoneAccount.builder(phoneAccountHandle, "com.darkhorse.videocalltest").setCapabilities(
+//                    PhoneAccount.CAPABILITY_SELF_MANAGED
+//
+//            ).setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER).build();
+//            try {
+//                telecomManager.registerPhoneAccount(phoneAccount);
+//                Intent intent = new Intent();
+//                intent.setComponent(new ComponentName(
+//                        "com.android.server.telecom",
+//                        "com.android.server.telecom.settings.EnableAccountPreferenceActivity"
+//                ));
+//                startActivity(intent);
+//
+//            } catch (Exception e) {
+//                Log.e("main activity register", e.toString());
+//            }
+//        }
+//    }
+//  void openAppPermission(){
+//      Intent intent = new Intent();
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//          intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+//          intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
+//      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+//          intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+//          intent.putExtra("app_package", this.getPackageName());
+//          intent.putExtra("app_uid", this.getApplicationInfo().uid);
+//      } else {
+//          intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+////          intent.addCategory(Intent.CATEGORY_DEFAULT);
+//          intent.setData(Uri.parse("package:" + this.getPackageName()));
+//      }
+//      this.startActivity(intent);
+//
+//    }
 }

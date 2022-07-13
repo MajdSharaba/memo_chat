@@ -28,6 +28,7 @@ import android.widget.RemoteViews;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.android.volley.Request;
@@ -89,7 +90,7 @@ public class FirebaseMessageReceiver
     public void onMessageReceived(RemoteMessage remoteMessage) {
 
         wackLock();
-        Log.i(TAG, "onMessageReceived: "+ remoteMessage.getPriority()+"getPriority"+remoteMessage.getPriority());
+        Log.i(TAG, "onMessageReceived: "+ remoteMessage.getOriginalPriority()+"getPriority"+remoteMessage.getPriority());
         myBase = (BaseApp) getApplication();
 
         chatRoomRepo=myBase.getChatRoomRepo();
@@ -258,8 +259,10 @@ public class FirebaseMessageReceiver
         intent.putExtra("id",anthor_user_id);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+//                intent, PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                intent, PendingIntent.FLAG_IMMUTABLE);
 
 
 
@@ -275,8 +278,10 @@ public class FirebaseMessageReceiver
         intentCancel.putExtra("id",anthor_user_id);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//        PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(this, 0,
+//                intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(this, 0,
-                intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
+                intentCancel,   PendingIntent.FLAG_IMMUTABLE);
 
         remoteViews.setOnClickPendingIntent(R.id.btnDecline,pendingIntentCancell);
 //        remoteViews.setO(R.id.btnDecline,sendPeerId(message,"null"));
@@ -583,8 +588,10 @@ public class FirebaseMessageReceiver
 
                 String channelCall = "call_channel";
 
+//                PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
+//                        intent, PendingIntent.FLAG_CANCEL_CURRENT);
                 PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
-                        intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                        intent, PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_CANCEL_CURRENT);
                 /////////intent for answare
                 Intent intentAnsware
                         = new Intent(FirebaseMessageReceiver.this, CallMainActivity.class);
@@ -592,8 +599,10 @@ public class FirebaseMessageReceiver
                 intentAnsware.putExtra("id",anthor_user_id);
 
                 intentAnsware.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                PendingIntent answarePendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
+//                        intentAnsware, PendingIntent.FLAG_UPDATE_CURRENT);
                 PendingIntent answarePendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
-                        intentAnsware, PendingIntent.FLAG_UPDATE_CURRENT);
+                        intentAnsware, PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT);
 
                 /////////intent for reject
                 Intent intentCancel
@@ -603,8 +612,10 @@ public class FirebaseMessageReceiver
                 intentCancel.putExtra("id",anthor_user_id);
 
                 intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(FirebaseMessageReceiver.this, 0,
+//                        intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
                 PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(FirebaseMessageReceiver.this, 0,
-                        intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
+                        intentCancel,   PendingIntent.FLAG_IMMUTABLE|PendingIntent.FLAG_UPDATE_CURRENT);
                 /////////////////
 
 //                Uri alarmSound =
@@ -630,6 +641,8 @@ public class FirebaseMessageReceiver
 //                        .setTimeoutAfter(10000)
                         .setSound(null)
                         .setOngoing(true)
+                        .setColor(ContextCompat.getColor(FirebaseMessageReceiver.this, R.color.green))
+
 
 
                         .setVibrate(new long[] { 10000, 10000})
@@ -637,19 +650,22 @@ public class FirebaseMessageReceiver
 
                         .setColorized(true)
                         .setSmallIcon(R.drawable.ic_memo_logo);
-                if (Build.VERSION.SDK_INT
-                        > Build.VERSION_CODES.Q) {
-                    builder.setCustomContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
-                    builder.setCustomBigContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
-                    builder.setCustomHeadsUpContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
-
-                }
-                else {
-                    builder.addAction(R.drawable.biv_call, "Receive Call", answarePendingIntent);
+//                if (Build.VERSION.SDK_INT
+//                        > Build.VERSION_CODES.Q) {
+//                    builder.setCustomContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
+//                    builder.setCustomBigContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
+//                    builder.setCustomHeadsUpContentView(getCustomDesign(anthor_user_id,title, message,ImageProperties.getCircleBitmap(bitmap)));
+//
+//                }
+               /// else {
+                    builder.addAction(R.drawable.btx_custom, "Receive Call", answarePendingIntent);
                     builder.setLargeIcon(ImageProperties.getCircleBitmap(bitmap));
-                    builder.addAction(R.drawable.biv_call, "Cancel call", pendingIntentCancell);
+                    builder.addAction(R.drawable.btx_custom, "Cancel call", pendingIntentCancell);
+
+
                     builder.setContentTitle(getResources().getString(R.string.call_from));
-                    builder.setContentText(title);}
+                    builder.setContentText(title);
+                //}
 
 
                 NotificationManager notificationManager

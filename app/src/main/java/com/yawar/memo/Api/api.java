@@ -34,5 +34,29 @@ public interface api {
     Single<String> getChatMessgeHistory(@Field("sender_id") String my_id
             ,@Field("reciver_id") String anthor_user_id);
 
+    @FormUrlEncoded
 
+    @POST("addtoken")//endpoint
+    Single<String> sendFcmToken(@Field("users_id") String my_id
+            ,@Field("token") String fcmToken);
+
+
+    @FormUrlEncoded
+
+    @POST("archivechat")//endpoint
+    Single<String> addToArchived(@Field("my_id") String my_id
+            ,@Field("your_id") String anthor_user_id);
+
+    @FormUrlEncoded
+
+    @POST("deletearchive")//endpoint
+    Single<String> removeFromArchived(@Field("my_id") String my_id
+            ,@Field("your_id") String anthor_user_id);
+
+
+    @FormUrlEncoded
+
+    @POST("deleteconversation")//endpoint
+    Single<String> deleteChatRoom(@Field("my_id") String my_id
+            ,@Field("your_id") String anthor_user_id);
 }

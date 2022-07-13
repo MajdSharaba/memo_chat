@@ -310,7 +310,7 @@ public class RequestCallActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 //        serverApi.sendNotification(data.toString(), "call",fcm_token,my_id);
-        System.out.println("call");
+        System.out.println("call"+data.toString());
         service.putExtra(SocketIOService.EXTRA_CALL_PARAMTERS, data.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_CALLING);
         startService(service);
@@ -583,7 +583,9 @@ public class RequestCallActivity extends AppCompatActivity {
 
 
     private void loadVideoCall() {
-        String filePath = "file:android_asset/call.html";
+//        String filePath = "file:android_asset/call.html";
+        String filePath = "file:android_asset/call2.html";
+
         System.out.println("load videooooooooooooooo" + filePath);
         webView.loadUrl(filePath);
 

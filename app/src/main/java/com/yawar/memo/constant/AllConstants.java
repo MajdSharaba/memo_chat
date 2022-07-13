@@ -24,7 +24,7 @@ public interface AllConstants {
     String get_media = "https://memoback.herokuapp.com/getmedia";
     String download_url = "https://storage.googleapis.com/memoback-ea9c4.appspot.com/";
     String socket_url = base_node_url;
-    String delete_message =base_url+"deletemessage2";
+    String delete_message =base_node_url+"deletemessage2";
     String add_to_archived_url = base_node_url+"archivechat";
     String add_token = base_node_url+"addtoken";
 

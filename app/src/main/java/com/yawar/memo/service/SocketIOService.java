@@ -647,7 +647,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
     private void deleteMessages(String messageObject) {
         JSONObject chat = null;
-
+        System.out.println("message deleted");
 
         try {
             chat = new JSONObject(messageObject);

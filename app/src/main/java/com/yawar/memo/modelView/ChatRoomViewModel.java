@@ -47,4 +47,12 @@ public class ChatRoomViewModel extends ViewModel {
 //        System.out.println(chatRoomListMutableLiveData.getValue().size()+"chatRoomListMutableLiveData.getValue().size()");
 
     }
+    public  void addToArchived(String my_id,String anthor_user_id){
+        repository.addToArchived(my_id,anthor_user_id);
+    }
+    public  void deleteChatRoom(String my_id,String anthor_user_id){
+        repository.deleteChatRoom(my_id,anthor_user_id);
+    }
+
+
 }

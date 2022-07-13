@@ -7,13 +7,13 @@ plugins {
 }
 apply plugin: 'com.google.gms.google-services'
 android {
-    compileSdkVersion 32
+    compileSdkVersion 33
     buildToolsVersion "30.0.0"
 
     defaultConfig {
         applicationId "com.yawar.memo"
         minSdkVersion 21
-        targetSdkVersion 32
+        targetSdkVersion 33
         versionCode 1
         versionName "1.0"
         multiDexEnabled true
@@ -116,8 +116,9 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.x.x'
 //    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.7.1'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
+    implementation 'com.github.alexto9090:PRDownloader:1.0'
 
-
+//    implementation 'com.ebanx:swipe-button:0.4.0'
 
 //    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
 

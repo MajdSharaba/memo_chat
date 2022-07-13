@@ -32,6 +32,7 @@
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/et_custom.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/gradient_spinner.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/ic_add.xml" value="0.1" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/notification_btn.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_archived.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_call.xml" value="0.184375" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_call_main.xml" value="0.25" />
@@ -43,6 +44,7 @@
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_request_call.xml" value="0.25" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/content_scrolling2.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/example.xml" value="0.18" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_chat_room.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_dialog_forward.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/item_contact_number.xml" value="0.16304347826086957" />

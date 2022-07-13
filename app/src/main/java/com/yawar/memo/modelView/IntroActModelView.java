@@ -1,5 +1,6 @@
 package com.yawar.memo.modelView;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
@@ -17,14 +18,22 @@ import android.app.Application;
         import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.retrofit.RetrofitClient;
 import com.yawar.memo.utils.BaseApp;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
         import java.util.List;
+
+import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class IntroActModelView extends ViewModel {
 
@@ -63,6 +72,19 @@ public class IntroActModelView extends ViewModel {
         return blockUserRepo.getUserBlockList();
 
 
+    }
+    @SuppressLint("CheckResult")
+    public void sendFcmToken(String user_id, String token){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().sendFcmToken(user_id,token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+
+            System.out.println(s+"dataadddddddddddddd");
+
+        },s-> {
+            System.out.println("Errorrrrrrrr" + s);
+          });
     }
 
     @Override

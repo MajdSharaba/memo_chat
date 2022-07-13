@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
@@ -170,7 +171,9 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
 
         }
         if(!chatRoomModel.getImage().isEmpty()){
-            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(holder.imageView);
+//            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(holder.imageView);
+            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+chatRoomModel.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.imageView);
+
         }
         else {
             holder.imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.th));
@@ -223,7 +226,9 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                 View mView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_user_image_layout, null);
                 PhotoView photoView = mView.findViewById(R.id.imageView);
                 if(!chatRoomModel.getImage().isEmpty()){
-                    Glide.with(photoView.getContext()).load(AllConstants.imageUrl+chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(photoView);}
+//                    Glide.with(photoView.getContext()).load(AllConstants.imageUrl+chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(photoView);
+                    Glide.with(photoView.getContext()).load(AllConstants.imageUrl+chatRoomModel.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(photoView);
+                   }
                 mBuilder.setView(mView);
                 AlertDialog mDialog = mBuilder.create();
                 mDialog.show();

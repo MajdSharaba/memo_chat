@@ -113,7 +113,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
                     itemAdapter.setData((ArrayList<ChatRoomModel>) list);
 
                     if(archived.size()<1){
-                  chatRoomRepo.setArchived(false);
+                  archivedActViewModel.setArchived(false);
                 }
                 }
                 //adapter.notifyDataSetChanged();
@@ -130,7 +130,8 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
             @Override
             public void onSwipedRight(int position) {
-                removeFromArchived(archived.get(position));
+                archivedActViewModel.removeFromArchived(myId,archived.get(position).getUserId());
+//                removeFromArchived(archived.get(position));
 //                if(archived.size()<1){
 //                    myBase.getObserver().setArchived(false);
 //                }
@@ -158,81 +159,6 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     }
 
-//    private void GetData() {
-////        userModel = classSharedPreferences.getUser();
-////        System.out.println(userModel.getUserId());
-//        final ProgressDialog progressDialog = new ProgressDialog(this);
-//        progressDialog.setMessage("Loading...");
-//        // progressDialog.show();
-//        RequestQueue requestQueue = Volley.newRequestQueue(this);
-//        StringRequest request = new StringRequest(Request.Method.GET, AllConstants.base_url+"APIS/my_archive_chat.php?user_id="+myId, new Response.Listener<String>() {
-//
-//
-//            @Override
-//            public void onResponse(String response) {
-////                progressDialog.dismiss();
-//                try {
-//                    JSONObject respObj = new JSONObject(response);
-//                    System.out.println(respObj);
-//                    JSONArray jsonArray = (JSONArray) respObj.get("data");
-////                    JSONArray jsonArray = new JSONArray(respObj.getJSONArray("data"));
-//                    System.out.println(jsonArray);
-//
-//                    for (int i = 0; i <= jsonArray.length()-1; i++) {
-//                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-//                        System.out.println(jsonObject.getString("last_message"));
-//                        String image =  jsonObject.getString("image");
-////                        String imageUrl="";
-////                        if(!image.isEmpty()){
-////                            imageUrl = globale.base_url+"/uploads/profile/"+image;
-////                        }
-////                        else{
-////                            imageUrl = "https://v5p7y9k6.stackpathcdn.com/wp-content/uploads/2018/03/11.jpg";
-////                        }
-//
-//                        archived.add(new ChatRoomModel(
-//                                jsonObject.getString("username"),
-//                                jsonObject.getString("sender_id"),
-//                                jsonObject.getString("reciver_id"),
-//                                jsonObject.getString("last_message"),
-//                                image,
-//                                false,
-//                                 "0",
-//                                  "0",
-//                                    "9",
-//
-//                            "0",
-//                                false,
-//                                jsonObject.getString("user_token")
-//
-//
-////                                "https://th.bing.com/th/id/OIP.2s7VxdmHEoDKji3gO_i-5QHaHa?pid=ImgDet&rs=1"
-//
-//                        ));
-//                        System.out.println(AllConstants.base_url+"uploads/profile/"+jsonObject.getString("image"));
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                    progressDialog.dismiss();
-//                }
-//                ///itemAdapter = new ChatRoomAdapter(postList, getApplicationContext(), listener);
-//                itemAdapter = new ArchivedAdapter(archived, ArchivedActivity.this);
-//////                itemAdapter=new ChatRoomAdapter(getApplicationContext(),postList);
-//                recyclerView.setAdapter(itemAdapter);
-//                itemAdapter.notifyDataSetChanged();
-//                Toast.makeText(ArchivedActivity.this, "Success", Toast.LENGTH_SHORT).show();
-//            }
-//        }, new Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                progressDialog.dismiss();
-//                Toast.makeText(ArchivedActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-//        }) {
-//
-//        };
-//        requestQueue.add(request);
-//    }
 
     @Override
     public void onHandleSelection(int position, ChatRoomModel chatRoomModel) {

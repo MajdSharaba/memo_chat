@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -80,11 +81,17 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordPermissionHandler;
 import com.devlomi.record_view.RecordView;
 
+import com.downloader.Error;
+import com.downloader.OnDownloadListener;
+import com.downloader.OnStartOrResumeListener;
+import com.downloader.PRDownloader;
+import com.downloader.request.DownloadRequest;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -142,8 +149,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -170,6 +177,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     WebView webView;
     private final int requestcode = 1;
     String peerId = null;
+    boolean first=true;
 
 
     private ImageView backImageBtn;
@@ -242,9 +250,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private static final int MY_RESULT_CODE_FILECHOOSER = 2200;
 
     ArrayList<String> returnValue = new ArrayList<>();
-    private boolean isCoonect;
     private ArrayList<ChatMessage> chatHistory;
-    private final ArrayList<ChatMessage> selectedMessage = new ArrayList<>();
+//    private ArrayList<ChatMessage> selectedMessage = new ArrayList<>();
     private ArrayList<JSONObject> unSendMessage = new ArrayList<>();
     private final ArrayList<String> deleteMessage = new ArrayList<>();
 
@@ -321,28 +328,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            conversationModelView.set_state(checkConnect);
 
-            System.out.println(check + "usernnnnnnnnnnnnnnnnnnnnnnn");
-            if (checkConnect.equals("true")) {
-                isCoonect = true;
-                tv_state.setText(R.string.connect_now);
-                tv_state.setVisibility(View.VISIBLE);
-            } else if (checkConnect.equals("false")) {
-                isCoonect = false;
-//                try {
-                if (!lastSeen.equals("null")) {
-                    tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(context, Long.parseLong(lastSeen)));
-                    tv_state.setVisibility(View.VISIBLE);
-                }
 
-//                }catch (Exception e){
-//                    System.out.println("nulll");
-//                }
-//                tv_state.setText(getResources().getString(R.string.last_seen)+" "+timeProperties.getFormattedDate(context,Long.parseLong(lastSeen)));
-//                tv_state.setVisibility(View.VISIBLE);
-
-//                tv_state.setVisibility(View.GONE);
-            }
         }
     };
 
@@ -365,19 +353,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
                     if (anthor_user_id.equals(anthor_id)) {
 
-                        if (isTyping.equals("true")) {
-                            tv_state.setText(R.string.writing_now);
-                            tv_state.setVisibility(View.VISIBLE);
-                        } else if (isCoonect) {
-                            tv_state.setText(R.string.connect_now);
-                        } else {
-                            tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(context, Long.parseLong(lastSeen)));
+                        conversationModelView.set_isTyping(isTyping);
 
 
-//                        tv_state.setVisibility(View.GONE);
-                        }
 
                     }
                 }
@@ -390,10 +371,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
+
                 @Override
                 public void run() {
                     String deleteString = intent.getExtras().getString("delete message");
                     JSONObject message = null;
+                    System.out.println("recive delete message ");
 
                     try {
                         JSONObject jsonObject = new JSONObject(deleteString);
@@ -404,21 +387,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         String second_user_id = jsonObject.getString("second_id");
 
 
+
                         if (anthor_user_id.equals(first_user_id) || anthor_user_id.equals(second_user_id)) {
-                            for (int i = 0; i < jsonArray.length(); i++) {
+                            conversationModelView.deleteMessageFromList(jsonArray);
 
-                                String message_id = jsonArray.getString(i);
-                                for (ChatMessage chatMessage : adapter.chatMessages) {
-                                    if (chatMessage.getId().equals(message_id)) {
-                                        System.out.println(chatMessage.getId() + " " + message_id);
-                                        adapter.chatMessages.remove(chatMessage);
-                                        break;
-                                    }
-                                }
-
-
-                            }
-                            adapter.notifyDataSetChanged();
 
                         }
                     } catch (JSONException e) {
@@ -451,20 +423,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                         if (anthor_user_id.equals(first_user_id) || anthor_user_id.equals(second_user_id)) {
-
-                            for (ChatMessage chatMessage : adapter.chatMessages) {
-                                System.out.println(chatMessage.getId() + "majdfadi" + message_id);
-                                if (chatMessage.getId().equals(message_id)) {
-                                    System.out.println(chatMessage.getId() + "mmk " + message_id);
-                                    chatMessage.setMessage(updateMessage);
-                                    chatMessage.setIsUpdate("1");
-                                    break;
-                                }
-                            }
-
-
-                            adapter.notifyDataSetChanged();
-
+                                conversationModelView.ubdateMessage(message_id,updateMessage);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -516,9 +475,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-//                    if(chat_id.equals("-1")){
-//
-//                    }
+
 
                     if (senderId.equals(user_id) && reciverId.equals(anthor_user_id)) {
                         if (!state.equals("3") && chat_id.equals(user_id + anthor_user_id)) {
@@ -530,106 +487,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                             }
                         }
 
-//                        if(chat_id.equals(user_id+anthor_user_id)&&!state.equals("3")){
-//                            System.out.println("afterrrrrrrrrrrrrrrrObserrrrrrrrrrrrrrrrrrv");
-//                            myBase.getObserver().setLastMessage(text,recive_chat_id,myId,anthor_id,type,state,dateTime);
-//
-//
-//
-//                        }//                        Toast.makeText(ConversationActivity.this,args[0].toString(),Toast.LENGTH_LONG).show();
 
+                        conversationModelView.setMessageState(id,state);
 
-                        for (int i = adapter.chatMessages.size() - 1; i >= 0; i--) {
-                            if (state.equals("3")) {
-                                System.out.println("state.equals(\"3\")==========================");
-
-                                if (adapter.chatMessages.get(i).getState().equals("3")) {
-                                    System.out.println(i + "===============");
-
-                                    break;
-                                }
-                                adapter.chatMessages.get(i).setState(state);
-
-//                                }
-
-//                            } else if (state.equals("2")) {
-//                                if (adapter.chatMessages.get(i).getState().equals("1") || adapter.chatMessages.get(i).getState().equals("0")) {
-//                                    adapter.chatMessages.get(i).setState(state);
-//                                    adapter.chatMessages.get(i).setId(id);
-//                                    System.out.println(adapter.chatMessages.get(i).message);
-//                                }
-//                                else{
-//                                    break;
-//                                }
-                            } else if (state.equals("2")) {
-                                System.out.println("state.equals(\"2\")==========================");
-
-                                if (adapter.chatMessages.get(i).getId().equals(id)) {
-                                    adapter.chatMessages.get(i).setState(state);
-                                    break;
-//                                    adapter.chatMessages.get(i).setId(id);
-//                                    System.out.println(adapter.chatMessages.get(i).message);
-                                }
-                            } else if (state.equals("1")) {
-                                /// System.out.println(adapter.chatMessages.get(i).getId()+"xxxx"+id);
-
-
-                                if (adapter.chatMessages.get(i).getId().equals(id)) {
-                                    System.out.println("majdddddddddddd" + unSendMessage.size());
-                                    adapter.chatMessages.get(i).setState(state);
-//
-//                                        adapter.chatMessages.get(adapter.chatMessages.size()-1).setState(state);
-//                                        adapter.chatMessages.get(adapter.chatMessages.size()-1).setId(id);
-//                                        for (JSONObject  object:
-//                                                unSendMessage) {
-                                    for (i = 0; i < unSendMessage.size(); i++) {
-                                        try {
-                                            if (unSendMessage.get(i).getString("message_id").equals(id))
-
-                                                unSendMessage.remove(unSendMessage.get(i));
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    }
-                                    classSharedPreferences.setList("list", unSendMessage);
-                                    break;
-                                }
-
-
-                            } else break;
-//                                if (state.equals("1")) {
-//                                unSendMessage.remove(0);
-//                                classSharedPreferences.setList("list",unSendMessage);
-//
-//                                if (adapter.chatMessages.get(i).getState().equals("0")) {
-//                                    System.out.println("majdddddddddddd");
-//                                    adapter.chatMessages.get(i).setState(state);
-//                                    adapter.chatMessages.get(i).setId(id);
-////                                    unSendMessage.remove(1);
-////                                    classSharedPreferences.setList("list",unSendMessage);
-//                                }
-//                                else {
-//                                    break;
-//                                }
-//                            }
-
-
-                        }
-//                        if (state.equals("1")) {
-//
-//
-//                                if (adapter.chatMessages.get(adapter.chatMessages.size()-1).getState().equals("0")) {
-//                                    System.out.println("majdddddddddddd");
-//                                    adapter.chatMessages.get(adapter.chatMessages.size()-1).setState(state);
-//                                    adapter.chatMessages.get(adapter.chatMessages.size()-1).setId(id);
-////                                    unSendMessage.remove(0);
-//                                    classSharedPreferences.setList("list",unSendMessage);
-//                                }
-//
-//                            }
-
-                        adapter.notifyDataSetChanged();
                     } else if (senderId.equals(anthor_user_id)) {
 
                         JSONObject jsonObject = new JSONObject();
@@ -860,8 +720,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     protected void onResume() {
         super.onResume();
+        first=true;
 //        checkConnect();
-        adapter.notifyDataSetChanged();
+//        adapter.notifyDataSetChanged();
 
     }
 
@@ -913,7 +774,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         fcmToken = bundle.getString("fcm_token", "");
         personImage = findViewById(R.id.user_image);
         if (!imageUrl.isEmpty()) {
-            Glide.with(personImage).load(AllConstants.imageUrl + imageUrl).error(R.drawable.th).into(personImage);
+//            Glide.with(personImage).load(AllConstants.imageUrl + imageUrl).error(R.drawable.th).into(personImage);
+            Glide.with(personImage).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(personImage);
+
         }
 
         chatMessageRepo = myBase.getChatMessageRepo();
@@ -989,21 +852,92 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         });
         chatHistory = new ArrayList<ChatMessage>();
+        conversationModelView.state.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                System.out.println("stateee"+s);
+                if(!s.equals(null)){
+                    if (s.equals("true")) {
+//                        isCoonect = true;
+                        System.out.println("dialay"+s);
+                        tv_state.setText(R.string.connect_now);
+                        tv_state.setVisibility(View.VISIBLE);
+                    } else if (s.equals("false")) {
+//                        isCoonect = false;
+
+                        if (!lastSeen.equals("null")) {
+                            tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(lastSeen)));
+                            tv_state.setVisibility(View.VISIBLE);
+                        }
+
+
+                    }
+
+                }
+            }
+        });
+        conversationModelView.isTyping.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                System.out.println("stateee"+s);
+                if(!s.equals(null)){
+                    if (s.equals("true")) {
+                        tv_state.setText(R.string.writing_now);
+                        tv_state.setVisibility(View.VISIBLE);
+                    } else if (conversationModelView.state.getValue().equals("true")) {
+                        tv_state.setText(R.string.connect_now);
+                    } else {
+                        tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(lastSeen)));
+
+
+//                        tv_state.setVisibility(View.GONE);
+                    }
+
+                }
+            }
+        });
 
         conversationModelView.getChatMessaheHistory().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
             @Override
             public void onChanged(ArrayList<ChatMessage> chatMessages) {
                 if (chatMessages != null) {
-                    chatHistory = chatMessages;
-                    adapter.add(chatHistory);
+                    ArrayList<ChatMessage> list = new ArrayList<>();
+                    System.out.println("chatmessage.size"+chatMessages.size()+""+chatHistory.size());
+                    for(ChatMessage chatMessage:chatMessages){
+                    list.add(chatMessage.clone());}
+                    System.out.println("notifyyyyyyyyyyy");
+
+                    chatHistory = list;
+//                    adapter.add(chatHistory);
+                    adapter.setData(list);
+                    if(!chatMessages.isEmpty())
                     scroll();
+//                                    adapter.notifyDataSetChanged();
+
+
+                }
+
+
+            }
+        });
+//        scroll();
+        conversationModelView.selectedMessage.observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
+            @Override
+            public void onChanged(ArrayList<ChatMessage> chatMessages) {
+                if (chatMessages != null) {
+//                    selectedMessage = chatMessages;
+                    if(chatMessages.isEmpty()){
+                        toolsLiner.setVisibility(View.GONE);
+                        personInformationLiner.setVisibility(View.VISIBLE);
+                        toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
+                    }
 
                 }
                 //adapter.notifyDataSetChanged();
 
             }
         });
-        adapter = new ChatAdapter(ConversationActivity.this, new ArrayList<ChatMessage>());
+        adapter = new ChatAdapter(ConversationActivity.this);
         messagesContainer.setAdapter(adapter);
         messagesContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -1014,9 +948,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     messagesContainer.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (adapter.getItemCount() > 1)
+                            if (adapter.getCurrentList().size() > 1)
                                 messagesContainer.smoothScrollToPosition(
-                                        adapter.getItemCount() - 1);
+                                        adapter.getCurrentList().size() - 1);
                         }
                     }, 100);
                 }
@@ -1322,14 +1256,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                 classSharedPreferences.setList("list", unSendMessage);
-                for (JSONObject message :
-                        unSendMessage) {
+//                for (JSONObject message :
+//                        unSendMessage) {
+//
+//                    newMeesage(message);
+//
+//                }
 
-                    newMeesage(message);
-
-                }
-
-//                newMeesage(jsonObject);
+                newMeesage(jsonObject);
 
             }
         });
@@ -1341,7 +1275,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.filter(newText);
+//                adapter.filter(newText);
                 return false;
             }
         });
@@ -1533,7 +1467,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             @Override
             public void onClick(View view) {
                 FragmentManager fm = getSupportFragmentManager();
-                ForwardDialogFragment forwardDialogFragment = ForwardDialogFragment.newInstance(selectedMessage, "jj");
+                ForwardDialogFragment forwardDialogFragment = ForwardDialogFragment.newInstance(conversationModelView.selectedMessage.getValue(), "jj");
                 forwardDialogFragment.show(fm, "fragment_edit_name");
             }
         });
@@ -1557,31 +1491,39 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         MenuItem blockItem = menu.findItem(R.id.item_block);
         MenuItem unblockItem = menu.findItem(R.id.item_unblock);
         MenuItem updateItem = menu.findItem(R.id.item_update);
+        System.out.println("preparing message");
 
 
-        if (selectedMessage.size() > 1) {
-            copyItem.setVisible(false);
-            updateItem.setVisible(false);
+        if(conversationModelView.selectedMessage.getValue()!=null) {
+
+             if (conversationModelView.selectedMessage.getValue().size() > 1) {
+                 copyItem.setVisible(false);
+                 updateItem.setVisible(false);
 //            menu.removeItem(item.getItemId());
 
-        } else if (selectedMessage.size() == 1) {
-            if (selectedMessage.get(0).getType().equals("text")) {
-                copyItem.setVisible(true);
-                System.out.println(selectedMessage.get(0).getMessage() + "majddddd");
-                updateItem.setVisible(selectedMessage.get(0).getUserId().equals(user_id));
+             } else if (conversationModelView.selectedMessage.getValue().size() == 1) {
+                 if (conversationModelView.selectedMessage.getValue().get(0).getType().equals("text")) {
+                     copyItem.setVisible(true);
+                     System.out.println(conversationModelView.selectedMessage.getValue().get(0).getMessage() + "majddddd");
+                     updateItem.setVisible(conversationModelView.selectedMessage.getValue().get(0).getUserId().equals(user_id));
 
-            } else {
-                updateItem.setVisible(false);
-                copyItem.setVisible(false);
+                 } else {
+                     updateItem.setVisible(false);
+                     copyItem.setVisible(false);
 
-            }
+                 }
 
 
-        } else {
+             } else {
+                 copyItem.setVisible(false);
+                 updateItem.setVisible(false);
+
+
+             }
+         }
+        else {
             copyItem.setVisible(false);
             updateItem.setVisible(false);
-
-
         }
         if (blockedForMe) {
             blockItem.setVisible(false);
@@ -1605,41 +1547,17 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         switch (id) {
             case R.id.item_copy:
                 ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText("key", selectedMessage.get(0).getMessage());
+                ClipData clipData = ClipData.newPlainText("key", conversationModelView.selectedMessage.getValue().get(0).getMessage());
                 clipboardManager.setPrimaryClip(clipData);
-//                chatHistory.get(selectedMessage.get(0).).setChecked(false);
-                for (ChatMessage chatMessage : chatHistory) {
-                    if (chatMessage.getId().equals(selectedMessage.get(0).getId())) {
-                        chatMessage.setChecked(false);
-                        break;
-                    }
-                }
-                selectedMessage.clear();
-                deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
+                conversationModelView.setMessageChecked(conversationModelView.selectedMessage.getValue().get(0).getId(),false);
 
-                adapter.notifyDataSetChanged();
-                toolsLiner.setVisibility(View.GONE);
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+                conversationModelView.clearSelectedMessage();
+                deleteMessage.clear();
+
                 return true;
             case R.id.item_update:
-                showUpdateMessageDialog(selectedMessage.get(0));
+                showUpdateMessageDialog(conversationModelView.selectedMessage.getValue().get(0));
 
-                for (ChatMessage chatMessage : chatHistory) {
-                    if (chatMessage.getId().equals(selectedMessage.get(0).getId())) {
-                        chatMessage.setChecked(false);
-                        break;
-                    }
-                }
-                selectedMessage.clear();
-                deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
-
-                adapter.notifyDataSetChanged();
-                toolsLiner.setVisibility(View.GONE);
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
                 return true;
             case R.id.item_block:
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -1706,17 +1624,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             @Override
             public void onResponse(String response) {
                 progressDialo.dismiss();
-                System.out.println("Data added to API+" + response);
-                for (ChatMessage message : selectedMessage) {
-                    adapter.chatMessages.remove(message);
+                System.out.println("Data added to API+" + conversationModelView.selectedMessage.getValue().size());
+                for (ChatMessage message : Objects.requireNonNull(conversationModelView.selectedMessage.getValue())) {
+                    System.out.println("chatMessage"+message.getMessage());
+                    conversationModelView.deleteMessage(message);
                 }
-                selectedMessage.clear();
+//                adapter.notifyDataSetChanged();
+                conversationModelView.clearSelectedMessage();
                 deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
-                adapter.notifyDataSetChanged();
-                toolsLiner.setVisibility(View.GONE);
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+
 
 
             }
@@ -1795,7 +1711,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     //// for add message to list and display ie]t
     public void displayMessage(ChatMessage message) {
-        adapter.add(message);
+        conversationModelView.addMessage(message);
         scroll();
     }
 
@@ -1966,9 +1882,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         messagesContainer.post(new Runnable() {
             @Override
             public void run() {
+                System.out.println("scrolll"+conversationModelView.getChatMessaheHistory().getValue().size());
+
                 // Select the last row so it will scroll into view...
-                if (adapter.getItemCount() > 0) {
-                    messagesContainer.scrollToPosition(adapter.getItemCount() - 1);
+                if (conversationModelView.getChatMessaheHistory().getValue().size() > 0) {
+
+                    messagesContainer.scrollToPosition(conversationModelView.getChatMessaheHistory().getValue().size() - 1);
                 }
 
             }
@@ -3003,7 +2922,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "files/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive");
                     new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getMessage(), "recive");
-
+//                 DownloadRequest downloadID = PRDownloader.download(AllConstants.download_url + chatMessage.getMessage(), pdfFile.getPath(), "recive")
+//                            .build();
                 } else {
                     Log.v(TAG, "File already download ");
 
@@ -3152,7 +3072,37 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 imageFile = new File(d, chatMessage.getFileName());
                 if (!imageFile.exists()) {
 
-                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage(), chatMessage.getFileName(), "send/video");
+//                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage(), chatMessage.getFileName(), "send/video");
+                    DownloadRequest downloadID = PRDownloader.download(AllConstants.imageUrlInConversation + chatMessage.getImage(), d.getPath(),  chatMessage.getFileName())
+                            .build().setOnStartOrResumeListener(new OnStartOrResumeListener() {
+                                @SuppressLint("SetTextI18n")
+                                @Override
+                                public void onStartOrResume() {
+                                    System.out.println("startttttttttt download");
+                                    conversationModelView.setMessageDownload(chatMessage.getId(),true);
+
+                                    Toast.makeText(ConversationActivity.this, "Downloading started", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+               int id=     downloadID.start(new OnDownloadListener() {
+                        @Override
+                        public void onDownloadComplete() {
+                            System.out.println("completed");
+                            conversationModelView.setMessageDownload(chatMessage.getId(),false);
+
+
+                        }
+
+                        @Override
+                        public void onError(Error error) {
+                            conversationModelView.setMessageDownload(chatMessage.getId(),false);
+
+                            System.out.println("errror");
+                        }
+                    });
+                    System.out.println("downloadID"+downloadID.getDownloadId()+""+id);
+
                 } else {
                     Log.v(TAG, "File already download ");
 
@@ -3294,26 +3244,24 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         toolsLiner.setVisibility(View.VISIBLE);
 
         if (isChecked) {
-            System.out.println(chatMessage.getMessage() + selectedMessage.size() + "getMessage");
-            selectedMessage.add(chatMessage);
-            System.out.println(chatMessage.getUserId() + "mmmmhhhh" + selectedMessage.get(0).getUserId());
+//            System.out.println(chatMessage.getMessage() + conversationModelView.selectedMessage.getValue().size() + "getMessage");
+            conversationModelView.addSelectedMessage(chatMessage);
             deleteMessage.add("\"" + chatMessage.getId() + "\"");
         } else {
-            selectedMessage.remove(chatMessage);
-            System.out.println("selected message " + selectedMessage.size() + "lllll");
+            conversationModelView.removeSelectedMessage(chatMessage);
             deleteMessage.remove("\"" + chatMessage.getId() + "\"");
 
-            if (selectedMessage.size() < 1) {
-                System.out.println("selectedMessage.size() < 1");
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
-                toolsLiner.setVisibility(View.GONE);
-            }
+//            if (conversationModelView.selectedMessage.getValue().size() < 1) {
+//                System.out.println("selectedMessage.size() < 1");
+//                personInformationLiner.setVisibility(View.VISIBLE);
+//                toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
+//                toolsLiner.setVisibility(View.GONE);
+//            }
+
 
         }
 
         System.out.println(deleteMessage.size() + "is sizeeee");
-        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -3400,7 +3348,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            System.out.println("data notifyyyyyyyyyyyyyyyyyy");
             adapter.notifyDataSetChanged();
 
         }
@@ -3436,6 +3383,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         e.printStackTrace();
                     }
                     updateMessage(data);
+                    conversationModelView.setMessageChecked(conversationModelView.selectedMessage.getValue().get(0).getId(),false);
+
+                    conversationModelView.clearSelectedMessage();
+
+                    deleteMessage.clear();
                 }
             }
         });
@@ -3522,7 +3474,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     private void alertDeleteDialog() {
 
-        for (ChatMessage message : selectedMessage) {
+        for (ChatMessage message : conversationModelView.selectedMessage.getValue()) {
             if (!message.isMe()) {
                 isAllMessgeMe = false;
                 break;
@@ -3540,14 +3492,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     public void onClick(DialogInterface dialog,
                                         int which) {
                         deleteMessage();
-                        Toast.makeText(getApplicationContext(), "Yes is clicked", Toast.LENGTH_LONG).show();
                     }
                 });
         dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                Toast.makeText(getApplicationContext(), "cancel is clicked", Toast.LENGTH_LONG).show();
             }
         });
         if (isAllMessgeMe) {
@@ -3573,14 +3523,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     }
 
                     deletForAll(jsonObject);
-//                                deleteMessage(deleteMessage);
-                    selectedMessage.clear();
+
+                    conversationModelView.clearSelectedMessage();
                     deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
-//                adapter.notifyDataSetChanged();
-                    toolsLiner.setVisibility(View.GONE);
-                    personInformationLiner.setVisibility(View.VISIBLE);
-                    toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+
 
 
                 }
@@ -3765,7 +3711,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             super.onPostExecute(aVoid);
             System.out.println("data notifyyyyyyyyyyyyyyyyyy");
             displayMessage(chatMessage);
-            adapter.notifyDataSetChanged();
 
         }
     }

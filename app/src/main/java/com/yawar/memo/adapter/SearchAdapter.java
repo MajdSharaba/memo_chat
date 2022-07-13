@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.SearchFragment;
@@ -93,7 +94,8 @@ import java.util.ArrayList;
 
                    // Glide.with(holder.imageView.getContext()).load(model.getImage()).into(holder.imageView);
                    if (!model.getImage().isEmpty()) {
-                       Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl + model.getImage()).error(activity.getDrawable(R.drawable.th)).into(holder.imageView);
+                       Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+model.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.imageView);
+
                    }
                    if (!contactExists(model.getPhone())) {
                        holder.button.setVisibility(View.VISIBLE);

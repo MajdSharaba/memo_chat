@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
@@ -90,7 +91,9 @@ public class GroupSelectorAdapter extends RecyclerView.Adapter<com.yawar.memo.ad
         holder.tvNumber.setText(model.getNumber());
         System.out.println(model.getImage());
          if(!model.getImage().isEmpty()){
-        Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+model.getImage()).into(holder.imageView);}
+//        Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+model.getImage()).into(holder.imageView);
+             Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+model.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.imageView);
+       }
 
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
