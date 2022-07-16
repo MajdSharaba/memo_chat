@@ -248,7 +248,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     ArrayList<String> returnValue = new ArrayList<>();
     private ArrayList<ChatMessage> chatHistory;
-//    private ArrayList<ChatMessage> selectedMessage = new ArrayList<>();
+    private ArrayList<ChatMessage> selectedMessage = new ArrayList<>();
     private ArrayList<JSONObject> unSendMessage = new ArrayList<>();
     private final ArrayList<String> deleteMessage = new ArrayList<>();
 
@@ -705,10 +705,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
 //       getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //       WindowManager.LayoutParams.FLAG_FULLSCREEN);
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_conversation);
-         toolbar  = (Toolbar) findViewById(R.id.toolbar);
-         setSupportActionBar(toolbar);
+
          reply    = (TextView)findViewById(R.id.reply);
          username = (TextView)findViewById(R.id.username);
          close    = (ImageButton)findViewById(R.id.close);
@@ -1495,7 +1492,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 try {
 
                     username.setText(userName);
-                    reply.setText(selectedMessage.get(0).message);
+                    reply.setText(conversationModelView.selectedMessage.getValue().get(0).message);
                     close.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {

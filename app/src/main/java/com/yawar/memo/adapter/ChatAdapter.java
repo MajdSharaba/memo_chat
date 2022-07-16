@@ -44,7 +44,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.app.adprogressbarlib.AdCircleProgress;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.hbisoft.pickit.PickiT;
@@ -241,7 +240,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
 
                                 ConversationActivity.reply.setText( chatMessage.message.toString());
-                                ConversationActivity.username.setText(chatMessages.get(0).getFileName().toString());
+                                ConversationActivity.username.setText(chatMessage.getFileName().toString());
 
 
                             } catch (Exception exception) {
