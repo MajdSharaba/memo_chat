@@ -105,7 +105,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
-
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -155,7 +154,6 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
-
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.socket.client.Socket;
@@ -224,12 +222,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private static final int PICK_IMAGE_FROM_GALLERY = 8396;
     private static final int RESULT_PICK_CONTACT = 1;
 
-
     ProgressDialog mProgressDialog;
 
     boolean viewVisability = false;
-    //    private String senderId;
-//    private String reciverId;
+//  private String senderId;
+//  private String reciverId;
     private String userName;
     private String imageUrl;
     Bitmap bitmap;
@@ -688,6 +685,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     SharedPreferences sharedPreferences;
     PickiT pickiT;
 
+    public static TextView reply;
+    public static TextView username;
+    public static ImageButton close;
+    public static CardView cardview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -702,6 +703,18 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         if (!isPermissionGranted()) {
             askPermissions();
         }
+//       getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//       WindowManager.LayoutParams.FLAG_FULLSCREEN);
+         super.onCreate(savedInstanceState);
+         setContentView(R.layout.activity_conversation);
+         toolbar  = (Toolbar) findViewById(R.id.toolbar);
+         setSupportActionBar(toolbar);
+         reply    = (TextView)findViewById(R.id.reply);
+         username = (TextView)findViewById(R.id.username);
+         close    = (ImageButton)findViewById(R.id.close);
+         cardview = (CardView) findViewById(R.id.cardview);
+         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+         pickiT   = new PickiT(this, this, this);
 
 
         initViews();
@@ -740,11 +753,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     private void initViews() {
 
-//        cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+//      cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         timeProperties = new TimeProperties();
         conversationModelView = new ViewModelProvider(this).get(ConversationModelView.class);
 
-//        moreOption = findViewById(R.id.image_button_Options);
+//      moreOption = findViewById(R.id.image_button_Options);
         messageLiner = findViewById(R.id.liner);
         videoCallBtn = findViewById(R.id.video_call);
         audioCallBtn = findViewById(R.id.audio_call);
@@ -1129,6 +1142,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 } else {
                     sendMessageBtn.setEnabled(false);
                     sendMessageBtn.setVisibility(View.GONE);
+                    cardview.setVisibility(View.GONE);
                     recordButton.setVisibility(View.VISIBLE);
                 }
 
@@ -1208,6 +1222,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         sendMessageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                username.setVisibility(View.GONE);
+                reply.setVisibility(View.GONE);
 
                 String message_id = System.currentTimeMillis() + "_" + user_id;
                 System.out.println(System.currentTimeMillis() + "_--" + user_id);
@@ -1472,6 +1488,31 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         });
 
+        ImageButton relyying = (ImageButton)findViewById(R.id.image_button_reply);
+        relyying.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+
+                    username.setText(userName);
+                    reply.setText(selectedMessage.get(0).message);
+                    close.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            cardview.setVisibility(View.GONE);
+
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                reply.setVisibility(View.VISIBLE);
+                username.setVisibility(View.VISIBLE);
+                close.setVisibility(View.VISIBLE);
+                cardview.setVisibility(View.VISIBLE);
+            }
+        });
 
     }
 

@@ -17,6 +17,8 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
+import android.util.Log;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -42,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.app.adprogressbarlib.AdCircleProgress;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.hbisoft.pickit.PickiT;
@@ -54,7 +57,7 @@ import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
-
+import com.yawar.memo.views.ConversationActivity;
 
 
 import java.io.File;
@@ -75,18 +78,19 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
     private final Activity context;
     private ChatAdapter.CallbackInterface mCallback;
 
-
+      public  String userNameeee ;
 //    float textSize = 14.0F ;
 //    SharedPreferences sharedPreferences ;
 
 
     public interface CallbackInterface {
 
-        /**
+        /*
+
          * Callback invoked when clicked
-         *
-         * @param position             - the position
-         * @param groupSelectorRespone - the text to pass back
+         * @param   position             - the position
+         * @param   groupSelectorRespone - the text to pass back
+
          */
         void onHandleSelection(int position, ChatMessage groupSelectorRespone, boolean myMessage);
 
@@ -116,10 +120,15 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
         this.context = context;
 //        this.chatMessages = chatMessages;
         try {
+
             mCallback = (ChatAdapter.CallbackInterface) context;
+
         } catch (ClassCastException ex) {
+
             //.. should log the error or throw and exception
+
         }
+
     }
 
     @Override
@@ -153,55 +162,50 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                 case 0:
                     View layoutOne
                             = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.image_item_chat_meesage, parent,
-                                    false);
+                            .inflate(R.layout.image_item_chat_meesage, parent, false);
                     return new LayoutImageViewHolder(layoutOne);
                 case 1:
                     View layoutTwo
                             = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.voice_record_item_chat_message, parent,
-                                    false);
+                            .inflate(R.layout.voice_record_item_chat_message, parent, false);
                     return new ChatAdapter.LayoutVoiceViewHolder(layoutTwo);
                 case 2:
                     View layoutthree
                             = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.video_item_chat_message, parent,
-                                    false);
+                            .inflate(R.layout.video_item_chat_message, parent, false);
                     return new ChatAdapter.LayoutVideoViewHolder(layoutthree);
                 case 3:
                     View layoutFour
                             = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.pdf_item_chat_message, parent,
-                                    false);
+                            .inflate(R.layout.pdf_item_chat_message, parent, false);
                     return new ChatAdapter.LayoutPdfViewHolder(layoutFour);
                 case 4:
                     View layoutFive
                             = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.contact_item_chat_message, parent,
-                                    false);
+                            .inflate(R.layout.contact_item_chat_message, parent, false);
                     return new LayoutContactViewHolder(layoutFive);
                 case 5:
                     View layoutSex
                             = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.location_item_chat_message, parent,
-                                    false);
+                            .inflate(R.layout.location_item_chat_message, parent, false);
                     return new LayoutLocationViewHolder(layoutSex);
                 case 6:
                     View layoutSeven
                             = LayoutInflater.from(parent.getContext())
-                            .inflate(R.layout.list_item_chat_message, parent,
-                                    false);
+                            .inflate(R.layout.list_item_chat_message, parent, false);
                     return new LayoutTextViewHolder(layoutSeven);
                 default:
                     return null;
             }
         }
+
 //        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_chat_message, parent, false);
 //        ChatAdapter.ViewHolder holder = new ChatAdapter.ViewHolder(v);
 //        return holder;
 
     }
-
+ float prex;
+    boolean isdraged ;
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
@@ -211,6 +215,57 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
         boolean myMsg = chatMessage.getIsme();
         TimeProperties timeProperties = new TimeProperties();
 
+
+        userNameeee = chatMessage.getFileName();
+
+        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent e) {
+                float x = e.getX();
+                float y = e.getY();
+                switch (e.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        isdraged = true;
+                        if((prex>x || prex<x) &&  (prex-x >= 5 || prex-x <= 5)) {
+                            try {
+                                ConversationActivity.close.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        ConversationActivity.cardview.setVisibility(View.GONE);
+
+                                    }
+                                });
+
+
+                                ConversationActivity.reply.setText( chatMessage.message.toString());
+                                ConversationActivity.username.setText(chatMessages.get(0).getFileName().toString());
+
+
+                            } catch (Exception exception) {
+                                exception.printStackTrace();
+                            }
+                            ConversationActivity.reply.setVisibility(View.VISIBLE);
+                            ConversationActivity.username.setVisibility(View.VISIBLE);
+                            ConversationActivity.cardview.setVisibility(View.VISIBLE);
+                            ConversationActivity.close.setVisibility(View.VISIBLE);
+
+                            return true;
+                        }else{
+
+                        }
+
+                    case MotionEvent.ACTION_UP:
+                        isdraged = false;
+                        break;
+                }
+
+                prex=x;
+                return false;
+            }
+        });
 
         switch (chatMessage.getType()) {
             case "imageWeb":
@@ -230,6 +285,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
                 }
                 if (!imageFile.exists()) {
+
                     Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(R.drawable.backgrounblack).centerCrop()
                             .into(((LayoutImageViewHolder) holder).imageView);
                     if (chatMessage.isDownload()) {
@@ -358,6 +414,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                                                 ((LayoutVoiceViewHolder) holder).adCircleProgress.setAdProgress(((LayoutVoiceViewHolder) holder).l);
 
                                                 ((LayoutVoiceViewHolder) holder).l++;
+
                                             }
                                         });
                                     }
@@ -576,6 +633,8 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                 if (myMsg) {
                     File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send");  // -> filename = maven.pdf
                     pdfFile = new File(d, chatMessage.getFileName());
+
+                    userNameeee = chatMessage.getFileName();
 
                 } else {
                     File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive");  // -> filename = maven.pdf
@@ -929,7 +988,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
-                    ((LayoutVoiceViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
                     if (state.equals("3")) {
@@ -1214,7 +1273,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutTextViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams = (LinearLayout.LayoutParams) ((LayoutTextViewHolder) holder).txtMessage.getLayoutParams();
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutTextViewHolder) holder).txtMessage.setLayoutParams(layoutParams);
+                    ((LayoutTextViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
 
                     ((LayoutTextViewHolder) holder).txtMessage.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
@@ -1418,10 +1477,9 @@ public void setData(ArrayList<ChatMessage> newData) {
 
 
         }
-    }
 
-    class LayoutVideoViewHolder
-            extends RecyclerView.ViewHolder {
+}
+    class LayoutVideoViewHolder extends RecyclerView.ViewHolder {
 
         private final LinearLayout content;
         private final LinearLayout contentWithBG;
