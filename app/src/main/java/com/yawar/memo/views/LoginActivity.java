@@ -32,7 +32,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.hbb20.CountryCodePicker;
 import com.yawar.memo.Api.AuthApi;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.ChatRoomFragment;
 
@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
-        text =(TextView) findViewById(R.id.text);
+        text = findViewById(R.id.text);
         text.setTextSize(textSize);
         text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
@@ -117,7 +117,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
 
         sendBtn = findViewById(R.id.btn_send_code);
-        ccp = (CountryCodePicker) findViewById(R.id.ccp);
+        ccp = findViewById(R.id.ccp);
 
         edtPhone = findViewById(R.id.editTextPhone);
         sendBtn.setOnClickListener(new View.OnClickListener() {

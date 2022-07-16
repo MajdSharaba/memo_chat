@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     android:layoutDirection="locale"
     android:orientation="vertical">
-
     <RelativeLayout
         android:id="@+id/relativeMaps"
         android:visibility="gone"
@@ -125,6 +124,7 @@
 
                 </LinearLayout>
                 <ImageView
+                    android:id="@+id/video_call"
                     android:layout_width="0dp"
                     android:layout_weight="0.5"
                     android:layout_gravity="center"
@@ -138,6 +138,7 @@
                 </ImageView>
 
                 <ImageView
+                    android:id="@+id/audio_call"
                     android:layout_width="0dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"

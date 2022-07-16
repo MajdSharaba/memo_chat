@@ -2,9 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yawar.memo">
-
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"></uses-permission>
     <uses-permission android:name="android.permission.INTERNET" />
+<!--    <uses-permission android:name="" />-->
+
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
@@ -19,7 +26,17 @@
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
         tools:ignore="CoarseFineLocation" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+        tools:ignore="ProtectedPermissions"/>
+<!--    <uses-permission android:name="android.permission.WAKE_LOCK" />-->
+
 
     <application
         android:name=".utils.BaseApp"
@@ -35,9 +52,28 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:theme">
         <activity
-            android:name=".views.BlockedUsersActivity"
+            android:name=".call.CallNotificationActivity"
+            android:showOnLockScreen="true"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-             />
+            android:exported="false" />
+        <activity
+            android:name=".call.RequestCallActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".call.CallMainActivity"
+            android:exported="false"
+            android:showOnLockScreen="false"
+            android:theme="@style/AppTheme"
+            android:screenOrientation="portrait"
+            />
+
+        <activity
+            android:name=".views.BlockedUsersActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".views.DevicesLinkActivity"
             android:screenOrientation="portrait"
@@ -77,6 +113,16 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <receiver android:name=".service.NotificationReceiver" />
+        <service
+            android:name="com.yawar.memo.videocalltest.ConnService"
+            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.telecom.ConnectionService" />
+            </intent-filter>
+        </service>
+
 
         <activity
             android:name=".views.VideoActivity"
@@ -87,13 +133,13 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.DashBord"
+            android:showOnLockScreen="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.ArchivedActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"
-            />
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".views.GroupPropertiesActivity"
             android:screenOrientation="portrait"
@@ -114,6 +160,7 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".views.SettingsActivity" />
+
         <activity
             android:name=".views.SplashScreen"
             android:exported="true"

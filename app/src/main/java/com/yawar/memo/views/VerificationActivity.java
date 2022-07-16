@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.yawar.memo.Api.AuthApi;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.AuthRepo;
@@ -131,7 +131,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
         resendbtn = findViewById(R.id.btn_resendCode);
         resendbtn.setEnabled(false);
         myBase = BaseApp.getInstance();
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
         forceResendingToken =myBase.getForceResendingToken().getForceResendingToken();
 
         classSharedPreferences = new ClassSharedPreferences(VerificationActivity.this);

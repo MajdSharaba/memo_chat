@@ -12,7 +12,9 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.call.CallMainActivity;
+import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ChatRoomFragment;
 import com.yawar.memo.model.UserModel;
@@ -43,9 +45,27 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final int EVENT_TYPE_JOIN = 1, EVENT_TYPE_MESSAGE = 2,
             EVENT_TYPE_TYPING = 3,EVENT_TYPE_ENTER = 4,EVENT_TYPE_CHECK_CONNECT=5,
             EVENT_TYPE_ON_SEEN=6,EVENT_TYPE_Forward=7,EVENT_TYPE_ON_DELETE =8,
-            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11, EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13,EVENT_TYPE_ON_UPDATE_MESSAGE=14;
+            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11,
+            EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13,EVENT_TYPE_ON_UPDATE_MESSAGE=14
+            , EVENT_TYPE_CALLING=15, EVENT_TYPE_SEND_PEER_ID=16,
+            EVENT_TYPE_STOP_CALLING=17,
+            EVENT_TYPE_SETTING_CALL=18,
+            EVENT_TYPE_RECIVED_CALL =19,
+            EVENT_TYPE_MISSING_CALL = 20
+
+                    ;
     public static final String EVENT_DELETE = "delete message";
     private static final String EVENT_MESSAGE = "new message";
+    private static final String EVENT_CALLING = "sendPeerId";
+    private static final String EVENT_RECIVE_PEER_ID = "recivePeerId";
+    private static final String EVENT_RECIVE_STOP_CALLING = "removeVideo";
+    private static final String EVENT_RECIVE_RINING = "call_recived";
+    private static final String EVENT_SETTINGS_RINING = "settingsCall";
+
+
+
+
+
     private static final String EVENT_CHANGE = "change";
     private static final String CHECK_CONNECT= "check connect";
     private static final String FORWARD= "forward message";
@@ -54,6 +74,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String BLOCK_USER= "block";
     private static final String UNBLOCK_USER= "unblock";
     private static final String UPDATE_MESSAGE= "editmsg";
+    private static final String FETCH_PEER_ID= "fetchPeerId";
+
 
 
 
@@ -76,6 +98,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_ON_DELETE_PARAMTERS = "extra_on_delete_paramters";
     public static final String EXTRA_BLOCK_PARAMTERS = "extra_block_paramters";
     public static final String EXTRA_UN_BLOCK_PARAMTERS = "extra_un_block_paramters";
+    public static final String EXTRA_CALL_PARAMTERS = "extra_call_paramters";
+    public static final String EXTRA_SEND_PEER_ID_PARAMTERS = "extra_send_peer_id_paramters";
+
+
+
 
 
 
@@ -94,8 +121,19 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
     public static final String EXTRA_ON_SEEN_PARAMTERS = "extra_on_seen_paramters";
     public static final String EXTRA_EVENT_TYPE = "extra_event_type";
+    public static final String EXTRA_EVENT_CALL = "extra_event_call";
+    public static final String EXTRA_STOP_CALL_PARAMTERS = "extra_stop_call_paramters";
+    public static final String EXTRA_SETTINGS_CALL_PARAMTERS = "extra_settings_call_paramters";
+    public static final String EXTRA_RECIVED_CALL_PARAMTERS = "extra_recived_call_paramters";
+    public static final String EXTRA_MISSING_CALL_PARAMTERS = "extra_missing_call_paramters";
 
-    private static final String TAG = SocketIOService.class.getSimpleName();
+
+
+
+
+
+
+    private static final String TAG = "SocketIOService";
     private Socket mSocket;
     private Boolean isConnected = true;
     private boolean mTyping;
@@ -169,7 +207,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mServiceHandler = new ServiceHandler(mServiceLooper);
         myBase = (BaseApp) getApplication();
         blockUserRepo = myBase.getBlockUserRepo();
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
 
 
 
@@ -220,19 +258,21 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("block", new SocketEventListener("block", this));
         listenersMap.put("unblock", new SocketEventListener("unblock", this));
         listenersMap.put("editmsg", new SocketEventListener("editmsg", this));
-
-
-
-
-
-
-
-
-
+        listenersMap.put("sendPeerId", new SocketEventListener("sendPeerId", this));
+        listenersMap.put("recivePeerId", new SocketEventListener("recivePeerId", this));
+        listenersMap.put("fetchPeerId", new SocketEventListener("fetchPeerId", this));
+        listenersMap.put("closeCall", new SocketEventListener("closeCall", this));
 
         listenersMap.put("check connect", new SocketEventListener("check connect", this));
         listenersMap.put("on typing", new SocketEventListener("on typing", this));
         listenersMap.put("new message", new SocketEventListener("new message", this));
+        listenersMap.put("removeVideo", new SocketEventListener("removeVideo", this));
+        listenersMap.put("call_recived", new SocketEventListener("call_recived", this));
+        listenersMap.put("settingsCall", new SocketEventListener("settingsCall", this));
+
+
+
+
     }
 
     @Override
@@ -250,6 +290,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         System.out.println("onStartCommand");
         if (intent != null) {
             int eventType = intent.getIntExtra(EXTRA_EVENT_TYPE, EVENT_TYPE_JOIN);
+            System.out.println(eventType+"event Type");
 
             switch (eventType) {
 
@@ -394,7 +435,80 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         updateMessage(update_message_paramter);
                     }
                     break;
+                case EVENT_TYPE_CALLING:
+                    System.out.println("EVENT_TYPE_Calling");
 
+                    String call_message_paramter = intent.getExtras().getString(EXTRA_CALL_PARAMTERS);
+
+                    if (isSocketConnected()) {
+                        call(call_message_paramter);
+                    }
+                    break;
+
+                case EVENT_TYPE_SEND_PEER_ID:
+                    System.out.println("EVENT_TYPE_SEND_PEER_ID");
+
+                    String send_peer_id_message_paramter = intent.getExtras().getString(EXTRA_SEND_PEER_ID_PARAMTERS);
+                    Log.i(TAG, "onStartCommand: before send_peer_id_message_paramter");
+
+//                    if (isSocketConnected()) {
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "reconnecting socket...");
+                        sendPeerId(send_peer_id_message_paramter);
+
+                    }
+                    else{
+                        sendPeerId(send_peer_id_message_paramter);
+                    }
+//                    return true;
+//                        Log.i(TAG, "onStartCommand: send_peer_id_message_paramter");
+//                        sendPeerId(send_peer_id_message_paramter);
+//                    }
+                    break;
+                case EVENT_TYPE_STOP_CALLING:
+                    System.out.println("EVENT_TYPE_Stop_calling");
+
+                    String stop_calling_paramter = intent.getExtras().getString(EXTRA_STOP_CALL_PARAMTERS);
+
+                    if (isSocketConnected()) {
+                        stopCalling(stop_calling_paramter);
+                    }
+                    break;
+                case EVENT_TYPE_SETTING_CALL:
+                    System.out.println("EVENT_TYPE_Stop_calling");
+
+                    String settings_calling_paramter = intent.getExtras().getString(EXTRA_SETTINGS_CALL_PARAMTERS);
+
+                    if (isSocketConnected()) {
+                        sendSettingsCalling(settings_calling_paramter);
+                    }
+                    break;
+                case EVENT_TYPE_RECIVED_CALL:
+
+                    String recived_calling_paramter = intent.getExtras().getString(EXTRA_RECIVED_CALL_PARAMTERS);
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "EVENT_TYPE_Stop_calling: ");
+                        recivedCall(recived_calling_paramter);
+
+                    }
+                    else{
+                        recivedCall(recived_calling_paramter);
+                    }
+
+                    break;
+
+                case EVENT_TYPE_MISSING_CALL:
+
+                    String recived_missing_paramter = intent.getExtras().getString(EXTRA_RECIVED_CALL_PARAMTERS);
+                    if (isSocketConnected()) {
+                        sendMissingCall(recived_missing_paramter);
+                    }
+
+                    break;
 
             }
         }
@@ -470,7 +584,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat.toString());
+            System.out.println(chat);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -482,7 +596,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             typingObject = new JSONObject(messageObject);
-            System.out.println(typingObject.toString());
+            System.out.println(typingObject);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -533,7 +647,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
     private void deleteMessages(String messageObject) {
         JSONObject chat = null;
-
+        System.out.println("message deleted");
 
         try {
             chat = new JSONObject(messageObject);
@@ -552,7 +666,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat.toString()+"qr paramterssssssssss");
+            System.out.println(chat +"qr paramterssssssssss");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -567,7 +681,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat.toString()+"getIdForUser paramterssssssssss");
+            System.out.println(chat +"getIdForUser paramterssssssssss");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -602,18 +716,100 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("unblock", chat);
 
     }
+    private void call(String messageObject) {
+        JSONObject chat = null;
+//        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(chat.toString()+"call paramters");
+        mSocket.emit("getPeerId", chat);
+
+    }
+    private void sendPeerId(String messageObject) {
+        JSONObject chat = null;
+//        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+//        System.out.println(chat.toString()+"send peer ID");
+        Log.i(TAG, "sendPeerId: "+chat.toString());
+        mSocket.emit("recivePeerId", chat);
+
+    }
+    private void stopCalling(String messageObject) {
+        JSONObject chat = null;
+        String id = "";
+//        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+            id = chat.getString("id");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(chat.toString()+"send stop calling");
+        mSocket.emit("closeContact", id);
+
+    }
+    private void sendSettingsCalling(String messageObject) {
+        JSONObject chat = null;
+//        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(chat.toString()+"sendSettingsCalling");
+        mSocket.emit("settingsCall", chat);
+
+    }
+    private void recivedCall(String messageObject) {
+        JSONObject chat = null;
+//        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("call_recived", chat);
+
+    }
+    private void sendMissingCall(String messageObject) {
+        JSONObject chat = null;
+//        joinSocket();
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("closeCall", chat);
+
+    }
+
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        System.out.println("destroyyyyyyyyyyyyyyyy");
+//        System.out.println("destroyyyyyyyyyyyyyyyy");
         mSocket.disconnect();
         mSocket.close();
         heartBeat.stop();
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.off(entry.getKey(), entry.getValue());
         }
+        Log.i(TAG, "onDestroy: ");
 //        stopService(getSystemService("name"));
 
 
@@ -750,6 +946,24 @@ public void onTaskRemoved(Intent rootIntent) {
                 intent.putExtra("updateMessage", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
+            case EVENT_CALLING:
+                System.out.println(args[0].toString()+"callRequest");
+//                intent = new Intent(CallMainActivity.ON_CALL_REQUEST);
+//                intent.putExtra("callRequest", args[0].toString());
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                Intent dialogIntent = new Intent(this, CallMainActivity.class);
+//                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                dialogIntent.putExtra("callRequest", args[0].toString());
+//
+//                startActivity(dialogIntent);
+
+                break;
+            case FETCH_PEER_ID:
+                System.out.println(args[0].toString()+"FETCH_PEER_ID");
+                intent = new Intent(RequestCallActivity.FETCH_PEER_ID);
+                intent.putExtra("fetchPeer", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
 
             case BLOCK_USER:
                 System.out.println(args[0].toString()+"NEW_Block");
@@ -815,6 +1029,33 @@ public void onTaskRemoved(Intent rootIntent) {
                     e.printStackTrace();
                 }
                 break;
+            case EVENT_RECIVE_STOP_CALLING:
+                  System.out.println("EVENT_RECIVE_STOP_CALLING");
+                intent = new Intent(CallMainActivity.ON_STOP_CALLING_REQUEST);
+                intent.putExtra("get stopCalling", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                intent = new Intent(RequestCallActivity.ON_STOP_CALLING_REQUEST);
+                intent.putExtra("get stopCalling", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+
+            case EVENT_RECIVE_RINING:
+                System.out.println("EVENT_RECIVE_RINING"+args[0].toString());
+                intent = new Intent(RequestCallActivity.ON_RINING_REQUEST);
+                intent.putExtra("get rining", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+
+            case EVENT_SETTINGS_RINING:
+                System.out.println("EVENT_SETTINGS_RINING"+args[0].toString());
+                intent = new Intent(CallMainActivity.ON_RECIVED_SETTINGS_CALL);
+                intent.putExtra("get settings", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                intent = new Intent(RequestCallActivity.ON_RECIVED_SETTINGS_CALL);
+                intent.putExtra("get settings", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+
         }
     }
 }

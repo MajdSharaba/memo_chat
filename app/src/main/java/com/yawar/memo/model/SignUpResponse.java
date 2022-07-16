@@ -8,7 +8,7 @@ public class SignUpResponse {
     private String success;
     private String message;
     private Integer userid;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private final Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public String getSuccess() {
         return success;

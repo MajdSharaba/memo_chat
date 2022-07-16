@@ -17,25 +17,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.GroupSelectorAdapter;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.SendContactNumberResponse;
-import com.yawar.memo.modelView.ChatRoomViewModel;
 import com.yawar.memo.modelView.ForwardDialogViewModel;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.views.ConversationActivity;
-import com.yawar.memo.views.GroupSelectorActivity;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -138,7 +133,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
 
         sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
-        select_title2 =(TextView) view.findViewById(R.id.select_title2);
+        select_title2 = view.findViewById(R.id.select_title2);
         select_title2.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
@@ -150,7 +145,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
         forwardDialogViewModel =  new ViewModelProvider(this).get(ForwardDialogViewModel.class);
 
 //        myBase.getContactNumberObserve().addObserver(this);
-        myBase.getObserver().addObserver(this);
+//        myBase.getObserver().addObserver(this);
 
         System.out.println(chatMessageArrayList.toString());
         for(ChatMessage chatMessage :chatMessageArrayList){
@@ -174,10 +169,10 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
                 if(chatRoomModels!=null){
                     sendContactNumberResponses.clear();
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
-                                        sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.userId,chatRoomModel.name,chatRoomModel.getSpecialNumber(),chatRoomModel.image,"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
+                                        sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.getUserId(),chatRoomModel.getName(),chatRoomModel.getSpecialNumber(),chatRoomModel.getImage(),"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
 
                     }
-                    mainAdapter.updateList((ArrayList<SendContactNumberResponse>) sendContactNumberResponses);
+                    mainAdapter.updateList(sendContactNumberResponses);
 
                 }
                 //adapter.notifyDataSetChanged();

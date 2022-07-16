@@ -3,8 +3,8 @@ package com.yawar.memo.service;
 import io.socket.emitter.Emitter;
 
 class SocketEventListener extends Emitter implements Emitter.Listener {
-    private String mEvent;
-    private Listener mListener;
+    private final String mEvent;
+    private final Listener mListener;
 
     public SocketEventListener(String mEvent, Listener mListener) {
         this.mEvent = mEvent;

@@ -14,17 +14,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.DeviceLinkAdapter;
-import com.yawar.memo.adapter.GroupSelectorAdapter;
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.DeviceLinkModel;
-import com.yawar.memo.model.SendContactNumberResponse;
 import com.yawar.memo.service.SocketIOService;
 
 import org.json.JSONException;
@@ -79,7 +75,7 @@ public class DevicesLinkActivity extends AppCompatActivity {
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_GET_QR);
         startService(service);
     }
-    private BroadcastReceiver recivecheckQr = new BroadcastReceiver() {
+    private final BroadcastReceiver recivecheckQr = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -111,7 +107,7 @@ public class DevicesLinkActivity extends AppCompatActivity {
 //
 //
     };
-    private BroadcastReceiver reciveGetQr = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveGetQr = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
 
@@ -181,7 +177,7 @@ public class DevicesLinkActivity extends AppCompatActivity {
                 } else {
 ////                    deviceLinkModels.add(new DeviceLinkModel(result.getContents(),""));
 //                    mainAdapter.notifyDataSetChanged();
-                    resultQr=result.getContents().toString();
+                    resultQr= result.getContents();
                     checkQr();
 //                    Toast.makeText(DevicesLinkActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                 }

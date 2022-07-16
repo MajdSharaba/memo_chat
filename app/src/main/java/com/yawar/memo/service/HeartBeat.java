@@ -8,7 +8,7 @@ public class HeartBeat implements Runnable {
     private static final String TAG = HeartBeat.class.getSimpleName();
     private boolean isBeating;
     private Handler handler;
-    private HeartBeatListener listener;
+    private final HeartBeatListener listener;
 
     public HeartBeat(HeartBeatListener listener) {
         handler = new Handler();

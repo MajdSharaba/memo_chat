@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
@@ -21,8 +22,8 @@ import java.util.ArrayList;
 
 public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerViewHolder> {
 
-    private ArrayList<MediaModel> courseDataArrayList;
-    private Context mcontext;
+    private final ArrayList<MediaModel> courseDataArrayList;
+    private final Context mcontext;
 
     public MediaAdapter(ArrayList<MediaModel> recyclerDataArrayList, Context mcontext) {
         this.courseDataArrayList = recyclerDataArrayList;
@@ -42,8 +43,10 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerView
         // Set the data to textview and imageview.
         MediaModel recyclerData = courseDataArrayList.get(position);
         if(!recyclerData.getImgid().isEmpty()){
-        Glide.with( holder.courseIV.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().error(mcontext.getResources().getDrawable(R.drawable.th))
-                .into(holder.courseIV);
+//        Glide.with( holder.courseIV.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().error(mcontext.getResources().getDrawable(R.drawable.th))
+//                .into(holder.courseIV);
+            Glide.with(holder.courseIV.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.courseIV);
+
             holder.courseIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -63,8 +66,10 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerView
                     dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
 
 
-                    PhotoView image = (PhotoView) dialog.findViewById(R.id.photo_view);
-                    Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().into(image);
+                    PhotoView image = dialog.findViewById(R.id.photo_view);
+//                    Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().into(image);
+                    Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(image);
+
                     dialog.show();
 
                 }
@@ -83,7 +88,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerView
     // View Holder Class to handle Recycler View.
     public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView courseIV;
+        private final ImageView courseIV;
 
         public RecyclerViewHolder(@NonNull View itemView) {
             super(itemView);

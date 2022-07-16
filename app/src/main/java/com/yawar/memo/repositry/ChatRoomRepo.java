@@ -65,7 +65,7 @@ public class ChatRoomRepo {
             Log.d("getUserrr", "callAPI: "+s);
                         JSONObject respObj = new JSONObject(s);
                         JSONArray dataArray = (JSONArray) respObj.get("data");
-                        System.out.println(dataArray.toString()+"dataArray");
+                        System.out.println(dataArray +"dataArray");
 
 
 
@@ -150,13 +150,25 @@ public class ChatRoomRepo {
 //        this.chatRoomsList = chatRoomModelList;
         chatRoomListMutableLiveData.setValue(chatRoomModelList);
     }
-    public  void deleteChatRoom(String chatId){
+    @SuppressLint("CheckResult")
+    public  void deleteChatRoom(String my_id, String your_id){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().deleteChatRoom(my_id,your_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chatId)){
+            if(chatRoom.getUserId().equals(your_id)){
                 chatRoomsList.remove(chatRoom);
                 break;
             }}
         chatRoomListMutableLiveData.setValue(chatRoomsList);
+
+
+        },s-> {
+            System.out.println("Errorrrrrrrr" + s);
+        });
+
     }
     public  void addChatRoom(ChatRoomModel chatRoomModel){
 //        System.out.println("addddddddddddddddddddddddddddddddddd");
@@ -166,7 +178,7 @@ public class ChatRoomRepo {
     public void setLastMessage(String message , String chatId,String senderId, String reciverId,String type,String state,String dateTime){
         boolean inList=false;
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chatId)){
+            if(chatRoom.getChatId().equals(chatId)){
                 chatRoom.setLastMessage(message);
                 chatRoom.setLastMessageType(type);
                 chatRoom.setLastMessageState(state);
@@ -178,7 +190,7 @@ public class ChatRoomRepo {
 
                 inList=true;
 
-                if(!chatRoom.inChat){
+                if(!chatRoom.isInChat()){
                     chatRoom.setNumberUnRMessage(String.valueOf(Integer.parseInt(chatRoom.getNumberUnRMessage())+1));
                 }
 
@@ -190,10 +202,10 @@ public class ChatRoomRepo {
 
         if(!inList){
             for(ChatRoomModel chatRoom:chatRoomsList){
-                if(chatRoom.chatId.equals(senderId+reciverId)){
+                if(chatRoom.getChatId().equals(senderId+reciverId)){
                     chatRoomsList.remove(chatRoom);
                     System.out.println("chatRoom.setLastMessage(message)outtttttttttttttt chatrommmmmmmmmmm");
-                    if(!chatRoom.inChat){
+                    if(!chatRoom.isInChat()){
                         chatRoom.setNumberUnRMessage(String.valueOf(Integer.parseInt(chatRoom.getNumberUnRMessage())+1));
                     }
                     chatRoom.setChatId(chatId);
@@ -220,9 +232,9 @@ public class ChatRoomRepo {
 //        chatRoomListMutableLiveData.setValue(chatRoomsList);
     }
     /// state 1 for Archived ChatRoom
-    public void setState(String chatId,String state) {
+    public void setState(String anthor_user_id,String state) {
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chatId)){
+            if(chatRoom.getUserId().equals(anthor_user_id)){
                 chatRoom.setState(state);
 
                 break;
@@ -231,9 +243,9 @@ public class ChatRoomRepo {
         chatRoomListMutableLiveData.setValue(chatRoomsList);
     }
 
-    public void setInChat(String chat_id,boolean state){
+    public void setInChat(String user_id,boolean state){
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.chatId.equals(chat_id)){
+            if(chatRoom.getUserId().equals(user_id)){
                 chatRoom.setInChat(state);
                 if(state){
                     chatRoom.setNumberUnRMessage("0");}
@@ -247,9 +259,9 @@ public class ChatRoomRepo {
     public String getChatId(String anthorUserId){
         System.out.println("getChatId"+anthorUserId);
         for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.userId.equals(anthorUserId)){
+            if(chatRoom.getUserId().equals(anthorUserId)){
 
-                return chatRoom.chatId;
+                return chatRoom.getChatId();
             }
 
 
@@ -257,17 +269,13 @@ public class ChatRoomRepo {
         return "";
 
     }
-    public  boolean checkInChat(String chat_id) {
+    public  boolean checkInChat(String anthor_user_id) {
         if(chatRoomsList==null){
             return false;
         }
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
-                if (chatRoom.inChat) {
-                    return true;
-                } else {
-                    return false;
-                }
+            if (chatRoom.getUserId().equals(anthor_user_id)) {
+                return chatRoom.isInChat();
 
             }
         }
@@ -276,7 +284,7 @@ public class ChatRoomRepo {
     }
     public  void setTyping(String chat_id,boolean isTyping) {
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
+            if (chatRoom.getChatId().equals(chat_id)) {
                 chatRoom.setTyping(isTyping);
                 break;
 
@@ -286,7 +294,7 @@ public class ChatRoomRepo {
     }
     public  void setBlockedState(String chat_id,String blockedFor) {
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
+            if (chatRoom.getChatId().equals(chat_id)) {
                 chatRoom.setBlockedFor(blockedFor);
                 break;
 
@@ -296,12 +304,41 @@ public class ChatRoomRepo {
     }
     public void getChatRoom(String chat_id){
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.chatId.equals(chat_id)) {
+            if (chatRoom.getChatId().equals(chat_id)) {
                 chatRoomModelMutableLiveData.setValue(chatRoom);
                 break;
 
 
             }
         }
+    }
+    @SuppressLint("CheckResult")
+    public void addToArchived(String my_id, String your_id){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().addToArchived(my_id,your_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+            setState(your_id,my_id);
+            setArchived(true);
+
+
+
+        },s-> {
+            System.out.println("Errorrrrrrrr" + s);
+        });
+    }
+    @SuppressLint("CheckResult")
+    public void removeFromArchived(String my_id, String your_id){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().removeFromArchived(my_id,your_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+            setState(your_id,"null");
+
+
+
+        },s-> {
+            System.out.println("Errorrrrrrrr" + s);
+        });
     }
 }

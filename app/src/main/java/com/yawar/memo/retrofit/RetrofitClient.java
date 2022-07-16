@@ -13,7 +13,7 @@ public class RetrofitClient { //world wide cases
     //private  static  final String base_url = "https://still-lake-87096.herokuapp.com/" ;//base url
 //    private static final String base_url = "https://memoback.herokuapp.com/";//base url
     private static RetrofitClient instance;
-    private Retrofit retrofit; //retrofit object
+    private final Retrofit retrofit; //retrofit object
 
     private RetrofitClient(String baseUrl) { //constructor
         retrofit = new Retrofit.Builder().baseUrl(baseUrl).

@@ -15,12 +15,11 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
@@ -36,7 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class SplashScreen extends AppCompatActivity {
-    private static int SPLASH_SCREEN_TIME_OUT=3000;
+    private static final int SPLASH_SCREEN_TIME_OUT=3000;
     ClassSharedPreferences classSharedPreferences;
     private static final int STORAGE_PERMISSION_CODE = 101;
 

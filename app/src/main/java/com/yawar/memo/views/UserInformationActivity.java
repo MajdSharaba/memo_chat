@@ -18,19 +18,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
-import com.yawar.memo.Api.ClassSharedPreferences;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.MediaAdapter;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.MediaModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.BlockUserRepo;
@@ -50,7 +48,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserInformationActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
+    private final ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
     ServerApi serverApi;
     CircleImageView circleImageView;
     LinearLayout linerMore;
@@ -338,7 +336,7 @@ public class UserInformationActivity extends AppCompatActivity {
                 progressDialog.dismiss();
 
                 try {
-                    System.out.println(response.toString());
+                    System.out.println(response);
                     JSONArray jsonArray = new JSONArray(response);
 //                    System.out.println(respObj + "");
 //                    JSONArray jsonArray = (JSONArray) respObj.get();

@@ -17,4 +17,10 @@ public class ArchivedActViewModel extends ViewModel {
         return repository.chatRoomListMutableLiveData;
 
     }
+    public  void removeFromArchived(String my_id,String your_id){
+        repository.removeFromArchived(my_id,your_id);
+    }
+    public  void setArchived(boolean state){
+        repository.setArchived(state);
+    }
 }

@@ -23,6 +23,7 @@ import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.DashBord;
 import com.yawar.memo.views.IntroActivity;
@@ -390,7 +391,7 @@ public class ServerApi {
             @Override
             public void onResponse(String response) {
                 progressDialog.dismiss();
-                System.out.println(response.toString());
+                System.out.println(response);
 
                 // on below line we are passing our response
                 // to json object to extract data from it.
@@ -440,7 +441,7 @@ public class ServerApi {
                 // on below line we are passing our key
                 // and value pair to our parameters.
                 String data = new Gson().toJson(arrayList);
-                params.put("data", data.toString());
+                params.put("data", data);
                 params.put("id",myId);
 //                params.put("email", email);
 //                params.put("first_name", firstName);
@@ -580,12 +581,12 @@ public class ServerApi {
                         ));
 //                        System.out.println(AllConstants.base_url + "uploads/profile/" + jsonObject.getString("image"));
                     }
-                    if (isArchived) {
-
-                        myBase.getObserver().setArchived(true);
-                    }
-                    System.out.println("postListttttttttttttttt" + postList.size());
-                    myBase.getObserver().setChatRoomModelList(postList);
+//                    if (isArchived) {
+//
+//                        myBase.getObserver().setArchived(true);
+//                    }
+//                    System.out.println("postListttttttttttttttt" + postList.size());
+//                    myBase.getObserver().setChatRoomModelList(postList);
                     Intent intent = new Intent(context, DashBord.class);
 
                     context.startActivity(intent);
@@ -595,7 +596,7 @@ public class ServerApi {
 //
 //                    startActivity(intent);
 //                    IntroActivity.this.finish();
-                    System.out.println("myBase.getObserver().getChatRoomModelList().size()" + myBase.getObserver().getChatRoomModelList().size());
+//                    System.out.println("myBase.getObserver().getChatRoomModelList().size()" + myBase.getObserver().getChatRoomModelList().size());
 
 
 //                    else {
@@ -645,7 +646,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.107:3000/addtoblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.109:3000/addtoblock", new Response.Listener<String>() {
 
 
 
@@ -732,7 +733,7 @@ public class ServerApi {
 
 
 
-        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.107:3000/deleteblock", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.109:3000/deleteblock", new Response.Listener<String>() {
 
 
 
@@ -872,7 +873,123 @@ public class ServerApi {
         // a json object request.
         queue.add(request);
     }
+    public void sendNotification(String message, String type,String fcmToken, String chat_id) {
+        classSharedPreferences = new ClassSharedPreferences(context);
 
+
+        try {
+//            RequestQueue queue = Volley.newRequestQueue(ConversationActivity.this);
+
+
+
+            JSONObject data = new JSONObject();
+            data.put("title", classSharedPreferences.getUser().getUserName());
+            data.put("body", message);
+            data.put("image", classSharedPreferences.getUser().getImage());
+            data.put("chat_id", chat_id);
+            data.put("sender_id", classSharedPreferences.getUser().getUserId());
+
+            data.put("type", type);
+
+            JSONObject notification_data = new JSONObject();
+            notification_data.put("data", data);
+            notification_data.put("to", fcmToken);
+            notification_data.put("content_available", true);
+            notification_data.put("priority", "high");
+
+
+            JsonObjectRequest request = new JsonObjectRequest(AllConstants.fcm_send_notification_url, notification_data, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    System.out.println("responeeeeeeeeeeeeeeeeeeeeeeeeee" + message + fcmToken);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            }) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new HashMap<>();
+                    headers.put("Content-Type", "application/json");
+                    headers.put("Authorization", AllConstants.api_key_fcm_token_header_value);
+                    return headers;
+                }
+            };
+
+//      queue.add(request);
+            myBase.addToRequestQueue(request);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void sendPeerId(String object,String peer_id) {
+        System.out.println(object + "this is object ");
+        JSONObject message = null;
+        /////////
+
+
+        try {
+            message = new JSONObject(object);
+            message.put("peerId", peer_id);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(message.toString() + "peeeeeeeeeeeId object");
+
+
+        Intent service = new Intent(context, SocketIOService.class);
+
+        service.putExtra(SocketIOService.EXTRA_SEND_PEER_ID_PARAMTERS, message.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_PEER_ID);
+       context.startService(service);
+
+    }
+
+    public void isRining(String yout_id) {
+        classSharedPreferences = new ClassSharedPreferences(context);
+
+        // creating a new variable for our request queue
+        RequestQueue queue = Volley.newRequestQueue(context);
+        // on below line we are calling a string
+        // request method to post the data to our API
+        // in this we are calling a post method.
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // method to handle errors.
+//                Toast.makeText(getContext(), "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("my_id", classSharedPreferences.getUser().getUserId());
+                params.put("your_id", yout_id);
+                params.put("state", "true");
+
+                // at last we are
+                // returning our params.
+                return params;
+            }
+        };
+        // below line is to make
+        // a json object request.
+        queue.add(request);
+    }
 
 
 }
