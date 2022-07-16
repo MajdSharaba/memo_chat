@@ -1625,10 +1625,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             public void onResponse(String response) {
                 progressDialo.dismiss();
                 System.out.println("Data added to API+" + conversationModelView.selectedMessage.getValue().size());
-                for (ChatMessage message : Objects.requireNonNull(conversationModelView.selectedMessage.getValue())) {
-                    System.out.println("chatMessage"+message.getMessage());
-                    conversationModelView.deleteMessage(message);
-                }
+//                for (ChatMessage message : Objects.requireNonNull(conversationModelView.selectedMessage.getValue())) {
+//                    System.out.println("chatMessage"+message.getMessage());
+                    conversationModelView.deleteMessage();
+//                }
 //                adapter.notifyDataSetChanged();
                 conversationModelView.clearSelectedMessage();
                 deleteMessage.clear();
@@ -1712,7 +1712,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     //// for add message to list and display ie]t
     public void displayMessage(ChatMessage message) {
         conversationModelView.addMessage(message);
-        scroll();
+//        scroll();
     }
 
     /////for browse file from device

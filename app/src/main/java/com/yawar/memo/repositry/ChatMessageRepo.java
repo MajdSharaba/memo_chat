@@ -104,15 +104,17 @@ public class ChatMessageRepo {
         chatMessageistMutableLiveData.setValue(chatMessageList);
     }
 
-    public void deleteMessage(ChatMessage chatMessage) {
+    public void deleteMessage(ChatMessage chatMessagee) {
         System.out.println("size before"+chatMessageList.size());
-        for(ChatMessage message:chatMessageList){
-            if(chatMessage.getId().equals(chatMessage.getId())){
-                chatMessageList.remove(message);
-                break;
+//        for(ChatMessage message:chatMessageList){
+//            if(chatMessage.getId().equals(chatMessage.getId())){
+//                chatMessageList.remove(message);
+//                break;
+//
+//            }
+//        }
+        chatMessageList.remove(chatMessagee);
 
-            }
-        }
 
         System.out.println("delete message is done"+chatMessageList.size());
 

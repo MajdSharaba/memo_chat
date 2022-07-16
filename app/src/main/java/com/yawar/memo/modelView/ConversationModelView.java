@@ -76,7 +76,7 @@ public class ConversationModelView extends ViewModel {
                     for (ChatMessage chatMessage : Objects.requireNonNull(getChatMessaheHistory().getValue())) {
                         if (chatMessage.getId().equals(message_id)) {
                             System.out.println(chatMessage.getId() + " " + message_id);
-                            deleteMessage(chatMessage);
+                            repository.deleteMessage(chatMessage);
                             break;
                         }
                     }
@@ -87,9 +87,20 @@ public class ConversationModelView extends ViewModel {
                 e.printStackTrace();
             }
         }
-    public void deleteMessage( ChatMessage chatMessage) {
-        System.out.println(chatMessage.getMessage()+"chatMesssagefffff");
-        repository.deleteMessage(chatMessage);
+    public void deleteMessage( ) {
+        for (int i = 0; i < _selectedMessage.size(); i++) {
+
+            String message_id = _selectedMessage.get(i).getId();
+            for (ChatMessage chatMessage : Objects.requireNonNull(getChatMessaheHistory().getValue())) {
+                if (chatMessage.getId().equals(message_id)) {
+                    System.out.println(chatMessage.getId() + " " + message_id);
+                    repository.deleteMessage(chatMessage);
+                    break;
+                }
+            }
+
+
+        }
     }
     public void ubdateMessage( String messge_id,String message) {
         repository.UpdateMessage(messge_id,message);

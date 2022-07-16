@@ -584,7 +584,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
     private void loadVideoCall() {
 //        String filePath = "file:android_asset/call.html";
-        String filePath = "file:android_asset/call2.html";
+        String filePath = "file:android_asset/call.html";
 
         System.out.println("load videooooooooooooooo" + filePath);
         webView.loadUrl(filePath);

@@ -211,6 +211,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             }
         });
 
+        itemAdapter = new ChatRoomAdapter( this);
+
 
 
         chatRoomViewModel.loadData().observe(getActivity(), new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
@@ -224,7 +226,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 //                            System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
                             list.add(chatRoomModel.clone());
                             postList.add(chatRoomModel);
-                            System.out.println(postList.size()+"this is size");
+                            System.out.println(list.size()+"this is size");
                         }
                     }
 
@@ -235,7 +237,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
             }
         });
-        itemAdapter = new ChatRoomAdapter( this);
+//        itemAdapter = new ChatRoomAdapter( this);
         recyclerView.setAdapter(itemAdapter);
         recyclerView.setListener(new SwipeLeftRightCallback.Listener() {
             @Override

@@ -8,11 +8,12 @@ class JavascriptInterface(val CallMainActivity: CallMainActivity) {
 
     @JavascriptInterface
     fun onPeerConnected(string: String) {
+        println("this is javaScript code")
         CallMainActivity.onPeerConnected(string)
     }
     @JavascriptInterface
-    fun print() {
-       println("this is javaScript code")
+    fun print(string:String) {
+       println("this is javaScript code2$string")
     }
 
 }
