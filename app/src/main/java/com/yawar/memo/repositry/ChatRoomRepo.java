@@ -36,9 +36,6 @@ public class ChatRoomRepo {
 
     boolean isArchived = false;
 
-
-
-
     public ChatRoomRepo(Application application) { //application is subclass of context
 
         //cant call abstract func but since instance is there we can do this
@@ -101,8 +98,6 @@ public class ChatRoomRepo {
                                     username,
                                     jsonObject.getString("other_id"),
                                     jsonObject.getString("last_message"),
-
-
                                     image,
                                     false,
                                     jsonObject.getString("num_msg"),
