@@ -47,7 +47,7 @@ import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
-import com.yawar.memo.videocalltest.ConnService;
+
 import com.yawar.memo.views.SplashScreen;
 
 import org.json.JSONException;
