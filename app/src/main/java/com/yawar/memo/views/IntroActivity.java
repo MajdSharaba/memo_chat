@@ -56,7 +56,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 import com.yawar.memo.utils.BaseApp;
-
+//import com.yawar.memo.videocalltest.ConnService;
 
 public class IntroActivity extends AppCompatActivity implements Observer {
     ClassSharedPreferences classSharedPreferences;

@@ -183,12 +183,7 @@
     <string name="alert_switch_to_video_from_anthor_message">want to switch to video call do you want to switch too?</string>
 
     <string name="switch_to_video">switch to video</string>
-
-
-
-
-
-
+    <string name="voice_call">Voice call</string>
 
 
 </resources>

@@ -223,28 +223,7 @@
     <string name="alert_switch_to_video_from_anthor_message">يريد الانتقال الى مكالمة فيديو هل تريد الانتقال ايضا؟</string>
 
     <string name="switch_to_video">الانتقال الى الفيديو</string>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <string name="voice_call">مكالمة صوتية </string>
 
 
 </resources>
