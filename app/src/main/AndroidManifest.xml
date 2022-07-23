@@ -65,7 +65,10 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".call.CallMainActivity"
-            android:exported="false"
+            android:launchMode="singleTop"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:exported="true"
             android:showOnLockScreen="false"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
@@ -113,7 +116,11 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <receiver android:name=".service.NotificationReceiver" />
+        <receiver android:name=".notification.CancelCallFromCallNotification" />
+        <receiver android:name=".notification.CancelCallFromCallOngoingNotification" />
+
+
+
         <service
             android:name="com.yawar.memo.videocalltest.ConnService"
             android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"

@@ -3,6 +3,8 @@ package com.yawar.memo.model;
 import android.text.Spannable;
 import android.text.SpannableString;
 
+import java.util.Objects;
+
 public class ChatMessage implements Comparable, Cloneable  {
     public boolean isMe() {
         return isMe;
@@ -159,13 +161,16 @@ public class ChatMessage implements Comparable, Cloneable  {
         ChatMessage compare = (ChatMessage) o;
         if (
 //                compare.getMessage().equals(this.getMessage()) &&
-                compare.state == (this.state)&&
+                Objects.equals(compare.state, this.state) &&
                 compare.isDownload == (this.isDownload)&&
                 compare.isChecked == (this.isChecked)&&
-                compare.isUpdate == (this.isUpdate)
+                        Objects.equals(compare.isUpdate, this.isUpdate)
+
         ) {
+
             return 0;
         }
+        System.out.println(compare.getMessage()+this.getMessage()+"compareTo"+1);
         return 1;
 
     }

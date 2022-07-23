@@ -112,7 +112,9 @@ public class CallNotificationActivity extends AppCompatActivity {
 
 //                sendPeerId(callString,"null");
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallNotificationActivity.this);
-                notificationManager.cancel(Integer.parseInt(id));
+//                notificationManager.cancel(Integer.parseInt(id)+10000);
+                notificationManager.cancel(-1);
+
                 reject(callString);
 
                 finish();

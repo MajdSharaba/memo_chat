@@ -922,7 +922,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     adapter.setData(list);
                     if(!chatMessages.isEmpty())
                     scroll();
-//                                    adapter.notifyDataSetChanged();
 
 
                 }
@@ -1748,7 +1747,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     }
 
     //// for add message to list and display ie]t
-    public void displayMessage(ChatMessage message) {
+    public void
+    displayMessage(ChatMessage message) {
         conversationModelView.addMessage(message);
 //        scroll();
     }
@@ -1917,19 +1917,24 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
     private void scroll() {
-        messagesContainer.post(new Runnable() {
+        messagesContainer.postDelayed(new Runnable() {
             @Override
             public void run() {
                 System.out.println("scrolll"+conversationModelView.getChatMessaheHistory().getValue().size());
 
                 // Select the last row so it will scroll into view...
+//                if (conversationModelView.getChatMessaheHistory().getValue().size() > 0) {
                 if (conversationModelView.getChatMessaheHistory().getValue().size() > 0) {
 
-                    messagesContainer.scrollToPosition(conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+
+//                    messagesContainer.scrollToPosition(conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+                    messagesContainer.getLayoutManager().scrollToPosition( conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+
+
                 }
 
             }
-        });
+        },100);
 //        messagesContainer.setSelection(messagesContainer.getCount() - 1);
     }
 

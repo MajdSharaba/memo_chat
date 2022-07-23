@@ -1,4 +1,4 @@
-package com.yawar.memo.service;
+package com.yawar.memo.notification;
 
 import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
@@ -28,7 +28,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NotificationReceiver extends BroadcastReceiver {
+public class CancelCallFromCallNotification extends BroadcastReceiver {
     JSONObject message = null;
     JSONObject data = new JSONObject();
     JSONObject type = new JSONObject();
@@ -67,7 +67,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 
 
 
-        notificationManager.cancel(Integer.parseInt(id));
+        notificationManager.cancel(-1);
 
 
     }

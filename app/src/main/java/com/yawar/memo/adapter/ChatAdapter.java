@@ -217,54 +217,54 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
         userNameeee = chatMessage.getFileName();
 
-        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent e) {
-                float x = e.getX();
-                float y = e.getY();
-                switch (e.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        isdraged = true;
-                        if((prex>x || prex<x) &&  (prex-x >= 5 || prex-x <= 5)) {
-                            try {
-                                ConversationActivity.close.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        ConversationActivity.cardview.setVisibility(View.GONE);
-
-                                    }
-                                });
-
-
-                                ConversationActivity.reply.setText( chatMessage.message.toString());
-                                ConversationActivity.username.setText(chatMessage.getFileName().toString());
-
-
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                            ConversationActivity.reply.setVisibility(View.VISIBLE);
-                            ConversationActivity.username.setVisibility(View.VISIBLE);
-                            ConversationActivity.cardview.setVisibility(View.VISIBLE);
-                            ConversationActivity.close.setVisibility(View.VISIBLE);
-
-                            return true;
-                        }else{
-
-                        }
-
-                    case MotionEvent.ACTION_UP:
-                        isdraged = false;
-                        break;
-                }
-
-                prex=x;
-                return false;
-            }
-        });
+//        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent e) {
+//                float x = e.getX();
+//                float y = e.getY();
+//                switch (e.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        isdraged = true;
+//                        if((prex>x || prex<x) &&  (prex-x >= 5 || prex-x <= 5)) {
+//                            try {
+//                                ConversationActivity.close.setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View view) {
+//                                        ConversationActivity.cardview.setVisibility(View.GONE);
+//
+//                                    }
+//                                });
+//
+//
+//                                ConversationActivity.reply.setText( chatMessage.message.toString());
+//                                ConversationActivity.username.setText(chatMessage.getFileName().toString());
+//
+//
+//                            } catch (Exception exception) {
+//                                exception.printStackTrace();
+//                            }
+//                            ConversationActivity.reply.setVisibility(View.VISIBLE);
+//                            ConversationActivity.username.setVisibility(View.VISIBLE);
+//                            ConversationActivity.cardview.setVisibility(View.VISIBLE);
+//                            ConversationActivity.close.setVisibility(View.VISIBLE);
+//
+//                            return true;
+//                        }else{
+//
+//                        }
+//
+//                    case MotionEvent.ACTION_UP:
+//                        isdraged = false;
+//                        break;
+//                }
+//
+//                prex=x;
+//                return false;
+//            }
+//        });
 
         switch (chatMessage.getType()) {
             case "imageWeb":
@@ -449,7 +449,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                         ((LayoutVoiceViewHolder) holder).mediaPlayer.prepare();
                         ((LayoutVoiceViewHolder) holder).textTotalDouration.setText(milliSecondsToTimer((long) ((LayoutVoiceViewHolder) holder).mediaPlayer.getDuration()));
                     } catch (Exception exceptione) {
-                        Toast.makeText(context, exceptione.getMessage(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, exceptione.getMessage(), Toast.LENGTH_SHORT).show();
                     }
 
 

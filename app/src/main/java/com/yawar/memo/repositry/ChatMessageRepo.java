@@ -159,7 +159,7 @@ public class ChatMessageRepo {
             }
             ////////////// state 2
             else if(state.equals("2")){
-                if (chatMessageList.get(i).getState().equals("2")) {
+                if (chatMessageList.get(i).getState().equals("2")||chatMessageList.get(i).getState().equals("3")) {
                     System.out.println(i + "===============");
 
                     break;

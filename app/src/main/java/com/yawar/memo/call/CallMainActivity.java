@@ -2,10 +2,18 @@ package com.yawar.memo.call;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.text.HtmlCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,6 +22,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -30,9 +39,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.videocallapp.JavascriptInterface;
+import com.yawar.memo.notification.CancelCallFromCallOngoingNotification;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.service.SocketIOService;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.UUID;
@@ -49,6 +60,8 @@ public class CallMainActivity extends AppCompatActivity {
     public static final String ON_CALL_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
     public static final String ON_STOP_CALLING_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
     public static final String ON_RECIVED_SETTINGS_CALL = "CallMainActivity.ON_RECIVED_SETTINGS_CALL";
+    public static final String ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY = "ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY";
+
 
 
 
@@ -99,6 +112,21 @@ public class CallMainActivity extends AppCompatActivity {
 //                    }
 
                     ///////////
+
+                }
+            });
+        }
+    };
+    private final BroadcastReceiver reciveclosecallfromnotification = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.i("CallNotificatio000000", "run: close ");
+                    finish();
+                    ///////////
+
 
                 }
             });
@@ -208,6 +236,7 @@ public class CallMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        showWhenLockedAndTurnScreenOn();
         setContentView(R.layout.activity_call_main);
+        System.out.println("Starrrrrrrrrrrt call activity");
         if (!isPermissionGranted()) {
             askPermissions();
         }
@@ -220,6 +249,8 @@ public class CallMainActivity extends AppCompatActivity {
         Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveclosecallfromnotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY));
+
 
         classSharedPreferences = new ClassSharedPreferences(this);
         webView = findViewById(R.id.webView);
@@ -242,6 +273,8 @@ public class CallMainActivity extends AppCompatActivity {
          id = bundle.getString("id", "0");
         callString = bundle.getString("callRequest", "code");
         System.out.println("call string is that"+callString);
+
+
         setupWebView();
 
         JSONObject message = null;
@@ -277,8 +310,11 @@ public class CallMainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancel(Integer.parseInt(id));
+//        notificationManager.cancel(Integer.parseInt(id)+10000);
+        notificationManager.cancel(-1);
+
         incomingCallTxt.setText(getResources().getString(R.string.call_from)+" "+username);
+        showInCallNotification();
 
 //        callBtn.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -396,6 +432,8 @@ public class CallMainActivity extends AppCompatActivity {
 //     setupWebView();
 
     }
+
+
 
 
     private void sendCallRequest() {
@@ -523,9 +561,19 @@ private String getUniqueID() {
         webView.loadUrl("about:blank");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveStopCalling);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveSettingsCalling);
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        notificationManager.cancel(Integer.parseInt("0"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
+         NotificationManager notificationManager1 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
+        for (StatusBarNotification statusBarNotification : notificationManager1.getActiveNotifications()) {
+           System.out.println(statusBarNotification.getId()+"statusBarNotification.getId()");
+        }
+        }
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveclosecallfromnotification);
 
+        closeCall();
 
         super.onDestroy();
     }
@@ -615,5 +663,99 @@ private String getUniqueID() {
 //                    or WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
 //            )
         }
+    }
+    private void showInCallNotification() {
+//        Intent intent
+//                = new Intent(this, CallNotificationActivity.class);
+//        intent.putExtra("callRequest",message );
+        Intent intent
+                = new Intent(CallMainActivity.this, CallMainActivity.class);
+        // Assign channel ID
+        // Here FLAG_ACTIVITY_CLEAR_TOP flag is set to clear
+        // the activities present in the activity stack,
+        // on the top of the Activity that is to be launched
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        // Pass the intent to PendingIntent to start the
+        // next Activity
+        PendingIntent pendingIntent
+                = PendingIntent.getActivity(CallMainActivity.this
+                , 0, intent,
+                PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
+        /////////intent for reject
+        Intent intentCancel
+                = new Intent(this, CancelCallFromCallOngoingNotification.class);
+
+        intentCancel.putExtra("id", anotherUserId);
+
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(FirebaseMessageReceiver.this, 0,
+//                        intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(this, 0,
+                intentCancel, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String channel_id = "notification_channel";
+
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+//                intent, PendingIntent.FLAG_IMMUTABLE);
+
+        NotificationCompat.Builder builder
+                = new NotificationCompat
+                .Builder(getApplicationContext(),
+                channel_id)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+
+                .setFullScreenIntent(null, false)
+
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .setSound(null)
+                .setOngoing(true)
+                .setGroup(anotherUserId)
+
+
+                .setVibrate(new long[]{10000, 10000})
+                .setTicker("Call_STATUS")
+                .addAction(R.drawable.btx_custom, HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(CallMainActivity.this, R.color.red) + "\">" +getResources().getString(R.string.cancel)+ " </font>", HtmlCompat.FROM_HTML_MODE_LEGACY), pendingIntentCancell)
+
+
+                .setColorized(true)
+                .setSmallIcon(R.drawable.ic_memo_logo)
+                        .setContentTitle(username)
+                .setContentText(getResources().getString(R.string.ongoing_call));
+
+
+
+
+
+
+//                .setContentIntent(pendingIntent);
+//
+//        builder = builder.setContent(
+//                getCustomDesign(title, message,image));
+
+
+        NotificationManager notificationManager
+                = (NotificationManager) getSystemService(
+                Context.NOTIFICATION_SERVICE);
+        // Check if the Android Version is greater than Oreo
+        if (Build.VERSION.SDK_INT
+                >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel
+                    = new NotificationChannel(
+                    channel_id, "Memo",
+
+                    NotificationManager.IMPORTANCE_LOW);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
+            notificationManager.createNotificationChannel(
+                    notificationChannel);
+            notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
+
+        }
+
+
+        Notification note = builder.build();
+        note.flags |= Notification.FLAG_INSISTENT;
+        notificationManager.notify(0,note);
     }
 }
