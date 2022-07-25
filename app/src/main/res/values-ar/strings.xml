@@ -221,12 +221,13 @@
     <string name="call_ended">تم انهاء المكالمة</string>
     <string name="alert_switch_to_video_message">هل تريد الانتقال الى مكالمة فيديو؟</string>
     <string name="alert_switch_to_video_from_anthor_message">يريد الانتقال الى مكالمة فيديو هل تريد الانتقال ايضا؟</string>
-
-    <string name="switch_to_video">الانتقال الى الفيديو</string>
+    <string name="switch_to_video">الانتقال الى مكالمة الفيديو</string>
     <string name="recive_call">قبول</string>
     <string name="end_call">رفض</string>
     <string name="ongoing_call">مكالمة جارية</string>
     <string name="recive_call_and_close">قبول واغلاق المكالمة</string>
+    <string name="requesting_to_switch_to_video_call">جار طلب الانتقال الى مكالمة الفيديو</string>
+
 
 
 

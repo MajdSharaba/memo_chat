@@ -22,7 +22,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.service.notification.StatusBarNotification;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -61,6 +60,11 @@ public class CallMainActivity extends AppCompatActivity {
     public static final String ON_STOP_CALLING_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
     public static final String ON_RECIVED_SETTINGS_CALL = "CallMainActivity.ON_RECIVED_SETTINGS_CALL";
     public static final String ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY = "ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY";
+    public static final String ON_RECIVED_ASK_FOR_VIDEO = "on_recived_ask_for_video";
+    public static final String ON_RECIVED_RESPONE_FOR_VIDEO = "on_recived_respone_for_video";
+
+
+
 
 
 
@@ -91,8 +95,12 @@ public class CallMainActivity extends AppCompatActivity {
     ClassSharedPreferences classSharedPreferences;
     CircleImageView imageCallUser;
     String callString = null;
+    AlertDialog alertDialog,alertDialogForME;
+    AlertDialog.Builder dialogForMe ;
 
-        private final BroadcastReceiver reciveStopCalling = new BroadcastReceiver() {
+
+
+    private final BroadcastReceiver reciveStopCalling = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -150,7 +158,7 @@ public class CallMainActivity extends AppCompatActivity {
 
                         if(isVideoForyou) {
                             if (webView.getVisibility() == View.GONE) {
-                                showSwitchToVideoDialog(username+" "+getResources().getString(R.string.alert_switch_to_video_from_anthor_message));
+                                showSwitchToVideoWhenANthorUserRequestDialog(username+" "+getResources().getString(R.string.alert_switch_to_video_from_anthor_message));
                                 System.out.println(" webView.setVisibility(View.VISIBLE)");
                                 webView.setVisibility(View.VISIBLE);
                                 imageCallUser.setVisibility(View.GONE);
@@ -170,6 +178,102 @@ public class CallMainActivity extends AppCompatActivity {
                     }
 
                     ///////////
+
+
+                }
+            });
+        }
+    };
+    private final BroadcastReceiver reciveAskForCall = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("the view visabilty is"+webView.getVisibility());
+
+                    String stopCallString = intent.getExtras().getString("get askVideo");
+                    JSONObject message = null;
+                    try {
+                        message = new JSONObject(stopCallString);
+                        isVideoForyou = message.getBoolean("video");
+//                        boolean audioSetting = message.getBoolean("microphone");
+                        callJavascriptFunction("javascript:toggleStream(\"" +isVideoForyou  + "\")");
+
+                        if(isVideoForyou) {
+//                            if (webView.getVisibility() == View.GONE) {
+                                showSwitchToVideoWhenANthorUserRequestDialog(username + " " + getResources().getString(R.string.alert_switch_to_video_from_anthor_message));
+                                webView.setVisibility(View.VISIBLE);
+                                imageCallUser.setVisibility(View.GONE);
+
+
+//                            }
+
+                        } else {
+                                webView.setVisibility(View.GONE);
+                                imageCallUser.setVisibility(View.VISIBLE);
+
+                                if(alertDialog!=null){
+                                 alertDialog.dismiss();}
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    ///////////
+
+
+                }
+            });
+        }
+    };
+    private final BroadcastReceiver reciveAcceptChangeToVideoCall = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+//                    isVideoForyou = !isVideoForyou;
+
+                    String stopCallString = intent.getExtras().getString("get responeAskVideo");
+                    System.out.println("get responeAskVideo");
+                    JSONObject message = null;
+                    try {
+                        message = new JSONObject(stopCallString);
+                        isVideoForyou = message.getBoolean("video");
+                        if (isVideoForyou){
+                            callJavascriptFunction("javascript:toggleStream(\"" + isVideoForyou + "\")");
+
+                        }
+
+                        else{
+                            isVideoForMe=!isVideoForMe;
+                            System.out.println("elseeee isVideoForYou "+ isVideoForMe);
+
+                            callJavascriptFunction("javascript:toggleVideo(\"" + isVideoForMe + "\")");
+
+                            webView.setVisibility(View.GONE);
+                            imageCallUser.setVisibility(View.VISIBLE);
+//                            alertDialogForME.setMessage(getResources().getString(R.string.reject));
+
+
+                        }
+                        if(alertDialogForME!=null){
+
+                        alertDialogForME.dismiss();}
+
+
+
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+
 
 
                 }
@@ -215,6 +319,22 @@ public class CallMainActivity extends AppCompatActivity {
         startService(service);
 
     }
+    private void SendSwitchTOVideoCallRespone(boolean video) {
+        Intent service = new Intent(this, SocketIOService.class);
+        JSONObject data = new JSONObject();
+        try {
+            data.put("my_id", classSharedPreferences.getUser().getUserId());
+            data.put("your_id", anotherUserId);
+            data.put("video", video);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+//        System.out.println("call");
+        service.putExtra(SocketIOService.EXTRA_RESPONE_VIDEO_CALL_PARAMTERS, data.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_RESPONE_VIDEO_CALL);
+        startService(service);
+
+    }
     private void closeCall() {
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
@@ -227,6 +347,23 @@ public class CallMainActivity extends AppCompatActivity {
         System.out.println("close Call");
         service.putExtra(SocketIOService.EXTRA_STOP_CALL_PARAMTERS, data.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_STOP_CALLING);
+        startService(service);
+
+    }
+    private void sendAskForVideoCall(boolean video) {
+        Intent service = new Intent(this, SocketIOService.class);
+        JSONObject data = new JSONObject();
+        System.out.println("isVideosetting"+video);
+        try {
+            data.put("my_id", classSharedPreferences.getUser().getUserId());
+            data.put("your_id", anotherUserId);
+            data.put("video", video);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+//        System.out.println("call");
+        service.putExtra(SocketIOService.EXTRA_SEND_ASK_VIDEO_CALL_PARAMTERS, data.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_VIDEO_CALL_REQUEST);
         startService(service);
 
     }
@@ -250,6 +387,10 @@ public class CallMainActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveclosecallfromnotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveAskForCall, new IntentFilter(ON_RECIVED_ASK_FOR_VIDEO));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveAcceptChangeToVideoCall, new IntentFilter(ON_RECIVED_RESPONE_FOR_VIDEO));
+
+
 
 
         classSharedPreferences = new ClassSharedPreferences(this);
@@ -276,6 +417,8 @@ public class CallMainActivity extends AppCompatActivity {
 
 
         setupWebView();
+        dialogForMe = new AlertDialog.Builder(this);
+
 
         JSONObject message = null;
         JSONObject userObject;
@@ -403,8 +546,19 @@ public class CallMainActivity extends AppCompatActivity {
         imgBtnOpenCameraCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 if(!isVideoForMe&&!isVideoForyou){
-                    showSwitchToVideoDialog(getResources().getString(R.string.alert_switch_to_video_message));
+                    showSwitchToVideoWhenIAskDialog(getResources().getString(R.string.alert_switch_to_video_message));
+
+                    isVideoForMe = !isVideoForMe;
+                    sendAskForVideoCall(isVideoForMe);
+
+                    callJavascriptFunction("javascript:toggleVideo(\"" + isVideoForMe + "\")");
+                    callJavascriptFunction("javascript:toggleStream(\"" +isVideoForyou  + "\")");
+                    webView.setVisibility(View.VISIBLE);
+                    layoutCallProperties.setVisibility(View.VISIBLE);
+                    imageCallUser.setVisibility(View.GONE);
+
                 }else {
                     closeOpenVideo();
                 }
@@ -563,15 +717,17 @@ private String getUniqueID() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveSettingsCalling);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancel(Integer.parseInt("0"));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-         NotificationManager notificationManager1 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
-        for (StatusBarNotification statusBarNotification : notificationManager1.getActiveNotifications()) {
-           System.out.println(statusBarNotification.getId()+"statusBarNotification.getId()");
-        }
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//
+//         NotificationManager notificationManager1 = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//
+//        for (StatusBarNotification statusBarNotification : notificationManager1.getActiveNotifications()) {
+//           System.out.println(statusBarNotification.getId()+"statusBarNotification.getId()");
+//        }
+//        }
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveclosecallfromnotification);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAskForCall);
+
 
         closeCall();
 
@@ -623,7 +779,34 @@ private String getUniqueID() {
         }
 
     }
-    void showSwitchToVideoDialog(String message){
+    void showSwitchToVideoWhenIAskDialog(String message){
+//        dialog.setMessage(getString(R.string.alert_delete_message));
+
+
+        dialogForMe.setTitle(message);
+        dialogForMe.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                isVideoForMe = !isVideoForMe;
+                webView.setVisibility(View.GONE);
+                layoutCallProperties.setVisibility(View.VISIBLE);
+                imageCallUser.setVisibility(View.VISIBLE);
+                sendAskForVideoCall(false);
+
+
+
+
+                callJavascriptFunction("javascript:toggleVideo(\"" + isVideoForMe + "\")");
+
+                dialog.dismiss();
+            }
+        });
+
+
+        alertDialogForME = dialogForMe.create();
+        alertDialogForME.show();
+    }
+    void showSwitchToVideoWhenANthorUserRequestDialog(String message){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 //        dialog.setMessage(getString(R.string.alert_delete_message));
         dialog.setTitle(message);
@@ -631,21 +814,35 @@ private String getUniqueID() {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
-                        closeOpenVideo();
+//                        closeOpenVideo();
+                        isVideoForMe = !isVideoForMe;
+                        callJavascriptFunction("javascript:toggleVideo(\"" + isVideoForMe + "\")");
+
+
+                        SendSwitchTOVideoCallRespone(isVideoForMe);
+                        dialog.dismiss();
 
                     }
                 });
         dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                isVideoForyou=!isVideoForyou;
                 dialog.dismiss();
+                System.out.println(" dialog.dismiss()");
+                SendSwitchTOVideoCallRespone(isVideoForMe);
+                webView.setVisibility(View.GONE);
+                layoutCallProperties.setVisibility(View.VISIBLE);
+                imageCallUser.setVisibility(View.VISIBLE);
+
             }
         });
 
 
-        AlertDialog alertDialog = dialog.create();
+        alertDialog = dialog.create();
         alertDialog.show();
     }
+
     private void showWhenLockedAndTurnScreenOn() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             setShowWhenLocked(true);

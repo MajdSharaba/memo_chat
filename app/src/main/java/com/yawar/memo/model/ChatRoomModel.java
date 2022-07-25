@@ -20,11 +20,6 @@ public class ChatRoomModel implements Comparable, Cloneable {
     public  String blockedFor;
 
 
-
-
-
-
-
     public ChatRoomModel(String name,String senderId, String lastMessage, String image, boolean isChecked, String numberMessage,String chatId,String state,String numberUnRMessage,
                          boolean inChat,String fcmToken,String specialNumber, String lastMessageType, String lastMessageState,String lastMessageTime, boolean isTyping, String blockedFor) {
         this.name = name;
@@ -61,7 +56,6 @@ public class ChatRoomModel implements Comparable, Cloneable {
     public void setUserId(String userId) {
         this.userId = userId;
     }
-
 
 
     public String getLastMessage() {
@@ -185,7 +179,6 @@ public class ChatRoomModel implements Comparable, Cloneable {
     @Override
     public int compareTo(Object o) {
         ChatRoomModel compare = (ChatRoomModel) o;
-
         if (compare.getUserId().equals(this.getUserId()) && compare.lastMessage.equals(this.lastMessage) && compare.isTyping == (this.isTyping)) {
             return 0;
         }

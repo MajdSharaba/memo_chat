@@ -75,7 +75,11 @@ public class ChatMessageRepo {
 //                            chatMessage.setIsUpdate(jsonObject.getString("edited"));
                             chatMessage.setIsUpdate("0");
 
-
+                            if(jsonObject.optJSONObject("reply_message") != null && !jsonObject.optJSONObject("reply_message").equals("") && !jsonObject.optJSONObject("reply_message").equals("null")) {
+//                                chatMessage.setReply(jsonObject.getJSONObject("reply_message").getString("message"));
+                            }else{
+                              //  chatMessage.setReply("");
+                            }
                             chatMessageList.add(chatMessage);
 
 

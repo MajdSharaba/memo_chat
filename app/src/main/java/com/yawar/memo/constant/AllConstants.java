@@ -1,5 +1,14 @@
 package com.yawar.memo.constant;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.Rect;
+
+import com.google.firebase.auth.PhoneAuthProvider;
+
 public interface AllConstants {
     String VERIFICATION_CODE = "code";
     String IMAGE_PATH = "Media/Prof ile_Image/profile";
@@ -10,9 +19,9 @@ public interface AllConstants {
     int Read_Write_Storage_CODE = 5000;
     String ip="109";
     public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
-//    String base_url = "https://memoback1.herokuapp.com/";
+    //    String base_url = "https://memoback1.herokuapp.com/";
     public  String base_node_url =  "http://192.168.0."+ip+":3000/";
-//    String base_node_url =  "https://memoback1.herokuapp.com/";
+    //    String base_node_url =  "https://memoback1.herokuapp.com/";
     String delet_from_archived_url = base_node_url+"deletearchive";
     String delete_conversation = base_node_url+"deleteconversation";
 
@@ -40,3 +49,4 @@ public interface AllConstants {
 
 
 }
+
