@@ -48,69 +48,30 @@
             android:textColor="@color/white" />
     </LinearLayout>
 
-    <LinearLayout
+
+    <me.mutasem.slidetoanswer.SwipeToAnswerView
+        android:id="@+id/answer"
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:orientation="horizontal">
+        android:layoutDirection="ltr"
+        />
 
-        <RelativeLayout
-            android:id="@+id/slide_view"
-            android:layout_width="175dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="100dp"
-            android:layout_marginBottom="50dp"
-            android:rotation="-90">
-
-            <ImageView
-                android:id="@+id/double_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/ic_double_arrow"
-                android:visibility="gone" />
-
-            <id.ss564.lib.slidingbutton.SlidingButton
-                android:id="@+id/slidingButton"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="10dp"
-                app:sliding_button_background="@drawable/answer"
-                app:sliding_button_icon="@drawable/flag_transparent"
-                app:sliding_text=""
-
-                app:sliding_trackExtendTo="button" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/refuse_slide_view"
-            android:layout_width="175dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginBottom="30dp"
-            android:gravity="bottom"
-            android:rotation="-90">
-
-            <ImageView
-                android:id="@+id/double_arrow2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="10dp"
-                android:src="@drawable/ic_double_arrow"
-                android:visibility="gone" />
-
-            <id.ss564.lib.slidingbutton.SlidingButton
-                android:id="@+id/refuse_slidingButton"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginBottom="10dp"
-                app:sliding_button_background="@drawable/refuse"
-                app:sliding_button_icon="@drawable/flag_transparent"
-                app:sliding_text=""
-                app:sliding_trackExtendTo="button" />
-        </RelativeLayout>
-    </LinearLayout>
+    <me.mutasem.slidetoanswer.SwipeToAnswerView
+        android:id="@+id/decline"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:layoutDirection="ltr"
+        app:icon="@drawable/ic_decline"
+        app:reverse="true" />
 
 </RelativeLayout>
