@@ -13,7 +13,7 @@ import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.call.CallMainActivity;
+import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ChatRoomFragment;
@@ -1082,7 +1082,7 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
             case EVENT_RECIVE_STOP_CALLING:
                   System.out.println("EVENT_RECIVE_STOP_CALLING");
-                intent = new Intent(CallMainActivity.ON_STOP_CALLING_REQUEST);
+                intent = new Intent(ResponeCallActivity.ON_STOP_CALLING_REQUEST);
                 intent.putExtra("get stopCalling", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 intent = new Intent(RequestCallActivity.ON_STOP_CALLING_REQUEST);
@@ -1099,7 +1099,7 @@ public void onTaskRemoved(Intent rootIntent) {
 
             case EVENT_SETTINGS_RINING:
                 System.out.println("EVENT_SETTINGS_RINING"+args[0].toString());
-                intent = new Intent(CallMainActivity.ON_RECIVED_SETTINGS_CALL);
+                intent = new Intent(ResponeCallActivity.ON_RECIVED_SETTINGS_CALL);
                 intent.putExtra("get settings", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 intent = new Intent(RequestCallActivity.ON_RECIVED_SETTINGS_CALL);
@@ -1110,7 +1110,7 @@ public void onTaskRemoved(Intent rootIntent) {
 
             case EVENT_ASK_FOR_VIDEO:
                 System.out.println("EVENT_ASK_FOR_VIDEO"+args[0].toString());
-                intent = new Intent(CallMainActivity.ON_RECIVED_ASK_FOR_VIDEO);
+                intent = new Intent(ResponeCallActivity.ON_RECIVED_ASK_FOR_VIDEO);
                 intent.putExtra("get askVideo", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 //                intent = new Intent(RequestCallActivity.ON_RECIVED_ASK_FOR_VIDEO);

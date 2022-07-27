@@ -3,8 +3,6 @@ package com.yawar.memo.notification;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 
-import static androidx.core.app.ActivityCompat.finishAffinity;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -38,7 +36,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yawar.memo.R;
-import com.yawar.memo.call.CallMainActivity;
+import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.call.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -111,7 +109,7 @@ public class NotificationWorker extends Worker {
                     intent, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
             /////////intent for answare
             Intent intentAnsware
-                    = new Intent(applicationContext, CallMainActivity.class);
+                    = new Intent(applicationContext, ResponeCallActivity.class);
             intentAnsware.putExtra("callRequest", message);
             intentAnsware.putExtra("id", anthor_user_id);
 
@@ -137,7 +135,7 @@ public class NotificationWorker extends Worker {
             ///for cancel ongoing call and start new call
 //            CancelCallAndStartNewCall cancelCallAndStartNewCall=new CancelCallAndStartNewCall(applicationContext);
             Intent intentCancelAndStart
-                    = new Intent(applicationContext, CallMainActivity.class);
+                    = new Intent(applicationContext, ResponeCallActivity.class);
 
             intentCancelAndStart.putExtra("callRequest", message);
             intentCancelAndStart.putExtra("id", anthor_user_id);

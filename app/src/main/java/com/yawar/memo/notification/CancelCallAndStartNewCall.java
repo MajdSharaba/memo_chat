@@ -8,8 +8,7 @@ import android.os.Bundle;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.yawar.memo.call.CallMainActivity;
-import com.yawar.memo.call.CallNotificationActivity;
+import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 
@@ -31,12 +30,12 @@ public class CancelCallAndStartNewCall extends BroadcastReceiver {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(Integer.parseInt("0"));
         //// for close current call
-        Intent closeCallActivity = new Intent(CallMainActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY);
+        Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY);
         LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);
         /////for close current call in anthor user
         closeCall(context,id);
         ////////////
-        Intent intent1 = new Intent(BaseApp.getInstance(),CallMainActivity.class);
+        Intent intent1 = new Intent(BaseApp.getInstance(), ResponeCallActivity.class);
         intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
 
         BaseApp.getInstance().startActivity(intent1);

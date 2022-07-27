@@ -1,24 +1,17 @@
 package com.yawar.memo.notification;
 
-import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.yawar.memo.call.CallMainActivity;
 import com.yawar.memo.call.CallNotificationActivity;
-import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.utils.BaseApp;
 

@@ -8,7 +8,7 @@ import android.os.Bundle;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.yawar.memo.call.CallMainActivity;
+import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.call.CallNotificationActivity;
 import com.yawar.memo.service.SocketIOService;
 
@@ -24,7 +24,7 @@ public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
         String callRequest = bundle.getString("callRequest");
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(Integer.parseInt("0"));
-        Intent closeCallActivity = new Intent(CallMainActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY);
+        Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY);
 
         LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);
         Intent closeRequestCallActivity = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
