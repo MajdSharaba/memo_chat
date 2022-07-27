@@ -948,8 +948,8 @@ public class ServerApi {
 
     }
 
+
     public void isRining(String yout_id) {
-        classSharedPreferences = new ClassSharedPreferences(context);
 
         // creating a new variable for our request queue
         RequestQueue queue = Volley.newRequestQueue(context);
@@ -960,13 +960,10 @@ public class ServerApi {
             @Override
             public void onResponse(String response) {
 
-
             }
         }, new com.android.volley.Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                // method to handle errors.
-//                Toast.makeText(getContext(), "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -988,7 +985,7 @@ public class ServerApi {
         };
         // below line is to make
         // a json object request.
-        queue.add(request);
+        myBase.addToRequestQueue(request);
     }
 
 

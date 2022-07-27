@@ -182,8 +182,25 @@
     <string name="alert_switch_to_video_message">do you want to switch to video call?</string>
     <string name="alert_switch_to_video_from_anthor_message">want to switch to video call do you want to switch too?</string>
 
-    <string name="switch_to_video">switch to video</string>
-    <string name="voice_call">Voice call</string>
+    <string name="switch_to_video">switch to video call</string>
+
+    <string name="recive_call">Accept</string>
+    <string name="end_call">Reject</string>
+    <string name="ongoing_call">Ongoing Call</string>
+    <string name="recive_call_and_close">Recive and Close</string>
+    <string name="requesting_to_switch_to_video_call">Requesting to Switch To Video Call</string>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 </resources>

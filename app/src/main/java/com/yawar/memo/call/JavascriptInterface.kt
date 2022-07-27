@@ -1,15 +1,14 @@
 package com.example.videocallapp
 
 import android.webkit.JavascriptInterface
-import com.yawar.memo.call.CallMainActivity
-import com.yawar.memo.views.ConversationActivity
+import com.yawar.memo.call.ResponeCallActivity
 
-class JavascriptInterface(val CallMainActivity: CallMainActivity) {
+class JavascriptInterface(val ResponeCallActivity: ResponeCallActivity) {
 
     @JavascriptInterface
     fun onPeerConnected(string: String) {
         println("this is javaScript code")
-        CallMainActivity.onPeerConnected(string)
+        ResponeCallActivity.onPeerConnected(string)
     }
     @JavascriptInterface
     fun print(string:String) {

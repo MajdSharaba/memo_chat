@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.app.KeyguardManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -94,7 +93,7 @@ public class CallNotificationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 //                System.out.println("acceptBtn" + callString)
-                Intent intent = new Intent(CallNotificationActivity.this,CallMainActivity.class);
+                Intent intent = new Intent(CallNotificationActivity.this, ResponeCallActivity.class);
                 intent.putExtra("callRequest",callString);
                 intent.putExtra("id",id);
 
@@ -112,7 +111,9 @@ public class CallNotificationActivity extends AppCompatActivity {
 
 //                sendPeerId(callString,"null");
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallNotificationActivity.this);
-                notificationManager.cancel(Integer.parseInt(id));
+//                notificationManager.cancel(Integer.parseInt(id)+10000);
+                notificationManager.cancel(-1);
+
                 reject(callString);
 
                 finish();

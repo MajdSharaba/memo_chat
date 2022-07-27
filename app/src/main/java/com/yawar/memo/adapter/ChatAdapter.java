@@ -38,11 +38,12 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.app.adprogressbarlib.AdCircleProgress;
-import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.hbisoft.pickit.PickiT;
@@ -51,7 +52,9 @@ import com.yawar.memo.BuildConfig;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
+import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.utils.ImageProperties;
+import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.views.ConversationActivity;
 
@@ -69,9 +72,9 @@ import java.util.regex.Pattern;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class ChatAdapter  extends RecyclerView.Adapter  {
-    public final List<ChatMessage> chatMessages;
-    private Activity context;
+public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolder> {
+    //    public final List<ChatMessage> chatMessages;
+    private final Activity context;
     private ChatAdapter.CallbackInterface mCallback;
 
       public  String userNameeee ;
@@ -88,22 +91,33 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
          * @param   groupSelectorRespone - the text to pass back
 
          */
+        void onHandleSelection(int position, ChatMessage groupSelectorRespone, boolean myMessage);
 
-        void onHandleSelection(  int position, ChatMessage groupSelectorRespone, boolean myMessage);
-        void downloadFile(       int position, ChatMessage chatMessage, boolean myMessage);
-         void downloadVoice(     int position, ChatMessage chatMessage, boolean myMessage);
-        void downloadVideo(      int position, ChatMessage chatMessage, boolean myMessage);
-        void downloadImage(      int position, ChatMessage chatMessage, boolean myMessage);
-        void onClickLocation(    int position, ChatMessage chatMessage, boolean myMessage );
-        void onLongClick(        int position, ChatMessage chatMessage, boolean isChecked);
+        void downloadFile(int position, ChatMessage chatMessage, boolean myMessage);
+
+        void downloadVoice(int position, ChatMessage chatMessage, boolean myMessage);
+
+        void downloadVideo(int position, ChatMessage chatMessage, boolean myMessage);
+
+        void downloadImage(int position, ChatMessage chatMessage, boolean myMessage);
+
+        void onClickLocation(int position, ChatMessage chatMessage, boolean myMessage);
+
+
+        void onLongClick(int position, ChatMessage chatMessage, boolean isChecked);
+
         void playVideo(Uri path);
 
+
     }
-    public ChatAdapter(Activity context, List<ChatMessage> chatMessages) {
+
+
+    //    public ChatAdapter(Activity context, List<ChatMessage> chatMessages) {
+    public ChatAdapter(Activity context) {
+        super(new MyDiffUtilChatMessage());
 
         this.context = context;
-        this.chatMessages = chatMessages;
-
+//        this.chatMessages = chatMessages;
         try {
 
             mCallback = (ChatAdapter.CallbackInterface) context;
@@ -117,17 +131,19 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
     }
 
     @Override
-    public int getItemViewType(int position)
-    {
-        switch (chatMessages.get(position).getType()) {
+    public int getItemViewType(int position) {
+        ChatMessage chatMessage = getItem(position);
+
+
+        switch (chatMessage.getType()) {
             case "imageWeb":
                 return 0;
             case "voice":
-                 return 1;
+                return 1;
             case "video":
                 return 2;
             case "file":
-               return 3;
+                return 3;
             case "contact":
                 return 4;
             case "location":
@@ -147,7 +163,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                             = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.image_item_chat_meesage, parent, false);
                     return new LayoutImageViewHolder(layoutOne);
-                case  1:
+                case 1:
                     View layoutTwo
                             = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.voice_record_item_chat_message, parent, false);
@@ -192,112 +208,119 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
-        ChatMessage chatMessage = chatMessages.get(position);
+//        ChatMessage chatMessage = chatMessages.get(position);
+        ChatMessage chatMessage = getItem(position);
+
         boolean myMsg = chatMessage.getIsme();
         TimeProperties timeProperties = new TimeProperties();
 
 
         userNameeee = chatMessage.getFileName();
 
-        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent e) {
-                float x = e.getX();
-                float y = e.getY();
-                switch (e.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        isdraged = true;
-                        if((prex>x || prex<x) &&  (prex-x >= 5 || prex-x <= 5)) {
-                            try {
-                                ConversationActivity.close.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View view) {
-                                        ConversationActivity.cardview.setVisibility(View.GONE);
-
-                                    }
-                                });
-
-
-                                ConversationActivity.reply.setText( chatMessage.message.toString());
-                                ConversationActivity.username.setText(chatMessages.get(0).getFileName().toString());
-
-
-                            } catch (Exception exception) {
-                                exception.printStackTrace();
-                            }
-                            ConversationActivity.reply.setVisibility(View.VISIBLE);
-                            ConversationActivity.username.setVisibility(View.VISIBLE);
-                            ConversationActivity.cardview.setVisibility(View.VISIBLE);
-                            ConversationActivity.close.setVisibility(View.VISIBLE);
-
-                            return true;
-                        }else{
-
-                        }
-
-                    case MotionEvent.ACTION_UP:
-                        isdraged = false;
-                        break;
-                }
-
-                prex=x;
-                return false;
-            }
-        });
+//        holder.itemView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View view, MotionEvent e) {
+//                float x = e.getX();
+//                float y = e.getY();
+//                switch (e.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        isdraged = true;
+//                        if((prex>x || prex<x) &&  (prex-x >= 5 || prex-x <= 5)) {
+//                            try {
+//                                ConversationActivity.close.setOnClickListener(new View.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(View view) {
+//                                        ConversationActivity.cardview.setVisibility(View.GONE);
+//
+//                                    }
+//                                });
+//
+//
+//                                ConversationActivity.reply.setText( chatMessage.message.toString());
+//                                ConversationActivity.username.setText(chatMessage.getFileName().toString());
+//
+//
+//                            } catch (Exception exception) {
+//                                exception.printStackTrace();
+//                            }
+//                            ConversationActivity.reply.setVisibility(View.VISIBLE);
+//                            ConversationActivity.username.setVisibility(View.VISIBLE);
+//                            ConversationActivity.cardview.setVisibility(View.VISIBLE);
+//                            ConversationActivity.close.setVisibility(View.VISIBLE);
+//
+//                            return true;
+//                        }else{
+//
+//                        }
+//
+//                    case MotionEvent.ACTION_UP:
+//                        isdraged = false;
+//                        break;
+//                }
+//
+//                prex=x;
+//                return false;
+//            }
+//        });
 
         switch (chatMessage.getType()) {
             case "imageWeb":
-                setAlignment(( LayoutImageViewHolder ) holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                (( LayoutImageViewHolder ) holder ).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutImageViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
 
                 File imageFile;
                 if (myMsg) {
 
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator + "memo/send/video");  // -> filename = maven.pdf
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video");  // -> filename = maven.pdf
                     imageFile = new File(d, chatMessage.getFileName());
 
                 } else {
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");  // -> filename = maven.pdf
 
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator + "memo/recive/video");  // -> filename = maven.pdf
-                    imageFile = new File( d , chatMessage.getImage().toString());
+                    imageFile = new File(d, chatMessage.getImage());
 
                 }
                 if (!imageFile.exists()) {
 
                     Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(R.drawable.backgrounblack).centerCrop()
                             .into(((LayoutImageViewHolder) holder).imageView);
+                    if (chatMessage.isDownload()) {
+                        ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.GONE);
+                        ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+                    } else {
+
+                        ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.VISIBLE);
+                        ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+
+                        ((LayoutImageViewHolder) holder).downloadImage.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+
+                                ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.GONE);
+                                ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+                                final Timer t = new Timer();
+                                t.scheduleAtFixedRate(new TimerTask() {
+                                    public void run() {
+                                        context.runOnUiThread(new Runnable() {
+                                            public void run() {
 
 
-                    ((LayoutImageViewHolder) holder).downloadImage.setVisibility(   View.VISIBLE);
-                    ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
-                    ((LayoutImageViewHolder) holder).downloadImage.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+                                                ((LayoutImageViewHolder) holder).adCircleProgress.setAdProgress(((LayoutImageViewHolder) holder).l);
 
-                    ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.GONE);
-                    ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
-                            final Timer t = new Timer();
-                            t.scheduleAtFixedRate(new TimerTask() {
-                                public void run() {
-                                    context.runOnUiThread(new Runnable() {
-                                        public void run() {
-
-
-                                            ((LayoutImageViewHolder) holder).adCircleProgress.setAdProgress(((LayoutImageViewHolder) holder).l);
-
-                                            ((LayoutImageViewHolder) holder).l++;
-                                        }
-                                    });
+                                                ((LayoutImageViewHolder) holder).l++;
+                                            }
+                                        });
+                                    }
+                                }, 0, 100);
+                                if (mCallback != null) {
+                                    mCallback.downloadImage(position,chatMessage, myMsg);
                                 }
-                            }, 0, 100);
-                            if (mCallback != null) {
-                                mCallback.downloadImage(position, chatMessages.get(position), myMsg);
                             }
-                        }
-                    });
+                        });
+                    }
                 } else {
                     ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
@@ -306,55 +329,59 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                     ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.GONE);
 
 
-                    Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load( path ).centerCrop().into(((LayoutImageViewHolder) holder).imageView);
+                    Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(path).centerCrop()
+                            .into(((LayoutImageViewHolder) holder).imageView);
                     ((LayoutImageViewHolder) holder).imageView.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-//                          androidx.appcompat.app.AlertDialog.Builder mBuilder = new androidx.appcompat.app.AlertDialog.Builder(view.getContext());
-//                          View mView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_image_cht, null);
-//                          ImageView photoView =  mView.findViewById(R.id.photo_view);
-//                          Glide.with(photoView.getContext()).load("https://th.bing.com/th/id/OIP.DP48uGkldTg01Wx5KTExXAHaE6?pid=ImgDet&rs=1").into(photoView);
-//                          photoView.setImageResource(R.drawable.ic_send_done);
-//                          mBuilder.setView(mView);
-//                          androidx.appcompat.app.AlertDialog mDialog = mBuilder.create();
-//                          mBuilder.show();
-
+//                        androidx.appcompat.app.AlertDialog.Builder mBuilder = new androidx.appcompat.app.AlertDialog.Builder(view.getContext());
+//                        View mView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_image_cht, null);
+//                        ImageView photoView =  mView.findViewById(R.id.photo_view);
+////                        Glide.with(photoView.getContext()).load("https://th.bing.com/th/id/OIP.DP48uGkldTg01Wx5KTExXAHaE6?pid=ImgDet&rs=1").into(photoView);
+//                        photoView.setImageResource(R.drawable.ic_send_done);
+//                        mBuilder.setView(mView);
+////                        androidx.appcompat.app.AlertDialog mDialog = mBuilder.create();
+//                        mBuilder.show();
                             Dialog dialog = new Dialog(context);
                             dialog.setContentView(R.layout.dialog_image_cht);
                             dialog.setTitle("Title...");
 
-                         // set the custom dialog components - text, image and button
+                            // set the custom dialog components - text, image and button
                             dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
 
-                            PhotoView  image = (PhotoView) dialog.findViewById(R.id.photo_view);
+
+                            PhotoView image = dialog.findViewById(R.id.photo_view);
                             Glide.with(image.getContext()).load(path).centerCrop().into(image);
                             dialog.show();
 
                         }
                     });
 
+
                 }
 
                 break;
 
             case "voice":
-                setAlignment((LayoutVoiceViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
 
                 ((LayoutVoiceViewHolder) holder).contentRecord.setVisibility(View.VISIBLE);
-                ((LayoutVoiceViewHolder) holder).textDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                ((LayoutVoiceViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+
+
                 ((LayoutVoiceViewHolder) holder).mediaPlayer = new MediaPlayer();
                 ((LayoutVoiceViewHolder) holder).playerSeekBar.setMax(100);
 
                 File voiceFile;
 
                 if (myMsg) {
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/send/voiceRecord");  // -> filename = maven.pdf
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/voiceRecord");  // -> filename = maven.pdf
+
                     voiceFile = new File(d, chatMessage.getFileName());
 
                 } else {
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/voiceRecord");  // -> filename = maven.pdf
-                    voiceFile = new File(d, chatMessage.getMessage().toString());
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/voiceRecord");  // -> filename = maven.pdf
+                    voiceFile = new File(d, chatMessage.getMessage());
 
                 }
                 if (!voiceFile.exists()) {
@@ -370,7 +397,6 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                     ((LayoutVoiceViewHolder) holder).textTotalDouration.setText("0.00");
 
 
-
                     ((LayoutVoiceViewHolder) holder).downloadRecordIB.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -383,7 +409,8 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                                         context.runOnUiThread(new Runnable() {
                                             public void run() {
 
-                                                ((LayoutVoiceViewHolder) holder).adCircleProgress.setAdProgress( ((LayoutVoiceViewHolder) holder).l);
+
+                                                ((LayoutVoiceViewHolder) holder).adCircleProgress.setAdProgress(((LayoutVoiceViewHolder) holder).l);
 
                                                 ((LayoutVoiceViewHolder) holder).l++;
 
@@ -391,7 +418,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                                         });
                                     }
                                 }, 0, 100);
-                                mCallback.downloadVoice(position, chatMessages.get(position), myMsg);
+                                mCallback.downloadVoice(position, chatMessage, myMsg);
                             }
                         }
                     });
@@ -401,37 +428,40 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 } else {
                     ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
-//                     holder.downloadRecordIB.setVisibility(View.GONE);
-//                     holder.imagePlayerPause.setVisibility(View.VISIBLE);
+//                        holder.downloadRecordIB.setVisibility(View.GONE);
+//                        holder.imagePlayerPause.setVisibility(View.VISIBLE);
 
-                    if (!((LayoutVoiceViewHolder) holder ).mediaPlayer.isPlaying()) {
-                        ((LayoutVoiceViewHolder)  holder ).playerSeekBar.setProgress(0);
-                        ((LayoutVoiceViewHolder)  holder ).textCurrentTime.setText("0.00");
-                        ((LayoutVoiceViewHolder)  holder ).textTotalDouration.setText("0.00");
-                        ((LayoutVoiceViewHolder)  holder ).imagePlayerPause.setImageResource(R.drawable.ic_play_audio);
-                        ((LayoutVoiceViewHolder)  holder ).downloadRecordIB.setVisibility(View.GONE);
-                        ((LayoutVoiceViewHolder)  holder).imagePlayerPause.setVisibility(View.VISIBLE);
+                    if (!((LayoutVoiceViewHolder) holder).mediaPlayer.isPlaying()) {
+                        ((LayoutVoiceViewHolder) holder).playerSeekBar.setProgress(0);
+                        ((LayoutVoiceViewHolder) holder).textCurrentTime.setText("0.00");
+                        ((LayoutVoiceViewHolder) holder).textTotalDouration.setText("0.00");
+
+                        ((LayoutVoiceViewHolder) holder).imagePlayerPause.setImageResource(R.drawable.ic_play_audio);
+                        ((LayoutVoiceViewHolder) holder).downloadRecordIB.setVisibility(View.GONE);
+
+                        ((LayoutVoiceViewHolder) holder).imagePlayerPause.setVisibility(View.VISIBLE);
                     } else {
                         System.out.println("is playing" + chatMessage.getMessage());
                     }
 
                     try {
-                        ((LayoutVoiceViewHolder) holder ).mediaPlayer.setDataSource(voiceFile.getAbsolutePath());
-                        ((LayoutVoiceViewHolder) holder ).mediaPlayer.prepare();
-                        ((LayoutVoiceViewHolder) holder ).textTotalDouration.setText(milliSecondsToTimer((long) ((LayoutVoiceViewHolder) holder).mediaPlayer.getDuration()));
+                        ((LayoutVoiceViewHolder) holder).mediaPlayer.setDataSource(voiceFile.getAbsolutePath());
+                        ((LayoutVoiceViewHolder) holder).mediaPlayer.prepare();
+                        ((LayoutVoiceViewHolder) holder).textTotalDouration.setText(milliSecondsToTimer((long) ((LayoutVoiceViewHolder) holder).mediaPlayer.getDuration()));
                     } catch (Exception exceptione) {
-                        Toast.makeText(context, exceptione.getMessage(), Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, exceptione.getMessage(), Toast.LENGTH_SHORT).show();
                     }
+
 
                 }
                 ////////////////media player tools
-                ((LayoutVoiceViewHolder) holder ).playerSeekBar.setOnTouchListener(new View.OnTouchListener() {
+                ((LayoutVoiceViewHolder) holder).playerSeekBar.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
                         SeekBar seekBar = (SeekBar) view;
-                        int payPosition = ( ( (LayoutVoiceViewHolder) holder ).mediaPlayer.getDuration() / 100 ) * seekBar.getProgress();
-                        ((LayoutVoiceViewHolder) holder ).mediaPlayer.seekTo(payPosition);
-                        ((LayoutVoiceViewHolder) holder ).textCurrentTime.setText(milliSecondsToTimer((long) ((LayoutVoiceViewHolder) holder).mediaPlayer.getCurrentPosition()));
+                        int payPosition = (((LayoutVoiceViewHolder) holder).mediaPlayer.getDuration() / 100) * seekBar.getProgress();
+                        ((LayoutVoiceViewHolder) holder).mediaPlayer.seekTo(payPosition);
+                        ((LayoutVoiceViewHolder) holder).textCurrentTime.setText(milliSecondsToTimer((long) ((LayoutVoiceViewHolder) holder).mediaPlayer.getCurrentPosition()));
                         return false;
                     }
                 });
@@ -450,15 +480,11 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                         ((LayoutVoiceViewHolder) holder).textCurrentTime.setText("0.00");
                         mediaPlayer.reset();
                         try {
-
                             ((LayoutVoiceViewHolder) holder).mediaPlayer.setDataSource(voiceFile.getAbsolutePath());
                             ((LayoutVoiceViewHolder) holder).mediaPlayer.prepare();
                             ((LayoutVoiceViewHolder) holder).textTotalDouration.setText(milliSecondsToTimer((long) ((LayoutVoiceViewHolder) holder).mediaPlayer.getDuration()));
-
                         } catch (Exception exceptione) {
-
                             Toast.makeText(context, exceptione.getMessage(), Toast.LENGTH_SHORT).show();
-
                         }
                         //prepeareMediaPlayer();
                     }
@@ -497,21 +523,20 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 break;
             //// voice end
             case "video":
-                setAlignment((LayoutVideoViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutVideoViewHolder) holder).textDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutVideoViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
 
                 File videoFile;
                 if (myMsg) {
 
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/send/video");  // -> filename = maven.pdf
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video");  // -> filename = maven.pdf
                     videoFile = new File(d, chatMessage.getFileName());
 
                 } else {
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/video");  // -> filename = maven.pdf
-                    videoFile = new File(d, chatMessage.getMessage().toString());
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");  // -> filename = maven.pdf
+                    videoFile = new File(d, chatMessage.getMessage());
 
                 }
-
 //                if(chatMessage.isDownload()){
 //                    ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
 //                    Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(R.drawable.backgrounblack).centerCrop()
@@ -533,59 +558,62 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 //                            });
 //                        }
 //                    }, 0, 100);
+//
+//
 //                }
-
                 if (!videoFile.exists()) {
                     ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
-                    Glide.with   (((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(R.drawable.backgrounblack).centerCrop()
+
+                    Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(R.drawable.backgrounblack).centerCrop()
                             .into(((LayoutVideoViewHolder) holder).imageVideo);
+
                     ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
                     ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.VISIBLE);
+
                     ((LayoutVideoViewHolder) holder).videoImageDownload.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            ((LayoutVideoViewHolder) holder ).videoImageDownload.setVisibility(View.GONE);
-                            ((LayoutVideoViewHolder) holder ).adCircleProgress.setVisibility(View.VISIBLE);
-//                          ((LayoutVideoViewHolder) holder ).adCircleProgress.animate();
+                            ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
+                            ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+//                            ((LayoutVideoViewHolder) holder).adCircleProgress.animate();
                             final Timer t = new Timer();
                             t.scheduleAtFixedRate(new TimerTask() {
                                 public void run() {
                                     context.runOnUiThread(new Runnable() {
                                         public void run() {
 
-                                            ((LayoutVideoViewHolder) holder ).adCircleProgress.setAdProgress( ((LayoutVideoViewHolder) holder).l);
-                                            ((LayoutVideoViewHolder) holder ).l++;
 
+                                            ((LayoutVideoViewHolder) holder).adCircleProgress.setAdProgress(((LayoutVideoViewHolder) holder).l);
+
+                                            ((LayoutVideoViewHolder) holder).l++;
                                         }
                                     });
                                 }
                             }, 0, 100);
                             chatMessage.setDownload(true);
                             if (mCallback != null) {
-
-                                mCallback.downloadVideo(position, chatMessages.get(position), myMsg);
-
+                                mCallback.downloadVideo(position, chatMessage, myMsg);
                             }
                         }
                     });
                 } else {
                     ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+
                     ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.VISIBLE);
                     ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
                     Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", videoFile);
 
-                    Glide.with(((LayoutVideoViewHolder)    holder).imageVideo.getContext()).load(path).centerCrop()
+                    Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(path).centerCrop()
                             .into(((LayoutVideoViewHolder) holder).imageVideo);
 
                     ((LayoutVideoViewHolder) holder).videoImageButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
-                            if ( mCallback != null ) {
-
-                                 mCallback.playVideo(path);
-
+                            if (mCallback != null) {
+                                mCallback.playVideo(path);
                             }
+
+
                         }
                     });
                 }
@@ -596,20 +624,20 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
             ///////////////////////
             //// file begin
             case "file":
-                setAlignment((LayoutPdfViewHolder) holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutPdfViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutPdfViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
 
 
                 File pdfFile;
                 if (myMsg) {
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/send");  // -> filename = maven.pdf
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send");  // -> filename = maven.pdf
                     pdfFile = new File(d, chatMessage.getFileName());
 
                     userNameeee = chatMessage.getFileName();
 
                 } else {
-                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive");  // -> filename = maven.pdf
-                    pdfFile = new File(d, chatMessage.getMessage().toString());
+                    File d = context.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive");  // -> filename = maven.pdf
+                    pdfFile = new File(d, chatMessage.getMessage());
 
                 }
 
@@ -621,7 +649,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                     @Override
                     public void onClick(View view) {
                         if (mCallback != null) {
-                            mCallback.onHandleSelection(position, chatMessages.get(position), myMsg);
+                            mCallback.onHandleSelection(position, chatMessage, myMsg);
                         }
                     }
                 });
@@ -651,7 +679,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                                         });
                                     }
                                 }, 0, 100);
-                                mCallback.downloadFile(position, chatMessages.get(position), myMsg);
+                                mCallback.downloadFile(position, chatMessage, myMsg);
                             }
                         }
                     });
@@ -676,9 +704,9 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
                 break;
             case "contact":
-                setAlignment(((LayoutContactViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
 
-                ((LayoutContactViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                ((LayoutContactViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
 
                 ((LayoutContactViewHolder) holder).txtNumber.setText(chatMessage.getMessage());
 
@@ -695,23 +723,22 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                         final AlertDialog dialogadd = builder.create();
 
 
-                        float textSize = 14.0F ;
-                        SharedPreferences sharedPreferences ;
-                         sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+                        float textSize = 14.0F;
+                        SharedPreferences sharedPreferences;
+                        sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
                         final TextView name = dialogView.findViewById(R.id.name);
                         name.setTextSize(textSize);
                         name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
-
                         final TextView nameAddContact = dialogView.findViewById(R.id.nameAddContact);
-                         nameAddContact.setTextSize(textSize);
+                        nameAddContact.setTextSize(textSize);
                         nameAddContact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
                         nameAddContact.setText(chatMessage.getFileName());
 
                         final TextView numberAddContact = dialogView.findViewById(R.id.numberAddContact);
-                         numberAddContact.setTextSize(textSize);
+                        numberAddContact.setTextSize(textSize);
                         numberAddContact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
                         numberAddContact.setText(chatMessage.getMessage());
 
@@ -719,11 +746,11 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                         btnAddContact.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if (!nameAddContact.getText().toString().isEmpty() && !numberAddContact.getText().toString().isEmpty()){
+                                if (!nameAddContact.getText().toString().isEmpty() && !numberAddContact.getText().toString().isEmpty()) {
                                     Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
                                     intent.setType(ContactsContract.RawContacts.CONTENT_ITEM_TYPE);
-                                    intent.putExtra(ContactsContract.Intents.Insert.NAME , nameAddContact.getText().toString());
-                                    intent.putExtra(ContactsContract.Intents.Insert.PHONE , numberAddContact.getText().toString());
+                                    intent.putExtra(ContactsContract.Intents.Insert.NAME, nameAddContact.getText().toString());
+                                    intent.putExtra(ContactsContract.Intents.Insert.PHONE, numberAddContact.getText().toString());
                                     context.startActivity(intent);
                                     dialogadd.cancel();
                   /*          if (intent.resolveActivity(getPackageManager()) != null){
@@ -734,7 +761,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
                             }*/
 
-                                }else {
+                                } else {
 
                                     Toast.makeText(context, "please fill all the fields", Toast.LENGTH_SHORT).show();
                                 }
@@ -744,95 +771,97 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                         });
 
 
-
                         dialogadd.show();
                     }
                 });
                 break;
             case "location":
 
-                setAlignment(((LayoutLocationViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutLocationViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutLocationViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
 
                 ((LayoutLocationViewHolder) holder).cardOpenLocation.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         if (mCallback != null) {
-                            System.out.println(chatMessages.get(position).getFileName());
-                            mCallback.onClickLocation(position, chatMessages.get(position),myMsg);
+                            System.out.println(chatMessage.getFileName());
+                            mCallback.onClickLocation(position, chatMessage, myMsg);
                         }
                     }
                 });
-
 
 
                 break;
             default:
 
-                setAlignment(((LayoutTextViewHolder) holder), myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutTextViewHolder) holder).txtDate.setText(timeProperties.getDate(Long.parseLong(chatMessage.getDate()),"hh:mm"));
-                if(chatMessage.getIsUpdate().equals("1")){
+                setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
+                ((LayoutTextViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+                if (chatMessage.getIsUpdate().equals("1")) {
                     ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.VISIBLE);
 
-                }
-                else {
-                ((LayoutTextViewHolder) holder ).txtUpdate.setVisibility(View.GONE);
+                } else {
+                    ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.GONE);
                 }
 
-                ((LayoutTextViewHolder) holder ).txtMessage.setText(chatMessage.getMessage());
+                ((LayoutTextViewHolder) holder).txtMessage.setText(chatMessage.getMessage());
                 Linkify.addLinks(((LayoutTextViewHolder) holder).txtMessage, Linkify.WEB_URLS);
-                ((LayoutTextViewHolder) holder ).txtMessage.setLinkTextColor(ContextCompat.getColor(context, R.color.blue_200));
-                ((LayoutTextViewHolder) holder) .txtMessage.setVisibility(View.VISIBLE);
+                ((LayoutTextViewHolder) holder).txtMessage.setLinkTextColor(ContextCompat.getColor(context,
+                        R.color.blue_200));
+
+
+                ((LayoutTextViewHolder) holder).txtMessage.setVisibility(View.VISIBLE);
+
 
                 break;
 
 
         }
 
-//                 ((ViewHolder)holder).txtInfo.setText(chatMessage.getDate());
-                if (chatMessages.get(position).isChecked) {
+//                ((ViewHolder)holder).txtInfo.setText(chatMessage.getDate());
+        if (chatMessage.isChecked) {
+            holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.background_onLong_click));
+
+        } else {
+            holder.itemView.setBackground(null);
+        }
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                System.out.println(chatMessage.getMessage() + "mjjjjjjjjjjj");
+
+                if (!chatMessage.isChecked) {
+                    if (mCallback != null) {
+
+                        mCallback.onLongClick(position, chatMessage, true);
+                        System.out.println(chatMessage.getMessage() + "mjjjjjjjjjjjllklkl");
+
+                    }
+
+
+                    chatMessage.setChecked(true);
                     holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.background_onLong_click));
 
+
                 } else {
-                    holder.itemView.setBackground(null);
-                }
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        if(!isdraged) {
-                            System.out.println(chatMessages.get(position).getMessage() + "mjjjjjjjjjjj");
+                    if (mCallback != null) {
 
-                            if (!chatMessages.get(position).isChecked) {
-                                if (mCallback != null) {
+                        mCallback.onLongClick(position, chatMessage, false);
+                        System.out.println(chatMessage.getMessage() + "mjjjjjjjjjjj");
 
-                                    mCallback.onLongClick(position, chatMessages.get(position), true);
-                                    System.out.println(chatMessages.get(position).getMessage() + "mjjjjjjjjjjjllklkl");
-
-                                }
-
-                                chatMessages.get(position).setChecked(true);
-                                holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.background_onLong_click));
-
-                            } else {
-                                if (mCallback != null) {
-
-                                    mCallback.onLongClick(position, chatMessages.get(position), false);
-                                    System.out.println(chatMessages.get(position).getMessage() + "mjjjjjjjjjjj");
-
-                                }
-
-                                chatMessages.get(position).setChecked(false);
-                                holder.itemView.setBackground(null);
-
-                            }
-
-                        }
-                        return false;
                     }
-                });
+                    chatMessage.setChecked(false);
+                    holder.itemView.setBackground(null);
 
 
-        }
+                }
+
+
+                return false;
+            }
+        });
+
+
+    }
 
 
     @Override
@@ -840,20 +869,20 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
         return position;
     }
 
-    @Override
-    public int getItemCount() {
-        if (chatMessages != null) {
-            return chatMessages.size();
-        } else {
-            return 0;
-        }
-    }
+//    @Override
+//    public int getItemCount() {
+//        if (chatMessages != null) {
+//            return chatMessages.size();
+//        } else {
+//            return 0;
+//        }
+//    }
 
     @Override
     public void onViewRecycled(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewRecycled(holder);
-        System.out.println("holder type"+holder.getItemViewType());
-        if(holder.getItemViewType()==1) {
+        System.out.println("holder type" + holder.getItemViewType());
+        if (holder.getItemViewType() == 1) {
 //        holder.itemView.
             if (((LayoutVoiceViewHolder) holder).mediaPlayer != null)
                 if (((LayoutVoiceViewHolder) holder).mediaPlayer.isPlaying()) {
@@ -866,16 +895,20 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
     }
 
 
+//    public void add(ChatMessage message) {
+//        chatMessages.add(message);
+//    }
+//
+//    public void add(List<ChatMessage> messages) {
+//        chatMessages.addAll(messages);
+//    }
+public void setData(ArrayList<ChatMessage> newData) {
 
-    public void add(ChatMessage message) {
-        chatMessages.add(message);
-    }
+    submitList(newData);
 
-    public void add(List<ChatMessage> messages) {
-        chatMessages.addAll(messages);
-    }
+}
 
-    private void setAlignment(RecyclerView.ViewHolder holder, boolean isMe, String state,String type) {
+    private void setAlignment(RecyclerView.ViewHolder holder, boolean isMe, String state, String type) {
         switch (type) {
             case "imageWeb":
                 if (isMe) {
@@ -893,114 +926,111 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                     ((LayoutImageViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
 
-                ((LayoutImageViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
-            if (state.equals("3")) {
-                ((LayoutImageViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
-            } else if (state.equals("2")) {
-                ((LayoutImageViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
-            } else if (state.equals("1")) {
-                ((LayoutImageViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
-            } else {
-                ((LayoutImageViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                    if (state.equals("3")) {
+                        ((LayoutImageViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                    } else if (state.equals("2")) {
+                        ((LayoutImageViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                    } else if (state.equals("1")) {
+                        ((LayoutImageViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                    } else {
+                        ((LayoutImageViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
 
-            }
-                    ((LayoutImageViewHolder)holder).imageSeen.setVisibility(View.VISIBLE);
+                    }
+                    ((LayoutImageViewHolder) holder).imageSeen.setVisibility(View.VISIBLE);
 
                 } else if (!isMe) {
-                    ((LayoutImageViewHolder)holder).imageSeen.setVisibility(View.GONE);
+                    ((LayoutImageViewHolder) holder).imageSeen.setVisibility(View.GONE);
 
                     ((LayoutImageViewHolder) holder).contentwithB.setBackgroundResource(R.drawable.out_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams)  ((LayoutImageViewHolder) holder).contentwithB.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutImageViewHolder) holder).contentwithB.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutImageViewHolder) holder).contentwithB.setLayoutParams(layoutParams);
-                    ((LayoutImageViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-
+                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams)  ((LayoutImageViewHolder) holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutImageViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
                     ((LayoutImageViewHolder) holder).content.setLayoutParams(lp);
 
                 }
                 break;
-            case"voice":
+            case "voice":
                 if (isMe) {
-                    ((LayoutVoiceViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
+                    ((LayoutVoiceViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutVoiceViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutVoiceViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutVoiceViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutVoiceViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutVoiceViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutVoiceViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    ((LayoutVoiceViewHolder)holder).content.setLayoutParams(lp);
+                    ((LayoutVoiceViewHolder) holder).content.setLayoutParams(lp);
 //                    layoutParams = (LinearLayout.LayoutParams) ((ViewHolder)holder).txtMessage.getLayoutParams();
 //                    layoutParams.gravity = Gravity.RIGHT;
 //                    ((ViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
-                    ((LayoutVoiceViewHolder)holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder)holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
-                    ((LayoutVoiceViewHolder)holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder)holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder)holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
                     ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
-
                     if (state.equals("3")) {
-                        ((LayoutVoiceViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                        ((LayoutVoiceViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
                     } else if (state.equals("2")) {
-                        ((LayoutVoiceViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                        ((LayoutVoiceViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
                     } else if (state.equals("1")) {
-                        ((LayoutVoiceViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                        ((LayoutVoiceViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
                     } else {
-                        ((LayoutVoiceViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                        ((LayoutVoiceViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
 
                     }
-                    ((LayoutVoiceViewHolder)holder).imageSeen.setVisibility(View.VISIBLE);
+                    ((LayoutVoiceViewHolder) holder).imageSeen.setVisibility(View.VISIBLE);
 
 
 //                    layoutParams = (LinearLayout.LayoutParams) ((ViewHolder)holder).txtInfo.getLayoutParams();
 //                    layoutParams.gravity = Gravity.RIGHT;
 //                    ((ViewHolder)holder).txtInfo.setLayoutParams(layoutParams);
                 } else if (!isMe) {
-                    ((LayoutVoiceViewHolder)holder).imageSeen.setVisibility(View.GONE);
+                    ((LayoutVoiceViewHolder) holder).imageSeen.setVisibility(View.GONE);
 
-                    ((LayoutVoiceViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
+                    ((LayoutVoiceViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutVoiceViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutVoiceViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
-                    ((LayoutVoiceViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutVoiceViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 //                    ((LayoutVoiceViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutVoiceViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutVoiceViewHolder)holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.textColor));
-                    ((LayoutVoiceViewHolder)holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.textColor));
+                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.textColor));
+                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.textColor));
 
-                    ((LayoutVoiceViewHolder)holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutVoiceViewHolder)holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutVoiceViewHolder)holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
-
+                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutVoiceViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutVoiceViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutVoiceViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    ((LayoutVoiceViewHolder)holder).content.setLayoutParams(lp);
+                    ((LayoutVoiceViewHolder) holder).content.setLayoutParams(lp);
 //                    layoutParams = (LinearLayout.LayoutParams) ((ViewHolder)holder).txtMessage.getLayoutParams();
 //                    layoutParams.gravity = Gravity.LEFT;
 //                    ((ViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
@@ -1009,57 +1039,56 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 //                    layoutParams.gravity = Gravity.LEFT;
 //                    ((ViewHolder)holder).txtInfo.setLayoutParams(layoutParams);
                 }
-             break;
-                  case"video":
+                break;
+            case "video":
                 if (isMe) {
-                    ((LayoutVideoViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
+                    ((LayoutVideoViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutVideoViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutVideoViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutVideoViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutVideoViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutVideoViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutVideoViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    ((LayoutVideoViewHolder)holder).content.setLayoutParams(lp);
-                    ((LayoutVideoViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
-
+                    ((LayoutVideoViewHolder) holder).content.setLayoutParams(lp);
+                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
                     if (state.equals("3")) {
-                        ((LayoutVideoViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                        ((LayoutVideoViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
                     } else if (state.equals("2")) {
-                        ((LayoutVideoViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                        ((LayoutVideoViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
                     } else if (state.equals("1")) {
-                        ((LayoutVideoViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                        ((LayoutVideoViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
                     } else {
-                        ((LayoutVideoViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                        ((LayoutVideoViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
 
                     }
-                    ((LayoutVideoViewHolder)holder).imageSeen.setVisibility(View.VISIBLE);
+                    ((LayoutVideoViewHolder) holder).imageSeen.setVisibility(View.VISIBLE);
 
 
                 } else if (!isMe) {
-                    ((LayoutVideoViewHolder)holder).imageSeen.setVisibility(View.GONE);
+                    ((LayoutVideoViewHolder) holder).imageSeen.setVisibility(View.GONE);
 
-                    ((LayoutVideoViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
+                    ((LayoutVideoViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutVideoViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutVideoViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
-                    ((LayoutVideoViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
-                    ((LayoutVideoViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutVideoViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 //
 
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutVideoViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutVideoViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    ((LayoutVideoViewHolder)holder).content.setLayoutParams(lp);
+                    ((LayoutVideoViewHolder) holder).content.setLayoutParams(lp);
 //
                 }
 
@@ -1067,52 +1096,51 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
             case "file":
                 if (isMe) {
 
-                    ((LayoutPdfViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
+                    ((LayoutPdfViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutPdfViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutPdfViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutPdfViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutPdfViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutPdfViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutPdfViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    ((LayoutPdfViewHolder)holder).content.setLayoutParams(lp);
+                    ((LayoutPdfViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutPdfViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
                     if (state.equals("3")) {
-                        ((LayoutPdfViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                        ((LayoutPdfViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
                     } else if (state.equals("2")) {
-                        ((LayoutPdfViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                        ((LayoutPdfViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
                     } else if (state.equals("1")) {
-                        ((LayoutPdfViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                        ((LayoutPdfViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
                     } else {
-                        ((LayoutPdfViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                        ((LayoutPdfViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
 
                     }
-                    ((LayoutPdfViewHolder)holder).imageSeen.setVisibility(View.VISIBLE);
+                    ((LayoutPdfViewHolder) holder).imageSeen.setVisibility(View.VISIBLE);
 
                 } else if (!isMe) {
-                    ((LayoutPdfViewHolder)holder).imageSeen.setVisibility(View.GONE);
+                    ((LayoutPdfViewHolder) holder).imageSeen.setVisibility(View.GONE);
 
-                    ((LayoutPdfViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
+                    ((LayoutPdfViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutPdfViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutPdfViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
-                    ((LayoutPdfViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
-                    ((LayoutPdfViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-
+                    ((LayoutPdfViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutPdfViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutPdfViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    ((LayoutPdfViewHolder)holder).content.setLayoutParams(lp);
+                    ((LayoutPdfViewHolder) holder).content.setLayoutParams(lp);
 
                 }
                 break;
@@ -1120,64 +1148,57 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
             case "contact":
                 if (isMe) {
 
-                    ((LayoutContactViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
+                    ((LayoutContactViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutContactViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutContactViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutContactViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutContactViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutContactViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutContactViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    ((LayoutContactViewHolder)holder).content.setLayoutParams(lp);
+                    ((LayoutContactViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutContactViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
                     if (state.equals("3")) {
-                        ((LayoutContactViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                        ((LayoutContactViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
                     } else if (state.equals("2")) {
-                        ((LayoutContactViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                        ((LayoutContactViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
                     } else if (state.equals("1")) {
-                        ((LayoutContactViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                        ((LayoutContactViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
                     } else {
-                        ((LayoutContactViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                        ((LayoutContactViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
 
                     }
-                    ((LayoutContactViewHolder)holder).imageSeen.setVisibility(View.VISIBLE);
+                    ((LayoutContactViewHolder) holder).imageSeen.setVisibility(View.VISIBLE);
 
                 } else if (!isMe) {
-                    ((LayoutContactViewHolder)holder).imageSeen.setVisibility(View.GONE);
+                    ((LayoutContactViewHolder) holder).imageSeen.setVisibility(View.GONE);
 
-                    ((LayoutContactViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
+                    ((LayoutContactViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutContactViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutContactViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
-                    ((LayoutContactViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
-                    ((LayoutContactViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutContactViewHolder)holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutContactViewHolder)holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).view1.setBackgroundColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).view2.setBackgroundColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).sendMessage.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutContactViewHolder)holder).addContact.setTextColor(context.getResources().getColor(R.color.textColor));
-
-
-
-
-
-
-
+                    ((LayoutContactViewHolder) holder).addContact.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutContactViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutContactViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    ((LayoutContactViewHolder)holder).content.setLayoutParams(lp);
+                    ((LayoutContactViewHolder) holder).content.setLayoutParams(lp);
 
                 }
                 break;
@@ -1197,36 +1218,35 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                     ((LayoutLocationViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
 
-                    ((LayoutLocationViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
                     if (state.equals("3")) {
-                        ((LayoutLocationViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                        ((LayoutLocationViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
                     } else if (state.equals("2")) {
-                        ((LayoutLocationViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                        ((LayoutLocationViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
                     } else if (state.equals("1")) {
-                        ((LayoutLocationViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                        ((LayoutLocationViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
                     } else {
-                        ((LayoutLocationViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                        ((LayoutLocationViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
 
                     }
-                    ((LayoutLocationViewHolder)holder).imageSeen.setVisibility(View.VISIBLE);
+                    ((LayoutLocationViewHolder) holder).imageSeen.setVisibility(View.VISIBLE);
 
                 } else if (!isMe) {
-                    ((LayoutLocationViewHolder)holder).imageSeen.setVisibility(View.GONE);
+                    ((LayoutLocationViewHolder) holder).imageSeen.setVisibility(View.GONE);
 
                     ((LayoutLocationViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams)  ((LayoutLocationViewHolder) holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutLocationViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutLocationViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
-                    ((LayoutLocationViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-
+                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams)  ((LayoutLocationViewHolder) holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutLocationViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
                     ((LayoutLocationViewHolder) holder).content.setLayoutParams(lp);
@@ -1238,70 +1258,68 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
 
                 if (isMe) {
-                    ((LayoutTextViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
+                    ((LayoutTextViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.in_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutTextViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutTextViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutTextViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutTextViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutTextViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutTextViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-                    ((LayoutTextViewHolder)holder).content.setLayoutParams(lp);
-                    layoutParams = (LinearLayout.LayoutParams) ((LayoutTextViewHolder)holder).txtMessage.getLayoutParams();
+                    ((LayoutTextViewHolder) holder).content.setLayoutParams(lp);
+                    layoutParams = (LinearLayout.LayoutParams) ((LayoutTextViewHolder) holder).txtMessage.getLayoutParams();
                     layoutParams.gravity = Gravity.RIGHT;
                     ((LayoutTextViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
 
-                        ((LayoutTextViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutTextViewHolder) holder).txtMessage.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
-
-                    ((LayoutTextViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutTextViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
 
 
                     if (state.equals("3")) {
-                        ((LayoutTextViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                        ((LayoutTextViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
                     } else if (state.equals("2")) {
-                        ((LayoutTextViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                        ((LayoutTextViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
                     } else if (state.equals("1")) {
-                        ((LayoutTextViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                        ((LayoutTextViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
                     } else {
-                        ((LayoutTextViewHolder)holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                        ((LayoutTextViewHolder) holder).imageSeen.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
 
                     }
-                    ((LayoutTextViewHolder)holder).imageSeen.setVisibility(View.VISIBLE);
+                    ((LayoutTextViewHolder) holder).imageSeen.setVisibility(View.VISIBLE);
 
 
 //                    layoutParams = (LinearLayout.LayoutParams) ((LayoutTextViewHolder)holder).txtInfo.getLayoutParams();
 //                    layoutParams.gravity = Gravity.RIGHT;
 //                    ((LayoutTextViewHolder)holder).txtInfo.setLayoutParams(layoutParams);
                 } else if (!isMe) {
-                    ((LayoutTextViewHolder)holder).imageSeen.setVisibility(View.GONE);
+                    ((LayoutTextViewHolder) holder).imageSeen.setVisibility(View.GONE);
 
-                    ((LayoutTextViewHolder)holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
+                    ((LayoutTextViewHolder) holder).contentWithBG.setBackgroundResource(R.drawable.out_message_bg);
 
                     LinearLayout.LayoutParams layoutParams =
-                            (LinearLayout.LayoutParams) ((LayoutTextViewHolder)holder).contentWithBG.getLayoutParams();
+                            (LinearLayout.LayoutParams) ((LayoutTextViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
-                    ((LayoutTextViewHolder)holder).contentWithBG.setLayoutParams(layoutParams);
+                    ((LayoutTextViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 
-                        ((LayoutTextViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutTextViewHolder) holder).txtMessage.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
-                    ((LayoutTextViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-
+                    ((LayoutTextViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
-                            (RelativeLayout.LayoutParams) ((LayoutTextViewHolder)holder).content.getLayoutParams();
+                            (RelativeLayout.LayoutParams) ((LayoutTextViewHolder) holder).content.getLayoutParams();
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-                    ((LayoutTextViewHolder)holder).content.setLayoutParams(lp);
-                    layoutParams = (LinearLayout.LayoutParams) ((LayoutTextViewHolder)holder).txtMessage.getLayoutParams();
+                    ((LayoutTextViewHolder) holder).content.setLayoutParams(lp);
+                    layoutParams = (LinearLayout.LayoutParams) ((LayoutTextViewHolder) holder).txtMessage.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
-                    ((LayoutTextViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
+                    ((LayoutTextViewHolder) holder).txtMessage.setLayoutParams(layoutParams);
 
 //                    layoutParams = (LinearLayout.LayoutParams) ((LayoutTextViewHolder)holder).txtInfo.getLayoutParams();
 //                    layoutParams.gravity = Gravity.LEFT;
@@ -1310,23 +1328,24 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
                 break;
         }
     }
-    public void filter(String charText) {
-        for (ChatMessage wp : chatMessages) {
-            if (wp.getMessage() != null) {
-                System.out.println(wp.getMessage().toString());
-                if (wp.getMessage().toString().toLowerCase(Locale.getDefault()).contains(charText)) {
-                    int index = wp.getMessage().toString().toLowerCase(Locale.getDefault()).indexOf(charText);
 
-                    Spannable WordtoSpan = new SpannableString(wp.getMessage().toString());
-                    WordtoSpan.setSpan(new ForegroundColorSpan(Color.BLUE), index, index + charText.length(),
-                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    //wp.setMessage(WordtoSpan);
-                }
-
-                notifyDataSetChanged();
-            }
-        }
-    }
+    //    public void filter(String charText) {
+//        for (ChatMessage wp : chatMessages) {
+//            if (wp.getMessage() != null) {
+//                System.out.println(wp.getMessage());
+//                if (wp.getMessage().toLowerCase(Locale.getDefault()).contains(charText)) {
+//                    int index = wp.getMessage().toLowerCase(Locale.getDefault()).indexOf(charText);
+//
+//                    Spannable WordtoSpan = new SpannableString(wp.getMessage());
+//                    WordtoSpan.setSpan(new ForegroundColorSpan(Color.BLUE), index, index + charText.length(),
+//                            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                    //wp.setMessage(WordtoSpan);
+//                }
+//
+//                notifyDataSetChanged();
+//            }
+//        }
+//    }
     String milliSecondsToTimer(Long milliSeconds) {
         String timerString = "";
         String secondString;
@@ -1349,7 +1368,7 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
     }
 
-//    private ViewHolder createViewHolder(View v) {
+    //    private ViewHolder createViewHolder(View v) {
 //
 //        ViewHolder holder = new ViewHolder();
 //        holder.txtMessage = (TextView) v.findViewById(R.id.txtMessage);
@@ -1365,112 +1384,112 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 //        holder.fileImageButton = v.findViewById(R.id.image_button_file);
 //        return holder;
 //    }
-    class LayoutImageViewHolder extends RecyclerView.ViewHolder {
+    class LayoutImageViewHolder
+            extends RecyclerView.ViewHolder {
 
-    private ImageView imageView;
-    private ImageButton downloadImage;
-    int l =0;
+        private final ImageView imageView;
+        private final ImageButton downloadImage;
+        int l = 0;
 
-    private LinearLayout content;
-    private LinearLayout contentwithB;
-    private ImageView imageSeen;
-    public TextView txtDate;
-    AdCircleProgress  adCircleProgress;
-
-
-    float textSize = 14.0F ;
-    SharedPreferences sharedPreferences ;
-
-    public LayoutImageViewHolder(@NonNull View itemView) {
-        super(itemView);
+        private final LinearLayout content;
+        private final LinearLayout contentwithB;
+        private final ImageView imageSeen;
+        public TextView txtDate;
+        AdCircleProgress adCircleProgress;
 
 
-        // Find the Views
-        imageView = itemView.findViewById(R.id.imgMessage);
-        content = itemView.findViewById(R.id.content);
-        contentwithB = itemView.findViewById(R.id.contentWithBackground);
+        float textSize = 14.0F;
+        SharedPreferences sharedPreferences;
 
-        txtDate = itemView.findViewById(R.id.tv_date);
-        txtDate.setTextSize(textSize);
-        txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-        imageSeen = itemView.findViewById(R.id.iv_state);
-        downloadImage = itemView.findViewById(R.id.image_download);
-        adCircleProgress = itemView.findViewById(R.id.pgb_progress);
+        public LayoutImageViewHolder(@NonNull View itemView) {
+            super(itemView);
 
 
-    }
+            // Find the Views
+            imageView = itemView.findViewById(R.id.imgMessage);
+            content = itemView.findViewById(R.id.content);
+            contentwithB = itemView.findViewById(R.id.contentWithBackground);
 
-}
-    class LayoutVoiceViewHolder extends RecyclerView.ViewHolder {
+            txtDate = itemView.findViewById(R.id.tv_date);
+//        txtDate.setTextSize(textSize);
+//        txtDate.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-    private LinearLayout content;
-    int l =0;
-    private LinearLayout contentWithBG;
-    private ImageView imageSeen;
-    public TextView textDate;
-    public LinearLayout contentRecord;
-    ImageView imagePlayerPause;
-    TextView textCurrentTime,textTotalDouration,timeSeparator;
-    SeekBar playerSeekBar;
-    MediaPlayer mediaPlayer;
-    RelativeLayout relativeLayout;
-    Handler handler = new Handler();
-    Runnable updater;
-    ImageButton downloadRecordIB;
-    AdCircleProgress  adCircleProgress;
+            imageSeen = itemView.findViewById(R.id.iv_state);
+            downloadImage = itemView.findViewById(R.id.image_download);
+            adCircleProgress = itemView.findViewById(R.id.pgb_progress);
 
 
-
-
-    float textSize = 14.0F ;
-    SharedPreferences sharedPreferences ;
-
-    public LayoutVoiceViewHolder(@NonNull View itemView) {
-        super(itemView);
-
-        sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
-
-        content = itemView.findViewById(R.id.content);
-        contentWithBG = itemView.findViewById(R.id.contentWithBackground);
-
-        textDate = itemView.findViewById(R.id.tv_date);
-
-
-        contentRecord = itemView.findViewById(R.id.Liner_record);
-        imagePlayerPause = itemView.findViewById(R.id.image_play_pause);
-
-        textCurrentTime = itemView.findViewById(R.id.text_current_time);
-
-
-        textTotalDouration = itemView.findViewById(R.id.text_total_duration);
-
-        timeSeparator = itemView.findViewById(R.id.time_separator);
-
-
-        playerSeekBar = itemView.findViewById(R.id.player_seek_bar);
-        imageSeen = itemView.findViewById(R.id.iv_state);
-
-        downloadRecordIB =  itemView.findViewById(R.id.image_download_audio);
-        adCircleProgress = itemView.findViewById(R.id.pgb_progress);
-
+        }
 
     }
+
+    class LayoutVoiceViewHolder
+            extends RecyclerView.ViewHolder {
+
+        private final LinearLayout content;
+        int l = 0;
+        private final LinearLayout contentWithBG;
+        private final ImageView imageSeen;
+        public TextView textDate;
+        public LinearLayout contentRecord;
+        ImageView imagePlayerPause;
+        TextView textCurrentTime, textTotalDouration, timeSeparator;
+        SeekBar playerSeekBar;
+        MediaPlayer mediaPlayer;
+        RelativeLayout relativeLayout;
+        Handler handler = new Handler();
+        Runnable updater;
+        ImageButton downloadRecordIB;
+        AdCircleProgress adCircleProgress;
+
+
+        float textSize = 14.0F;
+        SharedPreferences sharedPreferences;
+
+        public LayoutVoiceViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            sharedPreferences = context.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.contentWithBackground);
+
+            textDate = itemView.findViewById(R.id.tv_date);
+
+
+            contentRecord = itemView.findViewById(R.id.Liner_record);
+            imagePlayerPause = itemView.findViewById(R.id.image_play_pause);
+
+            textCurrentTime = itemView.findViewById(R.id.text_current_time);
+
+
+            textTotalDouration = itemView.findViewById(R.id.text_total_duration);
+
+            timeSeparator = itemView.findViewById(R.id.time_separator);
+
+
+            playerSeekBar = itemView.findViewById(R.id.player_seek_bar);
+            imageSeen = itemView.findViewById(R.id.iv_state);
+
+            downloadRecordIB = itemView.findViewById(R.id.image_download_audio);
+            adCircleProgress = itemView.findViewById(R.id.pgb_progress);
+
+
+        }
+
 }
     class LayoutVideoViewHolder extends RecyclerView.ViewHolder {
 
-        private LinearLayout content;
-        private LinearLayout contentWithBG;
-        private ImageView imageSeen;
+        private final LinearLayout content;
+        private final LinearLayout contentWithBG;
+        private final ImageView imageSeen;
         public TextView textDate;
         FrameLayout contentVideo;
         ImageButton videoImageButton;
         ImageButton videoImageDownload;
         ImageView imageVideo;
-        int l =0;
-        AdCircleProgress  adCircleProgress;
-
-
+        int l = 0;
+        AdCircleProgress adCircleProgress;
 
 
         public LayoutVideoViewHolder(@NonNull View itemView) {
@@ -1492,9 +1511,10 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 
         }
     }
+
     public static class LayoutPdfViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageSeen;
+        private final ImageView imageSeen;
 
         public TextView txtDate;
         public TextView txtFile;
@@ -1504,21 +1524,21 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
         public LinearLayout content;
         public LinearLayout contentFile;
         public LinearLayout contentWithBG;
-        int l =0;
+        int l = 0;
 
         //        float textSize = 14.0F ;
-        SharedPreferences sharedPreferences ;
-        private Activity context ;
+        SharedPreferences sharedPreferences;
+        private Activity context;
 
-        AdCircleProgress  adCircleProgress;
+        AdCircleProgress adCircleProgress;
 
 
         public LayoutPdfViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            content = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (LinearLayout) itemView.findViewById(R.id.contentWithBackground);
-            contentFile = (LinearLayout) itemView.findViewById(R.id.liner_file);
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.contentWithBackground);
+            contentFile = itemView.findViewById(R.id.liner_file);
 
             txtDate = itemView.findViewById(R.id.tv_date);
 
@@ -1535,47 +1555,46 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
             adCircleProgress = itemView.findViewById(R.id.pgb_progress);
 
 
-
-
         }
     }
+
     public static class LayoutContactViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageSeen;
+        private final ImageView imageSeen;
 
         public TextView txtDate;
-        public CircleImageView imageProfile ;
+        public CircleImageView imageProfile;
         public LinearLayout content;
         public CardView contentWithBG;
 
         public TextView txtName;
-        public  TextView txtNumber;
-        public  TextView addContact;
+        public TextView txtNumber;
+        public TextView addContact;
 //        public  TextView sendMessage;
 
 
-        public  View view1;
-        public  View view2;
+        public View view1;
+        public View view2;
 
 
-        float textSize = 14.0F ;
-        SharedPreferences sharedPreferences ;
+        float textSize = 14.0F;
+        SharedPreferences sharedPreferences;
 
         public LayoutContactViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            content       = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (CardView) itemView.findViewById(R.id.card);
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.card);
 
-            txtDate   = itemView.findViewById(R.id.tv_date);
+            txtDate = itemView.findViewById(R.id.tv_date);
 
 
             imageSeen = itemView.findViewById(R.id.iv_state);
 
-            txtNumber = itemView.findViewById (R.id.phone);
+            txtNumber = itemView.findViewById(R.id.phone);
 
 
-            txtName = itemView.findViewById (R.id.name);
+            txtName = itemView.findViewById(R.id.name);
 
 
             imageProfile = itemView.findViewById(R.id.profile);
@@ -1583,19 +1602,15 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
             addContact = itemView.findViewById(R.id.addContact);
 
 
-
             view1 = itemView.findViewById(R.id.view1);
-
-
-
-
 
 
         }
     }
+
     public static class LayoutLocationViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imageSeen;
+        private final ImageView imageSeen;
 
         public TextView txtDate;
         public LinearLayout content;
@@ -1604,41 +1619,32 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
 //        public MapView map;
 
 
-
-
-
-
-
-
-
         public LayoutLocationViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            content = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (LinearLayout) itemView.findViewById(R.id.contentWithBackground);
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.contentWithBackground);
             txtDate = itemView.findViewById(R.id.tv_date);
             imageSeen = itemView.findViewById(R.id.iv_state);
             cardOpenLocation = itemView.findViewById(R.id.cardOpenItLocation);
 //            map = itemView.findViewById(R.id.map);
 
 
-
-
-
         }
     }
+
     public static class LayoutTextViewHolder extends RecyclerView.ViewHolder {
-        public  TextView  txtMessage;
-        private ImageView imageSeen;
-        public  TextView  txtInfo;
-        public  TextView  txtDate;
-        public  TextView  txtUpdate;
+        public TextView txtMessage;
+        private final ImageView imageSeen;
+        public TextView txtInfo;
+        public TextView txtDate;
+        public TextView txtUpdate;
 
 
+        float textSize = 14.0F;
+        SharedPreferences sharedPreferences;
+//        private Activity activity;
 
-         float textSize = 14.0F ;
-         SharedPreferences sharedPreferences ;
-//       private Activity activity;
 
         public LinearLayout content;
         public RelativeLayout contentWithBG;
@@ -1648,20 +1654,39 @@ public class ChatAdapter  extends RecyclerView.Adapter  {
             super(itemView);
 
 
-            txtMessage = (TextView) itemView.findViewById(R.id.txtMessage);
-            content    = (LinearLayout) itemView.findViewById(R.id.content);
-            contentWithBG = (RelativeLayout) itemView.findViewById(R.id.contentWithBackground);
-            txtInfo    = (TextView) itemView.findViewById(R.id.txtInfo);
-            txtDate    = itemView.findViewById(R.id.tv_date);
-            imageSeen  = itemView.findViewById(R.id.iv_state);
-            txtUpdate  = itemView.findViewById(R.id.text_update);
+            txtMessage = itemView.findViewById(R.id.txtMessage);
 
+
+            content = itemView.findViewById(R.id.content);
+            contentWithBG = itemView.findViewById(R.id.contentWithBackground);
+
+
+            txtInfo = itemView.findViewById(R.id.txtInfo);
+
+
+            txtDate = itemView.findViewById(R.id.tv_date);
+
+
+            imageSeen = itemView.findViewById(R.id.iv_state);
+            txtUpdate = itemView.findViewById(R.id.text_update);
 
         }
     }
 
 
+    public static class MyDiffUtilChatMessage extends DiffUtil.ItemCallback<ChatMessage> {
 
+
+        @Override
+        public boolean areItemsTheSame(@NonNull ChatMessage oldItem, @NonNull ChatMessage newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull ChatMessage oldItem, @NonNull ChatMessage newItem) {
+            return 0 == oldItem.compareTo(newItem);
+        }
+
+    }
 }
-
 

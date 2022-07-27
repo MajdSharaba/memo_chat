@@ -76,7 +76,7 @@ public class ChatMessageRepo {
                             chatMessage.setIsUpdate("0");
 
                             if(jsonObject.optJSONObject("reply_message") != null && !jsonObject.optJSONObject("reply_message").equals("") && !jsonObject.optJSONObject("reply_message").equals("null")) {
-                                chatMessage.setReply(jsonObject.getJSONObject("reply_message").getString("message"));
+//                                chatMessage.setReply(jsonObject.getJSONObject("reply_message").getString("message"));
                             }else{
                               //  chatMessage.setReply("");
                             }
@@ -163,7 +163,7 @@ public class ChatMessageRepo {
             }
             ////////////// state 2
             else if(state.equals("2")){
-                if (chatMessageList.get(i).getState().equals("2")) {
+                if (chatMessageList.get(i).getState().equals("2")||chatMessageList.get(i).getState().equals("3")) {
                     System.out.println(i + "===============");
 
                     break;

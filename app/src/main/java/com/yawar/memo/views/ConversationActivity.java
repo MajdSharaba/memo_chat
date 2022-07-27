@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,7 +56,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.view.WindowManager;
+import android.webkit.PermissionRequest;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -73,16 +77,21 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.devlomi.record_view.OnRecordListener;
 import com.devlomi.record_view.RecordButton;
 import com.devlomi.record_view.RecordPermissionHandler;
 import com.devlomi.record_view.RecordView;
 
+import com.downloader.Error;
+import com.downloader.OnDownloadListener;
+import com.downloader.OnStartOrResumeListener;
+import com.downloader.PRDownloader;
+import com.downloader.request.DownloadRequest;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -98,22 +107,22 @@ import com.google.android.gms.tasks.Task;
 
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.BuildConfig;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.ChatAdapter;
+import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ForwardDialogFragment;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
-import com.yawar.memo.modelView.ArchivedActViewModel;
 import com.yawar.memo.modelView.ConversationModelView;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
-import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.FileDownloader;
 import com.yawar.memo.utils.FileUtil;
@@ -139,20 +148,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.socket.client.Socket;
 
 
-public class ConversationActivity extends AppCompatActivity implements ChatAdapter.CallbackInterface , Observer , PickiTCallbacks {
-
+public class ConversationActivity extends AppCompatActivity implements ChatAdapter.CallbackInterface, PickiTCallbacks {
 
     private EditText messageET;
     private TextView tv_name;
@@ -162,6 +169,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private AppCompatTextView contact;
     private AppCompatTextView location;
     private ImageView fowordImageBtn;
+    private ImageView videoCallBtn;
+    private ImageView audioCallBtn;
+
+    WebView webView;
+    private final int requestcode = 1;
+    String peerId = null;
+    boolean first=true;
+
+
     private ImageView backImageBtn;
     private CircleImageView personImage;
     private RecyclerView messagesContainer;
@@ -174,25 +190,29 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     boolean blockedForMe = false;
     ServerApi serverApi;
     ConversationModelView conversationModelView;
+
+
     private ImageButton deletImageBtn;
     private ChatAdapter adapter;
     BaseApp myBase;
-    ChatRoomRepo chatRoomRepo ;
+    ChatRoomRepo chatRoomRepo;
     String chat_id = "";
-    String fcmToken ;
+    String fcmToken;
     boolean isAllMessgeMe = true;
     boolean inChatRoom;
     SupportMapFragment supportMapFragment;
     FusedLocationProviderClient client;
     LatLng latLng;
-    String stringLatLng ;
-    private LinearLayout openMaps ;
-    private Button sendLocation ;
-    private RelativeLayout relativeMaps ;
-    private RelativeLayout container ;
-    LatLng locationLatLng ;
-//  Calendar cal;
-    ChatMessageRepo chatMessageRepo ;
+    String stringLatLng;
+    private LinearLayout openMaps;
+    private Button sendLocation;
+    private RelativeLayout relativeMaps;
+    private RelativeLayout container;
+    LatLng locationLatLng;
+    //    Calendar cal;
+    ChatMessageRepo chatMessageRepo;
+    private static final String[] callPermissions = {android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO};
+
 
     private CardView cardOpenItLocation;
 
@@ -214,7 +234,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     MediaController mediaControls;
     Toolbar toolbar;
 
-    String audioPath , audioName;
+
+    String audioPath, audioName;
     String lastSeen = "";
     private static final int REQUEST_PERMISSIONS = 100;
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -226,14 +247,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private static final int MY_RESULT_CODE_FILECHOOSER = 2200;
 
     ArrayList<String> returnValue = new ArrayList<>();
-    private boolean isCoonect;
     private ArrayList<ChatMessage> chatHistory;
     private ArrayList<ChatMessage> selectedMessage = new ArrayList<>();
     private ArrayList<JSONObject> unSendMessage = new ArrayList<>();
-    private ArrayList<String> deleteMessage = new ArrayList<>();
+    private final ArrayList<String> deleteMessage = new ArrayList<>();
+
 
     SearchView searchView;
-    private Boolean hasConnection = false;
+    private final Boolean hasConnection = false;
     private Socket socket;
     private Timer timer = new Timer();
     private final long DELAY = 1000;
@@ -242,7 +263,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     String specialNumber = "";
     private Permissions permissions;
     private MediaRecorder mediaRecorder;
-    RecordView   recordView;
+    RecordView recordView;
     RecordButton recordButton;
     LinearLayout messageLayout;
     LinearLayout personInformationLiner;
@@ -251,28 +272,31 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     LinearLayout messageLiner;
 
 
-    public static final String CHEK   = "ConversationActivity.CHECK_CONNECT";
+    public static final String CHEK = "ConversationActivity.CHECK_CONNECT";
     public static final String TYPING = "ConversationActivity.ON_TYPING";
     public static final String ON_MESSAGE_RECEIVED = "ConversationActivity.ON_MESSAGE_RECEIVED";
-    public static final String ON_MESSAGE_DELETED  = "ConversationActivity.ON_MESSAGE_DELETED";
-    public static final String ON_MESSAGE_UPDATE   = "ConversationActivity.ON_MESSAGE_UPDATE";
+    public static final String ON_MESSAGE_DELETED = "ConversationActivity.ON_MESSAGE_DELETED";
+    public static final String ON_MESSAGE_UPDATE = "ConversationActivity.ON_MESSAGE_UPDATE";
+//    public static final String ON_CALL_REQUEST = "ConversationActivity.ON_CALL_REQUEST";
+//    public static final String FETCH_PEER_ID = "ConversationActivity.FETCH_PEER_ID";
+
 
     String filepath = "";
 
 
-    private RequestQueue rQueue ;
-    private ArrayList<HashMap<String, String>> arraylist ;
-    private static final String TAG = "MainActivity2" ;
-    LinearLayout imageLiner    ;
-    LinearLayout gallaryLiner  ;
-    ImageButton  moreOption    ;
+    private RequestQueue rQueue;
+    private ArrayList<HashMap<String, String>> arraylist;
+    private static final String TAG = "MainActivity2";
+    LinearLayout imageLiner;
+    LinearLayout gallaryLiner;
+    ImageButton moreOption;
 
     LinearLayout fileLiner;
     LinearLayout contactLiner;
 
     private static final String[] PERMISSIONS = {android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-    // download() Method PERMISSIONS
+    ////////download() Method  PERMISSIONS
 
     private static boolean hasPermissions(Context context, String... permissions) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && context != null && permissions != null) {
@@ -287,10 +311,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     /////////start recive from socket
 ///// for check if anthor user is connect
-    private BroadcastReceiver check = new BroadcastReceiver() {
+    private final BroadcastReceiver check = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             String check = intent.getExtras().getString("check");
             JSONObject checkObject = null;
             String checkConnect = "false";
@@ -302,34 +325,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
-            System.out.println(check + "usernnnnnnnnnnnnnnnnnnnnnnn");
-            if (checkConnect.equals("true")) {
-                isCoonect = true;
-                tv_state.setText(R.string.connect_now);
-                tv_state.setVisibility(View.VISIBLE);
-            } else if (checkConnect.equals("false")) {
-                isCoonect = false;
-
-//                try {
-
-                if(!lastSeen.equals("null")){
-                tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(context, Long.parseLong(lastSeen)));
-                tv_state.setVisibility(View.VISIBLE);}
-
-//                }catch (Exception e){
-//                    System.out.println("nulll");
-//                }
-//                tv_state.setText(getResources().getString(R.string.last_seen)+" "+timeProperties.getFormattedDate(context,Long.parseLong(lastSeen)));
-//                tv_state.setVisibility(View.VISIBLE);
-//                tv_state.setVisibility(View.GONE);
+            conversationModelView.set_state(checkConnect);
 
 
-            }
         }
     };
 
-    private BroadcastReceiver reciveTyping = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveTyping = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -348,33 +350,30 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+
                     if (anthor_user_id.equals(anthor_id)) {
 
-                        if (isTyping.equals("true")) {
-                            tv_state.setText(R.string.writing_now);
-                            tv_state.setVisibility(View.VISIBLE);
-                        } else if (isCoonect) {
-                            tv_state.setText(R.string.connect_now);
-                        } else {
-                            tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(context, Long.parseLong(lastSeen)));
+                        conversationModelView.set_isTyping(isTyping);
 
 
-//                        tv_state.setVisibility(View.GONE);
-                        }
 
                     }
                 }
             });
         }
     };
-    private BroadcastReceiver reciveDeleteMessage = new BroadcastReceiver() {
+
+
+    private final BroadcastReceiver reciveDeleteMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
+
                 @Override
                 public void run() {
                     String deleteString = intent.getExtras().getString("delete message");
                     JSONObject message = null;
+                    System.out.println("recive delete message ");
 
                     try {
                         JSONObject jsonObject = new JSONObject(deleteString);
@@ -385,21 +384,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         String second_user_id = jsonObject.getString("second_id");
 
 
+
                         if (anthor_user_id.equals(first_user_id) || anthor_user_id.equals(second_user_id)) {
-                            for (int i = 0; i < jsonArray.length(); i++) {
+                            conversationModelView.deleteMessageFromList(jsonArray);
 
-                                String message_id = jsonArray.getString(i);
-                                for (ChatMessage chatMessage : adapter.chatMessages) {
-                                    if (chatMessage.getId().equals(message_id)) {
-                                        System.out.println(chatMessage.getId() + " " + message_id);
-                                        adapter.chatMessages.remove(chatMessage);
-                                        break;
-                                    }
-                                }
-
-
-                            }
-                            adapter.notifyDataSetChanged();
 
                         }
                     } catch (JSONException e) {
@@ -411,7 +399,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             });
         }
     };
-    private BroadcastReceiver reciveUpdateMessage = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveUpdateMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -419,7 +407,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 public void run() {
                     String deleteString = intent.getExtras().getString("updateMessage");
                     JSONObject message = null;
-                    System.out.println(deleteString.toString()+"deleteRespone");
+                    System.out.println(deleteString + "deleteRespone");
 
                     try {
                         JSONObject jsonObject = new JSONObject(deleteString);
@@ -432,21 +420,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                         if (anthor_user_id.equals(first_user_id) || anthor_user_id.equals(second_user_id)) {
-
-                                for (ChatMessage chatMessage : adapter.chatMessages) {
-                                    System.out.println(chatMessage.getId()+"majdfadi"+message_id);
-                                    if (chatMessage.getId().equals(message_id)) {
-                                        System.out.println(chatMessage.getId() + "mmk " + message_id);
-                                        chatMessage.setMessage(updateMessage);
-                                        chatMessage.setIsUpdate("1");
-                                        break;
-                                    }
-                                }
-
-
-
-                            adapter.notifyDataSetChanged();
-
+                                conversationModelView.ubdateMessage(message_id,updateMessage);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -457,7 +431,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             });
         }
     };
-    private BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
@@ -470,176 +444,67 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    System.out.println("this is message "+message);
+                    System.out.println("this is message " + message);
 
                     String text = "";
-                    String type = ""  ;
-                    String state = "" ;
+                    String type = "";
+                    String state = "";
                     String senderId = "";
                     String reciverId = "";
                     String id = "";
-                    String reply = "";
                     String recive_chat_id = "";
                     String fileName = "";
                     String MessageDate = "";
                     try {
 
-                        // JSONObject jsonObject= (JSONObject) messageJson.get("data");
-                        text           = message.getString("message");
-                        reply           = message.getString("reply");
-                        type           = message.getString("message_type");
-                        state          = message.getString("state");
-                        senderId       = message.getString("sender_id");
-                        id             = message.getString("message_id");
-                        reciverId      = message.getString("reciver_id");
-                        MessageDate    = message.getString("dateTime");
+                        /// JSONObject jsonObject= (JSONObject) messageJson.get("data");
+                        text = message.getString("message");
+                        type = message.getString("message_type");
+                        state = message.getString("state");
+                        senderId = message.getString("sender_id");
+                        id = message.getString("message_id");
+                        reciverId = message.getString("reciver_id");
+                        MessageDate = message.getString("dateTime");
                         recive_chat_id = message.getString("chat_id");
-//                      fileName = message.getString("orginalName");
+//                        fileName = message.getString("orginalName");
 
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
 
-//                    if(chat_id.equals("-1")){
-
-//                    }
 
                     if (senderId.equals(user_id) && reciverId.equals(anthor_user_id)) {
                         if (!state.equals("3") && chat_id.equals(user_id + anthor_user_id)) {
-
 //                            myBase.getObserver().setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
-
-                            if(!recive_chat_id.isEmpty()){
-
+                            if (!recive_chat_id.isEmpty()) {
                                 chatRoomRepo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
 
-                            chat_id = recive_chat_id;}
+                                chat_id = recive_chat_id;
+                            }
                         }
 
-//                        if(chat_id.equals(user_id+anthor_user_id)&&!state.equals("3")){
-//                            System.out.println("afterrrrrrrrrrrrrrrrObserrrrrrrrrrrrrrrrrrv");
-//                            myBase.getObserver().setLastMessage(text,recive_chat_id,myId,anthor_id,type,state,dateTime);
-//                        }   Toast.makeText(ConversationActivity.this,args[0].toString(),Toast.LENGTH_LONG).show();
 
+                        conversationModelView.setMessageState(id,state);
 
-                        for (int i = adapter.chatMessages.size() - 1; i >= 0; i--) {
-                            if (state.equals("3")) {
-                                System.out.println("state.equals(\"3\")==========================");
-
-                                if (adapter.chatMessages.get(i).getState().equals("3")) {
-                                    System.out.println(i + "===============");
-
-                                    break;
-                                }
-                                adapter.chatMessages.get(i).setState(state);
-
-//                                }
-
-//                            } else if (state.equals("2")) {
-//                                if (adapter.chatMessages.get(i).getState().equals("1") || adapter.chatMessages.get(i).getState().equals("0")) {
-//                                    adapter.chatMessages.get(i).setState(state);
-//                                    adapter.chatMessages.get(i).setId(id);
-//                                    System.out.println(adapter.chatMessages.get(i).message);
-//                                }
-//                                else{
-//                                    break;
-//                                }
-
-                            } else if (state.equals("2")) {
-                                System.out.println("state.equals(\"2\")==========================");
-
-                                if (adapter.chatMessages.get(i).getId().equals(id)) {
-                                    adapter.chatMessages.get(i).setState(state);
-                                    break;
-
-//                                    adapter.chatMessages.get(i).setId(id);
-//                                    System.out.println(adapter.chatMessages.get(i).message);
-
-                                }
-                            } else if (state.equals("1")) {
-
-                                /// System.out.println(adapter.chatMessages.get(i).getId()+"xxxx"+id);
-
-                                if (adapter.chatMessages.get(i).getId().equals(id)) {
-                                    System.out.println("majdddddddddddd" + unSendMessage.size());
-                                    adapter.chatMessages.get(i).setState(state);
-//
-//                                        adapter.chatMessages.get(adapter.chatMessages.size()-1).setState(state);
-//                                        adapter.chatMessages.get(adapter.chatMessages.size()-1).setId(id);
-//                                        for (JSONObject  object:
-//                                                unSendMessage) {
-                                    for (i = 0; i < unSendMessage.size(); i++) {
-                                        try {
-
-                                            if (unSendMessage.get(i).getString("message_id").equals(id))
-
-                                                unSendMessage.remove(unSendMessage.get(i));
-
-                                         }catch (JSONException e) {
-
-                                            e.printStackTrace();
-
-                                        }
-
-                                    }
-                                    classSharedPreferences.setList("list", unSendMessage);
-                                    break;
-                                }
-
-                            } else break;
-//                                if (state.equals("1")) {
-//                                unSendMessage.remove(0);
-//                                classSharedPreferences.setList("list",unSendMessage);
-
-//                                if (adapter.chatMessages.get(i).getState().equals("0")) {
-//                                     System.out.println("majdddddddddddd");
-//                                     adapter.chatMessages.get(i).setState(state);
-//                                     adapter.chatMessages.get(i).setId(id);
-//                                     unSendMessage.remove(1);
-//                                     classSharedPreferences.setList("list",unSendMessage);
-//                                }
-//                                else {
-//                                    break;
-//                                }
-//                            }
-
-                        }
-//                        if (state.equals("1")) {
-
-//                                if (adapter.chatMessages.get(adapter.chatMessages.size()-1).getState().equals("0")) {
-//                                    System.out.println("majdddddddddddd");
-//                                    adapter.chatMessages.get(adapter.chatMessages.size()-1).setState(state);
-//                                    adapter.chatMessages.get(adapter.chatMessages.size()-1).setId(id);
-////                                    unSendMessage.remove(0);
-//                                    classSharedPreferences.setList("list",unSendMessage);
-//                                }
-//
-//                            }
-
-                        adapter.notifyDataSetChanged();
                     } else if (senderId.equals(anthor_user_id)) {
 
                         JSONObject jsonObject = new JSONObject();
 
 
                         try {
-
                             jsonObject.put("message_id", id);
-                            jsonObject.put("reply", reply);
                             jsonObject.put("sender_id", senderId);
                             jsonObject.put("reciver_id", reciverId);
                             jsonObject.put("message", text);
                             jsonObject.put("message_type", type);
                             jsonObject.put("state", "3");
                             jsonObject.put("chat_id", Integer.parseInt(recive_chat_id));
-                         // DateFormat.getDateTimeInstance().format(new Date())
+
+                            ////DateFormat.getDateTimeInstance().format(new Date())
                             jsonObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-
                         } catch (JSONException e) {
-
                             e.printStackTrace();
-
                         }
 
                         onSeen(jsonObject);
@@ -652,14 +517,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         } else if (type.equals("file") || type.equals("voice") || type.equals("video") || type.equals("contact")) {
                             chatMessage.setMessage(text);
                             try {
-
                                 chatMessage.setFileName(message.getString("orginalName"));
-
                             } catch (JSONException e) {
-
                                 e.printStackTrace();
-
                             }
+
 
                         } else {
                             chatMessage.setImage(text);
@@ -676,7 +538,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         chatMessage.setDate(MessageDate);
                         chatMessage.setIsUpdate("0");
                         chatMessage.setMe(false);
-
                         try {
                             Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                             Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
@@ -687,6 +548,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         if (type.equals("text") || type.equals("location") || type.equals("contact") || type.equals("video"))
                             displayMessage(chatMessage);
                         else new DownloadFileFromSocket(chatMessage).execute();
+
 
                     }
                 }
@@ -708,6 +570,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         service.putExtra(SocketIOService.EXTRA_ENTER_PARAMTERS, userEnter.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_ENTER);
         startService(service);
@@ -715,7 +578,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     ////// check connect
     private void checkConnect() {
-        System.out.println("myId="+user_id+"your_id="+anthor_user_id);
+        System.out.println("myId=" + user_id + "your_id=" + anthor_user_id);
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject object = new JSONObject();
         try {
@@ -736,7 +599,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject onTyping = new JSONObject();
         try {
-
             onTyping.put("id", anthor_user_id);
             onTyping.put("typing", typing);
             onTyping.put("my_id", user_id);
@@ -744,9 +606,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
         } catch (JSONException e) {
-
             e.printStackTrace();
-
         }
 
         service.putExtra(SocketIOService.EXTRA_TYPING_PARAMTERS, onTyping.toString());
@@ -755,7 +615,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     }
 
-    // onNewMessage
+    //////////onNewMessage
     private void newMeesage(JSONObject chatMessage) {
 
 
@@ -778,10 +638,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
         if (chat_id.isEmpty()) {
             chat_id = user_id + anthor_user_id;
-          chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false,"null"));
+            chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false, "null"));
         }
 
-        sendNotification(message, type);
+        serverApi.sendNotification(message, type,fcmToken,chat_id);
         Intent service = new Intent(this, SocketIOService.class);
         service.putExtra(SocketIOService.EXTRA_NEW_MESSAGE_PARAMTERS, chatMessage.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_MESSAGE);
@@ -807,6 +667,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         startService(service);
 
     }
+
     private void updateMessage(JSONObject chatMessage) {
         Intent service = new Intent(this, SocketIOService.class);
 
@@ -815,6 +676,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         startService(service);
 
     }
+
     ///////////////end
 
     float textSize = 14.0F;
@@ -829,12 +691,21 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     public static CardView cardview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_conversation);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+        pickiT = new PickiT(this, this, this);
+        if (!isPermissionGranted()) {
+            askPermissions();
+        }
 //       getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //       WindowManager.LayoutParams.FLAG_FULLSCREEN);
-         super.onCreate(savedInstanceState);
-         setContentView(R.layout.activity_conversation);
-         toolbar  = (Toolbar) findViewById(R.id.toolbar);
-         setSupportActionBar(toolbar);
+
          reply    = (TextView)findViewById(R.id.reply);
          username = (TextView)findViewById(R.id.username);
          close    = (ImageButton)findViewById(R.id.close);
@@ -859,16 +730,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     protected void onResume() {
         super.onResume();
-        System.out.println("onResuuuuuuuuuuuumr");
-//      checkConnect();
-        adapter.notifyDataSetChanged();
+        first=true;
+//        checkConnect();
+//        adapter.notifyDataSetChanged();
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        System.out.println("OnStop");
     }
 
     @Override
@@ -882,10 +752,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 //      cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         timeProperties = new TimeProperties();
-        conversationModelView =  new ViewModelProvider(this).get(ConversationModelView.class);
+        conversationModelView = new ViewModelProvider(this).get(ConversationModelView.class);
 
 //      moreOption = findViewById(R.id.image_button_Options);
         messageLiner = findViewById(R.id.liner);
+        videoCallBtn = findViewById(R.id.video_call);
+        audioCallBtn = findViewById(R.id.audio_call);
+        webView = findViewById(R.id.webView);
 
         myBase = BaseApp.getInstance();
 
@@ -902,22 +775,22 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         specialNumber = bundle.getString("special", "");
 
 
-
-
         chat_id = bundle.getString("chat_id", "");
         if (chat_id.isEmpty()) {
             System.out.println("anthor_user_id" + anthor_user_id);
-            chat_id =chatRoomRepo.getChatId(anthor_user_id);
+            chat_id = chatRoomRepo.getChatId(anthor_user_id);
             System.out.println(chat_id + "chat_iddddddddd");
         }
         fcmToken = bundle.getString("fcm_token", "");
         personImage = findViewById(R.id.user_image);
         if (!imageUrl.isEmpty()) {
-            Glide.with(personImage).load(AllConstants.imageUrl + imageUrl).error(R.drawable.th).into(personImage);
+//            Glide.with(personImage).load(AllConstants.imageUrl + imageUrl).error(R.drawable.th).into(personImage);
+            Glide.with(personImage).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(personImage);
+
         }
 
         chatMessageRepo = myBase.getChatMessageRepo();
-        chatMessageRepo.getChatHistory(user_id,anthor_user_id);
+        chatMessageRepo.getChatHistory(user_id, anthor_user_id);
 
 
         backImageBtn = findViewById(R.id.image_button_back);
@@ -929,17 +802,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
 
-
         messagesContainer.setLayoutManager(linearLayoutManager);
 
         ///// block when anthor user do
-;
         blockUserRepo.userBlockListMutableLiveData.observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
             @Override
             public void onChanged(ArrayList<UserModel> userModelArrayList) {
-                boolean isAnyOneBlock= false;
+                boolean isAnyOneBlock = false;
 
-                if(userModelArrayList!=null) {
+                if (userModelArrayList != null) {
                     for (UserModel userModel : userModelArrayList) {
                         if (userModel.getUserId().equals(anthor_user_id)) {
                             if (userModel.getStatus().equals(user_id)) {
@@ -947,14 +818,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                 textForBlock.setVisibility(View.VISIBLE);
                                 messageLiner.setVisibility(View.GONE);
                                 blockedForMe = true;
-                                isAnyOneBlock= true;
+                                isAnyOneBlock = true;
                             } else if (userModel.getStatus().equals(anthor_user_id)) {
                                 textForBlock.setVisibility(View.VISIBLE);
                                 messageLiner.setVisibility(View.GONE);
 
                                 textForBlock.setText(getResources().getString(R.string.block_message2));
                                 blockedForMe = false;
-                                isAnyOneBlock= true;
+                                isAnyOneBlock = true;
 
 
                             } else if (userModel.getStatus().equals("0")) {
@@ -962,14 +833,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                 messageLiner.setVisibility(View.GONE);
                                 textForBlock.setText(getResources().getString(R.string.block_message2));
                                 blockedForMe = true;
-                                isAnyOneBlock= true;
+                                isAnyOneBlock = true;
 
 
                             } else {
                                 textForBlock.setVisibility(View.GONE);
                                 messageLiner.setVisibility(View.VISIBLE);
                                 blockedForMe = false;
-                                isAnyOneBlock= false;
+                                isAnyOneBlock = false;
 
 
                             }
@@ -979,36 +850,103 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                         }
                     }
-                    if(!isAnyOneBlock){
+                    if (!isAnyOneBlock) {
                         textForBlock.setVisibility(View.GONE);
                         messageLiner.setVisibility(View.VISIBLE);
-                        blockedForMe = false;}
-
+                        blockedForMe = false;
                     }
+
                 }
-
-
-
-
+            }
 
 
         });
         chatHistory = new ArrayList<ChatMessage>();
+        conversationModelView.state.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                System.out.println("stateee"+s);
+                if(!s.equals(null)){
+                    if (s.equals("true")) {
+//                        isCoonect = true;
+                        System.out.println("dialay"+s);
+                        tv_state.setText(R.string.connect_now);
+                        tv_state.setVisibility(View.VISIBLE);
+                    } else if (s.equals("false")) {
+//                        isCoonect = false;
+
+                        if (!lastSeen.equals("null")) {
+                            tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(lastSeen)));
+                            tv_state.setVisibility(View.VISIBLE);
+                        }
+
+
+                    }
+
+                }
+            }
+        });
+        conversationModelView.isTyping.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                System.out.println("stateee"+s);
+                if(!s.equals(null)){
+                    if (s.equals("true")) {
+                        tv_state.setText(R.string.writing_now);
+                        tv_state.setVisibility(View.VISIBLE);
+                    } else if (conversationModelView.state.getValue().equals("true")) {
+                        tv_state.setText(R.string.connect_now);
+                    } else {
+                        tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(lastSeen)));
+
+
+//                        tv_state.setVisibility(View.GONE);
+                    }
+
+                }
+            }
+        });
 
         conversationModelView.getChatMessaheHistory().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
             @Override
             public void onChanged(ArrayList<ChatMessage> chatMessages) {
-                if(chatMessages!=null){
-                    chatHistory=chatMessages;
-                    adapter.add(chatHistory);
+                if (chatMessages != null) {
+                    ArrayList<ChatMessage> list = new ArrayList<>();
+                    System.out.println("chatmessage.size"+chatMessages.size()+""+chatHistory.size());
+                    for(ChatMessage chatMessage:chatMessages){
+                    list.add(chatMessage.clone());}
+                    System.out.println("notifyyyyyyyyyyy");
+
+                    chatHistory = list;
+//                    adapter.add(chatHistory);
+                    adapter.setData(list);
+                    if(!chatMessages.isEmpty())
                     scroll();
+
+
+                }
+
+
+            }
+        });
+//        scroll();
+        conversationModelView.selectedMessage.observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
+            @Override
+            public void onChanged(ArrayList<ChatMessage> chatMessages) {
+                if (chatMessages != null) {
+//                    selectedMessage = chatMessages;
+                    if(chatMessages.isEmpty()){
+                        toolsLiner.setVisibility(View.GONE);
+                        personInformationLiner.setVisibility(View.VISIBLE);
+                        toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
+                    }
 
                 }
                 //adapter.notifyDataSetChanged();
 
             }
         });
-        adapter = new ChatAdapter(ConversationActivity.this, new ArrayList<ChatMessage>());
+        adapter = new ChatAdapter(ConversationActivity.this);
         messagesContainer.setAdapter(adapter);
         messagesContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
@@ -1019,16 +957,16 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     messagesContainer.postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (adapter.getItemCount() > 1)
+                            if (adapter.getCurrentList().size() > 1)
                                 messagesContainer.smoothScrollToPosition(
-                                        adapter.getItemCount() - 1);
+                                        adapter.getCurrentList().size() - 1);
                         }
                     }, 100);
                 }
             }
         });
 
-        messageET = (EditText) findViewById(R.id.messageEdit);
+        messageET = findViewById(R.id.messageEdit);
         sendMessageBtn = findViewById(R.id.btn_send_message_text);
         sendImageBtn = findViewById(R.id.btn_send_message_image);
         searchView = findViewById(R.id.search_con);
@@ -1078,8 +1016,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         client = LocationServices.getFusedLocationProviderClient(this);
 
 
-        recordView = (RecordView) findViewById(R.id.recordView);
-        recordButton = (RecordButton) findViewById(R.id.recordButton);
+        recordView = findViewById(R.id.recordView);
+        recordButton = findViewById(R.id.recordButton);
         deletImageBtn = findViewById(R.id.image_button_delete);
         recordButton.setRecordView(recordView);
 
@@ -1093,12 +1031,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
 
 
-       chatRoomRepo.setInChat(chat_id, true);
-        container = (RelativeLayout) findViewById(R.id.container);
-        openMaps = (LinearLayout) findViewById(R.id.pick_location);
-        sendLocation = (Button) findViewById(R.id.sendLocation);
-        relativeMaps = (RelativeLayout) findViewById(R.id.relativeMaps);
-        cardOpenItLocation = (CardView) findViewById(R.id.cardOpenItLocation);
+        chatRoomRepo.setInChat(anthor_user_id, true);
+        container = findViewById(R.id.container);
+        openMaps = findViewById(R.id.pick_location);
+        sendLocation = findViewById(R.id.sendLocation);
+        relativeMaps = findViewById(R.id.relativeMaps);
+        cardOpenItLocation = findViewById(R.id.cardOpenItLocation);
 
         openMaps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1149,8 +1087,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         });
 
-///// form get message history
-//        loadDummyHistory();
     }
 
     private void initAction() {
@@ -1168,7 +1104,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 bundle.putString("fcm_token", fcmToken);
                 bundle.putString("special", specialNumber);
                 bundle.putString("chat_id", chat_id);
-                bundle.putString("blockedFor","");
+                bundle.putString("blockedFor", "");
 
 
                 intent.putExtras(bundle);
@@ -1233,14 +1169,49 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             public void onClick(View view) {
                 // MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.song);
 
-                    if (!viewVisability) {
-                        System.out.println("show dialog");
-                        showLayout();
-                    } else
-                        hideLayout();
-                }
+                if (!viewVisability) {
+                    System.out.println("show dialog");
+                    showLayout();
+                } else
+                    hideLayout();
+            }
 
             ///////////////////
+        });
+        /////////////////////////send btn
+        videoCallBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                System.out.println("clickeddddddd");
+//                startCall();
+
+                Intent intent = new Intent(ConversationActivity.this, RequestCallActivity.class);
+                intent.putExtra("anthor_user_id", anthor_user_id);
+                intent.putExtra("user_name", userName);
+                intent.putExtra("isVideo", true);
+                intent.putExtra("fcm_token", fcmToken);
+
+
+
+
+                startActivity(intent);
+            }
+        });
+        audioCallBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                System.out.println("clickeddddddd");
+//                startCall();
+
+                Intent intent = new Intent(ConversationActivity.this, RequestCallActivity.class);
+                intent.putExtra("anthor_user_id", anthor_user_id);
+                intent.putExtra("user_name", userName);
+                intent.putExtra("isVideo", false);
+                intent.putExtra("fcm_token", fcmToken);
+
+
+                startActivity(intent);
+            }
         });
 
 
@@ -1250,62 +1221,61 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 username.setVisibility(View.GONE);
                 reply.setVisibility(View.GONE);
 
-                //Send Reply Message to Api With Original message relation
-                    String message_id = System.currentTimeMillis() + "_" + user_id;
-                    System.out.println(System.currentTimeMillis() + "_--" + user_id);
+                String message_id = System.currentTimeMillis() + "_" + user_id;
+                System.out.println(System.currentTimeMillis() + "_--" + user_id);
 
-                    if (classSharedPreferences.getList() != null) {
-                        unSendMessage = classSharedPreferences.getList();
+                if (classSharedPreferences.getList() != null) {
+                    unSendMessage = classSharedPreferences.getList();
 
-                    }
-                    String messageText = messageET.getText().toString();
+                }
+                String messageText = messageET.getText().toString();
 
-                    if (TextUtils.isEmpty(messageText)) {
-                        return;
-                    }
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject.put("sender_id", user_id);
-                        jsonObject.put("reciver_id", anthor_user_id);
-                        jsonObject.put("message", messageText);
-                        jsonObject.put("message_type", "text");
-                        jsonObject.put("state", "0");
-                        jsonObject.put("message_id", message_id);
-                        jsonObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    ChatMessage chatMessage = new ChatMessage();
-                    chatMessage.setId(message_id);//dummy
-                    chatMessage.setMessage(messageText);
-                    chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                    chatMessage.setMe(true);
-                    chatMessage.setUserId(user_id);
+                if (TextUtils.isEmpty(messageText)) {
+                    return;
+                }
+                JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("sender_id", user_id);
+                    jsonObject.put("reciver_id", anthor_user_id);
+                    jsonObject.put("message", messageText);
+                    jsonObject.put("message_type", "text");
+                    jsonObject.put("state", "0");
+                    jsonObject.put("message_id", message_id);
+                    jsonObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                ChatMessage chatMessage = new ChatMessage();
+                chatMessage.setId(message_id);//dummy
+                chatMessage.setMessage(messageText);
+                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                chatMessage.setMe(true);
+                chatMessage.setUserId(user_id);
 
-                    chatMessage.setType("text");
-                    chatMessage.setState("0");
-                    chatMessage.setChecked(false);
-                    chatMessage.setId(message_id);
-                   chatMessage.setIsUpdate("0");
+                chatMessage.setType("text");
+                chatMessage.setState("0");
+                chatMessage.setChecked(false);
+                chatMessage.setId(message_id);
+                chatMessage.setIsUpdate("0");
 
 
                 messageET.setText("");
-                    displayMessage(chatMessage);
-                    unSendMessage.clear();
+                displayMessage(chatMessage);
+                unSendMessage.clear();
 
-                    unSendMessage.add(jsonObject);
+                unSendMessage.add(jsonObject);
 //              unSendMessage.clear();
 
 
-                    classSharedPreferences.setList("list", unSendMessage);
-                    for (JSONObject message :
-                            unSendMessage) {
+                classSharedPreferences.setList("list", unSendMessage);
+//                for (JSONObject message :
+//                        unSendMessage) {
+//
+//                    newMeesage(message);
+//
+//                }
 
-                        newMeesage(message);
-
-                    }
-
-//                newMeesage(jsonObject);
+                newMeesage(jsonObject);
 
             }
         });
@@ -1317,7 +1287,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.filter(newText);
+//                adapter.filter(newText);
                 return false;
             }
         });
@@ -1388,16 +1358,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         recordButton.setOnClickListener(view -> {
 
-//            recordButton.setListenForRecord(true);
-
-//            recordButton.setListenForRecord(true);
-//            recordButton.setListenForRecord(true);
-
-//            if (permissions.isRecordingOk(ConversationActivity.this))
-//                if (permissions.isStorageReadOk(ConversationActivity.this))
-//                    recordButton.setListenForRecord(true);
-//                else permissions.requestStorage(ConversationActivity.this);
-//            else permissions.requestRecording(ConversationActivity.this);
         });
         recordView.setLessThanSecondAllowed(false);
         recordView.setRecordPermissionHandler(new RecordPermissionHandler() {
@@ -1410,16 +1370,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 }
 
                 if (permissions.isRecordingOk(ConversationActivity.this))
-                if (permissions.isStorageReadOk(ConversationActivity.this))
-                    return true;
-                else permissions.requestStorage(ConversationActivity.this);
-            else permissions.requestRecording(ConversationActivity.this);
-//
-//
-//                ActivityCompat.
-//                        requestPermissions(MainActivity.this,
-//                                new String[]{Manifest.permission.RECORD_AUDIO},
-//                                0);
+                    if (permissions.isStorageReadOk(ConversationActivity.this))
+                        return true;
+                    else permissions.requestStorage(ConversationActivity.this);
+                else permissions.requestRecording(ConversationActivity.this);
+
 
                 return false;
 
@@ -1514,16 +1469,17 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         deletImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//              deleteMessage(deleteMessage);
+//                deleteMessage(deleteMessage);
                 alertDeleteDialog();
-//              System.out.println(selectedMessage.get(0).getMessage()+"kkkkk");
+
+//                System.out.println(selectedMessage.get(0).getMessage()+"kkkkk");
             }
         });
         fowordImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FragmentManager fm = getSupportFragmentManager();
-                ForwardDialogFragment forwardDialogFragment = ForwardDialogFragment.newInstance(selectedMessage, "jj");
+                ForwardDialogFragment forwardDialogFragment = ForwardDialogFragment.newInstance(conversationModelView.selectedMessage.getValue(), "jj");
                 forwardDialogFragment.show(fm, "fragment_edit_name");
             }
         });
@@ -1535,7 +1491,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 try {
 
                     username.setText(userName);
-                    reply.setText(selectedMessage.get(0).message);
+                    reply.setText(conversationModelView.selectedMessage.getValue().get(0).message);
                     close.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -1554,8 +1510,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         });
 
-
     }
+
     @SuppressLint("ResourceType")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -1572,44 +1528,44 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         MenuItem blockItem = menu.findItem(R.id.item_block);
         MenuItem unblockItem = menu.findItem(R.id.item_unblock);
         MenuItem updateItem = menu.findItem(R.id.item_update);
+        System.out.println("preparing message");
 
 
+        if(conversationModelView.selectedMessage.getValue()!=null) {
 
-        if(selectedMessage.size()>1){
-            copyItem.setVisible(false);
-            updateItem.setVisible(false);
+             if (conversationModelView.selectedMessage.getValue().size() > 1) {
+                 copyItem.setVisible(false);
+                 updateItem.setVisible(false);
 //            menu.removeItem(item.getItemId());
 
-        }
-        else  if(selectedMessage.size()==1){
-           if(selectedMessage.get(0).getType().equals("text")){
-            copyItem.setVisible(true);
-            System.out.println(selectedMessage.get(0).getMessage()+"majddddd");
-            if(selectedMessage.get(0).getUserId().equals(user_id)){
-               updateItem.setVisible(true);
-            }
-            else updateItem.setVisible(false);
+             } else if (conversationModelView.selectedMessage.getValue().size() == 1) {
+                 if (conversationModelView.selectedMessage.getValue().get(0).getType().equals("text")) {
+                     copyItem.setVisible(true);
+                     System.out.println(conversationModelView.selectedMessage.getValue().get(0).getMessage() + "majddddd");
+                     updateItem.setVisible(conversationModelView.selectedMessage.getValue().get(0).getUserId().equals(user_id));
 
-           }
-           else {
-               updateItem.setVisible(false);
-               copyItem.setVisible(false);
+                 } else {
+                     updateItem.setVisible(false);
+                     copyItem.setVisible(false);
 
-           }
+                 }
 
 
-        }
+             } else {
+                 copyItem.setVisible(false);
+                 updateItem.setVisible(false);
+
+
+             }
+         }
         else {
             copyItem.setVisible(false);
             updateItem.setVisible(false);
-
-
         }
-        if(blockedForMe){
+        if (blockedForMe) {
             blockItem.setVisible(false);
             unblockItem.setVisible(true);
-        }
-        else{
+        } else {
             blockItem.setVisible(true);
             unblockItem.setVisible(false);
 
@@ -1622,47 +1578,23 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        UserModel userModel = new UserModel(anthor_user_id,userName,"","","",specialNumber,imageUrl,"");
+        UserModel userModel = new UserModel(anthor_user_id, userName, "", "", "", specialNumber, imageUrl, "");
 
 
         switch (id) {
             case R.id.item_copy:
                 ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText("key", selectedMessage.get(0).getMessage());
+                ClipData clipData = ClipData.newPlainText("key", conversationModelView.selectedMessage.getValue().get(0).getMessage());
                 clipboardManager.setPrimaryClip(clipData);
-//                chatHistory.get(selectedMessage.get(0).).setChecked(false);
-                for (ChatMessage chatMessage : chatHistory) {
-                    if (chatMessage.getId().equals(selectedMessage.get(0).getId())) {
-                        chatMessage.setChecked(false);
-                        break;
-                    }
-                }
-                selectedMessage.clear();
-                deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
+                conversationModelView.setMessageChecked(conversationModelView.selectedMessage.getValue().get(0).getId(),false);
 
-                adapter.notifyDataSetChanged();
-                toolsLiner.setVisibility(View.GONE);
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+                conversationModelView.clearSelectedMessage();
+                deleteMessage.clear();
+
                 return true;
             case R.id.item_update:
-                showUpdateMessageDialog(selectedMessage.get(0));
+                showUpdateMessageDialog(conversationModelView.selectedMessage.getValue().get(0));
 
-                for (ChatMessage chatMessage : chatHistory) {
-                    if (chatMessage.getId().equals(selectedMessage.get(0).getId())) {
-                        chatMessage.setChecked(false);
-                        break;
-                    }
-                }
-                selectedMessage.clear();
-                deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
-
-                adapter.notifyDataSetChanged();
-                toolsLiner.setVisibility(View.GONE);
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
                 return true;
             case R.id.item_block:
                 AlertDialog.Builder dialog = new AlertDialog.Builder(this);
@@ -1710,7 +1642,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 alertUnBlockDialog.show();
 
                 break;
-               //case R.id.i
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -1721,7 +1652,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private void deleteMessage() {
         final ProgressDialog progressDialo = new ProgressDialog(this);
         JSONArray jsonArray = new JSONArray(deleteMessage);
-        ;
         progressDialo.setMessage(getResources().getString(R.string.prograss_message));
         progressDialo.show();
         // creating a new variable for our request queue
@@ -1731,17 +1661,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             @Override
             public void onResponse(String response) {
                 progressDialo.dismiss();
-                System.out.println("Data added to API+" + response);
-                for (ChatMessage message : selectedMessage) {
-                    adapter.chatMessages.remove(message);
-                }
-                selectedMessage.clear();
+                System.out.println("Data added to API+" + conversationModelView.selectedMessage.getValue().size());
+//                for (ChatMessage message : Objects.requireNonNull(conversationModelView.selectedMessage.getValue())) {
+//                    System.out.println("chatMessage"+message.getMessage());
+                    conversationModelView.deleteMessage();
+//                }
+//                adapter.notifyDataSetChanged();
+                conversationModelView.clearSelectedMessage();
                 deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
-                adapter.notifyDataSetChanged();
-                toolsLiner.setVisibility(View.GONE);
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
+
 
 
             }
@@ -1819,9 +1747,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     }
 
     //// for add message to list and display ie]t
-    public void displayMessage(ChatMessage message) {
-        adapter.add(message);
-        scroll();
+    public void
+    displayMessage(ChatMessage message) {
+        conversationModelView.addMessage(message);
+//        scroll();
     }
 
     /////for browse file from device
@@ -1837,7 +1766,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     @Override
     public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+                                           String[] permissions, int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         //
@@ -1867,8 +1796,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 } else
                     showPermissionDialog(getResources().getString(R.string.record_voice_premission), 1888);
-//                    this.permissions.requestRecording(ConversationActivity.this);
-//                    Toast.makeText(this, "Recording permission denied", Toast.LENGTH_SHORT).show();}
+
                 break;
             }
             case AllConstants.STORAGE_REQUEST_CODE:
@@ -1987,26 +1915,26 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     }
 
-    //    @Override
-//    public void onBackPressed() {
-//
-//        if (binding.dataLayout.getVisibility() == View.VISIBLE)
-//            hideLayout();
-//        else
-//            super.onBackPressed();
-//    }
-///// for scroll to end of list
+
     private void scroll() {
-        messagesContainer.post(new Runnable() {
+        messagesContainer.postDelayed(new Runnable() {
             @Override
             public void run() {
+                System.out.println("scrolll"+conversationModelView.getChatMessaheHistory().getValue().size());
+
                 // Select the last row so it will scroll into view...
-                if (adapter.getItemCount() > 0) {
-                    messagesContainer.scrollToPosition(adapter.getItemCount() - 1);
+//                if (conversationModelView.getChatMessaheHistory().getValue().size() > 0) {
+                if (conversationModelView.getChatMessaheHistory().getValue().size() > 0) {
+
+
+//                    messagesContainer.scrollToPosition(conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+                    messagesContainer.getLayoutManager().scrollToPosition( conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+
+
                 }
 
             }
-        });
+        },100);
 //        messagesContainer.setSelection(messagesContainer.getCount() - 1);
     }
 
@@ -2039,7 +1967,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
             } else {
-                    return;
+                return;
             }
 
         } else if (requestCode == 1666) {
@@ -2083,7 +2011,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         } else if (requestCode == 2020) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.contact_permission),2020);
+                showPermissionDialog(getResources().getString(R.string.contact_permission), 2020);
             } else {
                 Intent in = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(in, RESULT_PICK_CONTACT);
@@ -2104,21 +2032,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     Path path = null;
 //                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 //                         path = Paths.get(pathUri.toString());
-                        System.out.println(pathUri+"patttttttttttttttttttt");
+                    System.out.println(pathUri + "patttttttttttttttttttt");
 //                    }
 
 
                     String uriString = uri.toString();
-//                    copyFileOrDirectory( FilePath.getPath(this,pathUri), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
-
-
-//                    Uri pathUri = Uri.fromFile(new File(pathh));
-
-
-//                    System.out.println(uri+"ppppp"+FilePath.getPath(this,Uri.parse(pathUri.toString()))+"firsssssssssst");
-
-//                    copyFileOrDirectory( FilePath.getPath(this,Uri.parse(uriString),, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath()));
 
 
                     String displayName = null;
@@ -2151,8 +2070,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         Uri pathImage = Uri.fromFile(new File(selectedMediaUri.toString()));
                         File myFileImage = new File(pathImage.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, pathImage), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
 
@@ -2180,27 +2098,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         }
 
                     } else {
-//                        System.out.println(selectedMediaUri.toString()+"selectedMediaUri.toString()");
-//                                                Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
-//
-//                        TrimVideo.activity(pathhh.toString())
-//                                .setTrimType(TrimType.MIN_MAX_DURATION)
-//                                .setLocal("ar")
-//                                .setMinToMax(1, 15) //seconds
-//                                .start(ConversationActivity.this, startForResult);
-//            }
 
-//                            String uriString = selectedMediaUri.toString();
-//                            System.out.println("this is Video"+uriString);
-//                            File myFile = new File(uriString);
-
-//                            String path = myFile.getAbsolutePath();
                         ////////////////////////////
                         Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
                         File myFilee = new File(pathhh.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, pathhh), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
                         String displayNamee = null;
@@ -2252,8 +2155,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                        Uri pathImage = Uri.fromFile(new File(selectedMediaUriGallery.toString()));
                         File myFileImage = new File(selectedMediaUriGallery.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
 
@@ -2282,32 +2184,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                     } else if (mimeType.startsWith("video")) {
-//                        TrimVideo.activity(String.valueOf(selectedMediaUriGallery))
-////        .setCompressOption(new CompressOption()) //empty constructor for default compress option
-//                                .setHideSeekBar(true)
-//                                .setTrimType(TrimType.MIN_MAX_DURATION)
-//                                .setMinToMax(1, 60)  //seconds
-//                                .start(this);
-//                        System.out.println(selectedMediaUri.toString()+"selectedMediaUri.toString()");
-//                                                Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
-//
-//                        TrimVideo.activity(pathhh.toString())
-//                                .setTrimType(TrimType.MIN_MAX_DURATION)
-//                                .setLocal("ar")
-//                                .setMinToMax(1, 15) //seconds
-//                                .start(ConversationActivity.this, startForResult);
-//            }
 
-//                            String uriString = selectedMediaUri.toString();
-//                            System.out.println("this is Video"+uriString);
-//                            File myFile = new File(uriString);
-//
-//                            String path = myFile.getAbsolutePath();
                         //////////////////////////
                         File myFilee = new File(selectedMediaUriGallery.toString());
 
-//                        System.out.println("FileUtil.getPath(this,selectedMediaUri)" + FileUtil.getPath(this, selectedMediaUri) + path);
-//                            copyFileOrDirectory(FileUtil.getPath(this,selectedMediaUri),Environment.getExternalStoragePublicDirectory("memo/send/video").getAbsolutePath());
+
                         copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
                         String displayNamee = null;
@@ -2346,61 +2227,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                    }}}
 ////////////////////////
     }
-//        @SuppressLint("Range")
-//        ActivityResultLauncher<Intent> startForResult = registerForActivityResult(
-//            new ActivityResultContracts.StartActivityForResult(),
-//            result -> {
-//                System.out.println("uri is uriiiiiiiiiiiiiiiiiiii");
-//                if (result.getResultCode() == Activity.RESULT_OK &&
-//                        result.getData() != null) {
-//                    Uri uri = Uri.parse(TrimVideo.getTrimmedVideoPath(result.getData()));
-//                     Uri pathhh = Uri.fromFile(new File(uri.toString()));
-//
-//                    String uriSt = uri.toString();
-//                   System.out.println("uri is uri"+uriSt);
-////                    String selectedFilePath = FilePath.getPath(getContext(), uri);
-//
-//                    File myFile = new File(uriSt);
-//                    String uriString =Uri.fromFile(myFile).toString();
-//                    copyFileOrDirectory(FileUtil.getPath(this, pathhh), this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/send/video").getAbsolutePath());
-//
-//
-//
-//                    System.out.println("   Uri uri = Uri.parse(TrimVideo.getTrimmedVideoPath(result.getData()));"+uriString);
-//
-//                    String displayName = null;
-//
-//                    if (uriString.startsWith("content://")) {
-//                        System.out.println("uriString.startsWith(\"content://\")");
-//                        Cursor cursor = null;
-//                        try {
-//                            cursor = this.getContentResolver().query(uri, null, null, null, null);
-//                            if (cursor != null && cursor.moveToFirst()) {
-//                                displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-//                                Log.d("nameeeee>>>>  ", displayName);
-//                                uploadVideo(displayName, Uri.parse(uriString));
-//
-////                                upload(displayName, Uri.parse(uriString),"video");
-//                            }
-//                        } finally {
-//                            cursor.close();
-//                        }
-//                    } else if (uriString.startsWith("file://")) {
-//
-//                        displayName = myFile.getName();
-//                        uploadVideo(displayName, Uri.parse(uriString));
-//
-//                        Log.d("nameeeee>>>>  ", displayName);
-//                    }
-//                    else {
-////                        upload("video", uri,"video");
-//
-//                    }
-//                    Log.d(TAG, "Trimmed path:: " + uri);
-//
-//                } else
-//                    Toast.makeText(this, "Failed ", Toast.LENGTH_SHORT).show();
-//            });
+
 
 
     @SuppressLint("Range")
@@ -2461,7 +2288,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     //// for upload file to server
     private void uploadPDF(final String pdfname, Uri pdffile) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
-        System.out.println(pdfname+"pdfnameeeeeeeeeeee");
+        System.out.println(pdfname + "pdfnameeeeeeeeeeee");
 
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(message_id);//dummy
@@ -2496,25 +2323,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                 JSONObject jsonObject = new JSONObject(new String(response.data));
 
 
-//                                String text = "";
-//                                String type = "";
-//                                String state = "";
-//                                String senderId = "";
-//                                String reciverId = "";
-//                                String id = "";
-//
-//                                    /// JSONObject jsonObject= (JSONObject) messageJson.get("data");
-//                                    text = jsonObject.getString("message");
-//                                    type = jsonObject.getString("message_type");
-//                                    state = jsonObject.getString("state");
-//                                    senderId = jsonObject.getString("sender_id");
-//                                    id = jsonObject.getString("id");
-//
-//                                    reciverId = jsonObject.getString("reciver_id");
-//                                    System.out.println(text+type+state+senderId+reciverId+id);
-////                                    jsonObject.put("file name",pdfname );
-//
-//                                newMeesage(jsonObject);
+
                                 System.out.println(jsonObject.getString("orginalName") + pdfname);
 
                                 JSONObject sendObject = new JSONObject();
@@ -2538,20 +2347,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
 
-//                                newMeesage(sendObject);
 
-//                                ChatMessage chatMessage = new ChatMessage();
-//                                chatMessage.setId(message_id);//dummy
-//                                chatMessage.setMessage(jsonObject.getString("message"));
-//                                chatMessage.setFileName(pdfname);
-//
-//                                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-//                                chatMessage.setMe(true);
-//                                chatMessage.setType("file");
-//                                chatMessage.setState("0");
-//                                messageET.setText("");
-//                                chatMessage.setChecked(false);
-//                                displayMessage(chatMessage);
                                 newMeesage(sendObject);
 
 
@@ -2622,7 +2418,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     ///// for upload voice
     private void uploadVoice(final String voiceName, Uri voicedPath) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
-        System.out.println("the message id is"+message_id);
+        System.out.println("the message id is" + message_id);
 
 
         ChatMessage chatMessage = new ChatMessage();
@@ -2716,7 +2512,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     Map<String, DataPart> params = new HashMap<>();
 
 //                    params.put("audios", new DataPart(voiceName, inputData));
-                                        params.put("audios", new DataPart(voiceName, inputData, "audio/aac"));
+                    params.put("audios", new DataPart(voiceName, inputData, "audio/aac"));
 
 
                     return params;
@@ -2838,7 +2634,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 protected Map<String, DataPart> getByteData() {
                     Map<String, DataPart> params = new HashMap<>();
 
-                    params.put("vedios", new DataPart(pdfname, inputData,"plan/text"));
+                    params.put("vedios", new DataPart(pdfname, inputData, "plan/text"));
 
                     return params;
                 }
@@ -2865,16 +2661,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     private void uploadImage(final String imageName, Uri pdfFile) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
-        //                        ChatMessage chatMessage = new ChatMessage();
-//                        chatMessage.setImage(String.valueOf(selectedMediaUri));
-//                        chatMessage.setType("image");
-//                        chatMessage.setState("0");
-//                        chatMessage.setId(message_id);
-//                        chatMessage.setFileName(displayNamee);
-//
-//                        chatMessage.setDate(String.valueOf(cal.getTimeInMillis()));
-//                        chatMessage.setMe(true);
-//                        displayMessage(chatMessage);
+
 
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(message_id);//dummy
@@ -2970,7 +2757,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 protected Map<String, DataPart> getByteData() {
                     Map<String, DataPart> params = new HashMap<>();
 
-                    params.put("img_chat", new DataPart(imageName, inputData,"plan/text"));
+                    params.put("img_chat", new DataPart(imageName, inputData, "plan/text"));
 
                     return params;
                 }
@@ -3020,7 +2807,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             if (src.isDirectory()) {
 
-                String files[] = src.list();
+                String[] files = src.list();
                 int filesLength = files.length;
                 for (int i = 0; i < filesLength; i++) {
                     String src1 = (new File(src, files[i]).getPath());
@@ -3069,14 +2856,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("on destroy");
-     chatRoomRepo.setInChat(chat_id, false);
+        chatRoomRepo.setInChat(anthor_user_id, false);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(check);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveDeleteMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveUpdateMessage);
-
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(recivecallRequest);
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(recivePeerId);
 
 
     }
@@ -3102,7 +2890,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 pdfFile = new File(d, chatMessage.getFileName());
             } else {
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo" + File.separator + "recive");  // -> filename = maven.pdf
-                pdfFile = new File(d, chatMessage.getMessage().toString());
+                pdfFile = new File(d, chatMessage.getMessage());
             }
 
             Log.v(TAG, "view() Method pdfFile " + pdfFile.getAbsolutePath());
@@ -3161,7 +2949,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "files/" + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send");
-                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getFileName(), "send");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3171,13 +2959,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive");
 
-                pdfFile = new File(d, chatMessage.getMessage().toString());
+                pdfFile = new File(d, chatMessage.getMessage());
                 if (!pdfFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "files/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive");
-                    new DownloadFile().execute(AllConstants.download_url  + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive");
-
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getMessage(), "recive");
+//                 DownloadRequest downloadID = PRDownloader.download(AllConstants.download_url + chatMessage.getMessage(), pdfFile.getPath(), "recive")
+//                            .build();
                 } else {
                     Log.v(TAG, "File already download ");
 
@@ -3212,12 +3001,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 audioFile = new File(d, chatMessage.getFileName());
                 if (!audioFile.exists()) {
-                    System.out.println(chatMessage.message.toString() + "kkkkkkkkkk");
+                    System.out.println(chatMessage.message + "kkkkkkkkkk");
 
-//            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
-                    //new DownloadFile().execute("http://192.168.1.9:8080/src/yawar_chat/uploads/files/" + chatMessage.getMessage().toString(), chatMessage.getFileName(),"send");
-//                    new DownloadFile().execute(AllConstants.download_url + "audio/" + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/voiceRecord");
-                    new DownloadFile().execute(AllConstants.download_url  + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/voiceRecord");
+
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getFileName(), "send/voiceRecord");
 
 
                 } else {
@@ -3231,12 +3018,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/voiceRecord");
 
-                audioFile = new File(d, chatMessage.getMessage().toString());
+                audioFile = new File(d, chatMessage.getMessage());
                 if (!audioFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "audio/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/voiceRecord");
-                    new DownloadFile().execute(AllConstants.download_url  + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/voiceRecord");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getMessage(), "recive/voiceRecord");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3275,7 +3062,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (!videoFile.exists()) {
 
 //                    new DownloadFile().execute(AllConstants.download_url + "video/" + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/video");
-                    new DownloadFile().execute(AllConstants.download_url  + chatMessage.getMessage().toString(), chatMessage.getFileName(), "send/video");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getFileName(), "send/video");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3285,12 +3072,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                videoFile = new File(d, chatMessage.getMessage().toString());
+                videoFile = new File(d, chatMessage.getMessage());
                 if (!videoFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                    new DownloadFile().execute(AllConstants.download_url + "video/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/video");
-                    new DownloadFile().execute(AllConstants.download_url  + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive/video");
+                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getMessage(), "recive/video");
 
                 } else {
                     Log.v(TAG, "File already download ");
@@ -3328,7 +3115,37 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 imageFile = new File(d, chatMessage.getFileName());
                 if (!imageFile.exists()) {
 
-                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage().toString(), chatMessage.getFileName(), "send/video");
+//                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage(), chatMessage.getFileName(), "send/video");
+                    DownloadRequest downloadID = PRDownloader.download(AllConstants.imageUrlInConversation + chatMessage.getImage(), d.getPath(),  chatMessage.getFileName())
+                            .build().setOnStartOrResumeListener(new OnStartOrResumeListener() {
+                                @SuppressLint("SetTextI18n")
+                                @Override
+                                public void onStartOrResume() {
+                                    System.out.println("startttttttttt download");
+                                    conversationModelView.setMessageDownload(chatMessage.getId(),true);
+
+                                    Toast.makeText(ConversationActivity.this, "Downloading started", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+               int id=     downloadID.start(new OnDownloadListener() {
+                        @Override
+                        public void onDownloadComplete() {
+                            System.out.println("completed");
+                            conversationModelView.setMessageDownload(chatMessage.getId(),false);
+
+
+                        }
+
+                        @Override
+                        public void onError(Error error) {
+                            conversationModelView.setMessageDownload(chatMessage.getId(),false);
+
+                            System.out.println("errror");
+                        }
+                    });
+                    System.out.println("downloadID"+downloadID.getDownloadId()+""+id);
+
                 } else {
                     Log.v(TAG, "File already download ");
 
@@ -3337,11 +3154,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                imageFile = new File(d, chatMessage.getImage().toString());
+                imageFile = new File(d, chatMessage.getImage());
                 if (!imageFile.exists()) {
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
-                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage().toString(), chatMessage.getImage().toString(), "recive/video");
+                    new DownloadFile().execute(AllConstants.imageUrlInConversation + chatMessage.getImage(), chatMessage.getImage(), "recive/video");
                 } else {
                     Log.v(TAG, "File already download ");
 
@@ -3362,8 +3179,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             sendLocation.setVisibility(View.GONE);
         }
 
-        String[] latlong = chatMessage.getMessage().toString().split(",");
-        System.out.println(chatMessage.getMessage().toString() + " chatMessage.getMessage().toString()");
+        String[] latlong = chatMessage.getMessage().split(",");
+        System.out.println(chatMessage.getMessage() + " chatMessage.getMessage().toString()");
 //        5.967120
         double latitude = Double.parseDouble(latlong[0]);
         double longitude = Double.parseDouble(latlong[1]);
@@ -3377,8 +3194,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 && ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
             ActivityCompat.requestPermissions(ConversationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 448);
-        }else {
-        openMap();}
+        } else {
+            openMap();
+        }
 //        Task<Location> taskd = client.getLastLocation();
 //        taskd.addOnSuccessListener(new OnSuccessListener<Location>() {
 //            @Override
@@ -3426,36 +3244,36 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             return;
         }
         Task<Location> taskd = client.getLastLocation();
-    taskd.addOnSuccessListener(new OnSuccessListener<Location>() {
-        @Override
-        public void onSuccess(Location location) {
-            //When Success
-            if (location != null){
-                //Sync Map
-                supportMapFragment.getMapAsync(new OnMapReadyCallback() {
-                    @Override
-                    public void onMapReady(GoogleMap googleMap) {
+        taskd.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                //When Success
+                if (location != null) {
+                    //Sync Map
+                    supportMapFragment.getMapAsync(new OnMapReadyCallback() {
+                        @Override
+                        public void onMapReady(GoogleMap googleMap) {
 
 //                                   latLng = new LatLng("lat from response API" + lat ,"longg from response API" + longg);
 
 
-                        // Create Marker Option                                                             //  We need a small icon to represent our company
-                        MarkerOptions options = new MarkerOptions().position(locationLatLng).title("He is there"); // .icon(BitmapDescriptorFactory.fromResource(R.drawable.logolocation))
+                            // Create Marker Option                                                             //  We need a small icon to represent our company
+                            MarkerOptions options = new MarkerOptions().position(locationLatLng).title("He is there"); // .icon(BitmapDescriptorFactory.fromResource(R.drawable.logolocation))
 
-                        //Zoom Map
-                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationLatLng,15));
+                            //Zoom Map
+                            googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationLatLng, 15));
 
-                        //Add Marker On Map
-                        googleMap.addMarker(options);
+                            //Add Marker On Map
+                            googleMap.addMarker(options);
 
-                    }
-                });
+                        }
+                    });
+
+                }
 
             }
-
-        }
-    });
-}
+        });
+    }
 
 
     @SuppressLint("ResourceType")
@@ -3469,26 +3287,24 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         toolsLiner.setVisibility(View.VISIBLE);
 
         if (isChecked) {
-            System.out.println(chatMessage.getMessage()+selectedMessage.size() + "getMessage");
-            selectedMessage.add(chatMessage);
-            System.out.println(chatMessage.getUserId()+"mmmmhhhh"+selectedMessage.get(0).getUserId());
-            deleteMessage.add( "\""+ chatMessage.getId()+"\"");
+//            System.out.println(chatMessage.getMessage() + conversationModelView.selectedMessage.getValue().size() + "getMessage");
+            conversationModelView.addSelectedMessage(chatMessage);
+            deleteMessage.add("\"" + chatMessage.getId() + "\"");
         } else {
-            selectedMessage.remove(chatMessage);
-            System.out.println("selected message "+selectedMessage.size()+"lllll");
-            deleteMessage.remove("\""+ chatMessage.getId()+"\"");
+            conversationModelView.removeSelectedMessage(chatMessage);
+            deleteMessage.remove("\"" + chatMessage.getId() + "\"");
 
-            if (selectedMessage.size() < 1) {
-                System.out.println("selectedMessage.size() < 1");
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
-                toolsLiner.setVisibility(View.GONE);
-            }
+//            if (conversationModelView.selectedMessage.getValue().size() < 1) {
+//                System.out.println("selectedMessage.size() < 1");
+//                personInformationLiner.setVisibility(View.VISIBLE);
+//                toolbar.setBackgroundColor(getResources().getColor(R.color.memo_background_color));
+//                toolsLiner.setVisibility(View.GONE);
+//            }
+
 
         }
 
-        System.out.println(deleteMessage.size()+"is sizeeee");
-        adapter.notifyDataSetChanged();
+        System.out.println(deleteMessage.size() + "is sizeeee");
     }
 
     @Override
@@ -3500,69 +3316,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         startActivity(intent);
     }
 
-    @Override
-    public void update(Observable observable, Object o) {
-        System.out.println("prevvvvvvvvvvvvvObserrrrrrrrrrrrrrrrrrv");
-//        if(chat_id.equals(user_id+anthor_user_id)){
-//            System.out.println("afterrrrrrrrrrrrrrrrObserrrrrrrrrrrrrrrrrrv");
-//
-//            chat_id = myBase.getObserver().getChatId(anthor_user_id);
-//
-//        }
-
-    }
-
-    public void sendNotification(String message,String type) {
-
-        try {
-            RequestQueue queue = Volley.newRequestQueue(ConversationActivity.this);
 
 
-            System.out.println("fcmTokennn" + fcmToken + "message" + message);
-
-            JSONObject data = new JSONObject();
-            data.put("title", classSharedPreferences.getUser().getUserName());
-            data.put("body", message);
-            data.put("image", classSharedPreferences.getUser().getImage());
-            data.put("chat_id", chat_id);
-            data.put("type", type);
-
-            JSONObject notification_data = new JSONObject();
-            notification_data.put("data", data);
-            notification_data.put("to", fcmToken);
-            notification_data.put("content_available", true);
-            notification_data.put("priority", "high");
-
-
-
-
-            JsonObjectRequest request = new JsonObjectRequest(AllConstants.fcm_send_notification_url, notification_data, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    System.out.println("responeeeeeeeeeeeeeeeeeeeeeeeeee" + message + fcmToken);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                }
-            }) {
-                @Override
-                public Map<String, String> getHeaders() {
-                    Map<String, String> headers = new HashMap<>();
-                    headers.put("Content-Type", "application/json");
-                    headers.put("Authorization", AllConstants.api_key_fcm_token_header_value);
-                    return headers;
-                }
-            };
-
-//      queue.add(request);
-            myBase.addToRequestQueue(request);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void PickiTonUriReturned() {
@@ -3585,15 +3340,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void PickiTonCompleteListener(String path, boolean wasDriveFile, boolean wasUnknownProvider, boolean wasSuccessful, String Reason) {
 //        System.out.println("PickiTonCompleteListener");
-                    copyFileOrDirectory( path, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send").getAbsolutePath());
+        copyFileOrDirectory(path, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send").getAbsolutePath());
 //                    ll;l
 
     }
 
     @Override
     public void PickiTonMultipleCompleteListener(ArrayList<String> paths, boolean wasSuccessful, String Reason) {
-        System.out.println("PickiTonMultipleCompleteListener"+paths+wasSuccessful);
-        System.out.println(paths.size()+"sizee");
+        System.out.println("PickiTonMultipleCompleteListener" + paths + wasSuccessful);
+        System.out.println(paths.size() + "sizee");
 
 
     }
@@ -3610,7 +3365,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             String folderName = strings[2];
             String extStorageDirectory = Environment.getExternalStorageDirectory().toString();
             /// File folder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-            File folder = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/" + folderName);
+            File folder = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/" + folderName);
 
             File pdfFile = new File(folder, fileName);
             Log.v(TAG, "doInBackground() pdfFile invoked " + pdfFile.getAbsolutePath());
@@ -3636,7 +3391,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            System.out.println("data notifyyyyyyyyyyyyyyyyyy");
             adapter.notifyDataSetChanged();
 
         }
@@ -3650,13 +3404,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     }
 
 
-    private void  showUpdateMessageDialog(ChatMessage chatMessage){
+    private void showUpdateMessageDialog(ChatMessage chatMessage) {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         LayoutInflater inflater = this.getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.update_message_dialog, null);
         dialogBuilder.setView(dialogView);
 
-        final EditText edt = (EditText) dialogView.findViewById(R.id.edit1);
+        final EditText edt = dialogView.findViewById(R.id.edit1);
         edt.setText(chatMessage.getMessage());
 
         dialogBuilder.setTitle(R.string.update_message_note);
@@ -3665,13 +3419,18 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (!chatMessage.getMessage().equals(edt.getText().toString())) {
                     JSONObject data = new JSONObject();
                     try {
-                        data.put("message_id",chatMessage.getId());
-                        data.put("message",edt.getText().toString() );
+                        data.put("message_id", chatMessage.getId());
+                        data.put("message", edt.getText().toString());
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                       updateMessage(data);
+                    updateMessage(data);
+                    conversationModelView.setMessageChecked(conversationModelView.selectedMessage.getValue().get(0).getId(),false);
+
+                    conversationModelView.clearSelectedMessage();
+
+                    deleteMessage.clear();
                 }
             }
         });
@@ -3735,7 +3494,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                             latLng = new LatLng(location.getLatitude(), location.getLongitude());
                             Log.d("latLng", String.valueOf(latLng));
 //                            System.out.println(String.valueOf(latLng) + "latln");
-                            stringLatLng=location.getLatitude()+","+location.getLongitude();
+                            stringLatLng = location.getLatitude() + "," + location.getLongitude();
 
                             // Create Marker Option                                                            //  We need a small icon to represent our company
                             MarkerOptions options = new MarkerOptions().position(latLng).title("I am There"); // .icon(BitmapDescriptorFactory.fromResource(R.drawable.logolocation))
@@ -3755,19 +3514,20 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         });
 
     }
+
     private void alertDeleteDialog() {
 
-        for(ChatMessage message :selectedMessage){
-            if(!message.isMe()){
+        for (ChatMessage message : conversationModelView.selectedMessage.getValue()) {
+            if (!message.isMe()) {
                 isAllMessgeMe = false;
                 break;
-            }else {
+            } else {
                 isAllMessgeMe = true;
 
             }
 
         }
-        AlertDialog.Builder dialog=new AlertDialog.Builder(this);
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 //        dialog.setMessage(getString(R.string.alert_delete_message));
         dialog.setTitle(R.string.alert_delete_message);
         dialog.setPositiveButton(R.string.delete_for_me,
@@ -3775,55 +3535,50 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     public void onClick(DialogInterface dialog,
                                         int which) {
                         deleteMessage();
-                        Toast.makeText(getApplicationContext(),"Yes is clicked",Toast.LENGTH_LONG).show();
                     }
                 });
-        dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
+        dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                Toast.makeText(getApplicationContext(),"cancel is clicked",Toast.LENGTH_LONG).show();
             }
         });
-        if(isAllMessgeMe){
-        dialog.setNeutralButton(R.string.delete_for_all, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                JSONObject jsonObject = new JSONObject();
+        if (isAllMessgeMe) {
+            dialog.setNeutralButton(R.string.delete_for_all, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    JSONObject jsonObject = new JSONObject();
 //                for (ChatMessage message : selectedMessage) {
 //                    adapter.chatMessages.remove(message);
 //                }
 
-                System.out.println(deleteMessage.size()+"sizeeeeeeeeeeeeee");
-                System.out.println(deleteMessage.toString()+"stringgggggggg");
+                    System.out.println(deleteMessage.size() + "sizeeeeeeeeeeeeee");
+                    System.out.println(deleteMessage.toString() + "stringgggggggg");
 
 
-                try {
-                    jsonObject.put("message_to_delete", deleteMessage.toString());
-                    jsonObject.put("anthor_user_id", anthor_user_id);
-                    jsonObject.put("my_id", user_id);
+                    try {
+                        jsonObject.put("message_to_delete", deleteMessage.toString());
+                        jsonObject.put("anthor_user_id", anthor_user_id);
+                        jsonObject.put("my_id", user_id);
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    deletForAll(jsonObject);
+
+                    conversationModelView.clearSelectedMessage();
+                    deleteMessage.clear();
+
+
+
                 }
-
-                deletForAll(jsonObject);
-//                                deleteMessage(deleteMessage);
-                selectedMessage.clear();
-                deleteMessage.clear();
-//                System.out.println(chatMessage.getMessage()+chatMessage.getId());
-//                adapter.notifyDataSetChanged();
-                toolsLiner.setVisibility(View.GONE);
-                personInformationLiner.setVisibility(View.VISIBLE);
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green_500));
-
-
-
-            }
-        });}
-        AlertDialog alertDialog=dialog.create();
+            });
+        }
+        AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }
+
     private class DownloadFileFromSocket extends AsyncTask<String, Void, Void> {
         ChatMessage chatMessage;
 
@@ -3843,26 +3598,26 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 t.show();
 
             } else {
-                switch (chatMessage.getType()){
+                switch (chatMessage.getType()) {
                     case "imageWeb":
                         File imageFile;
-                        File d = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/video");
+                        File d = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                        imageFile = new File(d, chatMessage.getImage().toString());
+                        imageFile = new File(d, chatMessage.getImage());
                         if (!imageFile.exists()) {
-                                        try {
-                            imageFile.createNewFile();
-                Log.v(TAG, "doInBackground() file created" + imageFile);
+                            try {
+                                imageFile.createNewFile();
+                                Log.v(TAG, "doInBackground() file created" + imageFile);
 
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "doInBackground() error" + e.getMessage());
-                Log.e(TAG, "doInBackground() error" + e.getStackTrace());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Log.e(TAG, "doInBackground() error" + e.getMessage());
+                                Log.e(TAG, "doInBackground() error" + e.getStackTrace());
 
 
-            }
-            FileDownloader.downloadFile(AllConstants.imageUrlInConversation+chatMessage.getImage().toString(), imageFile);
-            Log.v(TAG, "doInBackground() file download completed");
+                            }
+                            FileDownloader.downloadFile(AllConstants.imageUrlInConversation + chatMessage.getImage(), imageFile);
+                            Log.v(TAG, "doInBackground() file download completed");
 
 
                         } else {
@@ -3872,14 +3627,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         //            try {
 
 
-
                         break;
                     case "voice":
                         File voiceFile;
                         System.out.println("image weeeeeeeeeeeeeeeeeeeeeeeb");
-                        File dV = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/voiceRecord");
+                        File dV = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/voiceRecord");
 
-                        voiceFile = new File(dV, chatMessage.getMessage().toString());
+                        voiceFile = new File(dV, chatMessage.getMessage());
                         if (!voiceFile.exists()) {
                             try {
                                 voiceFile.createNewFile();
@@ -3893,7 +3647,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                             }
 //                            FileDownloader.downloadFile(AllConstants.download_url+"audio/"+chatMessage.getMessage().toString(), voiceFile);
-                            FileDownloader.downloadFile(AllConstants.download_url+chatMessage.getMessage().toString(), voiceFile);
+                            FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage(), voiceFile);
 
                             Log.v(TAG, "doInBackground() file download completed");
 
@@ -3907,9 +3661,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     case "video":
                         File videoFile;
                         System.out.println("image weeeeeeeeeeeeeeeeeeeeeeeb");
-                        File dVideo = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive/video");
+                        File dVideo = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive/video");
 
-                        videoFile = new File(dVideo, chatMessage.getMessage().toString());
+                        videoFile = new File(dVideo, chatMessage.getMessage());
                         if (!videoFile.exists()) {
                             try {
                                 videoFile.createNewFile();
@@ -3923,7 +3677,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                             }
 //                            FileDownloader.downloadFile(AllConstants.download_url+"video/"+chatMessage.getMessage().toString(), videoFile);
-                            FileDownloader.downloadFile(AllConstants.download_url+chatMessage.getMessage().toString(), videoFile);
+                            FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage(), videoFile);
 
                             Log.v(TAG, "doInBackground() file download completed");
 
@@ -3949,47 +3703,44 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                             Log.v(TAG, "download() Method HAVE PERMISSIONS ");
 
 
-                                File dFile = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM+ File.separator+"memo/recive");
+                            File dFile = ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive");
 
-                                pdfFile = new File(dFile, chatMessage.getMessage().toString());
-                                if (!pdfFile.exists()) {
-                                    try {
-                                        pdfFile.createNewFile();
-                                        Log.v(TAG, "doInBackground() file created" + pdfFile);
+                            pdfFile = new File(dFile, chatMessage.getMessage());
+                            if (!pdfFile.exists()) {
+                                try {
+                                    pdfFile.createNewFile();
+                                    Log.v(TAG, "doInBackground() file created" + pdfFile);
 
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                        Log.e(TAG, "doInBackground() error" + e.getMessage());
-                                        Log.e(TAG, "doInBackground() error" + e.getStackTrace());
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                    Log.e(TAG, "doInBackground() error" + e.getMessage());
+                                    Log.e(TAG, "doInBackground() error" + e.getStackTrace());
 
 
-                                    }
+                                }
 //                                    FileDownloader.downloadFile(AllConstants.download_url+"files/"+chatMessage.getMessage().toString(), pdfFile);
-                                    FileDownloader.downloadFile(AllConstants.download_url+chatMessage.getMessage().toString(), pdfFile);
+                                FileDownloader.downloadFile(AllConstants.download_url + chatMessage.getMessage(), pdfFile);
 
-                                    Log.v(TAG, "doInBackground() file download completed");
+                                Log.v(TAG, "doInBackground() file download completed");
 
 //            new DownloadFile().execute("http://maven.apache.org/maven-1.x/maven.pdf", "maven.pdf");
 //                                    new DownloadFile().execute(AllConstants.download_url + "files/" + chatMessage.getMessage().toString(), chatMessage.getMessage().toString(), "recive");
-                                } else {
-                                    Log.v(TAG, "File already download ");
+                            } else {
+                                Log.v(TAG, "File already download ");
 
-                                }
                             }
-
-
+                        }
 
 
                         break;
 
                     default:
                         Toast t = Toast.makeText(getApplicationContext(), "dont support", Toast.LENGTH_LONG);
-                        t.show();                }
-
-
-
+                        t.show();
                 }
 
+
+            }
 
 
             Log.v(TAG, "download() Method completed ");
@@ -4003,11 +3754,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             super.onPostExecute(aVoid);
             System.out.println("data notifyyyyyyyyyyyyyyyyyy");
             displayMessage(chatMessage);
-            adapter.notifyDataSetChanged();
 
         }
     }
-    public void showPermissionDialog(String message,int RequestCode){
+
+    public void showPermissionDialog(String message, int RequestCode) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle(getResources().getString(R.string.permission_necessary));
@@ -4021,7 +3772,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                 Uri uri = Uri.fromParts("package", getPackageName(), null);
                 intent.setData(uri);
-                startActivityForResult(intent, RequestCode);                                     }
+                startActivityForResult(intent, RequestCode);
+            }
         });
 
         AlertDialog alert = alertBuilder.create();
@@ -4029,15 +3781,32 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
     }
+
     private void checkContactpermission() {
 
         if (permissions.isContactOk(this)) {
-                Intent in = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-                startActivityForResult(in, RESULT_PICK_CONTACT);
+            Intent in = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+            startActivityForResult(in, RESULT_PICK_CONTACT);
         } else {
             permissions.requestContact(this);
         }
     }
+
+    private void askPermissions() {
+        ActivityCompat.requestPermissions(this, callPermissions, requestcode);
+    }
+
+    private Boolean isPermissionGranted() {
+
+        for (String permission : callPermissions) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED)
+                return false;
+        }
+
+        return true;
+    }
+
+
 
 
 }

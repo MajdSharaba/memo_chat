@@ -13,7 +13,7 @@ import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.call.CallMainActivity;
+import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ChatRoomFragment;
@@ -43,17 +43,13 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 public class SocketIOService extends Service implements SocketEventListener.Listener, HeartBeat.HeartBeatListener, Observer {
     public static final String KEY_BROADCAST_MESSAGE = "b_message";
     public static final int EVENT_TYPE_JOIN = 1, EVENT_TYPE_MESSAGE = 2,
-            EVENT_TYPE_TYPING = 3,EVENT_TYPE_ENTER = 4,EVENT_TYPE_CHECK_CONNECT=5,
-            EVENT_TYPE_ON_SEEN=6,EVENT_TYPE_Forward=7,EVENT_TYPE_ON_DELETE =8,
-            EVENT_TYPE_CHECK_QR =9,EVENT_TYPE_GET_QR =10,EVENT_TYPE_DISCONNECT=11,
-            EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13,EVENT_TYPE_ON_UPDATE_MESSAGE=14
-            , EVENT_TYPE_CALLING=15, EVENT_TYPE_SEND_PEER_ID=16,
-            EVENT_TYPE_STOP_CALLING=17,
-            EVENT_TYPE_SETTING_CALL=18,
-            EVENT_TYPE_RECIVED_CALL =19,
-            EVENT_TYPE_MISSING_CALL = 20
-
-                    ;
+            EVENT_TYPE_TYPING = 3, EVENT_TYPE_ENTER = 4, EVENT_TYPE_CHECK_CONNECT=5,
+            EVENT_TYPE_ON_SEEN=6, EVENT_TYPE_Forward=7, EVENT_TYPE_ON_DELETE =8,
+            EVENT_TYPE_CHECK_QR =9, EVENT_TYPE_GET_QR =10, EVENT_TYPE_DISCONNECT=11,
+            EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13, EVENT_TYPE_ON_UPDATE_MESSAGE=14
+            , EVENT_TYPE_CALLING=15, EVENT_TYPE_SEND_PEER_ID=16, EVENT_TYPE_STOP_CALLING=17,
+            EVENT_TYPE_SETTING_CALL=18, EVENT_TYPE_RECIVED_CALL =19, EVENT_TYPE_MISSING_CALL = 20,
+            EVENT_TYPE_SEND_VIDEO_CALL_REQUEST = 21, EVENT_TYPE_RESPONE_VIDEO_CALL = 22;
     public static final String EVENT_DELETE = "delete message";
     private static final String EVENT_MESSAGE = "new message";
     private static final String EVENT_CALLING = "sendPeerId";
@@ -61,6 +57,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String EVENT_RECIVE_STOP_CALLING = "removeVideo";
     private static final String EVENT_RECIVE_RINING = "call_recived";
     private static final String EVENT_SETTINGS_RINING = "settingsCall";
+    private static final String EVENT_ASK_FOR_VIDEO = "askForVideo";
+    private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
+
+
 
 
 
@@ -100,6 +100,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_UN_BLOCK_PARAMTERS = "extra_un_block_paramters";
     public static final String EXTRA_CALL_PARAMTERS = "extra_call_paramters";
     public static final String EXTRA_SEND_PEER_ID_PARAMTERS = "extra_send_peer_id_paramters";
+    public static final String EXTRA_SEND_ASK_VIDEO_CALL_PARAMTERS = "extra_send_ask_video_call_paramters";
+    public static final String EXTRA_RESPONE_VIDEO_CALL_PARAMTERS = "extra_respone_video_video_call_paramters";
+
+
+
 
 
 
@@ -269,6 +274,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("removeVideo", new SocketEventListener("removeVideo", this));
         listenersMap.put("call_recived", new SocketEventListener("call_recived", this));
         listenersMap.put("settingsCall", new SocketEventListener("settingsCall", this));
+        listenersMap.put("askForVideo", new SocketEventListener("askForVideo", this));
+        listenersMap.put("turn_to_video", new SocketEventListener("turn_to_video", this));
+
+
+
 
 
 
@@ -290,7 +300,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         System.out.println("onStartCommand");
         if (intent != null) {
             int eventType = intent.getIntExtra(EXTRA_EVENT_TYPE, EVENT_TYPE_JOIN);
-            System.out.println(eventType+"event Type");
+            System.out.println(eventType + "event Type");
 
             switch (eventType) {
 
@@ -341,7 +351,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     String paramter = intent.getExtras().getString(EXTRA_ENTER_PARAMTERS);
 
                     if (isSocketConnected()) {
-                       enter(paramter );
+                        enter(paramter);
                     }
                     break;
                 case EVENT_TYPE_CHECK_CONNECT:
@@ -458,8 +468,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         Log.i(TAG, "reconnecting socket...");
                         sendPeerId(send_peer_id_message_paramter);
 
-                    }
-                    else{
+                    } else {
                         sendPeerId(send_peer_id_message_paramter);
                     }
 //                    return true;
@@ -494,8 +503,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         Log.i(TAG, "EVENT_TYPE_Stop_calling: ");
                         recivedCall(recived_calling_paramter);
 
-                    }
-                    else{
+                    } else {
                         recivedCall(recived_calling_paramter);
                     }
 
@@ -506,6 +514,22 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     String recived_missing_paramter = intent.getExtras().getString(EXTRA_RECIVED_CALL_PARAMTERS);
                     if (isSocketConnected()) {
                         sendMissingCall(recived_missing_paramter);
+                    }
+
+                    break;
+                case EVENT_TYPE_SEND_VIDEO_CALL_REQUEST:
+
+                    String send_video_call_request_paramters = intent.getExtras().getString(EXTRA_SEND_ASK_VIDEO_CALL_PARAMTERS);
+                    if (isSocketConnected()) {
+                        sendAskCAll(send_video_call_request_paramters);
+                    }
+
+                    break;
+
+                case EVENT_TYPE_RESPONE_VIDEO_CALL:
+                    String send_respone_video_call_paramters = intent.getExtras().getString(EXTRA_RESPONE_VIDEO_CALL_PARAMTERS);
+                    if (isSocketConnected()) {
+                        sendResponeAskCAll(send_respone_video_call_paramters);
                     }
 
                     break;
@@ -796,6 +820,33 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("closeCall", chat);
 
     }
+    private void sendAskCAll(String messageObject) {
+        System.out.println("sendAskCAllmessageObject");
+        JSONObject chat = null;
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("askForVideo", chat);
+
+    }
+    private void sendResponeAskCAll(String messageObject) {
+        System.out.println("sendAskCAllsendResponeAskCAllmessageObject");
+
+        JSONObject chat = null;
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("turn_to_video", chat);
+
+    }
+
+
 
 
     @Override
@@ -1031,7 +1082,7 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
             case EVENT_RECIVE_STOP_CALLING:
                   System.out.println("EVENT_RECIVE_STOP_CALLING");
-                intent = new Intent(CallMainActivity.ON_STOP_CALLING_REQUEST);
+                intent = new Intent(ResponeCallActivity.ON_STOP_CALLING_REQUEST);
                 intent.putExtra("get stopCalling", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 intent = new Intent(RequestCallActivity.ON_STOP_CALLING_REQUEST);
@@ -1048,13 +1099,34 @@ public void onTaskRemoved(Intent rootIntent) {
 
             case EVENT_SETTINGS_RINING:
                 System.out.println("EVENT_SETTINGS_RINING"+args[0].toString());
-                intent = new Intent(CallMainActivity.ON_RECIVED_SETTINGS_CALL);
+                intent = new Intent(ResponeCallActivity.ON_RECIVED_SETTINGS_CALL);
                 intent.putExtra("get settings", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 intent = new Intent(RequestCallActivity.ON_RECIVED_SETTINGS_CALL);
                 intent.putExtra("get settings", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
                 break;
+
+            case EVENT_ASK_FOR_VIDEO:
+                System.out.println("EVENT_ASK_FOR_VIDEO"+args[0].toString());
+                intent = new Intent(ResponeCallActivity.ON_RECIVED_ASK_FOR_VIDEO);
+                intent.putExtra("get askVideo", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                intent = new Intent(RequestCallActivity.ON_RECIVED_ASK_FOR_VIDEO);
+//                intent.putExtra("get askVideo", args[0].toString());
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+            case EVENT_RESPONE_ASK_FOR_VIDEO:
+                System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO"+args[0].toString());
+//                intent = new Intent(CallMainActivity.ON_RECIVED_RESPONE_FOR_VIDEO);
+//                intent.putExtra("get responeAskVideo", args[0].toString());
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                intent = new Intent(RequestCallActivity.ON_RECIVED_RESPONE_FOR_VIDEO);
+                intent.putExtra("get responeAskVideo", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+
 
         }
     }

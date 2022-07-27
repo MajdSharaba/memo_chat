@@ -3,7 +3,9 @@ package com.yawar.memo.model;
 import android.text.Spannable;
 import android.text.SpannableString;
 
-public class ChatMessage {
+import java.util.Objects;
+
+public class ChatMessage implements Comparable, Cloneable  {
     public boolean isMe() {
         return isMe;
     }
@@ -36,7 +38,6 @@ public class ChatMessage {
     private boolean isMe;
 //    public  Spannable message;
     public String message;
-    public String reply;
     private String image;
     private  String type;
     private String userId;
@@ -155,11 +156,35 @@ public class ChatMessage {
         this.fileName = fileName;
     }
 
-    public String getReply() {
-        return reply;
-    }
+    @Override
+    public int compareTo(Object o) {
+        ChatMessage compare = (ChatMessage) o;
+        if (
+//                compare.getMessage().equals(this.getMessage()) &&
+                Objects.equals(compare.state, this.state) &&
+                compare.isDownload == (this.isDownload)&&
+                compare.isChecked == (this.isChecked)&&
+                        Objects.equals(compare.isUpdate, this.isUpdate)
 
-    public void setReply(String reply) {
-        this.reply = reply;
+        ) {
+
+            return 0;
+        }
+        System.out.println(compare.getMessage()+this.getMessage()+"compareTo"+1);
+        return 1;
+
+    }
+    @Override
+    public ChatMessage clone() {
+
+        ChatMessage clone;
+        try {
+            clone = (ChatMessage) super.clone();
+
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e); //should not happen
+        }
+
+        return clone;
     }
 }
