@@ -1010,7 +1010,7 @@ public void onTaskRemoved(Intent rootIntent) {
 
                 break;
             case FETCH_PEER_ID:
-                System.out.println(args[0].toString()+"FETCH_PEER_ID");
+                System.out.println(args[0].toString()+"FETCH_PEER_IDDD");
                 intent = new Intent(RequestCallActivity.FETCH_PEER_ID);
                 intent.putExtra("fetchPeer", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);

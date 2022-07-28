@@ -24,7 +24,7 @@ public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
         String callRequest = bundle.getString("callRequest");
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(Integer.parseInt("0"));
-        Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY);
+        Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY);
 
         LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);
         Intent closeRequestCallActivity = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);

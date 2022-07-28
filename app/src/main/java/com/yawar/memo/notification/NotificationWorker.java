@@ -69,15 +69,29 @@ public class NotificationWorker extends Worker {
     @Override
     public Worker.Result doWork() {
         boolean inCall=false;
+        Context applicationContext = getApplicationContext();
+
         final String imageUrl = getInputData().getString("image");
-        final String title = getInputData().getString("name" );
+        final String name = getInputData().getString("name" );
         final String message = getInputData().getString("body" );
         final String anthor_user_id = getInputData().getString("anthorUserCallId" );
         final String channel = getInputData().getString("channel" );
+        final Boolean isViseoCall = getInputData().getBoolean("isVideoCall",true);
+         String title = "";
 
 
 
-        Context applicationContext = getApplicationContext();
+        if(isViseoCall){
+            title = applicationContext.getResources().getString(R.string.call_video_from);
+
+        }
+        else{
+            title = applicationContext.getResources().getString(R.string.call_audio_from);
+
+        }
+
+
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(applicationContext.NOTIFICATION_SERVICE);
@@ -99,6 +113,11 @@ public class NotificationWorker extends Worker {
                     = new Intent(applicationContext, CallNotificationActivity.class);
             intent.putExtra("callRequest", message);
             intent.putExtra("id", anthor_user_id);
+            intent.putExtra("title", title);
+            intent.putExtra("name", name);
+
+
+
 
 
             String channelCall = "call_channel";
@@ -112,6 +131,10 @@ public class NotificationWorker extends Worker {
                     = new Intent(applicationContext, ResponeCallActivity.class);
             intentAnsware.putExtra("callRequest", message);
             intentAnsware.putExtra("id", anthor_user_id);
+            intentAnsware.putExtra("title", title);
+            intentAnsware.putExtra("name", name);
+
+
 
             intentAnsware.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                PendingIntent answarePendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
@@ -179,8 +202,8 @@ public class NotificationWorker extends Worker {
             builder.addAction(R.drawable.btx_custom, HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(applicationContext, R.color.red) + "\">" +applicationContext.getResources().getString(R.string.end_call) +" </font>", HtmlCompat.FROM_HTML_MODE_LEGACY), pendingIntentCancell);
 
 
-            builder.setContentTitle(applicationContext.getResources().getString(R.string.call_from));
-            builder.setContentText(title);
+            builder.setContentTitle(title);
+            builder.setContentText(name);
             //}
 
 

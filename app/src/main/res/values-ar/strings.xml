@@ -227,6 +227,14 @@
     <string name="ongoing_call">مكالمة جارية</string>
     <string name="recive_call_and_close">قبول واغلاق المكالمة</string>
     <string name="requesting_to_switch_to_video_call">جار طلب الانتقال الى مكالمة الفيديو</string>
+    <string name="call_video_from">مكالمة فيديو واردة من</string>
+    <string name="call_audio_from">مكالمة صوت واردة من</string>
+    <string name="ongoing_video_call">مكالمة فيديو جارية</string>
+    <string name="ongoing_audio_call">مكالمة صوت جارية</string>
+
+
+
+
 
 
 

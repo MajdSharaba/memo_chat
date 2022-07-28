@@ -1,62 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-tools:context=".call.CallNotificationActivity">
-
-
-
-<de.hdodenhof.circleimageview.CircleImageView
-    android:id="@+id/image_user_calling"
-    android:padding="20dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_centerInParent="true"
-    android:background="@color/memo_background_color"
-    android:src="@drawable/th"
-    android:visibility="visible" />
+    android:background="@drawable/call2"
+    tools:context=".call.CallNotificationActivity">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:visibility="visible"
-    android:layout_margin="15dp"
-    android:layout_alignBottom="@+id/image_user_calling"
-    android:id="@+id/audio_only_Layout">
-
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        tools:text="Someone is calling..."
-        android:layout_centerInParent="true"
-        android:padding="20dp"
-        android:textStyle="bold"
-        android:id="@+id/user_name" />
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        app:cardCornerRadius="70dp"
+        app:cardElevation="10dp">
+
+        <ImageView
+            android:id="@+id/image_user_calling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img" />
+    </androidx.cardview.widget.CardView>
 
 
-    <ImageButton
-        android:id="@+id/rejectBtn"
-        android:layout_width="wrap_content"
+
+
+<!--    <de.hdodenhof.circleimageview.CircleImageView-->
+<!--    android:id="@+id/image_user_calling"-->
+<!--    android:padding="20dp"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:layout_centerInParent="true"-->
+<!--    android:background="@color/memo_background_color"-->
+<!--    android:src="@drawable/th"-->
+<!--    android:visibility="visible" />-->
+
+<!--<RelativeLayout-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:visibility="visible"-->
+<!--    android:layout_margin="15dp"-->
+<!--    android:layout_alignBottom="@+id/image_user_calling"-->
+<!--    android:id="@+id/audio_only_Layout">-->
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="user_name"
+            android:textColor="@color/white"
+            android:textSize="30sp" />
+
+        <TextView
+            android:id="@+id/type_call"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:text="@string/video"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+
+    <me.mutasem.slidetoanswer.SwipeToAnswerView
+        android:id="@+id/acceptBtn"
+        android:layout_marginBottom="50dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:background="@drawable/biv_call"
-        android:padding="15dp"
-        android:src="@drawable/ic_call_stop" />
-    <ImageButton
-        android:id="@+id/acceptBtn"
-        android:layout_width="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layoutDirection="ltr"
+        />
+
+    <me.mutasem.slidetoanswer.SwipeToAnswerView
+        android:id="@+id/rejectBtn"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:background="@drawable/btx_custom"
-        android:padding="15dp"
-        android:src="@drawable/ic_call_stop" />
-
-
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"
+        android:layoutDirection="ltr"
+        app:icon="@drawable/ic_decline"
+        app:reverse="true" />
+<!--    </RelativeLayout>-->
 
 </RelativeLayout>
+
+<!--    <TextView-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:textColor="@color/black"-->
+<!--        tools:text="Someone is calling..."-->
+<!--        android:layout_centerInParent="true"-->
+<!--        android:padding="20dp"-->
+<!--        android:textStyle="bold"-->
+<!--        android:id="@+id/user_name" />-->
+
+
+<!--    <ImageButton-->
+<!--        android:id="@+id/rejectBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentStart="true"-->
+<!--        android:background="@drawable/biv_call"-->
+<!--        android:padding="15dp"-->
+<!--        android:src="@drawable/ic_call_stop" />-->
+<!--    <ImageButton-->
+<!--        android:id="@+id/acceptBtn"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:background="@drawable/btx_custom"-->
+<!--        android:padding="15dp"-->
+<!--        android:src="@drawable/ic_call_stop" />-->
+
+
+
+<!--</RelativeLayout>-->
 <!--    <RelativeLayout-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
@@ -74,9 +146,7 @@ tools:context=".call.CallNotificationActivity">
 <!--       </ImageView>-->
 <!--    </RelativeLayout>-->
 
-<include layout="@layout/layout_call_properties">
 
-</include>
 
 <!--        <de.hdodenhof.circleimageview.CircleImageView-->
 
@@ -119,4 +189,4 @@ tools:context=".call.CallNotificationActivity">
 <!--    </LinearLayout>-->
 
 
-</RelativeLayout>
+<!--</RelativeLayout>-->

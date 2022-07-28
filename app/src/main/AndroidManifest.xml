@@ -53,12 +53,6 @@
         tools:replace="android:theme">
 
         <activity
-            android:name=".views.ReceivedPhoneCall"
-            android:exported="false"
-            android:showOnLockScreen="true"
-            android:theme="@style/AppTheme"/>
-
-        <activity
             android:name=".call.CallNotificationActivity"
             android:showOnLockScreen="true"
             android:launchMode="singleTop"
