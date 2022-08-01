@@ -2,20 +2,31 @@ package com.yawar.memo.repositry;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.app.ProgressDialog;
+import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.retrofit.RetrofitClient;
+import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -24,6 +35,27 @@ import io.reactivex.schedulers.Schedulers;
 public class ChatMessageRepo {
     public final MutableLiveData<ArrayList<ChatMessage>> chatMessageistMutableLiveData;
     public ArrayList<ChatMessage> chatMessageList;
+    ChatRoomRepo chatRoomRepo = BaseApp.getInstance().getChatRoomRepo();
+
+    public final MutableLiveData<ArrayList<ChatMessage>> selectedMessage;
+
+
+    public MutableLiveData<String> blockedFor;
+
+
+
+    public MutableLiveData<Boolean> blocked;
+    public MutableLiveData<Boolean> unBlocked;
+
+
+
+
+    public ArrayList<ChatMessage> _selectedMessage;
+    BaseApp myBase = BaseApp.getInstance();
+
+
+
+
 
 
     public ChatMessageRepo(Application application) { //application is subclass of context
@@ -31,8 +63,57 @@ public class ChatMessageRepo {
         //cant call abstract func but since instance is there we can do this
         chatMessageList = new ArrayList<>();
         chatMessageistMutableLiveData = new MutableLiveData<>();
+        selectedMessage = new MutableLiveData<>();
+        _selectedMessage = new ArrayList<>();
+        blockedFor = new MutableLiveData<>(null);
+        blocked = new MutableLiveData<>(null);
+        unBlocked = new MutableLiveData<>(null);
 
 
+
+
+
+
+    }
+    public MutableLiveData<String> getBlockedFor() {
+        return blockedFor;
+    }
+
+    public void setBlockedFor(String blockedFor) {
+        this.blockedFor.setValue(blockedFor);
+    }
+
+    public MutableLiveData<Boolean> getBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(Boolean blocked) {
+        this.blocked.setValue(blocked);
+    }
+
+    public MutableLiveData<Boolean> getUnBlocked() {
+        return unBlocked;
+    }
+
+    public void setUnBlocked(Boolean blocked) {
+        this.unBlocked.setValue(blocked);
+    }
+
+    public void addSelectedMessage(ChatMessage message){
+        _selectedMessage.add(message);
+        selectedMessage.setValue(_selectedMessage);
+    }
+    public void removeSelectedMessage(ChatMessage message){
+        _selectedMessage.remove(message);
+        selectedMessage.setValue(_selectedMessage);
+    }
+    public void clearSelectedMessage(){
+        for(ChatMessage chatMessage: selectedMessage.getValue()){
+            setMessageChecked(chatMessage.getId(),false);
+
+        }
+        _selectedMessage.clear();
+        selectedMessage.setValue(_selectedMessage);
     }
 
     @SuppressLint("CheckResult")
@@ -193,30 +274,144 @@ public class ChatMessageRepo {
         }
         chatMessageistMutableLiveData.setValue(chatMessageList);
     }
+
+    @SuppressLint("CheckResult")
+    public void deleteMessageForMe(String message_id, String user_id, ArrayList<ChatMessage> chatMessages){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().deleteMessage(message_id,user_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+                    System.out.println("respone delem"+chatMessages.size()+""+chatMessageList.size());
+
+
+                    for (int i = 0; i < chatMessages.size(); i++) {
+
+                String id = chatMessages.get(i).getId();
+                for (ChatMessage chatMessage : chatMessageList) {
+                    if (chatMessage.getId().equals(id)) {
+                        System.out.println("majd ssssss"+chatMessage.getId() + " " + message_id);
+                       deleteMessage(chatMessage);
+                        break;
+                    }
+                }
+
+
+
+                    }
+                    clearSelectedMessage();
+
+                    return ;
+
+                },
+                s-> {
+
+                    return ;
+
+                });
+
+    }
+
+    public void sendBlockRequest(String my_id, String anthor_user_id) {
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.109:3000/addtoblock", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                String blokedForRespone = "";
+                boolean blockedRespone = false;
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    blokedForRespone = jsonObject.getString("blocked_for");
+                    blockedRespone= jsonObject.getBoolean("blocked");
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                blockedFor.setValue(blokedForRespone);
+                blocked.setValue(blockedRespone);
+                chatRoomRepo.setBlockedState(anthor_user_id,blokedForRespone);
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                // progressDialog.dismiss();
+//                Toast.makeText(UserInformationActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put("my_id", my_id);
+                params.put("user_id",anthor_user_id);
+
+                return params;
+            }
+
+        };
+        myBase.addToRequestQueue(request);
+    }
+    public void sendUnbBlockUser(String my_id,String anthor_user_id) {
+
+
+        StringRequest request = new StringRequest(Request.Method.POST, "http://192.168.0.109:3000/deleteblock", new Response.Listener<String>() {
+
+
+
+            @Override
+            public void onResponse(String response) {
+
+
+                String blokedForRespone = "";
+                Boolean unBlockedRespone = false;
+
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    blokedForRespone = jsonObject.getString("blocked_for");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                blockedFor.setValue(blokedForRespone);
+                unBlocked.setValue(unBlockedRespone);
+                chatRoomRepo.setBlockedState(anthor_user_id,blokedForRespone);
+
+
+
+
+
+
+
+
+
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("errorrrrrrrr"+error);
+
+                // progressDialog.dismiss();
+//                Toast.makeText(UserInformationActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        }) {
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("my_id", my_id);
+                params.put("user_id",anthor_user_id);
+
+                return params;
+            }
+
+        };
+        myBase.addToRequestQueue(request);
+    }
 }
-//    public MutableLiveData<ArrayList<UserModel>> getUserBlockList() {
-//
-//        return userBlockListMutableLiveData;
-//    }
-//    public  void deleteBlockUser(String user_id,String status){
-//        for(UserModel user:userBlockList){
-//            if(user.getUserId().equals(user_id)){
-//                user.setStatus(status);
-//                break;
-//            }}
-//        userBlockListMutableLiveData.postValue(userBlockList);
-//    }
-//    public  void addBlockUser(UserModel userModel){
-//        boolean searchBlock = false;
-//        for(UserModel user:userBlockList){
-//            if(user.getUserId().equals(userModel.getUserId())){
-//                user.setStatus(userModel.getStatus());
-//                searchBlock = true;
-//                break;
-//            }}
-//        if(!searchBlock){
-//            userBlockList.add( 0,userModel);}
-//        userBlockListMutableLiveData.postValue(userBlockList);
-//    }
-//}
-//
+

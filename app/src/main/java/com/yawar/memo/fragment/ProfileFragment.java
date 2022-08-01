@@ -29,7 +29,6 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
-import com.yawar.memo.utils.Globale;
 import com.yawar.memo.views.LoginActivity;
 
 import java.io.ByteArrayOutputStream;
@@ -93,7 +92,7 @@ public class ProfileFragment extends Fragment {
     private static final int PICK_IMAGE = 100;
     Uri imageUri ;
     private GoogleApiClient googleApiClient;
-    Globale globale ;
+
 
     private GoogleSignInOptions gso;
     BottomNavigationView bottomNavigationView;
@@ -167,7 +166,6 @@ public class ProfileFragment extends Fragment {
         textnumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
-        globale = new Globale();
         serverApi = new ServerApi(getActivity());
         ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(getContext());
         userModel = classSharedPreferences.getUser();

@@ -11,6 +11,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MenuItem;
 
+import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -21,6 +22,7 @@ import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class BlockedUsersActivity extends AppCompatActivity implements BlockUserAdapter.CallbackInterface {
     ClassSharedPreferences classSharedPreferences ;
@@ -31,7 +33,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
     BlockUserAdapter blockUserAdapter;
     ChatRoomRepo chatRoomRepo;
     ServerApi serverApi;
-    ArrayList<UserModel> userBlockeds = new ArrayList<UserModel>();
+    ArrayList<ChatRoomModel> userBlockeds = new ArrayList<ChatRoomModel>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +50,14 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
         chatRoomRepo = myBase.getChatRoomRepo();
         userModel = classSharedPreferences.getUser();
         serverApi = new ServerApi(this);
-        blockedActViewModel.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
+        blockedActViewModel.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
             @Override
-            public void onChanged(ArrayList<UserModel> userModels) {
+            public void onChanged(ArrayList<ChatRoomModel> userModels) {
                 if(userModels!=null){
                     userBlockeds.clear();
-                    for(UserModel user:userModels) {
+                    for(ChatRoomModel user:userModels) {
                         System.out.println("this"+userModel.getUserId()+"+");
-                            if(user.getStatus().equals(userModel.getUserId())||user.getStatus().equals("0")){
+                            if(Objects.equals(user.getBlocked_for(),userModel.getUserId())||Objects.equals(user.getBlocked_for(),"0")){
 
                                 userBlockeds.add(user);}
 
@@ -181,7 +183,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
 //    }
 
     @Override
-    public void onHandleSelection(int position, UserModel blockUser) {
+    public void onHandleSelection(int position, ChatRoomModel blockUser) {
         AlertDialog.Builder dialog=new AlertDialog.Builder(this);
 //        dialog.setMessage(getString(R.string.alert_delete_message));
         dialog.setTitle(R.string.alert_unblock_user);

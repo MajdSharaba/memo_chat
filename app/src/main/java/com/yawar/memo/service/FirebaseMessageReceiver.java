@@ -1,12 +1,10 @@
 package com.yawar.memo.service;
 
 import android.annotation.SuppressLint;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Person;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -26,17 +24,13 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.call.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
+import com.yawar.memo.notification.NotificationCallWorker;
 import com.yawar.memo.notification.NotificationWorker;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -52,18 +46,17 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
 
 public class FirebaseMessageReceiver
         extends FirebaseMessagingService  {
 
     int id =1;
     String TAG = "FirebaseMessageReceiver";
+    public static final String workCallTag = "notificationCallWork";
     public static final String workTag = "notificationWork";
+
     BaseApp myBase;
     ChatRoomRepo chatRoomRepo;
     ServerApi serverApi;
@@ -87,6 +80,7 @@ public class FirebaseMessageReceiver
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         mWorkManager = WorkManager.getInstance();
+
 
 
         wackLock();
@@ -149,9 +143,9 @@ public class FirebaseMessageReceiver
                         Data inputData = new Data.Builder().putString("name",username).putString("image",image).putString("body",remoteMessage.getData().get("body")).putString("anthorUserCallId", anthorUserCallId).putString("channel", String.valueOf(channel_id)).putBoolean("isVideoCall",isVideoCall).build();
 
 
-                        OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                        OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationCallWorker.class)
                                 .setInputData(inputData)
-                                .addTag(workTag)
+                                .addTag(workCallTag)
                                 .build();
                         WorkManager.getInstance().enqueue(notificationWork);
 
@@ -184,7 +178,16 @@ public class FirebaseMessageReceiver
 //                            int channel_id=Integer.parseInt(channelId)+10000;
 
                             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
-                            new showNotification(this).execute(userMissCallName, userMissCallimage, getResources().getString(R.string.missing_call), String.valueOf(channelId));
+//                            new showNotification(this).execute(userMissCallName, userMissCallimage, getResources().getString(R.string.missing_call), String.valueOf(channelId));
+
+                            Data inputDataNotification = new Data.Builder().putString("name",userMissCallName).putString("image",userMissCallimage).putString("body",getResources().getString(R.string.missing_call)).putString("channel", String.valueOf(channelId)).build();
+
+
+                            OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                                    .setInputData(inputDataNotification)
+                                    .addTag(workTag)
+                                    .build();
+                            WorkManager.getInstance().enqueue(notificationWork1);
 
 
 
@@ -221,7 +224,15 @@ public class FirebaseMessageReceiver
 
                 if (!chatRoomRepo.checkInChat(remoteMessage.getData().get("sender_id"))) {
 
-                    new showNotification(this).execute(remoteMessage.getData().get("title"), remoteMessage.getData().get("image"), message, remoteMessage.getData().get("sender_id"));
+//                    new showNotification(this).execute(remoteMessage.getData().get("title"), remoteMessage.getData().get("image"), message, remoteMessage.getData().get("sender_id"));
+                    Data inputDataNotification = new Data.Builder().putString("name",remoteMessage.getData().get("title")).putString("image",remoteMessage.getData().get("image")).putString("body",message).putString("channel", remoteMessage.getData().get("sender_id")).build();
+
+
+                    OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                            .setInputData(inputDataNotification)
+                            .addTag(workTag)
+                            .build();
+                    WorkManager.getInstance().enqueue(notificationWork1);
                 }
 
         }}
@@ -230,133 +241,133 @@ public class FirebaseMessageReceiver
 
 
 
-    private class showNotification extends AsyncTask<String, Void, Bitmap> {
-
-        Context ctx;
-        String message;
-        String title;
-        String sender_id;
-
-        public showNotification(Context context) {
-            super();
-            this.ctx = context;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-
-            InputStream in;
-           message = params[2] ;
-           title = params[0];
-           sender_id = params[3];
-
-            try {
-                if(!params[1].equals("")){
-                URL url = new URL(AllConstants.imageUrl+params[1]);
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-                connection.setDoInput(true);
-                connection.connect();
-                in = connection.getInputStream();
-                Bitmap myBitmap = BitmapFactory.decodeStream(in);
-                return myBitmap;}
-                else {
-                    return null;
-                }
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            Bitmap bitmap;
-
-            super.onPostExecute(result);
-            try {
-               if(result==null){
-                   bitmap = BitmapFactory.decodeResource(FirebaseMessageReceiver.this.getResources(),
-                           R.drawable.th);
-                   System.out.println("this null");
-               }
-               else {
-                   bitmap= result;
-               }
-                Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.incomingcall);
-                Intent intent
-                        = new Intent(FirebaseMessageReceiver.this, SplashScreen.class);
-                // Assign channel ID
-                String channel_id = "notification_channel";
-                // Here FLAG_ACTIVITY_CLEAR_TOP flag is set to clear
-                // the activities present in the activity stack,
-                // on the top of the Activity that is to be launched
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                // Pass the intent to PendingIntent to start the
-                // next Activity
-                PendingIntent pendingIntent
-                        = PendingIntent.getActivity(FirebaseMessageReceiver.this
-                        , 0, intent,
-                        PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
-
-                // Create a Builder object using NotificationCompat
-                // class. This will allow control over all the flags
-                NotificationCompat.Builder builder
-                        = new NotificationCompat
-                        .Builder(getApplicationContext(),
-                        channel_id)
-                        .setNumber(id++)
-                        .setPriority(NotificationCompat.PRIORITY_MAX).
-                         setContentTitle(title)
-                        .setContentText(message)
-                        .setLargeIcon(ImageProperties.getCircleBitmap(bitmap))
-
-
-
-
-                        .setSmallIcon(R.drawable.ic_memo_logo)
-                        .setAutoCancel(false)
-                        .setSound((RingtoneManager. getDefaultUri (RingtoneManager. TYPE_NOTIFICATION)))
-                        .setGroup(GROUP_KEY_WORK_EMAIL)
-
-
-
-
-                        //specify which group this notification belongs to
-                        //set this notification as the summary for the group
-                        .setVibrate(new long[]{1000, 1000, 1000,
-                                1000, 1000})
-//                        .setOnlyAlertOnce(true)
-                        .setContentIntent(pendingIntent)
-                        .setGroupSummary(true);
-
-                NotificationManager notificationManager
-                        = (NotificationManager) getSystemService(
-                        Context.NOTIFICATION_SERVICE);
-                // Check if the Android Version is greater than Oreo
-                if (Build.VERSION.SDK_INT
-                        >= Build.VERSION_CODES.O) {
-                    NotificationChannel notificationChannel
-                            = new NotificationChannel(
-                            channel_id, "Memo",
-
-                            NotificationManager.IMPORTANCE_HIGH);
-                    notificationManager.createNotificationChannel(
-                            notificationChannel);
-                    notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
-
-                }
-
-
-                notificationManager.notify(Integer.parseInt(sender_id), builder.build());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    private class showNotification extends AsyncTask<String, Void, Bitmap> {
+//
+//        Context ctx;
+//        String message;
+//        String title;
+//        String sender_id;
+//
+//        public showNotification(Context context) {
+//            super();
+//            this.ctx = context;
+//        }
+//
+//        @Override
+//        protected Bitmap doInBackground(String... params) {
+//
+//            InputStream in;
+//           message = params[2] ;
+//           title = params[0];
+//           sender_id = params[3];
+//
+//            try {
+//                if(!params[1].equals("")){
+//                URL url = new URL(AllConstants.imageUrl+params[1]);
+//                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+//                connection.setDoInput(true);
+//                connection.connect();
+//                in = connection.getInputStream();
+//                Bitmap myBitmap = BitmapFactory.decodeStream(in);
+//                return myBitmap;}
+//                else {
+//                    return null;
+//                }
+//
+//            } catch (MalformedURLException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Bitmap result) {
+//            Bitmap bitmap;
+//
+//            super.onPostExecute(result);
+//            try {
+//               if(result==null){
+//                   bitmap = BitmapFactory.decodeResource(FirebaseMessageReceiver.this.getResources(),
+//                           R.drawable.th);
+//                   System.out.println("this null");
+//               }
+//               else {
+//                   bitmap= result;
+//               }
+//                Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.incomingcall);
+//                Intent intent
+//                        = new Intent(FirebaseMessageReceiver.this, SplashScreen.class);
+//                // Assign channel ID
+//                String channel_id = "notification_channel";
+//                // Here FLAG_ACTIVITY_CLEAR_TOP flag is set to clear
+//                // the activities present in the activity stack,
+//                // on the top of the Activity that is to be launched
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                // Pass the intent to PendingIntent to start the
+//                // next Activity
+//                PendingIntent pendingIntent
+//                        = PendingIntent.getActivity(FirebaseMessageReceiver.this
+//                        , 0, intent,
+//                        PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
+//
+//                // Create a Builder object using NotificationCompat
+//                // class. This will allow control over all the flags
+//                NotificationCompat.Builder builder
+//                        = new NotificationCompat
+//                        .Builder(getApplicationContext(),
+//                        channel_id)
+//                        .setNumber(id++)
+//                        .setPriority(NotificationCompat.PRIORITY_MAX).
+//                         setContentTitle(title)
+//                        .setContentText(message)
+//                        .setLargeIcon(ImageProperties.getCircleBitmap(bitmap))
+//
+//
+//
+//
+//                        .setSmallIcon(R.drawable.ic_memo_logo)
+//                        .setAutoCancel(false)
+//                        .setSound((RingtoneManager. getDefaultUri (RingtoneManager. TYPE_NOTIFICATION)))
+//                        .setGroup(GROUP_KEY_WORK_EMAIL)
+//
+//
+//
+//
+//                        //specify which group this notification belongs to
+//                        //set this notification as the summary for the group
+//                        .setVibrate(new long[]{1000, 1000, 1000,
+//                                1000, 1000})
+////                        .setOnlyAlertOnce(true)
+//                        .setContentIntent(pendingIntent)
+//                        .setGroupSummary(true);
+//
+//                NotificationManager notificationManager
+//                        = (NotificationManager) getSystemService(
+//                        Context.NOTIFICATION_SERVICE);
+//                // Check if the Android Version is greater than Oreo
+//                if (Build.VERSION.SDK_INT
+//                        >= Build.VERSION_CODES.O) {
+//                    NotificationChannel notificationChannel
+//                            = new NotificationChannel(
+//                            channel_id, "Memo",
+//
+//                            NotificationManager.IMPORTANCE_HIGH);
+//                    notificationManager.createNotificationChannel(
+//                            notificationChannel);
+//                    notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
+//
+//                }
+//
+//
+//                notificationManager.notify(Integer.parseInt(sender_id), builder.build());
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
 
 

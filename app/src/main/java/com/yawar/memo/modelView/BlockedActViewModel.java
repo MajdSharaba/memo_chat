@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 public class BlockedActViewModel extends ViewModel {
     BaseApp baseApp = BaseApp.getInstance();
-    private final BlockUserRepo repository = baseApp.getBlockUserRepo();
+    private final ChatRoomRepo repository = baseApp.getChatRoomRepo();
 
 
     public MutableLiveData<ArrayList<UserModel>> blockUserListMutableLiveData;
@@ -32,8 +32,8 @@ public class BlockedActViewModel extends ViewModel {
 
 
 
-    public  MutableLiveData<ArrayList<UserModel>> loadData() {
-        return repository.userBlockListMutableLiveData;
+    public  MutableLiveData<ArrayList<ChatRoomModel>> loadData() {
+        return repository.chatRoomListMutableLiveData;
 //        System.out.println(chatRoomListMutableLiveData.getValue().size()+"chatRoomListMutableLiveData.getValue().size()");
 
     }

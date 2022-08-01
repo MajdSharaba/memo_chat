@@ -11,11 +11,21 @@ public class SendContactNumberResponse  implements Serializable {
     String chat_id;
     String fcmToken;
 
+    public String getBlockedFor() {
+        return blockedFor;
+    }
+
+    public void setBlockedFor(String blockedFor) {
+        this.blockedFor = blockedFor;
+    }
+
+    String blockedFor;
 
 
 
 
-    public SendContactNumberResponse(String id ,String name, String number, String image, String state ,String chat_id , String fcmToken) {
+
+    public SendContactNumberResponse(String id ,String name, String number, String image, String state ,String chat_id , String fcmToken, String blockedFor) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -23,6 +33,7 @@ public class SendContactNumberResponse  implements Serializable {
         this.state = state;
         this.chat_id = chat_id;
         this.fcmToken = fcmToken;
+        this.blockedFor = blockedFor;
     }
 
     public String getName() {

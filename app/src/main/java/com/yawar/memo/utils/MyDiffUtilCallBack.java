@@ -11,7 +11,7 @@ import com.yawar.memo.model.ChatRoomModel;
 
     @Override
     public boolean areItemsTheSame(@NonNull ChatRoomModel oldItem, @NonNull ChatRoomModel newItem) {
-        return oldItem.getUserId().equals(newItem.getUserId());
+        return oldItem.getOther_id().equals(newItem.getOther_id());
     }
 
     @Override

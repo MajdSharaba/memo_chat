@@ -1017,68 +1017,76 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
 
             case BLOCK_USER:
-                System.out.println(args[0].toString()+"NEW_Block");
-                String userDoBlock = "";
-                String userBlock = "";
-                String blockedFor = "";
-                String name = "";
-                String image = "";
-                String special_number = "";
-                try {
-                    JSONObject jsonObject = new JSONObject(args[0].toString());
-                    userDoBlock = jsonObject.getString("my_id");
-                    userBlock = jsonObject.getString("user_id");
-                    blockedFor = jsonObject.getString("blocked_for");
-                    name = jsonObject.getString("userDoBlockName");
-                    special_number = jsonObject.getString("userDoBlockSpecialNumber");
-                    image = jsonObject.getString("userDoBlockImage");
-
-                    System.out.println(args[0].toString()+"from here");
-
-
-
-                    if(userBlock.equals(classSharedPreferences.getUser().getUserId())){
-                        System.out.println("doooo it");
-                        UserModel userModel = new UserModel(userDoBlock,name,"","","",special_number,image,blockedFor);
-                        blockUserRepo.addBlockUser(userModel);
-                    }
-
-
-
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                System.out.println("BLOCK_USER "+args[0].toString());
+                intent = new Intent(ConversationActivity.ON_BLOCK_USER);
+                intent.putExtra("block", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                System.out.println(args[0].toString()+"NEW_Block");
+//                String userDoBlock = "";
+//                String userBlock = "";
+//                String blockedFor = "";
+//                String name = "";
+//                String image = "";
+//                String special_number = "";
+//                try {
+//                    JSONObject jsonObject = new JSONObject(args[0].toString());
+//                    userDoBlock = jsonObject.getString("my_id");
+//                    userBlock = jsonObject.getString("user_id");
+//                    blockedFor = jsonObject.getString("blocked_for");
+//                    name = jsonObject.getString("userDoBlockName");
+//                    special_number = jsonObject.getString("userDoBlockSpecialNumber");
+//                    image = jsonObject.getString("userDoBlockImage");
+//
+//                    System.out.println(args[0].toString()+"from here");
+//
+//
+//
+//                    if(userBlock.equals(classSharedPreferences.getUser().getUserId())){
+//                        System.out.println("doooo it");
+//                        UserModel userModel = new UserModel(userDoBlock,name,"","","",special_number,image,blockedFor);
+//                        blockUserRepo.addBlockUser(userModel);
+//                    }
+//
+//
+//
+//
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
                 break;
             case UNBLOCK_USER:
-                System.out.println(args[0].toString()+"NEW_UNBlock");
-                String userDoUnBlock = "";
-                String userUnBlock = "";
-                String unBlockedFor = "";
-
-                try {
-                    JSONObject jsonObject = new JSONObject(args[0].toString());
-                    userDoUnBlock = jsonObject.getString("my_id");
-                    userUnBlock = jsonObject.getString("user_id");
-                    unBlockedFor = jsonObject.getString("blocked_for");
-
-
-
-
-
-                    if(userUnBlock.equals(classSharedPreferences.getUser().getUserId())){
-                        System.out.println("doooo it");
-                        blockUserRepo.deleteBlockUser(userDoUnBlock,unBlockedFor);
-                    }
-
-
-
-
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                System.out.println("UNBLOCK_USER "+args[0].toString());
+                intent = new Intent(ConversationActivity.ON_UN_BLOCK_USER);
+                intent.putExtra("unBlock", args[0].toString());
+                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                System.out.println(args[0].toString()+"NEW_UNBlock");
+//                String userDoUnBlock = "";
+//                String userUnBlock = "";
+//                String unBlockedFor = "";
+//
+//                try {
+//                    JSONObject jsonObject = new JSONObject(args[0].toString());
+//                    userDoUnBlock = jsonObject.getString("my_id");
+//                    userUnBlock = jsonObject.getString("user_id");
+//                    unBlockedFor = jsonObject.getString("blocked_for");
+//
+//
+//
+//
+//
+//                    if(userUnBlock.equals(classSharedPreferences.getUser().getUserId())){
+//                        System.out.println("doooo it");
+//                        blockUserRepo.deleteBlockUser(userDoUnBlock,unBlockedFor);
+//                    }
+//
+//
+//
+//
+//
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
                 break;
             case EVENT_RECIVE_STOP_CALLING:
                   System.out.println("EVENT_RECIVE_STOP_CALLING");

@@ -43,7 +43,6 @@ import com.yawar.memo.R;
 import com.yawar.memo.adapter.SearchAdapter;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.SearchRespone;
-import com.yawar.memo.utils.Globale;
 import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.permissions.Permissions;
 
@@ -90,7 +89,6 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     List<SearchRespone> searchResponeArrayList = new ArrayList<>();
     SearchAdapter searchAdapter;
     BottomNavigationView bottomNavigationView;
-    Globale globale;
     ArrayList<SearchRespone> res = new ArrayList<>();
     LinearLayoutManager linearLayoutManager ;
     private Permissions permissions;
@@ -144,7 +142,6 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
 //      bottomNavigationView = view.findViewById(R.id.bottomNavigationView);
 //      bottomNavigationView.setSelectedItemId(R.id.searchSn);
 
-        globale   = new Globale();
         timer     = new Timer();
         loadingPB = view.findViewById(R.id.idPBLoading);
         nestedSV  = view.findViewById(R.id.idNestedSV);
@@ -438,6 +435,9 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
                         String secretNumber = jsonObject.getString("sn");
                         String image = jsonObject.getString("image");
                         String token = jsonObject.getString("token");
+                        String blockedFor = jsonObject.getString("blocked_for");
+
+
 
 //                      String imageUrl="";
 //                      if(!image.isEmpty()) {
@@ -448,7 +448,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
 //                        }
 //                        List res = new ArrayList();
 
-                        res.add(new SearchRespone(id, name, secretNumber, image, phone,token));
+                        res.add(new SearchRespone(id, name, secretNumber, image, phone,token,blockedFor));
                         searchAdapter = new SearchAdapter(SearchFragment.this,getActivity() , res);
                         recyclerView.setAdapter(searchAdapter);
 
@@ -546,6 +546,8 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         bundle.putString("chatId", "");
         bundle.putString("fcm_token",searchRespone.getToken() );
         bundle.putString("special",searchRespone.getSecretNumber() );
+        bundle.putString("blockedFor",searchRespone.getBlockedFor());
+
         Intent intent = new Intent(getContext(), ConversationActivity.class);
         intent.putExtras(bundle);
         startActivity(intent);
