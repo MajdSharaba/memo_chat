@@ -9,10 +9,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.yawar.memo.language.helper.LocaleHelper;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.ChatRoomFragment;
@@ -26,6 +31,7 @@ import com.yawar.memo.utils.BaseApp;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 //import com.yawar.memo.fragment.StoriesFragment;
@@ -284,8 +290,19 @@ BottomNavigationView bottomNavigation;
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         super.onCreate(savedInstanceState);
+        Context context = LocaleHelper.setLocale(this,LocaleHelper.getLanguage(this));
+        Locale myLocale = new Locale(LocaleHelper.getLanguage(this));
+        Resources res = context.getResources();
+        DisplayMetrics dm = res.getDisplayMetrics();
+        Configuration conf = res.getConfiguration();
+        conf.locale = myLocale;
+        res.updateConfiguration(conf, dm);
+        getBaseContext().getResources().updateConfiguration(conf,
+                getBaseContext().getResources().getDisplayMetrics());
         setContentView(R.layout.activity_dash_bord);
 
+        Log.i("TAG", "onCreate:  " + context.getResources().getString(R.string.chat));
+        Log.i("TAG", "onCreate:  " + getResources().getString(R.string.chat));
         connectSocket();
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, new IntentFilter(TYPING));

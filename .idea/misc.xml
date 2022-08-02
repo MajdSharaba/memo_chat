@@ -15,7 +15,11 @@
         <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/drawable/ic_double_arrow.xml" value="0.1" />
         <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/drawable/ic_launcher_background.xml" value="0.68125" />
         <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/drawable/picker_background.xml" value="0.20185185185185187" />
+        <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/layout/activity_devices_link.xml" value="0.1174342105263158" />
         <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/layout/activity_received_phone_call.xml" value="0.14" />
+        <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/layout/fragment_chat_room.xml" value="0.1174342105263158" />
+        <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/layout/fragment_settings.xml" value="0.25" />
+        <entry key="..\:/AndroidProjects/memo_android/app/src/main/res/menu/bottom_nav_menu.xml" value="0.1174342105263158" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_add.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_add_blue.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_arrow_send.xml" value="0.1" />

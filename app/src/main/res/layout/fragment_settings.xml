@@ -95,22 +95,24 @@
                     android:id="@+id/selectImage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/set_photo"
-                    android:layout_gravity="left"
-                    android:textColor="@color/textColor"
+                    android:layout_gravity="end"
+                    android:gravity="start"
                     android:layout_marginStart="5dp"
-                    android:drawablePadding="5dp"
-                    android:drawableStart="@drawable/ic_addphoto"
-                    android:textStyle="bold"
-                    android:textSize="18dp"
                     android:layout_marginBottom="10dp"
-                    />
+                    android:drawableStart="@drawable/ic_addphoto"
+                    android:drawablePadding="5dp"
+                    android:text="@string/set_photo"
+                    android:textColor="@color/textColor"
+                    android:textSize="18dp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/setUserName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/set_user_name"
-                    android:layout_gravity="left"
+                    android:layout_gravity="end"
+                    android:gravity="start"
                     android:drawableStart="@drawable/ic_add"
                     android:drawableTint="@color/green"
                     android:layout_marginStart="5dp"
@@ -171,6 +173,7 @@
                             android:text="@string/devices"
                             android:layout_marginStart="10dp"
                             android:textSize="16dp"
+                            android:gravity="start"
                             android:textColor="@color/textColor"
                             />
 
