@@ -34,9 +34,7 @@ import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.views.UserInformationActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.View_Holder>implements Filterable {
 //    final private ListItemClickListener mOnClickListener;
@@ -73,8 +71,6 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
             //.. should log the error or throw and exception
         }
         this.listsearch.addAll(getCurrentList());
-
-
     }
 
     @NonNull
@@ -97,10 +93,10 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
 
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
-        holder.name.setText(chatRoomModel.getName());
-        holder.textTime.setText(timeProperties.getFormattedDate(context,Long.parseLong(chatRoomModel.getLastMessageTime())));
+        holder.name.setText(chatRoomModel.getUsername());
+        holder.textTime.setText(timeProperties.getFormattedDate(context,Long.parseLong(chatRoomModel.getCreated_at())));
 
-        switch (chatRoomModel.getLastMessage()){
+        switch (chatRoomModel.getLast_message()){
             case "imageWeb":
                 lastMessage = context.getResources().getString(R.string.photo);
                 holder.imageType.setVisibility(View.VISIBLE);
@@ -145,15 +141,15 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
             default:
                 holder.imageType.setVisibility(View.GONE);
 
-                lastMessage = chatRoomModel.getLastMessage() ;
+                lastMessage = chatRoomModel.getLast_message() ;
 
         }
         holder.lastMessage.setText(lastMessage);
-        if(chatRoomModel.getNumberUnRMessage().equals("0"))
+        if(chatRoomModel.getNum_msg().equals("0"))
             holder.numUMessage.setVisibility(View.GONE);
         else {
             holder.numUMessage.setVisibility(View.VISIBLE);
-            holder.numUMessage.setText(chatRoomModel.getNumberUnRMessage());}
+            holder.numUMessage.setText(chatRoomModel.getNum_msg());}
         if(!chatRoomModel.getImage().isEmpty()){
             System.out.println("not freeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 //            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl +chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(holder.imageView);
@@ -194,12 +190,14 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
                     public void onClick(View view) {
                         Intent intent = new Intent(view.getContext(), UserInformationActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putString("user_id", chatRoomModel.getUserId());
-                        bundle.putString("name", chatRoomModel.getName());
+                        bundle.putString("user_id", chatRoomModel.getOther_id());
+                        bundle.putString("name", chatRoomModel.getUsername());
                         bundle.putString("image", chatRoomModel.getImage());
-                        bundle.putString("fcm_token", chatRoomModel.getFcmToken());
-                        bundle.putString("special", chatRoomModel.getSpecialNumber());
-                        bundle.putString("chat_id",chatRoomModel.getChatId());
+                        bundle.putString("fcm_token", chatRoomModel.getUser_token());
+                        bundle.putString("special", chatRoomModel.getSn());
+                        bundle.putString("chat_id",chatRoomModel.getId());
+                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+
                         intent.putExtras(bundle);
                         view.getContext().startActivity(intent);
                         mDialog.dismiss();
@@ -216,14 +214,14 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
                         Bundle bundle = new Bundle();
 
 
-                        bundle.putString("reciver_id",chatRoomModel.getUserId());
-
+                        bundle.putString("reciver_id",chatRoomModel.getOther_id());
                         bundle.putString("sender_id", my_id);
-                        bundle.putString("fcm_token",chatRoomModel.getFcmToken() );
-
-                        bundle.putString("name",chatRoomModel.getName());
+                        bundle.putString("fcm_token",chatRoomModel.getUser_token() );
+                        bundle.putString("name",chatRoomModel.getUsername());
                         bundle.putString("image",chatRoomModel.getImage());
-                        bundle.putString("chat_id",chatRoomModel.getChatId());
+                        bundle.putString("chat_id",chatRoomModel.getId());
+                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+
 
 
                         Intent intent = new Intent(context, ConversationActivity.class);
@@ -259,7 +257,7 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (ChatRoomModel item : listsearch) {
-                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                    if (item.getUsername().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }

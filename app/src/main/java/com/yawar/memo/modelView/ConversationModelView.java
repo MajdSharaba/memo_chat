@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
@@ -18,25 +19,51 @@ import java.util.Objects;
 public class ConversationModelView extends ViewModel {
         BaseApp baseApp = BaseApp.getInstance();
         private final ChatMessageRepo repository = baseApp.getChatMessageRepo();
+        private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
 
-    private   ArrayList<ChatMessage> _selectedMessage;
-    public MutableLiveData<ArrayList<ChatMessage>> selectedMessage ;
     private   String _state;
     public MutableLiveData<String> state ;
-
-
-
     private   String _isTyping;
-
-
-
     public MutableLiveData<String> isTyping ;
 
+
+
+
+
     public ConversationModelView() {
-        this._selectedMessage = new ArrayList<>();
-        this.selectedMessage = new MutableLiveData<>();
+
         this.state=new MutableLiveData<>();
         this.isTyping = new MutableLiveData<>();
+    }
+
+
+//
+    public void setBlockedFor(String blockedFor) {
+        blockUserRepo.setBlockedForRepo(blockedFor);
+    }
+    public MutableLiveData<String> blockedFor(){
+        return blockUserRepo.blockedForRepo;
+    }
+
+    public MutableLiveData<Boolean> isBlocked(){
+        return blockUserRepo.blockedRepo;
+    }
+    public void setBlocked(Boolean blocked){
+        blockUserRepo.setBlockedRepo(blocked);
+    }
+
+    public MutableLiveData<Boolean> isUnBlocked(){
+        return blockUserRepo.getUnBlockedRepo();
+    }
+    public void setUnBlocked(Boolean unBlocked){
+        blockUserRepo.setUnBlockedRepo(unBlocked);
+    }
+
+    public void sendBlockRequest(String my_id, String another_user_id){
+        blockUserRepo.sendBlockRequest(my_id,another_user_id);
+    }
+    public void sendUnBlockRequest(String my_id, String another_user_id){
+        blockUserRepo.sendUnbBlockUser(my_id,another_user_id);
     }
 
 
@@ -48,17 +75,26 @@ public class ConversationModelView extends ViewModel {
 
 
     public void addSelectedMessage(ChatMessage message){
-        _selectedMessage.add(message);
-        selectedMessage.setValue(_selectedMessage);
+        repository.addSelectedMessage(message);
+//        _selectedMessage.add(message);
+//        selectedMessage.setValue(_selectedMessage);
     }
     public void removeSelectedMessage(ChatMessage message){
-        _selectedMessage.remove(message);
-        selectedMessage.setValue(_selectedMessage);
+        repository.removeSelectedMessage(message);
+//        _selectedMessage.remove(message);
+//        selectedMessage.setValue(_selectedMessage);
     }
     public void clearSelectedMessage(){
-        _selectedMessage.clear();
-        selectedMessage.setValue(_selectedMessage);
+        repository.clearSelectedMessage();
+//        _selectedMessage.clear();
+//        selectedMessage.setValue(_selectedMessage);
     }
+    public MutableLiveData<ArrayList<ChatMessage>> getSelectedMessage() {
+        return repository.selectedMessage;
+
+    }
+
+
 
 
 
@@ -88,9 +124,9 @@ public class ConversationModelView extends ViewModel {
             }
         }
     public void deleteMessage( ) {
-        for (int i = 0; i < _selectedMessage.size(); i++) {
+        for (int i = 0; i < getSelectedMessage().getValue().size(); i++) {
 
-            String message_id = _selectedMessage.get(i).getId();
+            String message_id = getSelectedMessage().getValue().get(i).getId();
             for (ChatMessage chatMessage : Objects.requireNonNull(getChatMessaheHistory().getValue())) {
                 if (chatMessage.getId().equals(message_id)) {
                     System.out.println(chatMessage.getId() + " " + message_id);
@@ -127,5 +163,15 @@ public class ConversationModelView extends ViewModel {
     public void setMessageDownload(String message_id,boolean isDwonload) {
         repository.setMessageDownload(message_id,isDwonload);
     }
+
+    public void deleteMessageForMe(ArrayList<String> message_id,String user_id) {
+
+         repository.deleteMessageForMe(message_id.toString(),user_id,getSelectedMessage().getValue());
+
+
+
+
+    }
+
 
 }

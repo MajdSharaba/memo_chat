@@ -15,12 +15,16 @@ public class RequestCallViewModel extends ViewModel {
 //    private   Boolean _rining;
     public MutableLiveData<Boolean> rining ;
 
+    public MutableLiveData<Boolean> isAudio ;
+
+
     public RequestCallViewModel() {
         this.isVideoForMe = new MutableLiveData<>(false);
         this.isVideoForYou=new MutableLiveData<>(false);
         this.endCall = new MutableLiveData<>(false);
         this.rining = new MutableLiveData<>(false);
         this.peerIdRecived = new MutableLiveData<>("no connect");
+        this.isAudio = new MutableLiveData<>(true);
 
 
     }

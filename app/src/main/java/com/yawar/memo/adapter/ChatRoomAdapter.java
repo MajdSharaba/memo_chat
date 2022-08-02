@@ -1,7 +1,6 @@
 package com.yawar.memo.adapter;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,11 +11,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -31,13 +28,10 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.views.ConversationActivity;
-import com.yawar.memo.views.UserDetailsActivity;
 import com.yawar.memo.views.UserInformationActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.View_Holder> implements Filterable {
 //    final private ListItemClickListener mOnClickListener;
@@ -99,14 +93,14 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         ChatRoomModel chatRoomModel = getItem(position);
         String lastMessage = "";
-        holder.name.setText(chatRoomModel.name);
+        holder.name.setText(chatRoomModel.username);
 
 //            holder.textTime.setText(timeProperties.getFormattedDate(context.getActivity(),Long.parseLong(list.get(position).lastMessageTime)));
-        holder.textTime.setText(timeProperties.getFormattedDate(context.getActivity(),Long.parseLong(chatRoomModel.lastMessageTime)));
+        holder.textTime.setText(timeProperties.getFormattedDate(context.getActivity(),Long.parseLong(chatRoomModel.created_at)));
         if(!chatRoomModel.isTyping()) {
             holder.lastMessage.setTextColor(context.getResources().getColor(R.color.gray));
-            System.out.println(chatRoomModel.lastMessageType+"list.get(position).lastMessageType");
-            switch (chatRoomModel.lastMessageType) {
+            System.out.println(chatRoomModel.message_type +"list.get(position).lastMessageType");
+            switch (chatRoomModel.message_type) {
                 case "imageWeb":
                     lastMessage = context.getResources().getString(R.string.photo);
                     holder.imageType.setVisibility(View.VISIBLE);
@@ -150,16 +144,16 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                 default:
                     holder.imageType.setVisibility(View.GONE);
 
-                    lastMessage = chatRoomModel.lastMessage;
+                    lastMessage = chatRoomModel.last_message;
 
             }
             holder.lastMessage.setText(lastMessage);
-            if (chatRoomModel.numberUnRMessage.equals("0"))
+            if (chatRoomModel.num_msg.equals("0"))
                 holder.numUMessage.setVisibility(View.GONE);
             else {
                 holder.numUMessage.setVisibility(View.VISIBLE);
-                holder.numUMessage.setText(chatRoomModel.numberUnRMessage);
-                System.out.println(chatRoomModel.numberUnRMessage+chatRoomModel.numberUnRMessage);
+                holder.numUMessage.setText(chatRoomModel.num_msg);
+                System.out.println(chatRoomModel.num_msg +chatRoomModel.num_msg);
             }
         }
         else{
@@ -238,13 +232,13 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                     public void onClick(View view) {
                         Intent intent = new Intent(view.getContext(), UserInformationActivity.class);
                         Bundle bundle = new Bundle();
-                        bundle.putString("user_id", chatRoomModel.getUserId());
-                        bundle.putString("name", chatRoomModel.getName());
+                        bundle.putString("user_id", chatRoomModel.getOther_id());
+                        bundle.putString("name", chatRoomModel.getUsername());
                         bundle.putString("image", chatRoomModel.getImage());
-                        bundle.putString("fcm_token", chatRoomModel.fcmToken);
-                        bundle.putString("special", chatRoomModel.getSpecialNumber());
-                        bundle.putString("chat_id",chatRoomModel.getChatId());
-                        bundle.putString("blockedFor",chatRoomModel.blockedFor);
+                        bundle.putString("fcm_token", chatRoomModel.user_token);
+                        bundle.putString("special", chatRoomModel.getSn());
+                        bundle.putString("chat_id",chatRoomModel.getId());
+                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
 
 
                         intent.putExtras(bundle);
@@ -262,15 +256,15 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                         Bundle bundle = new Bundle();
 
 
-                        bundle.putString("reciver_id",chatRoomModel.getUserId());
+                        bundle.putString("reciver_id",chatRoomModel.getOther_id());
 
                         bundle.putString("sender_id", my_id);
-                        bundle.putString("fcm_token",chatRoomModel.fcmToken );
+                        bundle.putString("fcm_token",chatRoomModel.user_token);
 
-                        bundle.putString("name",chatRoomModel.getName());
+                        bundle.putString("name",chatRoomModel.getUsername());
                         bundle.putString("image",chatRoomModel.getImage());
-                        bundle.putString("chat_id",chatRoomModel.getChatId());
-                        bundle.putString("blockedFor",chatRoomModel.blockedFor);
+                        bundle.putString("chat_id",chatRoomModel.getId());
+                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
 
 
 
@@ -309,7 +303,7 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
                 for (ChatRoomModel item : listsearch) {
-                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                    if (item.getUsername().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }

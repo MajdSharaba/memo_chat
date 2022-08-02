@@ -17,6 +17,30 @@ public interface AllConstants {
     int CONTACTS_REQUEST_CODE = 2000;
     int RECORDING_REQUEST_CODE = 3000;
     int Read_Write_Storage_CODE = 5000;
+    int READ_STORAGE_PERMISSION_REJECT = 1999;
+    int RECORD_AUDIO_PERMISSION_REJECT = 1888;
+    int STORAGE_PERMISSION_REJECT = 1777;
+    int CAMERA_PERMISSION_REJECT = 1666;
+    int LOCATION_PERMISSION_REJECT = 1555;
+    int OPEN_MAP_PERMISSION_REJECT = 1448;
+    int READ_CONTACT_PERMISSION_REJECT = 2020;
+    int LOCATION_PERMISSION = 44;
+    int OPEN_MAP_PERMISSION = 448;
+    int OPEN_CAMERA_PERMISSION = 9921;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     String ip="109";
     public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
     //    String base_url = "https://memoback1.herokuapp.com/";
@@ -30,7 +54,7 @@ public interface AllConstants {
     String upload_file_URL = base_node_url+"uploadFile";
     String upload_video_URL = base_node_url+"uploadVedio";
     String upload_image_URL = base_node_url+"uploadImgChat";
-    String get_media = "https://memoback.herokuapp.com/getmedia";
+//    String get_media = base_node_url+"getmedia";
     String download_url = "https://storage.googleapis.com/memoback-ea9c4.appspot.com/";
     String socket_url = base_node_url;
     String delete_message =base_node_url+"deletemessage2";

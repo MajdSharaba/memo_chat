@@ -1,6 +1,8 @@
 package com.yawar.memo.views;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +26,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
+import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.modelView.UserInformationViewModel;
+import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -48,13 +53,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserInformationActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private final ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
+    private ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
     ServerApi serverApi;
     CircleImageView circleImageView;
     LinearLayout linerMore;
     TextView txtUserName;
     TextView txtSpecialNumber;
     BlockUserRepo blockUserRepo;
+    UserInformationViewModel userInformationViewModel;
     TextView call;
     TextView video;
     TextView message;
@@ -75,10 +81,62 @@ public class UserInformationActivity extends AppCompatActivity {
     ImageView imgBtnMessage;
     PopupMenu p;
     ChatRoomRepo chatRoomRepo;
-    boolean isBlocked;
+    String blockedFor;
+    boolean isBlockForMe = false;
 
     float textSize = 14.0F ;
     SharedPreferences sharedPreferences ;
+    private void sendBlockFor(Boolean blocked) {
+
+        JSONObject userBlocked = new JSONObject();
+        JSONObject item = new JSONObject();
+
+        try {
+            item.put("blocked_for",userInformationViewModel.blockedFor().getValue());
+            item.put("Block",blocked);
+            userBlocked.put("my_id", my_id);
+            userBlocked.put("user_id",another_user_id );
+            userBlocked.put("blocked_for",userInformationViewModel.blockedFor().getValue());
+//"item :blockedFor,Block"
+            userBlocked.put("userDoBlockName",classSharedPreferences.getUser().getUserName());
+            userBlocked.put("userDoBlockSpecialNumber",classSharedPreferences.getUser().getSecretNumber());
+            userBlocked.put("userDoBlockImage",classSharedPreferences.getUser().getImage());
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Intent service = new Intent(this, SocketIOService.class);
+
+
+        service.putExtra(SocketIOService.EXTRA_BLOCK_PARAMTERS, userBlocked.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_BLOCK);
+        startService(service);
+
+
+    }
+
+    private void sendUnBlockFor(Boolean blocked) {
+
+        JSONObject userUnBlocked = new JSONObject();
+
+        try {
+            userUnBlocked.put("my_id", my_id);
+            userUnBlocked.put("user_id",another_user_id );
+            userUnBlocked.put("blocked_for",userInformationViewModel.blockedFor().getValue());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Intent service = new Intent(this, SocketIOService.class);
+
+
+        service.putExtra(SocketIOService.EXTRA_UN_BLOCK_PARAMTERS, userUnBlocked.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_UN_BLOCK);
+        startService(service);
+
+
+    }
 
 
     @Override
@@ -87,6 +145,7 @@ public class UserInformationActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_user_information);
+
         
         recyclerView = findViewById(R.id.idCourseRV);
 
@@ -111,6 +170,8 @@ public class UserInformationActivity extends AppCompatActivity {
 
     private void initViews() {
         classSharedPreferences = new ClassSharedPreferences(this);
+        userInformationViewModel = new ViewModelProvider(this).get(UserInformationViewModel.class);
+
         myBase = BaseApp.getInstance();
         chatRoomRepo = myBase.getChatRoomRepo();
         blockUserRepo= myBase.getBlockUserRepo();
@@ -121,37 +182,81 @@ public class UserInformationActivity extends AppCompatActivity {
        another_user_id = bundle.getString("user_id", "Default");
         fcm_token = bundle.getString("fcm_token", "Default");
         imageUrl = bundle.getString("image", "Default");
-//        isBlocked = bundle.getBoolean("isBlocked",false);
+        blockedFor = bundle.getString("blockedFor","");
         my_id = classSharedPreferences.getUser().getUserId();
+        userInformationViewModel.setBlockedFor(blockedFor);
 
-        blockUserRepo.userBlockListMutableLiveData.observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
-            @Override
-            public void onChanged(ArrayList<UserModel> userModelArrayList) {
-                boolean checkBlock = false;
-                if(userModelArrayList!=null){
-                    for(UserModel userModel:userModelArrayList) {
+        userInformationViewModel.getMedia().observe(this, new androidx.lifecycle.Observer<ArrayList<MediaModel>>() {
+                    @Override
+                    public void onChanged(ArrayList<MediaModel> mediaModelArrayList) {
+                        if (mediaModelArrayList != null) {
 
-                        if (userModel.getUserId().equals(another_user_id)) {
-                            if(userModel.getStatus().equals(my_id)||userModel.getStatus().equals("0"))
-
-
-                            checkBlock = true;
-
+                            for (MediaModel media:
+                                 mediaModelArrayList) {
+                                recyclerDataArrayList.add(media);
                             }
-                        break;
 
 
+                        }
+                        adapter.notifyDataSetChanged();
                     }
-                    isBlocked = checkBlock;
-                    }
-
-                    }
+                });
 
 
+//////////////////////////
+        userInformationViewModel.isBlocked().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+                if(s!=null){
+                    sendBlockFor(s);
+                    userInformationViewModel.setBlocked(null);
 
+
+                }
+            }
         });
+        ////////////
+        userInformationViewModel.isUnBlocked().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+                System.out.println("stateee"+s);
+                if(s!=null){
+//                    conversationModelView.
+                    sendUnBlockFor(s);
+                    userInformationViewModel.setUnBlocked(null);
+
+
+                }
+            }
+        });
+        userInformationViewModel.blockedFor().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                boolean isAnyOneBlock = false;
+                if (s != null) {
+                    if (s.equals(my_id)||s.equals("0")) {
+                        isBlockForMe = true;
+           }
+             else {
+                        isBlockForMe = false;
+
+
+                    }
+            }
+                else{
+                    isBlockForMe = false;
+
+                }
+
+        }});
+
+        /////////
+
+
+
         serverApi = new ServerApi(this);
         linerMore=findViewById(R.id.liner_more);
+
 
 
         
@@ -196,7 +301,8 @@ public class UserInformationActivity extends AppCompatActivity {
 
         txtSpecialNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
         imgBtnMessage =  findViewById(R.id.ib_message);
-        getMedia();
+        userInformationViewModel.mediaRequest(my_id,another_user_id);
+//        getMedia();
 
 
 
@@ -218,7 +324,7 @@ public class UserInformationActivity extends AppCompatActivity {
                 bundle.putString("name",userName);
                 bundle.putString("image",imageUrl);
                 bundle.putString("chat_id",chatId);
-                bundle.putBoolean("isBlocked",isBlocked);
+                bundle.putString("blockedFor", blockedFor);
 
 
 
@@ -242,7 +348,7 @@ public class UserInformationActivity extends AppCompatActivity {
         PopupMenu p = new PopupMenu(this, linerMore);
         p.getMenuInflater().inflate(R.menu.main_menu, p .getMenu());
 
-        if(isBlocked){
+        if(isBlockForMe){
             p.getMenu().findItem(R.id.block).setVisible(false);
             p.getMenu().findItem(R.id.unBlock).setVisible(true);}
         else {
@@ -263,7 +369,8 @@ public class UserInformationActivity extends AppCompatActivity {
                                     public void onClick(DialogInterface dialog,
                                                         int which) {
 
-                                        serverApi.block(my_id,userModel);
+//                                        serverApi.block(my_id,userModel);
+                                        userInformationViewModel.sendBlockRequest(my_id,another_user_id);
                                     }
                                 });
                         dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
@@ -288,7 +395,9 @@ public class UserInformationActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog,
                                                     int which) {
 
-                                    serverApi.unbBlockUser(my_id,userModel);
+//                                    serverApi.unbBlockUser(my_id,userModel);
+                                    userInformationViewModel.sendUnBlockRequest(my_id,another_user_id);
+
                                 }
                             });
                         dialogUnBlock.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {
@@ -317,88 +426,6 @@ public class UserInformationActivity extends AppCompatActivity {
         p.show();
     }
 
-    public void getMedia() {
-
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("please wait...");
-        progressDialog.show();
-
-
-
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.get_media, new Response.Listener<String>() {
-
-
-
-            @Override
-            public void onResponse(String response) {
-
-
-                progressDialog.dismiss();
-
-                try {
-                    System.out.println(response);
-                    JSONArray jsonArray = new JSONArray(response);
-//                    System.out.println(respObj + "");
-//                    JSONArray jsonArray = (JSONArray) respObj.get();
-//                    JSONArray jsonArray = new JSONArray(respObj.getJSONArray("data"));
-                    System.out.println(jsonArray);
-
-                    for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        //System.out.println(jsonObject.getString("last_message"));
-                        String image = jsonObject.getString("message");
-                        recyclerDataArrayList.add(new MediaModel(image));
-
-//                        System.out.println(AllConstants.base_url + "uploads/profile/" + jsonObject.getString("image"));
-                    }
-                    adapter.notifyDataSetChanged();
-
-
-//                    Intent intent = new Intent(IntroActivity.this, DashBord.class);
-//
-//                    startActivity(intent);
-//                    IntroActivity.this.finish();
-
-
-//                    else {
-//                        linerArchived.setVisibility(View.GONE);
-//
-//                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    progressDialog.dismiss();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // progressDialog.dismiss();
-//                Toast.makeText(UserInformationActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                // below line we are creating a map for
-                // storing our values in key and value pair.
-                Map<String, String> params = new HashMap<String, String>();
-
-                // on below line we are passing our key
-                // and value pair to our parameters.
-                params.put("sender_id", my_id);
-                params.put("reciver_id",another_user_id);
-//                params.put("email", email);
-//                params.put("first_name", firstName);
-//                params.put("last_name", lastName);
-//                params.put("picture", imageString);
-
-                // at last we are
-                // returning our params.
-                return params;
-            }
-
-        };
-        myBase.addToRequestQueue(request);
-    }
 
 
 

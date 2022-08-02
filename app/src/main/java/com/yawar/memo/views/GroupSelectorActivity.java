@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -38,10 +39,8 @@ import com.yawar.memo.R;
 import com.yawar.memo.adapter.GroupSelectorAdapter;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ContactModel;
-import com.yawar.memo.model.GroupSelectorRespone;
 import com.yawar.memo.model.SendContactNumberResponse;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.utils.Globale;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -65,7 +64,6 @@ public class GroupSelectorActivity extends AppCompatActivity implements GroupSel
 
 //    ArrayList<String> arrayzOfSelectorId = new ArrayList<String>();
     GroupSelectorAdapter mainAdapter;
-    Globale globale;
 
     TextView new_group ;
     float textSize = 14.0F ;
@@ -220,13 +218,13 @@ public class GroupSelectorActivity extends AppCompatActivity implements GroupSel
         Cursor cursor = getContentResolver().query(uri,null,null,null,sort);
         if(cursor.getCount()>0){
             while (cursor.moveToNext()){
-                String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-                String name = cursor.getString(cursor.getColumnIndex(DISPLAY_NAME));
+                @SuppressLint("Range") String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+                @SuppressLint("Range") String name = cursor.getString(cursor.getColumnIndex(DISPLAY_NAME));
                 Uri uriPhone = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
                 String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID+" =?";
                 Cursor phoneCursor = getContentResolver().query(uriPhone, null ,selection , new String[]{id},null);
                 if(phoneCursor.moveToNext()){
-                    String number = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    @SuppressLint("Range") String number = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     ContactModel model = new ContactModel();
                     model.setName(name);
                     model.setNumber(number);
@@ -273,7 +271,8 @@ public class GroupSelectorActivity extends AppCompatActivity implements GroupSel
                         String fcm_token = jsonObject.getString("user_token");
                         String state = jsonObject.getString("state");
                         if(!state.equals( "false")){
-                        groupSelectorRespones.add(new SendContactNumberResponse(id,name,number,image,state,chat_id,fcm_token));}
+//                        groupSelectorRespones.add(new SendContactNumberResponse(id,name,number,image,state,chat_id,fcm_token));
+                        }
 
 
 

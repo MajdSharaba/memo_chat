@@ -1,69 +1,95 @@
 package com.yawar.memo.model;
 
+import java.util.Objects;
+
 public class ChatRoomModel implements Comparable, Cloneable {
-    public String name;
-    public String userId;
-    public String lastMessage;
+//    public String username;
+//    public String other_id;
+//    public String lastMessage;
+//    public String image;
+//    public boolean isChecked;
+//    public  String numberMessage;
+//    public String  chatId;
+//    public  String state;
+//    public  String numberUnRMessage;
+//    public  boolean inChat;
+//    public String fcmToken;
+//    public String lastMessageType;
+//    public String lastMessageState;
+//    public String specialNumber;
+//    public  String lastMessageTime;
+//    public boolean isTyping;
+//    public  String blockedFor;
+    ////
+    public String username;
+    public String other_id;
+    public String last_message;
     public String image;
     public boolean isChecked;
     public  String numberMessage;
-    public String  chatId;
+    public String id;
     public  String state;
-    public  String numberUnRMessage;
+    public  String num_msg;
     public  boolean inChat;
-    public String fcmToken;
-    public String lastMessageType;
-    public String lastMessageState;
-    public String specialNumber;
-    public  String lastMessageTime;
+    public String user_token;
+    public String message_type;
+    public String mstate;
+    public String sn;
+    public  String created_at;
     public boolean isTyping;
-    public  String blockedFor;
+    public  String blocked_for;
+
+
+//           "deleted":null,
+//            "blocked":false,"blocked_for":null,"num_msg":0,"last_message":"\u0628\u0628\u0628",
+//            ","mstate":"1","msg_sender":"198",
+//            "msg_reciver":"199","created_at":"1659009603214","archive":false}
 
 
     public ChatRoomModel(String name,String senderId, String lastMessage, String image, boolean isChecked, String numberMessage,String chatId,String state,String numberUnRMessage,
                          boolean inChat,String fcmToken,String specialNumber, String lastMessageType, String lastMessageState,String lastMessageTime, boolean isTyping, String blockedFor) {
-        this.name = name;
-        this.userId = senderId;
-        this.lastMessage = lastMessage;
+        this.username = name;
+        this.other_id = senderId;
+        this.last_message = lastMessage;
         this.image = image;
         this.isChecked = isChecked;
         this.numberMessage= numberMessage;
-        this.chatId = chatId;
+        this.id = chatId;
         this.state = state;
-        this.numberUnRMessage = numberUnRMessage;
+        this.num_msg = numberUnRMessage;
         this.inChat = inChat;
-        this.fcmToken = fcmToken;
-        this.specialNumber = specialNumber;
-        this.lastMessageState= lastMessageState;
-        this.lastMessageType = lastMessageType;
-        this.lastMessageTime = lastMessageTime;
+        this.user_token = fcmToken;
+        this.sn = specialNumber;
+        this.mstate = lastMessageState;
+        this.message_type = lastMessageType;
+        this.created_at = lastMessageTime;
         this.isTyping = isTyping;
-        this.blockedFor = blockedFor;
+        this.blocked_for = blockedFor;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getOther_id() {
+        return other_id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setOther_id(String other_id) {
+        this.other_id = other_id;
     }
 
 
-    public String getLastMessage() {
-        return lastMessage;
+    public String getLast_message() {
+        return last_message;
     }
 
-    public void setLastMessage(String lastMessage) {
-        this.lastMessage = lastMessage;
+    public void setLast_message(String last_message) {
+        this.last_message = last_message;
     }
 
     public String getImage() {
@@ -91,12 +117,12 @@ public class ChatRoomModel implements Comparable, Cloneable {
         this.numberMessage = numberMessage;
     }
 
-    public String getChatId() {
-        return chatId;
+    public String getId() {
+        return id;
     }
 
-    public void setChatId(String chatId) {
-        this.chatId = chatId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getState() {
@@ -113,51 +139,51 @@ public class ChatRoomModel implements Comparable, Cloneable {
     public void setInChat(boolean inChat) {
         this.inChat = inChat;
     }
-    public String getNumberUnRMessage() {
-        return numberUnRMessage;
+    public String getNum_msg() {
+        return num_msg;
     }
 
-    public void setNumberUnRMessage(String numberUnRMessage) {
-        this.numberUnRMessage = numberUnRMessage;
+    public void setNum_msg(String num_msg) {
+        this.num_msg = num_msg;
     }
 
-    public String getFcmToken() {
-        return fcmToken;
+    public String getUser_token() {
+        return user_token;
     }
 
-    public void setFcmToken(String fcmToken) {
-        this.fcmToken = fcmToken;
+    public void setUser_token(String user_token) {
+        this.user_token = user_token;
     }
-    public String getSpecialNumber() {
-        return specialNumber;
-    }
-
-    public void setSpecialNumber(String specialNumber) {
-        this.specialNumber = specialNumber;
+    public String getSn() {
+        return sn;
     }
 
-    public String getLastMessageType() {
-        return lastMessageType;
+    public void setSn(String sn) {
+        this.sn = sn;
     }
 
-    public void setLastMessageType(String lastMessageType) {
-        this.lastMessageType = lastMessageType;
+    public String getMessage_type() {
+        return message_type;
     }
 
-    public String getLastMessageState() {
-        return lastMessageState;
+    public void setMessage_type(String message_type) {
+        this.message_type = message_type;
     }
 
-    public void setLastMessageState(String lastMessageState) {
-        this.lastMessageState = lastMessageState;
+    public String getMstate() {
+        return mstate;
     }
 
-    public String getLastMessageTime() {
-        return lastMessageTime;
+    public void setMstate(String mstate) {
+        this.mstate = mstate;
     }
 
-    public void setLastMessageTime(String lastMessageTime) {
-        this.lastMessageTime = lastMessageTime;
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
     public boolean isTyping() {
         return isTyping;
@@ -168,18 +194,19 @@ public class ChatRoomModel implements Comparable, Cloneable {
     }
 
 
-    public String getBlockedFor() {
-        return blockedFor;
+    public String getBlocked_for() {
+        return blocked_for;
     }
 
-    public void setBlockedFor(String blockedFor) {
-        this.blockedFor = blockedFor;
+    public void setBlocked_for(String blocked_for) {
+        this.blocked_for = blocked_for;
     }
 
     @Override
     public int compareTo(Object o) {
         ChatRoomModel compare = (ChatRoomModel) o;
-        if (compare.getUserId().equals(this.getUserId()) && compare.lastMessage.equals(this.lastMessage) && compare.isTyping == (this.isTyping)) {
+        if (compare.getOther_id().equals(this.getOther_id()) && compare.last_message.equals(this.last_message) && compare.isTyping == (this.isTyping)&& Objects.equals(compare.getBlocked_for(),this.getBlocked_for())
+        ) {
             return 0;
         }
         return 1;

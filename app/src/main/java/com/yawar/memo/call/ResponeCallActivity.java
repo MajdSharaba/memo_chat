@@ -40,7 +40,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.videocallapp.JavascriptInterface;
-import com.yawar.memo.modelView.RequestCallViewModel;
 import com.yawar.memo.modelView.ResponeCallViewModel;
 import com.yawar.memo.notification.CancelCallFromCallOngoingNotification;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -59,11 +58,14 @@ public class ResponeCallActivity extends AppCompatActivity {
     String peerId = null;
     Boolean isPeerConnected = false;
     String id ="0";
+    String title = "";
+    String onGoingTitle = "";
+
     private final int requestcode = 1;
     public static final String ON_CALL_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
-    public static final String ON_STOP_CALLING_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
+    public static final String ON_STOP_CALLING_REQUEST = "RequestCallActivity.ON_CALL_REQUEST";
     public static final String ON_RECIVED_SETTINGS_CALL = "CallMainActivity.ON_RECIVED_SETTINGS_CALL";
-    public static final String ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY = "ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY";
+    public static final String ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY = "ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY";
     public static final String ON_RECIVED_ASK_FOR_VIDEO = "on_recived_ask_for_video";
     public static final String ON_RECIVED_RESPONE_FOR_VIDEO = "on_recived_respone_for_video";
 
@@ -298,6 +300,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 
     }
     private void closeCall() {
+        System.out.println("Close Call Senttt");
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
         try {
@@ -348,7 +351,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
-        LocalBroadcastManager.getInstance(this).registerReceiver(reciveclosecallfromnotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_Call_ACTIVITY));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveclosecallfromnotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAskForCall, new IntentFilter(ON_RECIVED_ASK_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAcceptChangeToVideoCall, new IntentFilter(ON_RECIVED_RESPONE_FOR_VIDEO));
 
@@ -374,6 +377,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
          id = bundle.getString("id", "0");
         callString = bundle.getString("callRequest", "code");
+        title = bundle.getString("title", "");
         System.out.println("call string is that"+callString);
 
 
@@ -392,6 +396,13 @@ public class ResponeCallActivity extends AppCompatActivity {
             isVideoForyou = typeObject.getBoolean("video");
             responeCallViewModel.isVideoForMe.setValue(isVideoForyou);
             responeCallViewModel.isVideoForYou.setValue(isVideoForyou);
+            if(isVideoForyou){
+                onGoingTitle = getResources().getString(R.string.ongoing_video_call);
+            }
+            else {
+                onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
+
+            }
 
             username = userObject.getString("name");
             anotherUserId = message.getString("snd_id");
@@ -406,7 +417,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancel(-1);
 
-        incomingCallTxt.setText(getResources().getString(R.string.call_from)+" "+username);
+        incomingCallTxt.setText(title+" "+username);
         showInCallNotification();
 
 
@@ -416,7 +427,7 @@ public class ResponeCallActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean s) {
                 if(s){
-
+                    imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
                     webView.setVisibility(View.VISIBLE);
                     layoutCallProperties.setVisibility(View.VISIBLE);
                     imageCallUser.setVisibility(View.GONE);
@@ -424,7 +435,10 @@ public class ResponeCallActivity extends AppCompatActivity {
 
                 }
                 else {
+                    imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_24);
+
                     if(!responeCallViewModel.isVideoForYou.getValue()) {
+
                         webView.setVisibility(View.GONE);
                         layoutCallProperties.setVisibility(View.VISIBLE);
                         imageCallUser.setVisibility(View.VISIBLE);
@@ -458,6 +472,28 @@ public class ResponeCallActivity extends AppCompatActivity {
                 callJavascriptFunction("javascript:toggleStream(\"" + s+ "\")");
 
             }
+        });
+
+
+        responeCallViewModel.isAudio.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+                callJavascriptFunction("javascript:toggleAudio(\"" + s + "\")");
+
+                if(s){
+                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_off_24);
+                }
+                else{
+                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
+
+                    }
+
+
+
+
+                }
+
+
         });
 
 
@@ -693,19 +729,24 @@ private String getUniqueID() {
                 sendSettingsCall(responeCallViewModel.isVideoForMe.getValue(),true);
     }
     public void closeOpenAudio(){
-        isAudio = !isAudio;
-        callJavascriptFunction("javascript:toggleAudio(\"" + isAudio + "\")");
-        if (isAudio) {
-            imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_off_24);
-        } else {
-            imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
-        }
+
+        responeCallViewModel.isAudio.setValue(!responeCallViewModel.isAudio.getValue());
+
+
+//        isAudio = !isAudio;
+//        callJavascriptFunction("javascript:toggleAudio(\"" + isAudio + "\")");
+//        if (isAudio) {
+//            imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_off_24);
+//        } else {
+//            imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
+//        }
 
     }
     void showSwitchToVideoWhenIAskDialog(String message){
 
 
         dialogForMe.setTitle(message);
+        dialogForMe.setCancelable(false);
         dialogForMe.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -722,6 +763,7 @@ private String getUniqueID() {
     void showSwitchToVideoWhenANthorUserRequestDialog(String message){
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
         dialog.setTitle(message);
+        dialog.setCancelable(false);
         dialog.setPositiveButton(R.string.switch_to_video,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
@@ -772,7 +814,7 @@ private String getUniqueID() {
 //                = new Intent(this, CallNotificationActivity.class);
 //        intent.putExtra("callRequest",message );
         Intent intent
-                = new Intent(ResponeCallActivity.this, ResponeCallActivity.class);
+                = new Intent(this, ResponeCallActivity.class);
         // Assign channel ID
         // Here FLAG_ACTIVITY_CLEAR_TOP flag is set to clear
         // the activities present in the activity stack,
@@ -818,13 +860,12 @@ private String getUniqueID() {
 
                 .setVibrate(new long[]{10000, 10000})
                 .setTicker("Call_STATUS")
-                .addAction(R.drawable.btx_custom, HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(ResponeCallActivity.this, R.color.red) + "\">" +getResources().getString(R.string.cancel)+ " </font>", HtmlCompat.FROM_HTML_MODE_LEGACY), pendingIntentCancell)
+                .addAction(R.drawable.btx_custom,  getResources().getString(R.string.cancel), pendingIntentCancell)
 
 
-                .setColorized(true)
                 .setSmallIcon(R.drawable.ic_memo_logo)
                         .setContentTitle(username)
-                .setContentText(getResources().getString(R.string.ongoing_call));
+                .setContentText(onGoingTitle);
         NotificationManager notificationManager
                 = (NotificationManager) getSystemService(
                 Context.NOTIFICATION_SERVICE);

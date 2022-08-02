@@ -4,33 +4,32 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.model.MediaModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.repositry.UserInformationRepo;
 import com.yawar.memo.utils.BaseApp;
 
 import java.util.ArrayList;
 
-public class BlockedActViewModel extends ViewModel {
+
+public class UserInformationViewModel extends ViewModel {
     BaseApp baseApp = BaseApp.getInstance();
-    private final ChatRoomRepo repository = baseApp.getChatRoomRepo();
+    private final UserInformationRepo repository = baseApp.getUserInformationRepo();
     private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
 
 
 
-    public MutableLiveData<ArrayList<UserModel>> blockUserListMutableLiveData;
-    public final ArrayList<UserModel> blockUserList = new ArrayList<>();
 
 
-//    public IntroActModelView(@NonNull Application application) {
-//        super(application);
-//        repository = new ChatRoomRepo(application);
-//        baseApp = BaseApp.getInstance();
-//        chatRoomsList = new ArrayList<>();
-//        chatRoomListMutableLiveData = new MutableLiveData<>();
-//
-//    }
+    public  MutableLiveData<Boolean>  isBlocked;
 
+
+    public UserInformationViewModel() {
+        isBlocked = new MutableLiveData<>(null);
+
+    }
 
     public void setBlockedFor(String blockedFor) {
         blockUserRepo.setBlockedForRepo(blockedFor);
@@ -59,10 +58,17 @@ public class BlockedActViewModel extends ViewModel {
     public void sendUnBlockRequest(String my_id, String another_user_id){
         blockUserRepo.sendUnbBlockUser(my_id,another_user_id);
     }
-
-    public  MutableLiveData<ArrayList<ChatRoomModel>> loadData() {
-        return repository.chatRoomListMutableLiveData;
-//        System.out.println(chatRoomListMutableLiveData.getValue().size()+"chatRoomListMutableLiveData.getValue().size()");
-
+    public void mediaRequest (String user_id , String anthor_user_id){
+        repository.getMedia(user_id, anthor_user_id);
     }
+    public  MutableLiveData<ArrayList<MediaModel>> getMedia(){
+        return  repository.mediaModelsMutableLiveData;
+    }
+
+
+
+
+
+
+
 }

@@ -1,5 +1,7 @@
 package com.yawar.memo.Api;
 
+import com.yawar.memo.model.ChatRoomRespone;
+
 import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -13,7 +15,9 @@ public interface api {
 
     @GET("APIS/mychat.php")//endpoint
 
-    Single<String> getChatRoom(@Query("user_id") String user_id);
+//    Single<String> getChatRoom(@Query("user_id") String user_id);
+    Single<ChatRoomRespone> getChatRoom(@Query("user_id") String user_id);
+
 
     @FormUrlEncoded
 
@@ -59,4 +63,24 @@ public interface api {
     @POST("deleteconversation")//endpoint
     Single<String> deleteChatRoom(@Field("my_id") String my_id
             ,@Field("your_id") String anthor_user_id);
+
+    @FormUrlEncoded
+
+    @POST("deletemessage2")//endpoint
+    Single<String> deleteMessage(@Field("message_id") String message_id
+            ,@Field("user_id") String user_id);
+
+    @FormUrlEncoded
+    @POST("getmedia")//endpoint
+    Single<String> getMedia(@Field("sender_id") String sender_id,@Field("reciver_id") String user_id);
+
+    @FormUrlEncoded
+    @POST("addtoblock")//endpoint
+    Single<String> blockUser(@Field("my_id") String my_id,@Field("user_id") String anthor_user_id);
+
+    @FormUrlEncoded
+    @POST("deleteblock")//endpoint
+    Single<String> unBlockUser(@Field("my_id") String my_id,@Field("user_id") String anthor_user_id);
 }
+
+

@@ -44,6 +44,8 @@ BottomNavigationView bottomNavigation;
     public static final String NEW_MESSAGE ="new Message" ;
     public static final String ON_MESSAGE_RECEIVED = "ConversationActivity.ON_MESSAGE_RECEIVED";
     public static final String TYPING = "ConversationActivity.ON_TYPING";
+    public static final String ON_BLOCK_USER = "ConversationActivity.ON_BLOCK_USER";
+    public static final String ON_UN_BLOCK_USER = "ConversationActivity.ON_UN_BLOCK_USER";
 
 
     private void connectSocket() {
@@ -112,31 +114,16 @@ BottomNavigationView bottomNavigation;
 
 
 
-//                                "https://th.bing.com/th/id/OIP.2s7VxdmHEoDKji3gO_i-5QHaHa?pid=ImgDet&rs=1"
 
                     ));
                 }
-                //              state = message.getString("state");
-//                senderId = message.getString("sender_id");
-//                id = message.getString("message_id");
-//                reciverId = message.getString("reciver_id");
-//                chatId =  message.getString("chat_id");
-////                        fileName = message.getString("orginalName");
+
 
 
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-//            String anthor_id="";
-//            if(senderId.equals(myId)){
-//                anthor_id= reciverId;
-//            }
-//            else {
-//                anthor_id = senderId;
-//            }
-//
-//            if(!state.equals("3")){
-//                myBase.getObserver().setLastMessage(text,chatId,myId,anthor_id);
+
         }
 
 //
@@ -228,6 +215,69 @@ BottomNavigationView bottomNavigation;
             chatRoomRepo.setTyping(chat_id, isTyping.equals("true"));
         }
     };
+    private final BroadcastReceiver reciveBlockUser = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            System.out.println("BroadcastReceiver");
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String blockString = intent.getExtras().getString("block");
+
+                    String userDoBlock = "";
+                    String userBlock = "";
+                    String blockedFor = "";
+                    String name = "";
+                    String image = "";
+                    String special_number = "";
+                    try {
+                        JSONObject jsonObject = new JSONObject(blockString);
+                        userDoBlock = jsonObject.getString("my_id");
+                        userBlock = jsonObject.getString("user_id");
+                        blockedFor = jsonObject.getString("blocked_for");
+                        name = jsonObject.getString("userDoBlockName");
+                        special_number = jsonObject.getString("userDoBlockSpecialNumber");
+                        image = jsonObject.getString("userDoBlockImage");
+
+                         chatRoomRepo.setBlockedState(userDoBlock,blockedFor);
+
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+
+    private final BroadcastReceiver reciveUnBlockUser = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String unBlockString = intent.getExtras().getString("unBlock");
+
+                    String userDoUnBlock = "";
+                    String userUnBlock = "";
+                    String unBlockedFor = "";
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(unBlockString);
+                        userDoUnBlock = jsonObject.getString("my_id");
+                        userUnBlock = jsonObject.getString("user_id");
+                        unBlockedFor = jsonObject.getString("blocked_for");
+
+                        chatRoomRepo.setBlockedState(userDoUnBlock,unBlockedFor);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        getWindow().setFlags(WindowManager.LayoutParams.,
@@ -239,6 +289,10 @@ BottomNavigationView bottomNavigation;
         connectSocket();
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, new IntentFilter(TYPING));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveBlockUser, new IntentFilter(ON_BLOCK_USER));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveUnBlockUser, new IntentFilter(ON_UN_BLOCK_USER));
+
+
 
         classSharedPreferences = new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
@@ -342,8 +396,7 @@ BottomNavigationView bottomNavigation;
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);
-
-
-
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveBlockUser);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveUnBlockUser);
     }
 }

@@ -25,14 +25,12 @@ import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.ContactNumberAdapter;
 import com.yawar.memo.model.SendContactNumberResponse;
-import com.yawar.memo.utils.Globale;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
 public class GroupPropertiesActivity extends AppCompatActivity {
-     Globale globale;
     ArrayList<SendContactNumberResponse> sendContactNumberResponses = new ArrayList<SendContactNumberResponse>();
     RecyclerView recyclerView;
     ContactNumberAdapter mainAdapter;

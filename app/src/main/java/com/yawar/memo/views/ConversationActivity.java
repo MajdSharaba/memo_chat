@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -46,7 +45,6 @@ import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -56,10 +54,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewAnimationUtils;
-import android.webkit.PermissionRequest;
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -70,15 +65,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -124,36 +111,25 @@ import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
+import com.yawar.memo.utils.DialogProperties;
 import com.yawar.memo.utils.FileDownloader;
 import com.yawar.memo.utils.FileUtil;
 import com.yawar.memo.utils.TimeProperties;
-import com.yawar.memo.utils.VolleyMultipartRequest;
 import com.yawar.memo.permissions.Permissions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
-import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Observable;
 import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.socket.client.Socket;
@@ -277,8 +253,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     public static final String ON_MESSAGE_RECEIVED = "ConversationActivity.ON_MESSAGE_RECEIVED";
     public static final String ON_MESSAGE_DELETED = "ConversationActivity.ON_MESSAGE_DELETED";
     public static final String ON_MESSAGE_UPDATE = "ConversationActivity.ON_MESSAGE_UPDATE";
-//    public static final String ON_CALL_REQUEST = "ConversationActivity.ON_CALL_REQUEST";
-//    public static final String FETCH_PEER_ID = "ConversationActivity.FETCH_PEER_ID";
+    public static final String ON_BLOCK_USER = "ConversationActivity.ON_BLOCK_USER";
+    public static final String ON_UN_BLOCK_USER = "ConversationActivity.ON_UN_BLOCK_USER";
 
 
     String filepath = "";
@@ -357,6 +333,78 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
 
+                    }
+                }
+            });
+        }
+    };
+
+    private final BroadcastReceiver reciveBlockUser = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String blockString = intent.getExtras().getString("block");
+
+                    String userDoBlock = "";
+                    String userBlock = "";
+                    String blockedFor = "";
+                    String name = "";
+                    String image = "";
+                    String special_number = "";
+                    try {
+                        JSONObject jsonObject = new JSONObject(blockString);
+                        userDoBlock = jsonObject.getString("my_id");
+                        userBlock = jsonObject.getString("user_id");
+                        blockedFor = jsonObject.getString("blocked_for");
+                        name = jsonObject.getString("userDoBlockName");
+                        special_number = jsonObject.getString("userDoBlockSpecialNumber");
+                        image = jsonObject.getString("userDoBlockImage");
+
+                        System.out.println(blockString + "from here");
+
+
+                        if(userDoBlock.equals(anthor_user_id)){
+
+                            conversationModelView.setBlockedFor(blockedFor);
+                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    };
+
+    private final BroadcastReceiver reciveUnBlockUser = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String unBlockString = intent.getExtras().getString("unBlock");
+
+                    String userDoUnBlock = "";
+                    String userUnBlock = "";
+                    String unBlockedFor = "";
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(unBlockString);
+                        userDoUnBlock = jsonObject.getString("my_id");
+                        userUnBlock = jsonObject.getString("user_id");
+                        unBlockedFor = jsonObject.getString("blocked_for");
+
+                        if(userDoUnBlock.equals(anthor_user_id)){
+                            System.out.println("doooo it");
+//                            blockUserRepo.deleteBlockUser(userDoUnBlock,unBlockedFor);
+                            conversationModelView.setBlockedFor(unBlockedFor);
+                        }
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
                 }
             });
@@ -616,7 +664,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     }
 
     //////////onNewMessage
-    private void newMeesage(JSONObject chatMessage) {
+    public void newMeesage(JSONObject chatMessage) {
 
 
         String message = "";
@@ -665,6 +713,57 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         service.putExtra(SocketIOService.EXTRA_ON_DELETE_PARAMTERS, chatMessage.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_ON_DELETE);
         startService(service);
+
+    }
+    private void sendBlockFor(Boolean blocked) {
+
+                 JSONObject userBlocked = new JSONObject();
+                JSONObject item = new JSONObject();
+
+                try {
+                    item.put("blocked_for",conversationModelView.blockedFor().getValue());
+                    item.put("Block",blocked);
+                    userBlocked.put("my_id", user_id);
+                    userBlocked.put("user_id",anthor_user_id );
+                    userBlocked.put("blocked_for",conversationModelView.blockedFor().getValue());
+//"item :blockedFor,Block"
+                    userBlocked.put("userDoBlockName",classSharedPreferences.getUser().getUserName());
+                    userBlocked.put("userDoBlockSpecialNumber",classSharedPreferences.getUser().getSecretNumber());
+                    userBlocked.put("userDoBlockImage",classSharedPreferences.getUser().getImage());
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+        Intent service = new Intent(this, SocketIOService.class);
+
+
+        service.putExtra(SocketIOService.EXTRA_BLOCK_PARAMTERS, userBlocked.toString());
+                service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_BLOCK);
+                startService(service);
+
+
+    }
+
+    private void sendUnBlockFor(Boolean blocked) {
+
+                        JSONObject userUnBlocked = new JSONObject();
+
+                try {
+                    userUnBlocked.put("my_id", user_id);
+                    userUnBlocked.put("user_id",anthor_user_id );
+                    userUnBlocked.put("blocked_for",conversationModelView.blockedFor().getValue());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+        Intent service = new Intent(this, SocketIOService.class);
+
+
+        service.putExtra(SocketIOService.EXTRA_UN_BLOCK_PARAMTERS, userUnBlocked.toString());
+                service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_UN_BLOCK);
+                startService(service);
+
 
     }
 
@@ -723,6 +822,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNwMessage, new IntentFilter(ON_MESSAGE_RECEIVED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveDeleteMessage, new IntentFilter(ON_MESSAGE_DELETED));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveUpdateMessage, new IntentFilter(ON_MESSAGE_UPDATE));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveBlockUser, new IntentFilter(ON_BLOCK_USER));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveUnBlockUser, new IntentFilter(ON_UN_BLOCK_USER));
+
+
 
 
     }
@@ -750,21 +853,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     private void initViews() {
 
-//      cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
         timeProperties = new TimeProperties();
         conversationModelView = new ViewModelProvider(this).get(ConversationModelView.class);
-
-//      moreOption = findViewById(R.id.image_button_Options);
         messageLiner = findViewById(R.id.liner);
         videoCallBtn = findViewById(R.id.video_call);
         audioCallBtn = findViewById(R.id.audio_call);
         webView = findViewById(R.id.webView);
-
         myBase = BaseApp.getInstance();
-
         textForBlock = findViewById(R.id.text_for_block);
         serverApi = new ServerApi(this);
-
         chatRoomRepo = myBase.getChatRoomRepo();
         blockUserRepo = myBase.getBlockUserRepo();
         Bundle bundle = getIntent().getExtras();
@@ -773,94 +870,177 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         userName = bundle.getString("name", "user");
         imageUrl = bundle.getString("image");
         specialNumber = bundle.getString("special", "");
-
-
         chat_id = bundle.getString("chat_id", "");
         if (chat_id.isEmpty()) {
             System.out.println("anthor_user_id" + anthor_user_id);
             chat_id = chatRoomRepo.getChatId(anthor_user_id);
-            System.out.println(chat_id + "chat_iddddddddd");
         }
         fcmToken = bundle.getString("fcm_token", "");
         personImage = findViewById(R.id.user_image);
         if (!imageUrl.isEmpty()) {
-//            Glide.with(personImage).load(AllConstants.imageUrl + imageUrl).error(R.drawable.th).into(personImage);
             Glide.with(personImage).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(personImage);
-
         }
+        String blockedFor
+         = bundle.getString("blockedFor", null);
+        conversationModelView.setBlockedFor(blockedFor);
 
         chatMessageRepo = myBase.getChatMessageRepo();
         chatMessageRepo.getChatHistory(user_id, anthor_user_id);
-
-
         backImageBtn = findViewById(R.id.image_button_back);
         LinearLayout linearLayout = findViewById(R.id.liner_conversation);
         messagesContainer = findViewById(R.id.messagesContainer);
         messagesContainer.setHasFixedSize(true);
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
-
         messagesContainer.setLayoutManager(linearLayoutManager);
+        messageET = findViewById(R.id.messageEdit);
+        sendMessageBtn = findViewById(R.id.btn_send_message_text);
+        sendImageBtn = findViewById(R.id.btn_send_message_image);
+        searchView = findViewById(R.id.search_con);
+        fowordImageBtn = findViewById(R.id.image_button_foword);
 
-        ///// block when anthor user do
-        blockUserRepo.userBlockListMutableLiveData.observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
+        tv_name = findViewById(R.id.name);
+        tv_name.setTextSize(textSize);
+        tv_name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+
+        tv_state = findViewById(R.id.state);
+        tv_state.setTextSize(textSize);
+        tv_state.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+
+        gallery = findViewById(R.id.gallery);
+        gallery.setTextSize(textSize);
+        gallery.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+        pdf = findViewById(R.id.pdf);
+        pdf.setTextSize(textSize);
+        pdf.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+        contact = findViewById(R.id.contact);
+        contact.setTextSize(textSize);
+        contact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+        location = findViewById(R.id.location);
+        location.setTextSize(textSize);
+        location.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+
+        CharSequence charSequence = searchView.getQuery();
+        view = findViewById(R.id.dataLayout);
+        imageLiner = findViewById(R.id.lytCameraPick);
+        fileLiner = findViewById(R.id.pickFile);
+        gallaryLiner = findViewById(R.id.lytGallaryPick);
+        contactLiner = findViewById(R.id.pick_contact);
+        permissions = new Permissions();
+        messageLayout = findViewById(R.id.messageLayout);
+        personInformationLiner = findViewById(R.id.person_information_liner);
+        toolsLiner = findViewById(R.id.tools_liner_layout);
+        supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.google_map);
+
+        //Initialize fused location
+        client = LocationServices.getFusedLocationProviderClient(this);
+
+
+        recordView = findViewById(R.id.recordView);
+        recordButton = findViewById(R.id.recordButton);
+        deletImageBtn = findViewById(R.id.image_button_delete);
+        recordButton.setRecordView(recordView);
+
+        recordButton.setListenForRecord(false);
+        deletImageBtn = findViewById(R.id.image_button_delete);
+        classSharedPreferences = new ClassSharedPreferences(this);
+
+        if (classSharedPreferences.getList() != null) {
+            unSendMessage = classSharedPreferences.getList();
+
+        }
+
+        chatRoomRepo.setInChat(anthor_user_id, true);
+        container = findViewById(R.id.container);
+        openMaps = findViewById(R.id.pick_location);
+        sendLocation = findViewById(R.id.sendLocation);
+        relativeMaps = findViewById(R.id.relativeMaps);
+        cardOpenItLocation = findViewById(R.id.cardOpenItLocation);
+
+
+        conversationModelView.blockedFor().observe(this, new Observer<String>() {
             @Override
-            public void onChanged(ArrayList<UserModel> userModelArrayList) {
+            public void onChanged(String s) {
                 boolean isAnyOneBlock = false;
+                if (s != null) {
+                    if (s.equals(user_id)) {
+                        textForBlock.setText(getResources().getString(R.string.block_message));
+                        textForBlock.setVisibility(View.VISIBLE);
+                        messageLiner.setVisibility(View.GONE);
+                        blockedForMe = true;
+                        isAnyOneBlock = true;
+                    } else if (s.equals(anthor_user_id)) {
+                        textForBlock.setVisibility(View.VISIBLE);
+                        messageLiner.setVisibility(View.GONE);
 
-                if (userModelArrayList != null) {
-                    for (UserModel userModel : userModelArrayList) {
-                        if (userModel.getUserId().equals(anthor_user_id)) {
-                            if (userModel.getStatus().equals(user_id)) {
-                                textForBlock.setText(getResources().getString(R.string.block_message));
-                                textForBlock.setVisibility(View.VISIBLE);
-                                messageLiner.setVisibility(View.GONE);
-                                blockedForMe = true;
-                                isAnyOneBlock = true;
-                            } else if (userModel.getStatus().equals(anthor_user_id)) {
-                                textForBlock.setVisibility(View.VISIBLE);
-                                messageLiner.setVisibility(View.GONE);
-
-                                textForBlock.setText(getResources().getString(R.string.block_message2));
-                                blockedForMe = false;
-                                isAnyOneBlock = true;
-
-
-                            } else if (userModel.getStatus().equals("0")) {
-                                textForBlock.setVisibility(View.VISIBLE);
-                                messageLiner.setVisibility(View.GONE);
-                                textForBlock.setText(getResources().getString(R.string.block_message2));
-                                blockedForMe = true;
-                                isAnyOneBlock = true;
-
-
-                            } else {
-                                textForBlock.setVisibility(View.GONE);
-                                messageLiner.setVisibility(View.VISIBLE);
-                                blockedForMe = false;
-                                isAnyOneBlock = false;
-
-
-                            }
-
-                            break;
-
-
-                        }
-                    }
-                    if (!isAnyOneBlock) {
-                        textForBlock.setVisibility(View.GONE);
-                        messageLiner.setVisibility(View.VISIBLE);
+                        textForBlock.setText(getResources().getString(R.string.block_message2));
                         blockedForMe = false;
+                        isAnyOneBlock = true;
+
+
+                    } else if (s.equals("0")) {
+                        textForBlock.setVisibility(View.VISIBLE);
+                        messageLiner.setVisibility(View.GONE);
+                        textForBlock.setText(getResources().getString(R.string.block_message2));
+                        blockedForMe = true;
+                        isAnyOneBlock = true;
+
+
                     }
 
+                } else {
+                    textForBlock.setVisibility(View.GONE);
+                    messageLiner.setVisibility(View.VISIBLE);
+                    blockedForMe = false;
+                    isAnyOneBlock = false;
+                }
+
+
+                if (!isAnyOneBlock) {
+                    textForBlock.setVisibility(View.GONE);
+                    messageLiner.setVisibility(View.VISIBLE);
+                    blockedForMe = false;
                 }
             }
 
-
         });
+        ////
+        conversationModelView.isBlocked().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+                System.out.println("stateee"+s);
+                if(s!=null){
+//                    conversationModelView.
+                    sendBlockFor(s);
+                    conversationModelView.setBlocked(null);
+
+
+                }
+            }
+        });
+        ////////////
+        conversationModelView.isUnBlocked().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+                System.out.println("stateee"+s);
+                if(s!=null){
+//                    conversationModelView.
+                    sendUnBlockFor(s);
+                    conversationModelView.setUnBlocked(null);
+
+
+                }
+            }
+        });
+
+        /////////
         chatHistory = new ArrayList<ChatMessage>();
         conversationModelView.state.observe(this, new Observer<String>() {
             @Override
@@ -930,7 +1110,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         });
 //        scroll();
-        conversationModelView.selectedMessage.observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
+        conversationModelView.getSelectedMessage().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
             @Override
             public void onChanged(ArrayList<ChatMessage> chatMessages) {
                 if (chatMessages != null) {
@@ -966,77 +1146,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         });
 
-        messageET = findViewById(R.id.messageEdit);
-        sendMessageBtn = findViewById(R.id.btn_send_message_text);
-        sendImageBtn = findViewById(R.id.btn_send_message_image);
-        searchView = findViewById(R.id.search_con);
-        fowordImageBtn = findViewById(R.id.image_button_foword);
 
-        tv_name = findViewById(R.id.name);
-        tv_name.setTextSize(textSize);
-        tv_name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-
-        tv_state = findViewById(R.id.state);
-        tv_state.setTextSize(textSize);
-        tv_state.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-
-        gallery = findViewById(R.id.gallery);
-        gallery.setTextSize(textSize);
-        gallery.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-        pdf = findViewById(R.id.pdf);
-        pdf.setTextSize(textSize);
-        pdf.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-        contact = findViewById(R.id.contact);
-        contact.setTextSize(textSize);
-        contact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-        location = findViewById(R.id.location);
-        location.setTextSize(textSize);
-        location.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-
-        CharSequence charSequence = searchView.getQuery();
-        view = findViewById(R.id.dataLayout);
-        imageLiner = findViewById(R.id.lytCameraPick);
-        fileLiner = findViewById(R.id.pickFile);
-        gallaryLiner = findViewById(R.id.lytGallaryPick);
-        contactLiner = findViewById(R.id.pick_contact);
-        permissions = new Permissions();
-        messageLayout = findViewById(R.id.messageLayout);
-        personInformationLiner = findViewById(R.id.person_information_liner);
-        toolsLiner = findViewById(R.id.tools_liner_layout);
-        supportMapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.google_map);
-
-        //Initialize fused location
-        client = LocationServices.getFusedLocationProviderClient(this);
-
-
-        recordView = findViewById(R.id.recordView);
-        recordButton = findViewById(R.id.recordButton);
-        deletImageBtn = findViewById(R.id.image_button_delete);
-        recordButton.setRecordView(recordView);
-
-        recordButton.setListenForRecord(false);
-        deletImageBtn = findViewById(R.id.image_button_delete);
-        classSharedPreferences = new ClassSharedPreferences(this);
-
-        if (classSharedPreferences.getList() != null) {
-            unSendMessage = classSharedPreferences.getList();
-
-        }
-
-
-        chatRoomRepo.setInChat(anthor_user_id, true);
-        container = findViewById(R.id.container);
-        openMaps = findViewById(R.id.pick_location);
-        sendLocation = findViewById(R.id.sendLocation);
-        relativeMaps = findViewById(R.id.relativeMaps);
-        cardOpenItLocation = findViewById(R.id.cardOpenItLocation);
 
         openMaps.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -1104,7 +1214,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 bundle.putString("fcm_token", fcmToken);
                 bundle.putString("special", specialNumber);
                 bundle.putString("chat_id", chat_id);
-                bundle.putString("blockedFor", "");
+                bundle.putString("blockedFor", conversationModelView.blockedFor().getValue());
 
 
                 intent.putExtras(bundle);
@@ -1222,7 +1332,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 reply.setVisibility(View.GONE);
 
                 String message_id = System.currentTimeMillis() + "_" + user_id;
-                System.out.println(System.currentTimeMillis() + "_--" + user_id);
 
                 if (classSharedPreferences.getList() != null) {
                     unSendMessage = classSharedPreferences.getList();
@@ -1268,12 +1377,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
                 classSharedPreferences.setList("list", unSendMessage);
-//                for (JSONObject message :
-//                        unSendMessage) {
-//
-//                    newMeesage(message);
-//
-//                }
+
 
                 newMeesage(jsonObject);
 
@@ -1346,9 +1450,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             public void onClick(View view) {
                 hideLayout();
                 checkContactpermission();
-//                Intent in = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
-//                startActivityForResult(in, RESULT_PICK_CONTACT);
-
             }
         });
 
@@ -1444,7 +1545,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 File f = new File(audioPath);
 
-                uploadVoice(audioName, Uri.fromFile(f));
+              ChatMessage chatMessage = FileUtil.uploadVoice(audioName, Uri.fromFile(f),ConversationActivity.this, user_id,anthor_user_id);
+              displayMessage(chatMessage);
 
             }
 
@@ -1466,20 +1568,20 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 messageLayout.setVisibility(View.VISIBLE);
             }
         });
+
+        /////////// for deleteMessage
         deletImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                deleteMessage(deleteMessage);
                 alertDeleteDialog();
-
-//                System.out.println(selectedMessage.get(0).getMessage()+"kkkkk");
             }
         });
+        ///// for forward message
         fowordImageBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FragmentManager fm = getSupportFragmentManager();
-                ForwardDialogFragment forwardDialogFragment = ForwardDialogFragment.newInstance(conversationModelView.selectedMessage.getValue(), "jj");
+                ForwardDialogFragment forwardDialogFragment = ForwardDialogFragment.newInstance(conversationModelView.getSelectedMessage().getValue(), "jj");
                 forwardDialogFragment.show(fm, "fragment_edit_name");
             }
         });
@@ -1491,7 +1593,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 try {
 
                     username.setText(userName);
-                    reply.setText(conversationModelView.selectedMessage.getValue().get(0).message);
+                    reply.setText(conversationModelView.getSelectedMessage().getValue().get(0).message);
                     close.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -1531,18 +1633,17 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         System.out.println("preparing message");
 
 
-        if(conversationModelView.selectedMessage.getValue()!=null) {
-
-             if (conversationModelView.selectedMessage.getValue().size() > 1) {
+        if(conversationModelView.getSelectedMessage().getValue()!=null) {
+            ////when selected message > 1 copy and update disable
+             if (conversationModelView.getSelectedMessage().getValue().size() > 1) {
                  copyItem.setVisible(false);
                  updateItem.setVisible(false);
-//            menu.removeItem(item.getItemId());
 
-             } else if (conversationModelView.selectedMessage.getValue().size() == 1) {
-                 if (conversationModelView.selectedMessage.getValue().get(0).getType().equals("text")) {
+             } else if (conversationModelView.getSelectedMessage().getValue().size() == 1) {
+                 ////copy and update when message type text only
+                 if (conversationModelView.getSelectedMessage().getValue().get(0).getType().equals("text")) {
                      copyItem.setVisible(true);
-                     System.out.println(conversationModelView.selectedMessage.getValue().get(0).getMessage() + "majddddd");
-                     updateItem.setVisible(conversationModelView.selectedMessage.getValue().get(0).getUserId().equals(user_id));
+                     updateItem.setVisible(conversationModelView.getSelectedMessage().getValue().get(0).getUserId().equals(user_id));
 
                  } else {
                      updateItem.setVisible(false);
@@ -1562,6 +1663,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             copyItem.setVisible(false);
             updateItem.setVisible(false);
         }
+        //// for block
         if (blockedForMe) {
             blockItem.setVisible(false);
             unblockItem.setVisible(true);
@@ -1584,16 +1686,16 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         switch (id) {
             case R.id.item_copy:
                 ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clipData = ClipData.newPlainText("key", conversationModelView.selectedMessage.getValue().get(0).getMessage());
+                ClipData clipData = ClipData.newPlainText("key", conversationModelView.getSelectedMessage().getValue().get(0).getMessage());
                 clipboardManager.setPrimaryClip(clipData);
-                conversationModelView.setMessageChecked(conversationModelView.selectedMessage.getValue().get(0).getId(),false);
+                conversationModelView.setMessageChecked(conversationModelView.getSelectedMessage().getValue().get(0).getId(),false);
 
                 conversationModelView.clearSelectedMessage();
                 deleteMessage.clear();
 
                 return true;
             case R.id.item_update:
-                showUpdateMessageDialog(conversationModelView.selectedMessage.getValue().get(0));
+                showUpdateMessageDialog(conversationModelView.getSelectedMessage().getValue().get(0));
 
                 return true;
             case R.id.item_block:
@@ -1604,7 +1706,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                             public void onClick(DialogInterface dialog,
                                                 int which) {
 
-                                serverApi.block(user_id, userModel);
+//                                serverApi.block(user_id, userModel);
+                                conversationModelView.sendBlockRequest(user_id,anthor_user_id);
                             }
                         });
                 dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -1628,7 +1731,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                             public void onClick(DialogInterface dialog,
                                                 int which) {
 
-                                serverApi.unbBlockUser(user_id, userModel);
+//                                serverApi.unbBlockUser(user_id, userModel);
+                                conversationModelView.sendUnBlockRequest(user_id,anthor_user_id);
                             }
                         });
                 dialogUnBlock.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -1649,58 +1753,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     }
 
 
-    private void deleteMessage() {
-        final ProgressDialog progressDialo = new ProgressDialog(this);
-        JSONArray jsonArray = new JSONArray(deleteMessage);
-        progressDialo.setMessage(getResources().getString(R.string.prograss_message));
-        progressDialo.show();
-        // creating a new variable for our request queue
-        RequestQueue queue = Volley.newRequestQueue(this);
-
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.delete_message, new com.android.volley.Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                progressDialo.dismiss();
-                System.out.println("Data added to API+" + conversationModelView.selectedMessage.getValue().size());
-//                for (ChatMessage message : Objects.requireNonNull(conversationModelView.selectedMessage.getValue())) {
-//                    System.out.println("chatMessage"+message.getMessage());
-                    conversationModelView.deleteMessage();
-//                }
-//                adapter.notifyDataSetChanged();
-                conversationModelView.clearSelectedMessage();
-                deleteMessage.clear();
-
-
-
-            }
-        }, new com.android.volley.Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // method to handle errors.
-//                Toast.makeText(ConversationActivity.this, "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() {
-                // below line we are creating a map for
-                // storing our values in key and value pair.
-                Map<String, String> params = new HashMap<String, String>();
-
-                // on below line we are passing our key
-                // and value pair to our parameters.
-                params.put("message_id", deleteMessage.toString());
-                params.put("user_id", user_id);
-
-
-                // at last we are
-                // returning our params.
-                return params;
-            }
-        };
-        // below line is to make
-        // a json object request.
-        myBase.addToRequestQueue(request);
-    }
 
     ///// End initialAction
     private void setUpRecording() {
@@ -1769,8 +1821,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                            String[] permissions, int[] grantResults) {
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        //
-        System.out.println(requestCode + "this is Requesstttttttttttttt code ");
         switch (requestCode) {
             case MY_REQUEST_CODE_PERMISSION: {
 
@@ -1782,9 +1832,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 }
                 // Cancelled or denied.
                 else {
-                    Log.i(",,", "Permission denied!");
-                    Toast.makeText(this, "Permission denied!", Toast.LENGTH_SHORT).show();
-                    showPermissionDialog(getResources().getString(R.string.read_premission), 1999);
+                    DialogProperties.showPermissionDialog(getResources().getString(R.string.read_premission), AllConstants.READ_STORAGE_PERMISSION_REJECT,ConversationActivity.this);
                 }
                 break;
             }
@@ -1795,7 +1843,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     else this.permissions.requestStorage(ConversationActivity.this);
 
                 } else
-                    showPermissionDialog(getResources().getString(R.string.record_voice_premission), 1888);
+                    DialogProperties.showPermissionDialog(getResources().getString(R.string.record_voice_premission), AllConstants.RECORD_AUDIO_PERMISSION_REJECT,ConversationActivity.this);
 
                 break;
             }
@@ -1804,30 +1852,32 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
                     return;
                 else
-                    showPermissionDialog(getResources().getString(R.string.read_premission), 1777);
+//                    showPermissionDialog(getResources().getString(R.string.read_premission), 1777);
+                    DialogProperties.showPermissionDialog(getResources().getString(R.string.read_premission), AllConstants.STORAGE_PERMISSION_REJECT,ConversationActivity.this);
+
                 break;
-            case 44:
+            case AllConstants.LOCATION_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // When Permission Granted
                     //Call Method
                     getCurrentLocation();
                 } else {
-                    showPermissionDialog(getResources().getString(R.string.location_premission), 1555);
+                    DialogProperties.showPermissionDialog(getResources().getString(R.string.location_premission), AllConstants.LOCATION_PERMISSION_REJECT,ConversationActivity.this);
 
                 }
                 break;
-            case 448:
+            case AllConstants.OPEN_MAP_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // When Permission Granted
                     //Call Method
                     openMap();
 
                 } else {
-                    showPermissionDialog(getResources().getString(R.string.location_premission), 1448);
+                    DialogProperties.showPermissionDialog(getResources().getString(R.string.location_premission), AllConstants.OPEN_MAP_PERMISSION_REJECT,ConversationActivity.this);
 
                 }
                 break;
-            case 9921:
+            case AllConstants.OPEN_CAMERA_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Options options = Options.init()
                             .setRequestCode(PICK_IMAGE_VIDEO)                                           //Request code for activity results
@@ -1847,7 +1897,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                     Pix.start(ConversationActivity.this, options);
                 } else {
-                    showPermissionDialog(getResources().getString(R.string.camera_premission), 1666);
+                    DialogProperties.showPermissionDialog(getResources().getString(R.string.camera_premission), AllConstants.CAMERA_PERMISSION_REJECT,ConversationActivity.this);
                 }
                 break;
             case AllConstants.CONTACTS_REQUEST_CODE:
@@ -1856,7 +1906,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     startActivityForResult(in, RESULT_PICK_CONTACT);
                 } else {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
-                        showPermissionDialog(getResources().getString(R.string.contact_permission), 2020);
+                        DialogProperties.showPermissionDialog(getResources().getString(R.string.contact_permission), AllConstants.READ_CONTACT_PERMISSION_REJECT,ConversationActivity.this);
 
                     }
                 }
@@ -1944,16 +1994,16 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         String message_id = System.currentTimeMillis() + "_" + user_id;
-        if (requestCode == 1999) {
+        if (requestCode == AllConstants.READ_STORAGE_PERMISSION_REJECT) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.read_premission), 1999);
+                DialogProperties.showPermissionDialog(getResources().getString(R.string.read_premission), AllConstants.READ_STORAGE_PERMISSION_REJECT,ConversationActivity.this);
 
             } else {
                 this.doBrowseFile();
             }
-        } else if (requestCode == 1888) {
+        } else if (requestCode == AllConstants.RECORD_AUDIO_PERMISSION_REJECT) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.record_voice_premission), 1888);
+                DialogProperties.showPermissionDialog(getResources().getString(R.string.record_voice_premission), AllConstants.RECORD_AUDIO_PERMISSION_REJECT,ConversationActivity.this);
 
             } else {
                 if (this.permissions.isStorageReadOk(ConversationActivity.this))
@@ -1961,18 +2011,18 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 else this.permissions.requestStorage(ConversationActivity.this);
 
             }
-        } else if (requestCode == 1777) {
+        } else if (requestCode == AllConstants.STORAGE_PERMISSION_REJECT) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.read_premission), 1777);
+                DialogProperties.showPermissionDialog(getResources().getString(R.string.read_premission), AllConstants.STORAGE_PERMISSION_REJECT,ConversationActivity.this);
 
 
             } else {
                 return;
             }
 
-        } else if (requestCode == 1666) {
+        } else if (requestCode == AllConstants.CAMERA_PERMISSION_REJECT) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.camera_premission), 1666);
+                DialogProperties.showPermissionDialog(getResources().getString(R.string.camera_premission), AllConstants.CAMERA_PERMISSION_REJECT,ConversationActivity.this);
 
 
             } else {
@@ -1995,23 +2045,23 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 Pix.start(ConversationActivity.this, options);
             }
 
-        } else if (requestCode == 1555) {
+        } else if (requestCode == AllConstants.LOCATION_PERMISSION_REJECT) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.location_premission), 1555);
+                DialogProperties.showPermissionDialog(getResources().getString(R.string.location_premission),  AllConstants.LOCATION_PERMISSION_REJECT,ConversationActivity.this);
 
 
             } else {
                 getCurrentLocation();
             }
-        } else if (requestCode == 1448) {
+        } else if (requestCode == AllConstants.OPEN_MAP_PERMISSION_REJECT) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.location_premission), 1555);
+                DialogProperties.showPermissionDialog(getResources().getString(R.string.location_premission), AllConstants.OPEN_MAP_PERMISSION_REJECT,ConversationActivity.this);
             } else {
                 openMap();
             }
-        } else if (requestCode == 2020) {
+        } else if (requestCode == AllConstants.READ_CONTACT_PERMISSION_REJECT) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
-                showPermissionDialog(getResources().getString(R.string.contact_permission), 2020);
+                DialogProperties.showPermissionDialog(getResources().getString(R.string.contact_permission), AllConstants.READ_CONTACT_PERMISSION_REJECT,ConversationActivity.this);
             } else {
                 Intent in = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(in, RESULT_PICK_CONTACT);
@@ -2032,7 +2082,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     Path path = null;
 //                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 //                         path = Paths.get(pathUri.toString());
-                    System.out.println(pathUri + "patttttttttttttttttttt");
 //                    }
 
 
@@ -2050,7 +2099,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                 displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                                 Log.d("nameeeee>>>>  ", displayName);
 
-                                uploadPDF(displayName, uri);
+                                ChatMessage chatMessage = FileUtil.uploadPDF(displayName, uri,ConversationActivity.this,user_id,anthor_user_id);
+                                displayMessage(chatMessage);
 
                             }
                         } finally {
@@ -2064,14 +2114,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 case PICK_IMAGE_VIDEO:
                     ArrayList<String> returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
                     Uri selectedMediaUri = Uri.parse(returnValue.get(0));
-                    if (!isVideoFile(selectedMediaUri.toString())) {
+                    if (!FileUtil.isVideoFile(selectedMediaUri.toString())) {
                         String displayNamee = null;
 
                         Uri pathImage = Uri.fromFile(new File(selectedMediaUri.toString()));
                         File myFileImage = new File(pathImage.toString());
 
 
-                        copyFileOrDirectory(FileUtil.getPath(this, pathImage), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, pathImage), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
 
                         if (pathImage.toString().startsWith("content://")) {
@@ -2083,15 +2133,20 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                     Log.d("nameeeee>>>>  ", displayNamee);
 //                                    System.out.println(displayNamee);
 
-                                    uploadImage(displayNamee, selectedMediaUri);
+//                                    uploadImage(displayNamee, selectedMediaUri);
+                                   ChatMessage chatMessage =  FileUtil.uploadImage(displayNamee,selectedMediaUri,ConversationActivity.this,user_id,anthor_user_id);
+                                   displayMessage(chatMessage);
+
                                 }
                             } finally {
                                 cursor.close();
                             }
                         } else if (pathImage.toString().startsWith("file://")) {
                             displayNamee = myFileImage.getName();
-                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-                            uploadImage(displayNamee, pathImage);
+//                            uploadImage(displayNamee, pathImage);
+                            ChatMessage chatMessage = FileUtil.uploadImage(displayNamee,pathImage,ConversationActivity.this,user_id,anthor_user_id);
+                            displayMessage(chatMessage);
+
 
 
                             Log.d("nameeeee>>>>  ", displayNamee);
@@ -2104,7 +2159,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         File myFilee = new File(pathhh.toString());
 
 
-                        copyFileOrDirectory(FileUtil.getPath(this, pathhh), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, pathhh), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
                         String displayNamee = null;
 
@@ -2117,15 +2172,19 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                     Log.d("nameeeee>>>>  ", displayNamee);
                                     System.out.println(displayNamee);
 
-                                    uploadVideo(displayNamee, selectedMediaUri);
+//                                    uploadVideo(displayNamee, selectedMediaUri);
+                                    ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,selectedMediaUri,ConversationActivity.this,user_id,anthor_user_id);
+                                    displayMessage(chatMessage);
                                 }
                             } finally {
                                 cursor.close();
                             }
                         } else if (pathhh.toString().startsWith("file://")) {
                             displayNamee = myFilee.getName();
-                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-                            uploadVideo(displayNamee, pathhh);
+//                            uploadVideo(displayNamee, pathhh);
+                            ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,pathhh,ConversationActivity.this,user_id,anthor_user_id);
+                            displayMessage(chatMessage);
+
 
 
                             Log.d("nameeeee>>>>  ", displayNamee);
@@ -2156,7 +2215,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         File myFileImage = new File(selectedMediaUriGallery.toString());
 
 
-                        copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
 
                         if (selectedMediaUriGallery.toString().startsWith("content://")) {
@@ -2168,7 +2227,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                     Log.d("nameeeee>>>>  ", displayNamee);
 //                                    System.out.println(displayNamee);
 
-                                    uploadImage(displayNamee, selectedMediaUriGallery);
+//                                    uploadImage(displayNamee, selectedMediaUriGallery);
+                                   ChatMessage chatMessage =  FileUtil.uploadImage(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
+                                    displayMessage(chatMessage);
+
                                 }
                             } finally {
                                 cursor.close();
@@ -2176,7 +2238,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
                             displayNamee = myFileImage.getName();
                             System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-                            uploadImage(displayNamee, selectedMediaUriGallery);
+//                            uploadImage(displayNamee, selectedMediaUriGallery);
+                             ChatMessage chatMessage = FileUtil.uploadImage(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
+                            displayMessage(chatMessage);
 
 
                             Log.d("nameeeee>>>>  ", displayNamee);
@@ -2189,7 +2253,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         File myFilee = new File(selectedMediaUriGallery.toString());
 
 
-                        copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
 
                         String displayNamee = null;
 
@@ -2202,7 +2266,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                                     Log.d("nameeeee>>>>  ", displayNamee);
                                     System.out.println(displayNamee);
 
-                                    uploadVideo(displayNamee, selectedMediaUriGallery);
+//                                    uploadVideo(displayNamee, selectedMediaUriGallery);
+                                    ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
+                                    displayMessage(chatMessage);
                                 }
                             } finally {
                                 cursor.close();
@@ -2210,7 +2276,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
                             displayNamee = myFilee.getName();
                             System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-                            uploadVideo(displayNamee, selectedMediaUriGallery);
+//                            uploadVideo(displayNamee, selectedMediaUriGallery);
+                            ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
+                            displayMessage(chatMessage);
 
 
                             Log.d("nameeeee>>>>  ", displayNamee);
@@ -2285,573 +2353,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         newMeesage(sendObject);
     }
 
-    //// for upload file to server
-    private void uploadPDF(final String pdfname, Uri pdffile) {
-        String message_id = System.currentTimeMillis() + "_" + user_id;
-        System.out.println(pdfname + "pdfnameeeeeeeeeeee");
-
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
-        chatMessage.setMessage(pdffile.toString());
-        chatMessage.setFileName(pdfname);
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-
-
-//        chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
-        chatMessage.setMe(true);
-        chatMessage.setType("file");
-        chatMessage.setState("0");
-        messageET.setText("");
-        chatMessage.setChecked(false);
-        displayMessage(chatMessage);
-
-
-        InputStream iStream = null;
-        try {
-            iStream = getContentResolver().openInputStream(pdffile);
-            //"file:///storage/emulated/0/memo/1640514470604.3gp"
-            final byte[] inputData = getBytes(iStream);
-
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.upload_file_URL,
-                    new Response.Listener<NetworkResponse>() {
-                        @Override
-                        public void onResponse(NetworkResponse response) {
-                            Log.d("ressssssoo", new String(response.data));
-                            System.out.println("ressssssssponeee" + new String(response.data));
-                            rQueue.getCache().clear();
-                            try {
-                                JSONObject jsonObject = new JSONObject(new String(response.data));
-
-
-
-                                System.out.println(jsonObject.getString("orginalName") + pdfname);
-
-                                JSONObject sendObject = new JSONObject();
-
-                                sendObject.put("sender_id", jsonObject.getString("sender_id"));
-                                sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
-                                sendObject.put("message", jsonObject.getString("message"));
-                                sendObject.put("message_type", jsonObject.getString("message_type"));
-                                sendObject.put("state", jsonObject.getString("state"));
-                                sendObject.put("message_id", message_id);
-                                sendObject.put("chat_id", jsonObject.getInt("chat_id"));
-                                sendObject.put("id", jsonObject.getInt("id"));
-                                sendObject.put("deleted_for", jsonObject.getString("deleted_for"));
-
-                                if (jsonObject.getBoolean("newchat") == true) {
-                                    sendObject.put("newchat", jsonObject.getBoolean("newchat"));
-                                }
-
-
-                                sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-
-
-
-                                newMeesage(sendObject);
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-//                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }) {
-
-                /*
-                 * If you want to add more parameters with the image
-                 * you can do it here
-                 * here we have only one parameter with the image
-                 * which is tags
-                 * */
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("sender_id", user_id);
-                    params.put("reciver_id", anthor_user_id);
-                    params.put("message_type", "file");
-                    params.put("state", "0");
-                    params.put("orginalName", pdfname);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                    return params;
-                }
-
-                /*
-                 *pass files using below method
-                 * */
-                @Override
-                protected Map<String, DataPart> getByteData() {
-                    Map<String, DataPart> params = new HashMap<>();
-
-//                    params.put("files", new DataPart(pdfname, inputData, "plan/text"));
-                    params.put("files", new DataPart(pdfname, inputData, "plan/text"));
-
-
-                    return params;
-                }
-            };
-
-
-            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    0,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            rQueue = Volley.newRequestQueue(ConversationActivity.this);
-//            rQueue.add(volleyMultipartRequest);
-            myBase.addToRequestQueue(volleyMultipartRequest);
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    ///// for upload voice
-    private void uploadVoice(final String voiceName, Uri voicedPath) {
-        String message_id = System.currentTimeMillis() + "_" + user_id;
-        System.out.println("the message id is" + message_id);
-
-
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
-        chatMessage.setMessage(voicedPath.toString());
-        chatMessage.setFileName(voiceName);
-
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-        chatMessage.setMe(true);
-        chatMessage.setType("voice");
-        chatMessage.setState("0");
-        chatMessage.setChecked(false);
-
-        messageET.setText("");
-        displayMessage(chatMessage);
-
-
-        InputStream iStream = null;
-        try {
-
-            iStream = getContentResolver().openInputStream(voicedPath);
-            final byte[] inputData = getBytes(iStream);
-
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.upload_Voice_URL,
-                    new Response.Listener<NetworkResponse>() {
-                        @Override
-                        public void onResponse(NetworkResponse response) {
-                            Log.d("ressssssoo", new String(response.data));
-                            System.out.println("responeeeeeeeeeeee" + new String(response.data));
-                            rQueue.getCache().clear();
-                            try {
-                                JSONObject jsonObject = new JSONObject(new String(response.data));
-                                JSONObject sendObject = new JSONObject();
-
-                                sendObject.put("sender_id", jsonObject.getString("sender_id"));
-                                sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
-                                sendObject.put("message", jsonObject.getString("message"));
-                                sendObject.put("message_type", jsonObject.getString("message_type"));
-                                sendObject.put("state", jsonObject.getString("state"));
-                                sendObject.put("message_id", message_id);
-                                sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                                sendObject.put("chat_id", jsonObject.getInt("chat_id"));
-                                sendObject.put("id", jsonObject.getInt("id"));
-                                sendObject.put("deleted_for", jsonObject.getString("deleted_for"));
-
-                                if (jsonObject.getBoolean("newchat") == true) {
-                                    sendObject.put("newchat", jsonObject.getBoolean("newchat"));
-                                }
-
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-
-
-                                newMeesage(sendObject);
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-//                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }) {
-
-                /*
-                 * If you want to add more parameters with the image
-                 * you can do it here
-                 * here we have only one parameter with the image
-                 * which is tags
-                 * */
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("sender_id", user_id);
-                    params.put("reciver_id", anthor_user_id);
-                    params.put("message_type", "voice");
-                    params.put("state", "0");
-                    params.put("orginalName", voiceName);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                    return params;
-                }
-
-                /*
-                 *pass files using below method
-                 * */
-                @Override
-                protected Map<String, DataPart> getByteData() {
-                    Map<String, DataPart> params = new HashMap<>();
-
-//                    params.put("audios", new DataPart(voiceName, inputData));
-                    params.put("audios", new DataPart(voiceName, inputData, "audio/aac"));
-
-
-                    return params;
-                }
-            };
-
-
-            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    0,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            rQueue = Volley.newRequestQueue(ConversationActivity.this);
-//            rQueue.add(volleyMultipartRequest);
-            myBase.addToRequestQueue(volleyMultipartRequest);
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    //// for upload video
-    private void uploadVideo(final String pdfname, Uri pdffile) {
-        String message_id = System.currentTimeMillis() + "_" + user_id;
-
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
-        chatMessage.setMessage(pdffile.toString());
-        chatMessage.setFileName(pdfname);
-
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-        chatMessage.setMe(true);
-        chatMessage.setType("video");
-        chatMessage.setState("0");
-        messageET.setText("");
-        chatMessage.setChecked(false);
-        displayMessage(chatMessage);
-
-
-        InputStream iStream = null;
-        try {
-
-            iStream = getContentResolver().openInputStream(pdffile);
-            System.out.println(pdffile);
-            //"file:///storage/emulated/0/memo/1640514470604.3gp"
-            final byte[] inputData = getBytes(iStream);
-
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.upload_video_URL,
-                    new Response.Listener<NetworkResponse>() {
-                        @Override
-                        public void onResponse(NetworkResponse response) {
-                            System.out.println("responeeeeeeeeeeee" + new String(response.data));
-
-                            rQueue.getCache().clear();
-                            try {
-                                JSONObject jsonObject = new JSONObject(new String(response.data));
-
-                                JSONObject sendObject = new JSONObject();
-
-                                sendObject.put("sender_id", jsonObject.getString("sender_id"));
-                                sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
-                                sendObject.put("message", jsonObject.getString("message"));
-                                sendObject.put("message_type", jsonObject.getString("message_type"));
-                                sendObject.put("state", jsonObject.getString("state"));
-                                sendObject.put("message_id", message_id);
-                                sendObject.put("chat_id", jsonObject.getInt("chat_id"));
-                                sendObject.put("id", jsonObject.getInt("id"));
-                                sendObject.put("deleted_for", jsonObject.getString("deleted_for"));
-
-                                if (jsonObject.getBoolean("newchat") == true) {
-                                    System.out.println("newwwwwwwwwwwww chatttttttttttt");
-                                    sendObject.put("newchat", jsonObject.getBoolean("newchat"));
-                                }
-
-                                sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-
-
-                                newMeesage(sendObject);
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }) {
-
-                /*
-                 * If you want to add more parameters with the image
-                 * you can do it here
-                 * here we have only one parameter with the image
-                 * which is tags
-                 * */
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("sender_id", user_id);
-                    params.put("reciver_id", anthor_user_id);
-                    params.put("message_type", "video");
-                    params.put("state", "0");
-                    params.put("orginalName", pdfname);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                    return params;
-                }
-
-                /*
-                 *pass files using below method
-                 * */
-                @Override
-                protected Map<String, DataPart> getByteData() {
-                    Map<String, DataPart> params = new HashMap<>();
-
-                    params.put("vedios", new DataPart(pdfname, inputData, "plan/text"));
-
-                    return params;
-                }
-            };
-
-
-            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    0,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            rQueue = Volley.newRequestQueue(ConversationActivity.this);
-//            rQueue.add(volleyMultipartRequest);
-            myBase.addToRequestQueue(volleyMultipartRequest);
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    private void uploadImage(final String imageName, Uri pdfFile) {
-        String message_id = System.currentTimeMillis() + "_" + user_id;
-
-
-        ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
-        chatMessage.setImage(pdfFile.toString());
-        chatMessage.setFileName(imageName);
-
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-        chatMessage.setMe(true);
-        chatMessage.setType("imageWeb");
-        chatMessage.setState("0");
-        messageET.setText("");
-//        chatMessage.setDate(String.valueOf(cal.getTimeInMillis()));
-        chatMessage.setChecked(false);
-        displayMessage(chatMessage);
-
-
-        InputStream iStream = null;
-        try {
-
-            iStream = getContentResolver().openInputStream(pdfFile);
-            System.out.println(pdfFile);
-            //"file:///storage/emulated/0/memo/1640514470604.3gp"
-            final byte[] inputData = getBytes(iStream);
-
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.upload_image_URL,
-                    new Response.Listener<NetworkResponse>() {
-                        @Override
-                        public void onResponse(NetworkResponse response) {
-                            System.out.println("responeeeeeeeeeeee" + new String(response.data));
-
-                            rQueue.getCache().clear();
-                            try {
-                                JSONObject jsonObject = new JSONObject(new String(response.data));
-
-                                JSONObject sendObject = new JSONObject();
-
-
-                                sendObject.put("sender_id", jsonObject.getString("sender_id"));
-                                sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
-                                sendObject.put("message", jsonObject.getString("message"));
-                                sendObject.put("message_type", jsonObject.getString("message_type"));
-                                sendObject.put("state", jsonObject.getString("state"));
-                                sendObject.put("message_id", message_id);
-                                sendObject.put("chat_id", jsonObject.getInt("chat_id"));
-                                sendObject.put("id", jsonObject.getInt("id"));
-                                sendObject.put("deleted_for", jsonObject.getString("deleted_for"));
-
-                                if (jsonObject.getBoolean("newchat") == true) {
-                                    sendObject.put("newchat", jsonObject.getBoolean("newchat"));
-                                }
-
-                                sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-
-
-                                newMeesage(sendObject);
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-//                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }) {
-
-                /*
-                 * If you want to add more parameters with the image
-                 * you can do it here
-                 * here we have only one parameter with the image
-                 * which is tags
-                 * */
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("sender_id", user_id);
-                    params.put("reciver_id", anthor_user_id);
-                    params.put("message_type", "imageWeb");
-                    params.put("state", "0");
-                    params.put("orginalName", imageName);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                    return params;
-                }
-
-                /*
-                 *pass files using below method
-                 * */
-                @Override
-                protected Map<String, DataPart> getByteData() {
-                    Map<String, DataPart> params = new HashMap<>();
-
-                    params.put("img_chat", new DataPart(imageName, inputData, "plan/text"));
-
-                    return params;
-                }
-            };
-
-
-            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    0,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-            rQueue = Volley.newRequestQueue(ConversationActivity.this);
-//            rQueue.add(volleyMultipartRequest);
-            myBase.addToRequestQueue(volleyMultipartRequest);
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    public byte[] getBytes(InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
-        int bufferSize = 1024;
-        byte[] buffer = new byte[bufferSize];
-
-        int len = 0;
-        while ((len = inputStream.read(buffer)) != -1) {
-            byteBuffer.write(buffer, 0, len);
-        }
-        return byteBuffer.toByteArray();
-    }
-
-
-    ///////for copy file
-    public static void copyFileOrDirectory(String srcDir, String dstDir) {
-
-        try {
-            System.out.println(srcDir + dstDir + "copy Recorrrrrrd");
-
-            File src = new File(srcDir);
-            File dst = new File(dstDir, src.getName());
-
-
-            if (src.isDirectory()) {
-
-                String[] files = src.list();
-                int filesLength = files.length;
-                for (int i = 0; i < filesLength; i++) {
-                    String src1 = (new File(src, files[i]).getPath());
-                    String dst1 = dst.getPath();
-                    copyFileOrDirectory(src1, dst1);
-
-                }
-            } else {
-                copyFile(src, dst);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void copyFile(File sourceFile, File destFile) throws IOException {
-        System.out.println(sourceFile.getPath() + destFile.getPath() + "nameeeeeee");
-        if (!destFile.getParentFile().exists())
-            destFile.getParentFile().mkdirs();
-
-        if (!destFile.exists()) {
-            destFile.createNewFile();
-        }
-
-        FileChannel source = null;
-        FileChannel destination = null;
-
-        try {
-            source = new FileInputStream(sourceFile).getChannel();
-            destination = new FileOutputStream(destFile).getChannel();
-            destination.transferFrom(source, 0, source.size());
-        } finally {
-            if (source != null) {
-                source.close();
-            }
-            if (destination != null) {
-                destination.close();
-            }
-        }
-    }
-
-///// end copy file
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -2863,6 +2364,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveDeleteMessage);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveUpdateMessage);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveBlockUser);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveUnBlockUser);
+
 //        LocalBroadcastManager.getInstance(this).unregisterReceiver(recivecallRequest);
 //        LocalBroadcastManager.getInstance(this).unregisterReceiver(recivePeerId);
 
@@ -2927,6 +2431,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void downloadFile(int position, ChatMessage chatMessage, boolean myMessage) {
         File pdfFile;
+
         System.out.println(chatMessage.message + "onDownload");
 
         Log.v(TAG, "download() Method invoked ");
@@ -2942,6 +2447,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             Log.v(TAG, "download() Method HAVE PERMISSIONS ");
             if (myMessage) {
+
                 File d = this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send");
 
                 pdfFile = new File(d, chatMessage.getFileName());
@@ -3193,7 +2699,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         if (ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(ConversationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 448);
+            ActivityCompat.requestPermissions(ConversationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, AllConstants.OPEN_MAP_PERMISSION);
         } else {
             openMap();
         }
@@ -3234,13 +2740,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     void openMap() {
         client = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             return;
         }
         Task<Location> taskd = client.getLastLocation();
@@ -3253,9 +2753,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     supportMapFragment.getMapAsync(new OnMapReadyCallback() {
                         @Override
                         public void onMapReady(GoogleMap googleMap) {
-
-//                                   latLng = new LatLng("lat from response API" + lat ,"longg from response API" + longg);
-
 
                             // Create Marker Option                                                             //  We need a small icon to represent our company
                             MarkerOptions options = new MarkerOptions().position(locationLatLng).title("He is there"); // .icon(BitmapDescriptorFactory.fromResource(R.drawable.logolocation))
@@ -3340,7 +2837,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void PickiTonCompleteListener(String path, boolean wasDriveFile, boolean wasUnknownProvider, boolean wasSuccessful, String Reason) {
 //        System.out.println("PickiTonCompleteListener");
-        copyFileOrDirectory(path, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send").getAbsolutePath());
+        FileUtil.copyFileOrDirectory(path, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send").getAbsolutePath());
 //                    ll;l
 
     }
@@ -3396,12 +2893,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
     }
 
-    public boolean isVideoFile(String path) {
-        String mimeType = URLConnection.guessContentTypeFromName(path);
-        System.out.println(mimeType + "memeType");
-        return mimeType != null && mimeType.indexOf("video") == 0;
 
-    }
 
 
     private void showUpdateMessageDialog(ChatMessage chatMessage) {
@@ -3426,7 +2918,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         e.printStackTrace();
                     }
                     updateMessage(data);
-                    conversationModelView.setMessageChecked(conversationModelView.selectedMessage.getValue().get(0).getId(),false);
+                    conversationModelView.setMessageChecked(conversationModelView.getSelectedMessage().getValue().get(0).getId(),false);
 
                     conversationModelView.clearSelectedMessage();
 
@@ -3445,21 +2937,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     }
 
     private void makeMapsAction() {
-        //Assign Variable
 
-        //Check Permission
         if (ActivityCompat.checkSelfPermission(ConversationActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            //When Permission Grated
-            //Call Method
-
-
             getCurrentLocation();
 
 
         } else {
             // When Permission Denied
             // Request Permission
-            ActivityCompat.requestPermissions(ConversationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 44);
+            ActivityCompat.requestPermissions(ConversationActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, AllConstants.LOCATION_PERMISSION);
         }
 
     }
@@ -3468,14 +2954,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         //Initialize Task Location
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            System.out.println("majdddddddddd");
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
             return;
         }
 
@@ -3517,7 +2995,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     private void alertDeleteDialog() {
 
-        for (ChatMessage message : conversationModelView.selectedMessage.getValue()) {
+        for (ChatMessage message : conversationModelView.getSelectedMessage().getValue()) {
             if (!message.isMe()) {
                 isAllMessgeMe = false;
                 break;
@@ -3528,13 +3006,15 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         }
         AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-//        dialog.setMessage(getString(R.string.alert_delete_message));
         dialog.setTitle(R.string.alert_delete_message);
         dialog.setPositiveButton(R.string.delete_for_me,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
-                        deleteMessage();
+                        conversationModelView.deleteMessageForMe(deleteMessage,user_id);
+
+                        deleteMessage.clear();
+
                     }
                 });
         dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -3752,35 +3232,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            System.out.println("data notifyyyyyyyyyyyyyyyyyy");
             displayMessage(chatMessage);
 
         }
     }
 
-    public void showPermissionDialog(String message, int RequestCode) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setCancelable(true);
-        alertBuilder.setTitle(getResources().getString(R.string.permission_necessary));
-        alertBuilder.setMessage(getResources().getString(R.string.contact_permission));
-        alertBuilder.setMessage(message);
-
-        alertBuilder.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
-
-            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-            public void onClick(DialogInterface dialog, int which) {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivityForResult(intent, RequestCode);
-            }
-        });
-
-        AlertDialog alert = alertBuilder.create();
-        alert.show();
-
-
-    }
 
     private void checkContactpermission() {
 
@@ -3805,9 +3261,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         return true;
     }
-
-
-
 
 }
 

@@ -36,7 +36,6 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ContactModel;
 import com.yawar.memo.model.SendContactNumberResponse;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.utils.Globale;
 import com.yawar.memo.permissions.Permissions;
 
 import java.util.ArrayList;
@@ -58,7 +57,6 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
     ArrayList<SendContactNumberResponse> sendContactNumberResponses = new ArrayList<SendContactNumberResponse>();
     ContactNumberAdapter mainAdapter;
     private Permissions permissions;
-    Globale globale;
 
     TextView contact_number ;
 
@@ -88,7 +86,6 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
 //        toolbar = findViewById(R.id.toolbar);
 //        toolbar.setTitle("Memo");
 //        setSupportActionBar(toolbar);
-        globale = new Globale();
         classSharedPreferences= new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
@@ -423,6 +420,8 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
         bundle.putString("name",sendContactNumberResponse.getName());
         bundle.putString("image",sendContactNumberResponse.getImage());
         bundle.putString("chat_id","");
+        bundle.putString("blockedFor",sendContactNumberResponse.getBlockedFor());
+
 
 
         Intent intent = new Intent(this, ConversationActivity.class);

@@ -2,20 +2,31 @@ package com.yawar.memo.repositry;
 
 import android.annotation.SuppressLint;
 import android.app.Application;
+import android.app.ProgressDialog;
+import android.content.Intent;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.retrofit.RetrofitClient;
+import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -24,6 +35,24 @@ import io.reactivex.schedulers.Schedulers;
 public class ChatMessageRepo {
     public final MutableLiveData<ArrayList<ChatMessage>> chatMessageistMutableLiveData;
     public ArrayList<ChatMessage> chatMessageList;
+    ChatRoomRepo chatRoomRepo = BaseApp.getInstance().getChatRoomRepo();
+
+    public final MutableLiveData<ArrayList<ChatMessage>> selectedMessage;
+
+
+    public MutableLiveData<String> blockedFor;
+    public MutableLiveData<Boolean> blocked;
+    public MutableLiveData<Boolean> unBlocked;
+
+
+
+
+    public ArrayList<ChatMessage> _selectedMessage;
+    BaseApp myBase = BaseApp.getInstance();
+
+
+
+
 
 
     public ChatMessageRepo(Application application) { //application is subclass of context
@@ -31,8 +60,32 @@ public class ChatMessageRepo {
         //cant call abstract func but since instance is there we can do this
         chatMessageList = new ArrayList<>();
         chatMessageistMutableLiveData = new MutableLiveData<>();
+        selectedMessage = new MutableLiveData<>();
+        _selectedMessage = new ArrayList<>();
 
 
+
+
+
+
+
+    }
+
+    public void addSelectedMessage(ChatMessage message){
+        _selectedMessage.add(message);
+        selectedMessage.setValue(_selectedMessage);
+    }
+    public void removeSelectedMessage(ChatMessage message){
+        _selectedMessage.remove(message);
+        selectedMessage.setValue(_selectedMessage);
+    }
+    public void clearSelectedMessage(){
+        for(ChatMessage chatMessage: selectedMessage.getValue()){
+            setMessageChecked(chatMessage.getId(),false);
+
+        }
+        _selectedMessage.clear();
+        selectedMessage.setValue(_selectedMessage);
     }
 
     @SuppressLint("CheckResult")
@@ -193,30 +246,43 @@ public class ChatMessageRepo {
         }
         chatMessageistMutableLiveData.setValue(chatMessageList);
     }
+
+    @SuppressLint("CheckResult")
+    public void deleteMessageForMe(String message_id, String user_id, ArrayList<ChatMessage> chatMessages){
+        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().deleteMessage(message_id,user_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+                    System.out.println("respone delem"+chatMessages.size()+""+chatMessageList.size());
+
+
+                    for (int i = 0; i < chatMessages.size(); i++) {
+
+                String id = chatMessages.get(i).getId();
+                for (ChatMessage chatMessage : chatMessageList) {
+                    if (chatMessage.getId().equals(id)) {
+                        System.out.println("majd ssssss"+chatMessage.getId() + " " + message_id);
+                       deleteMessage(chatMessage);
+                        break;
+                    }
+                }
+
+
+
+                    }
+                    clearSelectedMessage();
+
+                    return ;
+
+                },
+                s-> {
+
+                    return ;
+
+                });
+
+    }
+
+
 }
-//    public MutableLiveData<ArrayList<UserModel>> getUserBlockList() {
-//
-//        return userBlockListMutableLiveData;
-//    }
-//    public  void deleteBlockUser(String user_id,String status){
-//        for(UserModel user:userBlockList){
-//            if(user.getUserId().equals(user_id)){
-//                user.setStatus(status);
-//                break;
-//            }}
-//        userBlockListMutableLiveData.postValue(userBlockList);
-//    }
-//    public  void addBlockUser(UserModel userModel){
-//        boolean searchBlock = false;
-//        for(UserModel user:userBlockList){
-//            if(user.getUserId().equals(userModel.getUserId())){
-//                user.setStatus(userModel.getStatus());
-//                searchBlock = true;
-//                break;
-//            }}
-//        if(!searchBlock){
-//            userBlockList.add( 0,userModel);}
-//        userBlockListMutableLiveData.postValue(userBlockList);
-//    }
-//}
-//
+

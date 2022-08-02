@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
@@ -29,16 +29,21 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.mutasem.slidetoanswer.SwipeToAnswerView;
+
 public class CallNotificationActivity extends AppCompatActivity {
     public static final String ON_CLOSE_CALL_FROM_NOTIFICATION = "CallNotificationActivity.ON_RINING_REQUEST";
 
-    ImageView acceptBtn;
-    ImageView rejectBtn;
+    SwipeToAnswerView acceptBtn;
+    SwipeToAnswerView rejectBtn;
     String callString;
     String id;
+    TextView tvName,tvType;
     JSONObject message = null;
     JSONObject data = new JSONObject();
     JSONObject type = new JSONObject();
+    String userName = "User Name ";
+    String title = " ";
     JSONObject userObject = new JSONObject();
     private final BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
         @Override
@@ -84,32 +89,43 @@ public class CallNotificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_call_notification);
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION));
 
+        tvName = findViewById(R.id.user_name);
+        tvType = findViewById(R.id.type_call);
+
         Bundle bundle = getIntent().getExtras();
         id = bundle.getString("id","0");
         callString = bundle.getString("callRequest", "code");
+        title = bundle.getString("title","");
+        userName = bundle.getString("name","User Name");
+
+        tvName.setText(userName);
+        tvType.setText(title);
+
         acceptBtn = findViewById(R.id.acceptBtn);
         rejectBtn = findViewById(R.id.rejectBtn);
-        acceptBtn.setOnClickListener(new View.OnClickListener() {
+
+        acceptBtn.setSlideListner(new SwipeToAnswerView.SlideListner() {
             @Override
-            public void onClick(View view) {
-//                System.out.println("acceptBtn" + callString)
+            public void onSlideCompleted() {
+                //TODO : PERFORM WHEN ANSWER
+                rejectBtn.stopAnimation();
+                acceptBtn.setVisibility(View.GONE);
+                rejectBtn.setVisibility(View.GONE);
                 Intent intent = new Intent(CallNotificationActivity.this, ResponeCallActivity.class);
                 intent.putExtra("callRequest",callString);
                 intent.putExtra("id",id);
 
                 startActivity(intent);
                 finish();
-
-
             }
         });
-
-
-        rejectBtn.setOnClickListener(new View.OnClickListener() {
+        rejectBtn.setSlideListner(new SwipeToAnswerView.SlideListner() {
             @Override
-            public void onClick(View view) {
-
-//                sendPeerId(callString,"null");
+            public void onSlideCompleted() {
+                //TODO : PERFORM WHEN REFUSE/DECLINE
+                acceptBtn.stopAnimation();
+                acceptBtn.setVisibility(View.GONE);
+                rejectBtn.setVisibility(View.GONE);
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallNotificationActivity.this);
 //                notificationManager.cancel(Integer.parseInt(id)+10000);
                 notificationManager.cancel(-1);
@@ -117,9 +133,10 @@ public class CallNotificationActivity extends AppCompatActivity {
                 reject(callString);
 
                 finish();
-
             }
         });
+
+
     }
     private void showWhenLockedAndTurnScreenOn() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {

@@ -30,7 +30,6 @@ import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ArchivedActViewModel;
 import com.yawar.memo.repositry.ChatRoomRepo;
-import com.yawar.memo.utils.Globale;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +52,6 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
     ClassSharedPreferences classSharedPreferences;
     ServerApi serverApi;
     UserModel userModel;
-    Globale globale;
     ImageButton iBAddArchived;
     String myId;
     BaseApp myBase;
@@ -82,7 +80,6 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
         archive =  findViewById(R.id.archived);
 //        archive.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        globale = new Globale();
         classSharedPreferences= new ClassSharedPreferences(this);
         myId = classSharedPreferences.getUser().getUserId();
         archivedActViewModel = new ViewModelProvider(this).get(ArchivedActViewModel.class);
@@ -104,9 +101,11 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
                     archived.clear();
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
-                        if (chatRoomModel.getState().equals("0")||chatRoomModel.getState().equals(myId)) {
-                            list.add(chatRoomModel.clone());
-                            archived.add(chatRoomModel);
+                        if(!(chatRoomModel.getState() ==null)) {
+                            if (chatRoomModel.getState().equals("0") || chatRoomModel.getState().equals(myId)) {
+                                list.add(chatRoomModel.clone());
+                                archived.add(chatRoomModel);
+                            }
                         }
                     }
 //                    itemAdapter.updateList((ArrayList<ChatRoomModel>) archived);
@@ -130,7 +129,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
             @Override
             public void onSwipedRight(int position) {
-                archivedActViewModel.removeFromArchived(myId,archived.get(position).getUserId());
+                archivedActViewModel.removeFromArchived(myId,archived.get(position).getOther_id());
 //                removeFromArchived(archived.get(position));
 //                if(archived.size()<1){
 //                    myBase.getObserver().setArchived(false);
@@ -162,19 +161,19 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     @Override
     public void onHandleSelection(int position, ChatRoomModel chatRoomModel) {
-        Toast.makeText(this, "Position " + chatRoomModel.getLastMessage(), Toast.LENGTH_SHORT).show();
-        System.out.println(chatRoomModel.getName());
+        Toast.makeText(this, "Position " + chatRoomModel.getLast_message(), Toast.LENGTH_SHORT).show();
+        System.out.println(chatRoomModel.getUsername());
         Bundle bundle = new Bundle();
-        bundle.putString("reciver_id",chatRoomModel.getUserId());
+        bundle.putString("reciver_id",chatRoomModel.getOther_id());
 
         bundle.putString("sender_id", myId);
-        bundle.putString("fcm_token",chatRoomModel.getFcmToken() );
+        bundle.putString("fcm_token",chatRoomModel.getUser_token() );
 
 //        bundle.putString("reciver_id",chatRoomModel.reciverId);
-        bundle.putString("name",chatRoomModel.getName());
+        bundle.putString("name",chatRoomModel.getUsername());
         bundle.putString("image",chatRoomModel.getImage());
-        bundle.putString("chat_id",chatRoomModel.getChatId());
-        bundle.putString("special", chatRoomModel.getSpecialNumber());
+        bundle.putString("chat_id",chatRoomModel.getId());
+        bundle.putString("special", chatRoomModel.getSn());
 
 
 //        bundle.putString("sender_id", myId);
@@ -190,7 +189,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     }
     private void removeFromArchived(ChatRoomModel chatRoomModel) {
-        System.out.println(chatRoomModel.getLastMessage());
+        System.out.println(chatRoomModel.getLast_message());
         final ProgressDialog progressDialo = new ProgressDialog(this);
         // url to post our data
 
@@ -206,7 +205,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
             public void onResponse(String response) {
                 progressDialo.dismiss();
                 System.out.println("Data added to API+"+response);
-              chatRoomRepo.setState(chatRoomModel.getChatId(),"null");
+              chatRoomRepo.setState(chatRoomModel.getId(),"null");
 //                archived.remove(chatRoomModel);
 //                itemAdapter.notifyDataSetChanged();
 //                if(archived.size()<1){
@@ -234,7 +233,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
                 // on below line we are passing our key
                 // and value pair to our parameters.
                 params.put("my_id",myId );
-                params.put("your_id", chatRoomModel.getUserId());
+                params.put("your_id", chatRoomModel.getOther_id());
 
                 // at last we are
                 // returning our params.

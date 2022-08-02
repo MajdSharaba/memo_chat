@@ -189,6 +189,13 @@
     <string name="ongoing_call">Ongoing Call</string>
     <string name="recive_call_and_close">Recive and Close</string>
     <string name="requesting_to_switch_to_video_call">Requesting to Switch To Video Call</string>
+    <string name="call_video_from">Call Video From</string>
+    <string name="call_audio_from">Call Audio From</string>
+    <string name="ongoing_video_call">Ongoing Video Call</string>
+    <string name="ongoing_audio_call">مكالمة صوت جارية</string>
+
+
+
 
 
 

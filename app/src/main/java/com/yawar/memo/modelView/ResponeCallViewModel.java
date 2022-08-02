@@ -9,10 +9,13 @@ public class ResponeCallViewModel extends ViewModel {
     public MutableLiveData<Boolean> isVideoForMe ;
 
     public MutableLiveData<Boolean> isVideoForYou ;
+    public MutableLiveData<Boolean> isAudio ;
+
 
     public ResponeCallViewModel() {
         this.isVideoForMe = new MutableLiveData<>(false);
         this.isVideoForYou=new MutableLiveData<>(false);
+        this.isAudio = new MutableLiveData<>(true);
 
 
     }

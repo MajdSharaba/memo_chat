@@ -413,7 +413,8 @@ public class ServerApi {
                         String chat_id = jsonObject.getString("chat_id");
                          String fcm_token = jsonObject.getString("user_token");
                         String state = jsonObject.getString("state");
-                        sendContactNumberResponses.add(new SendContactNumberResponse(id, name, number, image, state,chat_id,fcm_token));
+                        String blockedFor = jsonObject.getString("blocked_for");
+                        sendContactNumberResponses.add(new SendContactNumberResponse(id, name, number, image, state,chat_id,fcm_token,blockedFor));
                     }
                     myBase.getContactNumberObserve().setContactNumberResponseList(sendContactNumberResponses);
 
@@ -725,7 +726,7 @@ public class ServerApi {
     }
     //unBlock user
     ///////////////////////////////
-    public void unbBlockUser(String my_id,UserModel userModel) {
+    public void unbBlockUser(String my_id,ChatRoomModel userModel) {
 
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
@@ -752,14 +753,14 @@ public class ServerApi {
                 }
 
 
-                blockUserRepo.deleteBlockUser(userModel.getUserId(),blokedFor);
+                chatRoomRepo.setBlockedState(userModel.other_id,blokedFor);
 
                 Intent service = new Intent(context, SocketIOService.class);
                 JSONObject userUnBlocked = new JSONObject();
 
                 try {
                     userUnBlocked.put("my_id", my_id);
-                    userUnBlocked.put("user_id",userModel.getUserId() );
+                    userUnBlocked.put("user_id",userModel.other_id );
                     userUnBlocked.put("blocked_for",blokedFor);
 
 
@@ -794,7 +795,7 @@ public class ServerApi {
                 // on below line we are passing our key
                 // and value pair to our parameters.
                 params.put("my_id", my_id);
-                params.put("user_id",userModel.getUserId());
+                params.put("user_id",userModel.other_id);
 //                params.put("email", email);
 //                params.put("first_name", firstName);
 //                params.put("last_name", lastName);
@@ -883,6 +884,8 @@ public class ServerApi {
 
 
             JSONObject data = new JSONObject();
+            JSONObject android = new JSONObject();
+            android.put("priority", "high");
             data.put("title", classSharedPreferences.getUser().getUserName());
             data.put("body", message);
             data.put("image", classSharedPreferences.getUser().getImage());
@@ -895,7 +898,7 @@ public class ServerApi {
             notification_data.put("data", data);
             notification_data.put("to", fcmToken);
             notification_data.put("content_available", true);
-            notification_data.put("priority", "high");
+            notification_data.put("android", android);
 
 
             JsonObjectRequest request = new JsonObjectRequest(AllConstants.fcm_send_notification_url, notification_data, new Response.Listener<JSONObject>() {

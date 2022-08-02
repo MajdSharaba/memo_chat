@@ -8,13 +8,24 @@ public class SearchRespone {
     String phone;
     String token;
 
-    public SearchRespone(String id, String name, String secretNumber, String image,String phone,String token) {
+    public String getBlockedFor() {
+        return blockedFor;
+    }
+
+    public void setBlockedFor(String blockedFor) {
+        this.blockedFor = blockedFor;
+    }
+
+    String blockedFor;
+
+    public SearchRespone(String id, String name, String secretNumber, String image,String phone,String token,String blockedFor) {
         this.id = id;
         this.name = name;
         SecretNumber = secretNumber;
         this.image = image;
         this.phone= phone;
         this.token=token;
+        this.blockedFor = blockedFor;
     }
 
     public String getId() {

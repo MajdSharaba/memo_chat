@@ -5,7 +5,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.WindowManager;
@@ -21,8 +20,6 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.model.UserModel;
-import com.yawar.memo.utils.Globale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +29,6 @@ import java.util.Map;
 
 public class UserDetailsActivity extends AppCompatActivity {
     Toolbar toolbar;
-    Globale globale;
     ProgressDialog progressDialog;
     TextView tvNumber;
     TextView tvEmail;
@@ -68,7 +64,6 @@ public class UserDetailsActivity extends AppCompatActivity {
 
     }
     private void initViews() {
-        globale = new Globale();
         tvNumber = findViewById(R.id.tv_number);
         tvNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 

@@ -46,6 +46,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -110,6 +111,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        forwardDialogViewModel.clearSelectedMessage();
 
         service.putExtra(SocketIOService.EXTRA_FORWARD_MESSAGE_PARAMTERS, object.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_Forward);
@@ -147,7 +149,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
 //        myBase.getContactNumberObserve().addObserver(this);
 //        myBase.getObserver().addObserver(this);
 
-        System.out.println(chatMessageArrayList.toString());
+        System.out.println(chatMessageArrayList.size()+"chatMessageArrayList.size()");
         for(ChatMessage chatMessage :chatMessageArrayList){
             chatMessageListId.add("\""+ chatMessage.getId()+"\"");
 
@@ -169,7 +171,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
                 if(chatRoomModels!=null){
                     sendContactNumberResponses.clear();
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
-                                        sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.getUserId(),chatRoomModel.getName(),chatRoomModel.getSpecialNumber(),chatRoomModel.getImage(),"true",chatRoomModel.getChatId(),chatRoomModel.getFcmToken()));
+                     sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.getOther_id(),chatRoomModel.getUsername(),chatRoomModel.getSn(),chatRoomModel.getImage(),"true",chatRoomModel.getId(),chatRoomModel.getUser_token(),chatRoomModel.getBlocked_for()));
 
                     }
                     mainAdapter.updateList(sendContactNumberResponses);
@@ -222,6 +224,5 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
         else {
             forwordList.remove(sendContactNumberResponse.getId());
         }
-        System.out.println(forwordList.size()+"sizeeeeeeeeee");
     }
 }
