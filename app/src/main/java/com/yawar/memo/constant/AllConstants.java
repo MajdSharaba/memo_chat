@@ -54,7 +54,7 @@ public interface AllConstants {
     String upload_file_URL = base_node_url+"uploadFile";
     String upload_video_URL = base_node_url+"uploadVedio";
     String upload_image_URL = base_node_url+"uploadImgChat";
-    String get_media = "https://memoback.herokuapp.com/getmedia";
+//    String get_media = base_node_url+"getmedia";
     String download_url = "https://storage.googleapis.com/memoback-ea9c4.appspot.com/";
     String socket_url = base_node_url;
     String delete_message =base_node_url+"deletemessage2";

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
@@ -18,57 +19,51 @@ import java.util.Objects;
 public class ConversationModelView extends ViewModel {
         BaseApp baseApp = BaseApp.getInstance();
         private final ChatMessageRepo repository = baseApp.getChatMessageRepo();
+        private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
 
-//    private   ArrayList<ChatMessage> _selectedMessage;
-//    public MutableLiveData<ArrayList<ChatMessage>> selectedMessage ;
     private   String _state;
     public MutableLiveData<String> state ;
     private   String _isTyping;
     public MutableLiveData<String> isTyping ;
-//    public MutableLiveData<String> blockedFor;
 
 
 
 
 
     public ConversationModelView() {
-//        this._selectedMessage = new ArrayList<>();
-//        this.selectedMessage = new MutableLiveData<>();
+
         this.state=new MutableLiveData<>();
         this.isTyping = new MutableLiveData<>();
-//        this.blockedFor = new MutableLiveData<>(null);
     }
 
-//    public String getBlockedFor() {
-//        return blockedFor.getValue();
-//    }
+
 //
     public void setBlockedFor(String blockedFor) {
-        repository.setBlockedFor(blockedFor);
+        blockUserRepo.setBlockedForRepo(blockedFor);
     }
     public MutableLiveData<String> blockedFor(){
-        return repository.blockedFor;
+        return blockUserRepo.blockedForRepo;
     }
 
     public MutableLiveData<Boolean> isBlocked(){
-        return repository.blocked;
+        return blockUserRepo.blockedRepo;
     }
     public void setBlocked(Boolean blocked){
-         repository.setBlocked(blocked);
+        blockUserRepo.setBlockedRepo(blocked);
     }
 
     public MutableLiveData<Boolean> isUnBlocked(){
-        return repository.getUnBlocked();
+        return blockUserRepo.getUnBlockedRepo();
     }
     public void setUnBlocked(Boolean unBlocked){
-        repository.setUnBlocked(unBlocked);
+        blockUserRepo.setUnBlockedRepo(unBlocked);
     }
 
     public void sendBlockRequest(String my_id, String another_user_id){
-        repository.sendBlockRequest(my_id,another_user_id);
+        blockUserRepo.sendBlockRequest(my_id,another_user_id);
     }
     public void sendUnBlockRequest(String my_id, String another_user_id){
-        repository.sendUnbBlockUser(my_id,another_user_id);
+        blockUserRepo.sendUnbBlockUser(my_id,another_user_id);
     }
 
 

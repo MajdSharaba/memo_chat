@@ -69,4 +69,18 @@ public interface api {
     @POST("deletemessage2")//endpoint
     Single<String> deleteMessage(@Field("message_id") String message_id
             ,@Field("user_id") String user_id);
+
+    @FormUrlEncoded
+    @POST("getmedia")//endpoint
+    Single<String> getMedia(@Field("sender_id") String sender_id,@Field("reciver_id") String user_id);
+
+    @FormUrlEncoded
+    @POST("addtoblock")//endpoint
+    Single<String> blockUser(@Field("my_id") String my_id,@Field("user_id") String anthor_user_id);
+
+    @FormUrlEncoded
+    @POST("deleteblock")//endpoint
+    Single<String> unBlockUser(@Field("my_id") String my_id,@Field("user_id") String anthor_user_id);
 }
+
+

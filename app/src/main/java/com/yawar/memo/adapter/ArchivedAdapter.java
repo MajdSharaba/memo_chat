@@ -71,8 +71,6 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
             //.. should log the error or throw and exception
         }
         this.listsearch.addAll(getCurrentList());
-
-
     }
 
     @NonNull

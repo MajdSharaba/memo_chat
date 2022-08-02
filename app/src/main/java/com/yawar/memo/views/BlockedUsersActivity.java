@@ -2,16 +2,19 @@ package com.yawar.memo.views;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -20,6 +23,9 @@ import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.BlockedActViewModel;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -33,7 +39,30 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
     BlockUserAdapter blockUserAdapter;
     ChatRoomRepo chatRoomRepo;
     ServerApi serverApi;
+    ChatRoomModel chatRoomModel;
     ArrayList<ChatRoomModel> userBlockeds = new ArrayList<ChatRoomModel>();
+
+    private void sendUnBlockFor(Boolean blocked) {
+
+        JSONObject userUnBlocked = new JSONObject();
+
+        try {
+            userUnBlocked.put("my_id", userModel.getUserId());
+            userUnBlocked.put("user_id",chatRoomModel.other_id );
+            userUnBlocked.put("blocked_for",blockedActViewModel.blockedFor().getValue());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Intent service = new Intent(this, SocketIOService.class);
+
+
+        service.putExtra(SocketIOService.EXTRA_UN_BLOCK_PARAMTERS, userUnBlocked.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_UN_BLOCK);
+        startService(service);
+
+
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +98,51 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
 
             }
         });
+        blockedActViewModel.isBlocked().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+                if(s!=null){
+                    blockedActViewModel.setBlocked(null);
+
+
+                }
+            }
+        });
+        ////////////
+        blockedActViewModel.isUnBlocked().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+                System.out.println("stateee"+s);
+                if(s!=null){
+//                    conversationModelView.
+                    sendUnBlockFor(s);
+                    blockedActViewModel.setUnBlocked(null);
+
+
+                }
+            }
+        });
+//        blockedActViewModel.blockedFor().observe(this, new Observer<String>() {
+//            @Override
+//            public void onChanged(String s) {
+//                boolean isAnyOneBlock = false;
+//                if (s != null) {
+//                    if (s.equals(my_id)||s.equals("0")) {
+//                        isBlockForMe = true;
+//                    }
+//                    else {
+//                        isBlockForMe = false;
+//
+//
+//                    }
+//                }
+//                else{
+//                    isBlockForMe = false;
+//
+//                }
+//
+//            }});
+
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(BlockedUsersActivity.this));
         blockUserAdapter = new BlockUserAdapter(BlockedUsersActivity.this,userBlockeds);
@@ -192,7 +266,9 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
                     public void onClick(DialogInterface dialog,
                                         int which) {
 
-                        serverApi.unbBlockUser(userModel.getUserId(),blockUser);
+                        chatRoomModel = blockUser;
+//                        serverApi.unbBlockUser(userModel.getUserId(),blockUser);
+                        blockedActViewModel.sendUnBlockRequest(userModel.getUserId(),blockUser.other_id);
                     }
                 });
         dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {

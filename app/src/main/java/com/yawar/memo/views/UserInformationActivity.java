@@ -26,6 +26,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
+import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.modelView.UserInformationViewModel;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -52,7 +53,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class UserInformationActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private final ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
+    private ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
     ServerApi serverApi;
     CircleImageView circleImageView;
     LinearLayout linerMore;
@@ -185,12 +186,28 @@ public class UserInformationActivity extends AppCompatActivity {
         my_id = classSharedPreferences.getUser().getUserId();
         userInformationViewModel.setBlockedFor(blockedFor);
 
+        userInformationViewModel.getMedia().observe(this, new androidx.lifecycle.Observer<ArrayList<MediaModel>>() {
+                    @Override
+                    public void onChanged(ArrayList<MediaModel> mediaModelArrayList) {
+                        if (mediaModelArrayList != null) {
+
+                            for (MediaModel media:
+                                 mediaModelArrayList) {
+                                recyclerDataArrayList.add(media);
+                            }
+
+
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
+
+//////////////////////////
         userInformationViewModel.isBlocked().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
-                System.out.println("stateee"+s);
                 if(s!=null){
-//                    conversationModelView.
                     sendBlockFor(s);
                     userInformationViewModel.setBlocked(null);
 
@@ -234,6 +251,7 @@ public class UserInformationActivity extends AppCompatActivity {
         }});
 
         /////////
+
 
 
         serverApi = new ServerApi(this);
@@ -283,7 +301,8 @@ public class UserInformationActivity extends AppCompatActivity {
 
         txtSpecialNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
         imgBtnMessage =  findViewById(R.id.ib_message);
-        getMedia();
+        userInformationViewModel.mediaRequest(my_id,another_user_id);
+//        getMedia();
 
 
 
@@ -407,88 +426,6 @@ public class UserInformationActivity extends AppCompatActivity {
         p.show();
     }
 
-    public void getMedia() {
-
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("please wait...");
-        progressDialog.show();
-
-
-
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.get_media, new Response.Listener<String>() {
-
-
-
-            @Override
-            public void onResponse(String response) {
-
-
-                progressDialog.dismiss();
-
-                try {
-                    System.out.println(response);
-                    JSONArray jsonArray = new JSONArray(response);
-//                    System.out.println(respObj + "");
-//                    JSONArray jsonArray = (JSONArray) respObj.get();
-//                    JSONArray jsonArray = new JSONArray(respObj.getJSONArray("data"));
-                    System.out.println(jsonArray);
-
-                    for (int i = 0; i <= jsonArray.length() - 1; i++) {
-                        JSONObject jsonObject = jsonArray.getJSONObject(i);
-                        //System.out.println(jsonObject.getString("last_message"));
-                        String image = jsonObject.getString("message");
-                        recyclerDataArrayList.add(new MediaModel(image));
-
-//                        System.out.println(AllConstants.base_url + "uploads/profile/" + jsonObject.getString("image"));
-                    }
-                    adapter.notifyDataSetChanged();
-
-
-//                    Intent intent = new Intent(IntroActivity.this, DashBord.class);
-//
-//                    startActivity(intent);
-//                    IntroActivity.this.finish();
-
-
-//                    else {
-//                        linerArchived.setVisibility(View.GONE);
-//
-//                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    progressDialog.dismiss();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                // progressDialog.dismiss();
-//                Toast.makeText(UserInformationActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            protected Map<String, String> getParams() {
-                // below line we are creating a map for
-                // storing our values in key and value pair.
-                Map<String, String> params = new HashMap<String, String>();
-
-                // on below line we are passing our key
-                // and value pair to our parameters.
-                params.put("sender_id", my_id);
-                params.put("reciver_id",another_user_id);
-//                params.put("email", email);
-//                params.put("first_name", firstName);
-//                params.put("last_name", lastName);
-//                params.put("picture", imageString);
-
-                // at last we are
-                // returning our params.
-                return params;
-            }
-
-        };
-        myBase.addToRequestQueue(request);
-    }
 
 
 
