@@ -150,6 +150,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment{
         if (!localeName.equals(currentLanguage)) {
             Context context = LocaleHelper.setLocale(getActivity(), localeName);
             //Resources resources = context.getResources();
+            LocaleHelper.setLocale(context, localeName);
             myLocale = new Locale(localeName);
             Resources res = context.getResources();
             DisplayMetrics dm = res.getDisplayMetrics();
@@ -158,6 +159,7 @@ public class BottomSheetFragment extends BottomSheetDialogFragment{
             res.updateConfiguration(conf, dm);
             Intent refresh = new Intent(getActivity(), DashBord.class);
             refresh.putExtra(currentLang, localeName);
+            getActivity().finish();
             startActivity(refresh);
         } else {
             //Toast.makeText(getActivity(), "Language already selected!", Toast.LENGTH_SHORT).show();
