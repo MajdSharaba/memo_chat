@@ -1,14 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".call.RequestCallActivity">
-    <WebView
-        android:id="@+id/webView"
+<!--    <WebView-->
+<!--        android:id="@+id/webView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent" />-->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:id="@+id/webRtcRelativeLayout"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="1dp"
+            >
+
+            <org.webrtc.SurfaceViewRenderer
+                android:id="@+id/surface_view2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="From PeerConection"
+                android:layout_gravity="top|end"
+                android:textColor="#fff"
+                android:layout_margin="16dp"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="120dp"
+            android:layout_height="150dp"
+            android:layout_margin="5dp"
+            >
+
+            <org.webrtc.SurfaceViewRenderer
+                android:id="@+id/surface_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/txt_camera"
+                android:layout_width="wrap_content"
+                android:text="From camera"
+                android:layout_gravity="top|end"
+                android:textColor="#fff"
+                android:layout_margin="16dp"
+                android:layout_height="wrap_content" />
+        </FrameLayout>
+    </RelativeLayout>
+
+        <!--            <FrameLayout-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_weight="1">-->
+
+        <!--                <org.webrtc.SurfaceViewRenderer-->
+        <!--                    android:id="@+id/surface_view2"-->
+        <!--                    android:layout_width="match_parent"-->
+        <!--                    android:layout_height="match_parent" />-->
+
+        <!--                <TextView-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:text="From PeerConection"-->
+        <!--                    android:layout_gravity="top|end"-->
+        <!--                    android:textColor="#fff"-->
+        <!--                    android:layout_margin="16dp"-->
+        <!--                    android:layout_height="wrap_content" />-->
+        <!--            </FrameLayout>-->
 
     <LinearLayout
         android:id="@+id/audio_only_Layout"
@@ -17,7 +85,7 @@
         android:background="#316565"
         android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/user_name"
@@ -225,6 +293,7 @@
                 android:orientation="vertical">
 
                 <ImageButton
+                    android:id="@+id/close_Speakers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
@@ -316,3 +385,4 @@
 
 
 </RelativeLayout>
+</layout>

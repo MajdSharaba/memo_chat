@@ -7,15 +7,20 @@ public class RequestCallViewModel extends ViewModel {
 
     public MutableLiveData<String> peerIdRecived;
     //    private   Boolean _isVideoForMe;
-    public MutableLiveData<Boolean> isVideoForMe ;
+    public MutableLiveData<Boolean> isVideoForMe;
 //    private   Boolean _isVideoForYou;
-    public MutableLiveData<Boolean> isVideoForYou ;
+    public MutableLiveData<Boolean> isVideoForYou;
 //    private   Boolean _endCall;
-    public MutableLiveData<Boolean> endCall ;
+    public MutableLiveData<Boolean> endCall;
 //    private   Boolean _rining;
-    public MutableLiveData<Boolean> rining ;
+    public MutableLiveData<Boolean> rining;
 
-    public MutableLiveData<Boolean> isAudio ;
+    public MutableLiveData<Boolean> isAudio;
+
+
+
+    public MutableLiveData<Boolean> isSpeaker;
+
 
 
     public RequestCallViewModel() {
@@ -25,6 +30,7 @@ public class RequestCallViewModel extends ViewModel {
         this.rining = new MutableLiveData<>(false);
         this.peerIdRecived = new MutableLiveData<>("no connect");
         this.isAudio = new MutableLiveData<>(true);
+        this.isSpeaker = new MutableLiveData<>(true);
 
 
     }
@@ -59,5 +65,13 @@ public class RequestCallViewModel extends ViewModel {
 
     public void setRining(boolean rining) {
         this.rining.setValue( rining);
+    }
+
+    public MutableLiveData<Boolean> getIsSpeaker() {
+        return isSpeaker;
+    }
+
+    public void setIsSpeaker(boolean isSpeaker) {
+        this.isSpeaker.setValue(isSpeaker);
     }
 }

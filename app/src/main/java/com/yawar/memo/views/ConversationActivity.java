@@ -94,6 +94,7 @@ import com.google.android.gms.tasks.Task;
 
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
+import com.yawar.memo.call.CompleteActivity;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.BuildConfig;
@@ -1296,6 +1297,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                startCall();
 
                 Intent intent = new Intent(ConversationActivity.this, RequestCallActivity.class);
+//                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
                 intent.putExtra("anthor_user_id", anthor_user_id);
                 intent.putExtra("user_name", userName);
                 intent.putExtra("isVideo", true);

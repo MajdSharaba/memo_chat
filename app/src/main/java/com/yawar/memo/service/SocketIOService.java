@@ -12,6 +12,8 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.yawar.memo.call.AnswerActivity;
+import com.yawar.memo.call.CompleteActivity;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.call.RequestCallActivity;
@@ -49,7 +51,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
             EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13, EVENT_TYPE_ON_UPDATE_MESSAGE=14
             , EVENT_TYPE_CALLING=15, EVENT_TYPE_SEND_PEER_ID=16, EVENT_TYPE_STOP_CALLING=17,
             EVENT_TYPE_SETTING_CALL=18, EVENT_TYPE_RECIVED_CALL =19, EVENT_TYPE_MISSING_CALL = 20,
-            EVENT_TYPE_SEND_VIDEO_CALL_REQUEST = 21, EVENT_TYPE_RESPONE_VIDEO_CALL = 22;
+            EVENT_TYPE_SEND_VIDEO_CALL_REQUEST = 21, EVENT_TYPE_RESPONE_VIDEO_CALL = 22,
+            EVENT_TYPE_SEND_MESSAGE_FOR_CALL = 23;
     public static final String EVENT_DELETE = "delete message";
     private static final String EVENT_MESSAGE = "new message";
     private static final String EVENT_CALLING = "sendPeerId";
@@ -59,6 +62,9 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String EVENT_SETTINGS_RINING = "settingsCall";
     private static final String EVENT_ASK_FOR_VIDEO = "askForVideo";
     private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
+    boolean isOpen =  false;
+//    private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
+
 
 
 
@@ -75,6 +81,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String UNBLOCK_USER= "unblock";
     private static final String UPDATE_MESSAGE= "editmsg";
     private static final String FETCH_PEER_ID= "fetchPeerId";
+    private static final String SEND_CALL_MESSAGE= "sdp";
+
 
 
 
@@ -102,6 +110,9 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_SEND_PEER_ID_PARAMTERS = "extra_send_peer_id_paramters";
     public static final String EXTRA_SEND_ASK_VIDEO_CALL_PARAMTERS = "extra_send_ask_video_call_paramters";
     public static final String EXTRA_RESPONE_VIDEO_CALL_PARAMTERS = "extra_respone_video_video_call_paramters";
+    public static final String EXTRA_SEND_MESSAGE_FOR_CALL_PARAMTES = "extra_send_message_for_call_paramtes";
+
+
 
 
 
@@ -276,6 +287,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("settingsCall", new SocketEventListener("settingsCall", this));
         listenersMap.put("askForVideo", new SocketEventListener("askForVideo", this));
         listenersMap.put("turn_to_video", new SocketEventListener("turn_to_video", this));
+        listenersMap.put("sdp", new SocketEventListener("sdp", this));
+
 
 
 
@@ -531,6 +544,22 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     if (isSocketConnected()) {
                         sendResponeAskCAll(send_respone_video_call_paramters);
                     }
+
+                    break;
+
+                case EVENT_TYPE_SEND_MESSAGE_FOR_CALL:
+                    String send_message_for_call = intent.getExtras().getString(EXTRA_SEND_MESSAGE_FOR_CALL_PARAMTES);
+
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "reconnecting socket...");
+                        sendCallMessage(send_message_for_call);
+
+                    } else {
+                        sendCallMessage(send_message_for_call);
+                    }
+
 
                     break;
 
@@ -845,6 +874,19 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("turn_to_video", chat);
 
     }
+    private void sendCallMessage(String messageObject) {
+        System.out.println("sendCallMessage");
+
+        JSONObject chat = null;
+        try {
+
+            chat = new JSONObject(messageObject);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("sdp", chat);
+
+    }
 
 
 
@@ -1133,6 +1175,82 @@ public void onTaskRemoved(Intent rootIntent) {
                 intent = new Intent(RequestCallActivity.ON_RECIVED_RESPONE_FOR_VIDEO);
                 intent.putExtra("get responeAskVideo", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                break;
+
+            case SEND_CALL_MESSAGE:
+                System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO"+args[0].toString());
+                Log.d(TAG, "onEventCall: "+args[0].toString());
+//                intent = new Intent(CompleteActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
+//                intent.putExtra("Call Sdp", args[0].toString());
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                intent = new Intent(AnswerActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
+//                intent.putExtra("Call Sdp", args[0].toString());
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                Intent dialogIntent = new Intent(this, AnswerActivity.class);
+//                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                dialogIntent.putExtra("callRequest", args[0].toString());
+//
+//                startActivity(dialogIntent);
+//                //                System.out.println(args[0].toString()+"NEW_UNBlock");
+                String type = "";
+                String userUN = "";
+//
+                try {
+                    JSONObject jsonObject = new JSONObject(args[0].toString());
+                    type = jsonObject.getString("type");
+                    String anthor_id = jsonObject.getString("my_id");
+
+                    if (type.equals("got user media")) {
+                        if(!anthor_id.equals(classSharedPreferences.getUser().getUserId())) {
+                            if (!isOpen) {
+                                isOpen = true;
+//                intent = new Intent(AnswerActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
+//                intent.putExtra("Call Sdp", args[0].toString());
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                                Intent dialogIntent = new Intent(this, AnswerActivity.class);
+                                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                dialogIntent.putExtra("Call Sdp", args[0].toString());
+
+                                startActivity(dialogIntent);
+                            }
+                        }
+
+                    }
+                    else if (type.equals("offer")) {
+
+                        System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO"+args[0].toString());
+                        intent = new Intent(RequestCallActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
+                        intent.putExtra("Call Sdp", args[0].toString());
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+
+                    }
+                    else if (type.equals("answer"))  {
+                        intent = new Intent(ResponeCallActivity.ON_RECIVE_MESSAGE);
+                        intent.putExtra("Call Sdp", args[0].toString());
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    }
+
+                   else {
+                        intent = new Intent(RequestCallActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
+                        intent.putExtra("Call Sdp", args[0].toString());
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                        intent = new Intent(ResponeCallActivity.ON_RECIVE_MESSAGE);
+                        intent.putExtra("Call Sdp", args[0].toString());
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                    }
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+
+
+
+
                 break;
 
 
