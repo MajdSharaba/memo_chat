@@ -94,7 +94,7 @@ import com.google.android.gms.tasks.Task;
 
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
-import com.yawar.memo.call.CompleteActivity;
+//import com.yawar.memo.call.CompleteActivity;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.BuildConfig;

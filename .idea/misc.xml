@@ -59,7 +59,7 @@
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_intro.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_login.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_received_phone_call.xml" value="0.1" />
-        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_request_call.xml" value="0.25" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_request_call.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_stories.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/bottom_sheet_layout.xml" value="0.16077898550724637" />
@@ -68,6 +68,8 @@
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_bottom_sheet.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_chat_room.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_dialog_forward.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_request_call_audio_and_video.xml" value="0.16077898550724637" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/fragment_request_call_audio_only.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/item_contact_number.xml" value="0.16304347826086957" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/item_divider.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/item_group_selector.xml" value="0.18854166666666666" />

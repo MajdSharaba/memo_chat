@@ -29,7 +29,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
 import com.tsuryo.swipeablerv.SwipeableRecyclerView;
 import com.yawar.memo.Api.ServerApi;
-import com.yawar.memo.call.CompleteActivity;
+//import com.yawar.memo.call.CompleteActivity;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ChatRoomViewModel;
 import com.yawar.memo.repositry.ChatRoomRepo;
@@ -282,8 +282,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 //
 //                Intent intent = new Intent(getContext(), ContactNumberActivity.class);
 //                startActivity(intent);
-                Intent intent = new Intent(getContext(), CompleteActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(getContext(), CompleteActivity.class);
+//                startActivity(intent);
 
             }
 

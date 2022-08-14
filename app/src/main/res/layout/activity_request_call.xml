@@ -7,6 +7,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".call.RequestCallActivity">
+    <fragment
+        android:name="com.yawar.memo.fragment.RequestCallAudioOnlyFragment"
+        android:id="@+id/title_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 <!--    <WebView-->
 <!--        android:id="@+id/webView"-->
 <!--        android:layout_width="match_parent"-->
@@ -381,6 +386,7 @@
 
 
 <!--    </LinearLayout>-->
+
 
 
 

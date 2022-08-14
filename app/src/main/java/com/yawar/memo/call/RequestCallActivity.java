@@ -10,6 +10,8 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -53,6 +55,7 @@ import android.widget.Toast;
 import com.baoyz.swipemenulistview.SwipeMenuView;
 import com.yawar.memo.databinding.ActivityCompleteBinding;
 import com.yawar.memo.databinding.ActivityRequestCallBinding;
+import com.yawar.memo.fragment.RequestCallAudioAndVideoFragment;
 import com.yawar.memo.modelView.RequestCallViewModel;
 import com.yawar.memo.notification.CancelCallFromCallOngoingNotification;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -69,21 +72,30 @@ import org.webrtc.Camera1Enumerator;
 import org.webrtc.Camera2Enumerator;
 import org.webrtc.CameraEnumerator;
 import org.webrtc.CameraVideoCapturer;
+import org.webrtc.CandidatePairChangeEvent;
 import org.webrtc.DataChannel;
+import org.webrtc.DefaultVideoDecoderFactory;
+import org.webrtc.DefaultVideoEncoderFactory;
 import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
+
+import org.webrtc.RtpReceiver;
+import org.webrtc.RtpTransceiver;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.VideoCapturer;
-import org.webrtc.VideoRenderer;
+import org.webrtc.VideoDecoderFactory;
+import org.webrtc.VideoEncoderFactory;
+//import org.webrtc.VideoRenderer;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import io.socket.client.Socket;
@@ -419,12 +431,12 @@ public class RequestCallActivity extends AppCompatActivity {
                         type = jsonObject.getString("type");
                         String anthor_id = jsonObject.getString("my_id");
 
-                        if (type.equals("got user media")) {
-                            if(!anthor_id.equals(classSharedPreferences.getUser().getUserId())){
-                                System.out.println("got user media");
-                                maybeStart();}
-
-                        }
+//                        if (type.equals("got user media")) {
+//                            if(!anthor_id.equals(classSharedPreferences.getUser().getUserId())){
+//                                System.out.println("got user media");
+//                                maybeStart();}
+//
+//                        }
 
 //                        if (type.equals("got user media") && isStarted) {
 //                            maybeStart();
@@ -437,17 +449,20 @@ public class RequestCallActivity extends AppCompatActivity {
                             System.out.println("type offer");
                             sdp = jsonObject.getString("sdp");
 
+
+
+
 //                                maybeStart();
 
 //                            peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(ANSWER, message.getString("sdp")));
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
-                                System.out.println("iduser" + id);
+                                System.out.println("iduser" + sdp);
 
                                 peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(OFFER, sdp));
                                 requestCallViewModel.peerIdRecived.setValue("opwn");
                                 requestCallViewModel.rining.setValue(false);
 
-                                doAnswer(anthor_id);
+                                doAnswer();
                             }
                         }
 
@@ -455,7 +470,7 @@ public class RequestCallActivity extends AppCompatActivity {
                         else if (type.equals("answer") ) {
                             sdp = jsonObject.getString("sdp");
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
-                                System.out.println("answermessageeeee");
+                                System.out.println("answermessageeeee"+sdp);
 
                                 peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(ANSWER, sdp));}}
                         else if (type.equals("candidate")) {
@@ -691,6 +706,7 @@ public class RequestCallActivity extends AppCompatActivity {
         fcm_token = bundle.getString("fcm_token", null);
         isVideoForMe = bundle.getBoolean("isVideo", true);
         if (isVideoForMe) {
+            changeFragment();
             onGoingTitle = getResources().getString(R.string.ongoing_video_call);
         } else {
             onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
@@ -754,12 +770,20 @@ public class RequestCallActivity extends AppCompatActivity {
                         binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
                         layoutCallProperties.setVisibility(View.VISIBLE);
+                        if(videoCapturer!=null) {
+                            videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+
+                        }
 
                         imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
                         binding.openCloseVideo.setImageResource(R.drawable.ic_baseline_videocam_off_24);
                     }
                 } else {
-
+                    try {
+                        videoCapturer.stopCapture();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                     imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_24);
                     binding.openCloseVideo.setImageResource(R.drawable.ic_baseline_videocam_24);
                     if(!requestCallViewModel.isVideoForYou.getValue()) {
@@ -771,7 +795,8 @@ public class RequestCallActivity extends AppCompatActivity {
                     }
 
                 }
-                videoTrackFromCamera.setEnabled(s);
+//                local.setEnabled(s);
+                localVideoTrack.setEnabled(s);
 
 
             }
@@ -1001,14 +1026,18 @@ private void start() {
 
         initializeSurfaceViews();
 
-        initializePeerConnectionFactory();
+//        initializePeerConnectionFactory();
+        createPeerConnectionFactory();
+
 
         createVideoTrackFromCameraAndShowIt();
+
 
         initializePeerConnections();
 
         startStreamingVideo();
         connectToSignallingServer();
+
 
     } else {
         EasyPermissions.requestPermissions(this, "Need some permissions", RC_CALL, perms);
@@ -1042,16 +1071,22 @@ private void start() {
 
             closeCall();
         }
-
-
-        if (surfaceTextureHelper != null) {
-            surfaceTextureHelper.dispose();
-            surfaceTextureHelper = null;
-        }
-        peerConnection.dispose();
-        videoCapturer.dispose();
-        factory.dispose();;
-        rootEglBase.release();
+        callDisconnect();
+//        if (surfaceTextureHelper != null) {
+//            surfaceTextureHelper.dispose();
+//            surfaceTextureHelper = null;
+//
+//        }
+//        if( binding.surfaceView2 != null){
+//            binding.surfaceView2.init(null,null);
+//        }
+//        if( binding.surfaceView != null){
+//            binding.surfaceView.init(null,null);
+//        }
+//        peerConnection.dispose();
+//        videoCapturer.dispose();
+//        factory.dispose();;
+//        rootEglBase.release();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveMessageCall);
         super.onDestroy();
     }
@@ -1253,7 +1288,7 @@ private void start() {
 
     }
     //MirtDPM4
-    private void doAnswer(String other_id) {
+    private void doAnswer() {
         System.out.println("doAnswermajdddd");
 
         peerConnection.createAnswer(new SimpleSdpObserver() {
@@ -1261,6 +1296,7 @@ private void start() {
             public void onCreateSuccess(SessionDescription sessionDescription) {
                 System.out.println("onCreateSuccessdoAnswer");
                 peerConnection.setLocalDescription(new SimpleSdpObserver(), sessionDescription);
+                System.out.println();
 
                 JSONObject message = new JSONObject();
                 try {
@@ -1338,26 +1374,119 @@ private void start() {
         //add one more
     }
 
-    private void initializePeerConnectionFactory() {
-        System.out.println("initializePeerConnectionFactory");
-        PeerConnectionFactory.initializeAndroidGlobals(this, true, true, true);
-        factory = new PeerConnectionFactory(null);
-        factory.setVideoHwAccelerationOptions(rootEglBase.getEglBaseContext(), rootEglBase.getEglBaseContext());
-    }
+//    private void initializePeerConnectionFactory() {
+//        System.out.println("initializePeerConnectionFactory");
+////        PeerConnectionFactory.initializeAndroidGlobals(this, true, true, true);
+////        PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+////
+////
+////        factory = new PeerConnectionFactory(options);
+////        factory.setVideoHwAccelerationOptions(rootEglBase.getEglBaseContext(), rootEglBase.getEglBaseContext());
+//        PeerConnectionFactory.InitializationOptions initializationOptions =
+//                PeerConnectionFactory.InitializationOptions.builder(this)
+//                        .createInitializationOptions();
+////        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(this).createInitializationOptions());
+//
+//
+//        PeerConnectionFactory.initialize(initializationOptions);
+//        PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+//
+//        VideoEncoderFactory encoderFactory = new DefaultVideoEncoderFactory(rootEglBase.getEglBaseContext(), true, true);
+//        VideoDecoderFactory decoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
+//
+//        factory = PeerConnectionFactory.builder()
+//                .setOptions(options)
+//                .setVideoDecoderFactory(decoderFactory)
+//                .setVideoEncoderFactory(encoderFactory)
+//                .createPeerConnectionFactory();
+//    }
+//private void createPeerConnectionFactory() {
+//    PeerConnectionFactory.InitializationOptions initializationOptions =
+//            PeerConnectionFactory.InitializationOptions.builder(this)
+//                    .createInitializationOptions();
+//    PeerConnectionFactory.initialize(initializationOptions);
+//
+//    //Create a new PeerConnectionFactory instance - using Hardware encoder and decoder.
+//    PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+//    DefaultVideoEncoderFactory defaultVideoEncoderFactory = new DefaultVideoEncoderFactory(
+//            rootEglBase.getEglBaseContext(),  /* enableIntelVp8Encoder */true,  /* enableH264HighProfile */true);
+//    DefaultVideoDecoderFactory defaultVideoDecoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
+////    peerConnectionFactory = new PeerConnectionFactory(options, defaultVideoEncoderFactory, defaultVideoDecoderFactory);
+////    PeerConnectionFactory.InitializationOptions initializationOptions =
+////            PeerConnectionFactory.InitializationOptions.builder(this)
+////                    .createInitializationOptions();
+//
+////    PeerConnectionFactory.initialize(null);
+////    PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+////
+////    EglBase eglBase = EglBase.create();
+////    VideoDecoderFactory decoderFactory = new DefaultVideoDecoderFactory(eglBase.getEglBaseContext());
+////
+////    factory = PeerConnectionFactory.builder()
+////            .setOptions(options)
+////            .setVideoDecoderFactory(decoderFactory)
+////            .createPeerConnectionFactory();
+//
+////    PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(new ArrayList<>());
+////    createPeerConnection(rtcConfig);
+//}
 
     private void createVideoTrackFromCameraAndShowIt() {
-        audioConstraints = new MediaConstraints();
-        VideoCapturer videoCap = createVideoCapturer();
-        VideoSource videoSource = factory.createVideoSource(videoCap);
-        videoCap.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+//        audioConstraints = new MediaConstraints();
+//        VideoCapturer videoCap = createVideoCapturer();
+////        VideoSource videoSource = factory.createVideoSource(videoCap);
+//        if (videoCapturer != null) {
+//            SurfaceTextureHelper surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
+//            videoSource = factory.createVideoSource(videoCapturer.isScreencast());
+//            videoCapturer.initialize(surfaceTextureHelper, this, videoSource.getCapturerObserver());
+//        }
+//        VideoSource videoSource = factory.createVideoSource(videoCap.isScreencast());
+//
+//        videoCap.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+//
+//        videoTrackFromCamera = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource);
+//        videoTrackFromCamera.setEnabled(true);
+//        localVideoTrack.addSink(binding.surfaceView);
+//
+////        videoTrackFromCamera.addRenderer(new VideoRenderer(binding.surfaceView));
+//
+//        //create an AudioSource instance
+//        audioSource = factory.createAudioSource(audioConstraints);
+//        localAudioTrack = factory.createAudioTrack("101", audioSource);
 
-        videoTrackFromCamera = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource);
-        videoTrackFromCamera.setEnabled(true);
-        videoTrackFromCamera.addRenderer(new VideoRenderer(binding.surfaceView));
+        VideoCapturer videoCapturer = createVideoCapturer();
+//        VideoSource videoSource;
+        //Create a VideoSource instance
+        if (videoCapturer != null) {
+             surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
+            videoSource = factory.createVideoSource(videoCapturer.isScreencast());
+            videoCapturer.initialize(surfaceTextureHelper, this, videoSource.getCapturerObserver());
+            System.out.println("my video camera");
+
+        }
+
+//        videoSource = factory.createVideoSource(videoCapturer.isScreencast());
+
+        localVideoTrack = factory.createVideoTrack("100", videoSource);
+        localVideoTrack.setEnabled(true);
+
+        //Create MediaConstraints - Will be useful for specifying video and audio constraints.
+        audioConstraints = new MediaConstraints();
+        videoConstraints = new MediaConstraints();
 
         //create an AudioSource instance
         audioSource = factory.createAudioSource(audioConstraints);
         localAudioTrack = factory.createAudioTrack("101", audioSource);
+
+
+        if (videoCapturer != null) {
+            videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+        }
+
+//        binding.surfaceView.setVisibility(View.VISIBLE);
+        // And finally, with our VideoRenderer ready, we
+        // can add our renderer to the VideoTrack.
+        localVideoTrack.addSink(binding.surfaceView);
 
     }
 
@@ -1367,7 +1496,10 @@ private void start() {
 
     private void startStreamingVideo() {
         MediaStream mediaStream = factory.createLocalMediaStream("ARDAMS");
-        mediaStream.addTrack(videoTrackFromCamera);
+//        mediaStream.addTrack(videoTrackFromCamera);
+   mediaStream.addTrack(localVideoTrack);
+
+
         mediaStream.addTrack(localAudioTrack);
         peerConnection.addStream(mediaStream);
         JSONObject message = new JSONObject();
@@ -1393,26 +1525,35 @@ private void start() {
 
         PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
         MediaConstraints pcConstraints = new MediaConstraints();
-
         PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
             @Override
             public void onSignalingChange(PeerConnection.SignalingState signalingState) {
-                Log.d(TAG, "onSignalingChange: ");
+
             }
 
             @Override
             public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
-                Log.d(TAG, "onIceConnectionChange: ");
+
+            }
+
+            @Override
+            public void onStandardizedIceConnectionChange(PeerConnection.IceConnectionState newState) {
+                PeerConnection.Observer.super.onStandardizedIceConnectionChange(newState);
+            }
+
+            @Override
+            public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
+                PeerConnection.Observer.super.onConnectionChange(newState);
             }
 
             @Override
             public void onIceConnectionReceivingChange(boolean b) {
-                Log.d(TAG, "onIceConnectionReceivingChange: ");
+
             }
 
             @Override
             public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
-                Log.d(TAG, "onIceGatheringChange: ");
+
             }
 
             @Override
@@ -1436,39 +1577,130 @@ private void start() {
                 }
             }
 
+
+
             @Override
             public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
-                Log.d(TAG, "onIceCandidatesRemoved: ");
+
+            }
+
+            @Override
+            public void onSelectedCandidatePairChanged(CandidatePairChangeEvent event) {
+                PeerConnection.Observer.super.onSelectedCandidatePairChanged(event);
             }
 
             @Override
             public void onAddStream(MediaStream mediaStream) {
-                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
+                                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
                 VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
                 AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
                 remoteAudioTrack.setEnabled(true);
                 remoteVideoTrack.setEnabled(true);
-                remoteVideoTrack.addRenderer(new VideoRenderer(binding.surfaceView2));
+                remoteVideoTrack.addSink(binding.surfaceView2);
+
 
             }
 
-
             @Override
             public void onRemoveStream(MediaStream mediaStream) {
-                Log.d(TAG, "onRemoveStream: ");
+
             }
 
             @Override
             public void onDataChannel(DataChannel dataChannel) {
-                Log.d(TAG, "onDataChannel: ");
+
             }
 
             @Override
             public void onRenegotiationNeeded() {
-                Log.d(TAG, "onRenegotiationNeeded: ");
-            }
-        };
 
+            }
+
+            @Override
+            public void onAddTrack(RtpReceiver rtpReceiver, MediaStream[] mediaStreams) {
+
+            }
+
+            @Override
+            public void onTrack(RtpTransceiver transceiver) {
+                PeerConnection.Observer.super.onTrack(transceiver);
+            }
+
+//        PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
+//            @Override
+//            public void onSignalingChange(PeerConnection.SignalingState signalingState) {
+//                Log.d(TAG, "onSignalingChange: ");
+//            }
+//
+//            @Override
+//            public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
+//                Log.d(TAG, "onIceConnectionChange: ");
+//            }
+//
+//            @Override
+//            public void onIceConnectionReceivingChange(boolean b) {
+//                Log.d(TAG, "onIceConnectionReceivingChange: ");
+//            }
+//
+//            @Override
+//            public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
+//                Log.d(TAG, "onIceGatheringChange: ");
+//            }
+//
+//            @Override
+//            public void onIceCandidate(IceCandidate iceCandidate) {
+//                Log.d(TAG, "onIceCandidate: ");
+//                JSONObject message = new JSONObject();
+//
+//                try {
+//                    message.put("type", "candidate");
+//                    message.put("label", iceCandidate.sdpMLineIndex);
+//                    message.put("id", iceCandidate.sdpMid);
+//                    message.put("candidate", iceCandidate.sdp);
+//                    message.put("your_id", anthor_user_id);
+//                    message.put("my_id", classSharedPreferences.getUser().getUserId());
+//
+//
+//                    Log.d(TAG, "onIceCandidate: sending candidate " + message);
+//                    sendMessage(message);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
+//                Log.d(TAG, "onIceCandidatesRemoved: ");
+//            }
+//
+//            @Override
+//            public void onAddStream(MediaStream mediaStream) {
+//                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
+//                VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
+//                AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
+//                remoteAudioTrack.setEnabled(true);
+//                remoteVideoTrack.setEnabled(true);
+//                remoteVideoTrack.addRenderer(new VideoRenderer(binding.surfaceView2));
+//
+//            }
+//
+//
+//            @Override
+//            public void onRemoveStream(MediaStream mediaStream) {
+//                Log.d(TAG, "onRemoveStream: ");
+//            }
+//
+//            @Override
+//            public void onDataChannel(DataChannel dataChannel) {
+//                Log.d(TAG, "onDataChannel: ");
+//            }
+//
+//            @Override
+//            public void onRenegotiationNeeded() {
+//                Log.d(TAG, "onRenegotiationNeeded: ");
+//            }
+//        };
+        };
         return factory.createPeerConnection(rtcConfig, pcConstraints, pcObserver);
     }
 
@@ -1586,5 +1818,74 @@ private void start() {
         return false;
 
     }
+    void changeFragment(){
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.title_fragment, new RequestCallAudioAndVideoFragment()).commit();
+    }
+    private void createPeerConnectionFactory() {
+        PeerConnectionFactory.InitializationOptions initializationOptions =
+                PeerConnectionFactory.InitializationOptions.builder(this)
+                        .createInitializationOptions();
+
+        PeerConnectionFactory.initialize(initializationOptions);
+        PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+
+        VideoEncoderFactory encoderFactory = new DefaultVideoEncoderFactory(rootEglBase.getEglBaseContext(), true, true);
+        VideoDecoderFactory decoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
+
+         factory = PeerConnectionFactory.builder()
+                .setOptions(options)
+                .setVideoDecoderFactory(decoderFactory)
+                .setVideoEncoderFactory(encoderFactory)
+                .createPeerConnectionFactory();
+
+        List<PeerConnection.IceServer> iceServers = new ArrayList<>();
+        PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
+//        createPeerConnection(rtcConfig);
+    }
+    private void callDisconnect() {
+        if (factory != null) {
+            factory.stopAecDump();
+        }
+        Log.d("ZCF", "Closing audio source.");
+        if (audioSource != null) {
+            audioSource.dispose();
+            audioSource = null;
+        }
+        Log.d("ZCF", "Stopping capture.");
+        if (videoCapturer != null) {
+            try {
+                videoCapturer.stopCapture();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            videoCapturer.dispose();
+            videoCapturer = null;
+        }
+        Log.d("ZCF", "Closing video source.");
+        if (videoSource != null) {
+            videoSource.dispose();
+            videoSource = null;
+        }
+
+        Log.d("ZCF", "Closing peer connection.");
+        if (peerConnection != null) {
+            peerConnection.dispose();
+            peerConnection = null;
+        }
+
+        Log.d("ZCF", "Closing peer connection factory.");
+        if (factory != null) {
+            factory.dispose();
+            factory = null;
+        }
+
+        rootEglBase.release();
+        Log.d("ZCF", "Closing peer connection done.");
+        PeerConnectionFactory.stopInternalTracingCapture();
+        PeerConnectionFactory.shutdownInternalTracer();
+    }
+
 }
 

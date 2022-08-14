@@ -12,8 +12,8 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.yawar.memo.call.AnswerActivity;
-import com.yawar.memo.call.CompleteActivity;
+//import com.yawar.memo.call.AnswerActivity;
+//import com.yawar.memo.call.CompleteActivity;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.call.RequestCallActivity;
@@ -875,7 +875,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
     }
     private void sendCallMessage(String messageObject) {
-        System.out.println("sendCallMessage");
+        System.out.println("sendCallMessage"+messageObject);
 
         JSONObject chat = null;
         try {
@@ -1178,7 +1178,6 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
 
             case SEND_CALL_MESSAGE:
-                System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO"+args[0].toString());
                 Log.d(TAG, "onEventCall: "+args[0].toString());
 //                intent = new Intent(CompleteActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
 //                intent.putExtra("Call Sdp", args[0].toString());
@@ -1207,11 +1206,11 @@ public void onTaskRemoved(Intent rootIntent) {
 //                intent = new Intent(AnswerActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
 //                intent.putExtra("Call Sdp", args[0].toString());
 //                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                                Intent dialogIntent = new Intent(this, AnswerActivity.class);
-                                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                dialogIntent.putExtra("Call Sdp", args[0].toString());
-
-                                startActivity(dialogIntent);
+//                                Intent dialogIntent = new Intent(this, AnswerActivity.class);
+//                                dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                                dialogIntent.putExtra("Call Sdp", args[0].toString());
+//
+//                                startActivity(dialogIntent);
                             }
                         }
 

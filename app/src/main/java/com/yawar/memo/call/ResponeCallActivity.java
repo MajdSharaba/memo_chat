@@ -52,17 +52,24 @@ import org.webrtc.Camera1Enumerator;
 import org.webrtc.Camera2Enumerator;
 import org.webrtc.CameraEnumerator;
 import org.webrtc.CameraVideoCapturer;
+import org.webrtc.CandidatePairChangeEvent;
 import org.webrtc.DataChannel;
+import org.webrtc.DefaultVideoDecoderFactory;
+import org.webrtc.DefaultVideoEncoderFactory;
 import org.webrtc.EglBase;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.PeerConnectionFactory;
+import org.webrtc.RtpReceiver;
+import org.webrtc.RtpTransceiver;
 import org.webrtc.SessionDescription;
 import org.webrtc.SurfaceTextureHelper;
 import org.webrtc.VideoCapturer;
-import org.webrtc.VideoRenderer;
+//import org.webrtc.VideoRenderer;
+import org.webrtc.VideoDecoderFactory;
+import org.webrtc.VideoEncoderFactory;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
@@ -218,7 +225,7 @@ public class ResponeCallActivity extends AppCompatActivity {
                         else if (type.equals("answer") ) {
                             sdp = jsonObject.getString("sdp");
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
-                                System.out.println("answermessageeeee");
+                                System.out.println("answermessageeeee"+sdp);
 
                                 peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(ANSWER, sdp));}}
                         else if (type.equals("candidate")) {
@@ -581,12 +588,16 @@ public class ResponeCallActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean s) {
                 if(s){
-                    createVideoCapturer();
+//                    createVideoCapturer();
                     imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
                     binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
 
                     layoutCallProperties.setVisibility(View.VISIBLE);
                     binding.imageUserCalling.setVisibility(View.GONE);
+                    if(videoCapturer!=null) {
+                        videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+
+                    }
 
 
                 }
@@ -594,11 +605,11 @@ public class ResponeCallActivity extends AppCompatActivity {
                     imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_24);
 
                     try {
-                        System.out.println("Capture off");
                         videoCapturer.stopCapture();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+
 
                     if(!responeCallViewModel.isVideoForYou.getValue()) {
 
@@ -609,7 +620,9 @@ public class ResponeCallActivity extends AppCompatActivity {
                     }
 
                 }
+
 //                videoTrackFromCamera.setEnabled(s);
+
 
 
 
@@ -729,14 +742,28 @@ public class ResponeCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveclosecallfromnotification);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAskForCall);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveMessageCall);
-        if (surfaceTextureHelper != null) {
-            surfaceTextureHelper.dispose();
-            surfaceTextureHelper = null;
-        }
-        peerConnection.dispose();
-        videoCapturer.dispose();
-        factory.dispose();;
-        rootEglBase.release();
+//        if (surfaceTextureHelper != null) {
+//            surfaceTextureHelper.dispose();
+//            surfaceTextureHelper = null;
+//
+//        }
+//        peerConnection.dispose();
+//        videoCapturer.dispose();
+//        factory.dispose();;
+//        rootEglBase.release();
+        callDisconnect();
+
+//        try {
+//            videoCapturer.stopCapture();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        if( binding.surfaceView2 != null){
+//            binding.surfaceView2.init(null,null);
+//        }
+//        if( binding.surfaceView != null){
+//            binding.surfaceView.init(null,null);
+//        }
 
 
 
@@ -848,8 +875,15 @@ public class ResponeCallActivity extends AppCompatActivity {
                 Log.d(TAG, "onCreateSuccess: ");
                 peerConnection.setLocalDescription(new SimpleSdpObserver(), sessionDescription);
                 JSONObject message = new JSONObject();
+                JSONObject jsonObject = new JSONObject();
+
+
                 try {
-                    message.put("type", "offer");
+//                    jsonObject.put("type","offer");
+//                    jsonObject.put("sdp",sessionDescription.description);
+
+
+                    message.put("type" ,"offer");
                     message.put("sdp", sessionDescription.description);
                     message.put("your_id", anthor_user_id);
                     message.put("my_id", classSharedPreferences.getUser().getUserId());
@@ -884,20 +918,61 @@ public class ResponeCallActivity extends AppCompatActivity {
 
     private void initializePeerConnectionFactory() {
         System.out.println("initializePeerConnectionFactory");
-        PeerConnectionFactory.initializeAndroidGlobals(this, true, true, true);
-        factory = new PeerConnectionFactory(null);
-        factory.setVideoHwAccelerationOptions(rootEglBase.getEglBaseContext(), rootEglBase.getEglBaseContext());
+//        PeerConnectionFactory.initializeAndroidGlobals(this, true, true, true);
+//        factory = new PeerConnectionFactory(null);
+//        factory.setVideoHwAccelerationOptions(rootEglBase.getEglBaseContext(), rootEglBase.getEglBaseContext());
+        PeerConnectionFactory.InitializationOptions initializationOptions =
+                PeerConnectionFactory.InitializationOptions.builder(this)
+                        .createInitializationOptions();
+
+        PeerConnectionFactory.initialize(initializationOptions);
+        PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
+
+        VideoEncoderFactory encoderFactory = new DefaultVideoEncoderFactory(rootEglBase.getEglBaseContext(), true, true);
+        VideoDecoderFactory decoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
+
+        factory = PeerConnectionFactory.builder()
+                .setOptions(options)
+                .setVideoDecoderFactory(decoderFactory)
+                .setVideoEncoderFactory(encoderFactory)
+                .createPeerConnectionFactory();
     }
 
     private void createVideoTrackFromCameraAndShowIt() {
+//        audioConstraints = new MediaConstraints();
+////        VideoCapturer videoCapt = createVideoCapturer();
+//        videoCapturer = createVideoCapturer();
+//        VideoSource videoSource = factory.createVideoSource(videoCapturer);
+//        videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+//        videoTrackFromCamera = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource);
+//        videoTrackFromCamera.setEnabled(true);
+//        videoTrackFromCamera.addRenderer(new VideoRenderer(binding.surfaceView));
+//
+//        //create an AudioSource instance
+//        audioSource = factory.createAudioSource(audioConstraints);
+//        localAudioTrack = factory.createAudioTrack("101", audioSource);
+        videoCapturer = createVideoCapturer();
+
         audioConstraints = new MediaConstraints();
-        VideoCapturer videoCapt = createVideoCapturer();
-        VideoSource videoSource = factory.createVideoSource(videoCapt);
-        videoCapt.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+        if (videoCapturer != null) {
+            surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
+            videoSource = factory.createVideoSource(videoCapturer.isScreencast());
+            videoCapturer.initialize(surfaceTextureHelper, this, videoSource.getCapturerObserver());
+            System.out.println("my video camera");
+
+        }
+        localVideoTrack = factory.createVideoTrack("100", videoSource);
+        localVideoTrack.setEnabled(true);
+//        VideoSource videoSource = factory.createVideoSource(videoCap);
+//        VideoSource videoSource = factory.createVideoSource(videoCap.isScreencast());
+
+        videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
 
         videoTrackFromCamera = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource);
         videoTrackFromCamera.setEnabled(true);
-        videoTrackFromCamera.addRenderer(new VideoRenderer(binding.surfaceView));
+        localVideoTrack.addSink(binding.surfaceView);
+
+//        videoTrackFromCamera.addRenderer(new VideoRenderer(binding.surfaceView));
 
         //create an AudioSource instance
         audioSource = factory.createAudioSource(audioConstraints);
@@ -916,101 +991,393 @@ public class ResponeCallActivity extends AppCompatActivity {
         peerConnection.addStream(mediaStream);
     }
 
-    private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
-        ArrayList<PeerConnection.IceServer> iceServers = new ArrayList<>();
-        String URL = "stun:stun.l.google.com:19302";
-        iceServers.add(new PeerConnection.IceServer(URL));
+//    private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
+//        ArrayList<PeerConnection.IceServer> iceServers = new ArrayList<>();
+//        String URL = "stun:stun.l.google.com:19302";
+//        iceServers.add(new PeerConnection.IceServer(URL));
+//
+//        PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
+//        MediaConstraints pcConstraints = new MediaConstraints();
+//        PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
+//            @Override
+//            public void onSignalingChange(PeerConnection.SignalingState signalingState) {
+//
+//            }
+//
+//            @Override
+//            public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
+//
+//            }
+//
+//            @Override
+//            public void onStandardizedIceConnectionChange(PeerConnection.IceConnectionState newState) {
+//                PeerConnection.Observer.super.onStandardizedIceConnectionChange(newState);
+//            }
+//
+//            @Override
+//            public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
+//                PeerConnection.Observer.super.onConnectionChange(newState);
+//            }
+//
+//            @Override
+//            public void onIceConnectionReceivingChange(boolean b) {
+//
+//            }
+//
+//            @Override
+//            public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
+//
+//            }
+//
+//            @Override
+//            public void onIceCandidate(IceCandidate iceCandidate) {
+//                Log.d(TAG, "onIceCandidate: ");
+//                JSONObject message = new JSONObject();
+//
+//                try {
+//                    message.put("type", "candidate");
+//                    message.put("label", iceCandidate.sdpMLineIndex);
+//                    message.put("id", iceCandidate.sdpMid);
+//                    message.put("candidate", iceCandidate.sdp);
+//                    message.put("your_id", anthor_user_id);
+//                    message.put("my_id", classSharedPreferences.getUser().getUserId());
+//
+//
+//                    Log.d(TAG, "onIceCandidate: sending candidate " + message);
+//                    sendMessage(message);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//
+//            @Override
+//            public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
+//
+//            }
+//
+//            @Override
+//            public void onSelectedCandidatePairChanged(CandidatePairChangeEvent event) {
+//                PeerConnection.Observer.super.onSelectedCandidatePairChanged(event);
+//            }
+//
+//            @Override
+//            public void onAddStream(MediaStream mediaStream) {
+//                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
+//                VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
+//                AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
+//                remoteAudioTrack.setEnabled(true);
+//                remoteVideoTrack.setEnabled(true);
+//                remoteVideoTrack.addSink(binding.surfaceView2);
+//
+////                remoteVideoTrack.addRenderer(new VideoRenderer(binding.surfaceView2));
+//
+//            }
+//
+//            @Override
+//            public void onRemoveStream(MediaStream mediaStream) {
+//
+//            }
+//
+//            @Override
+//            public void onDataChannel(DataChannel dataChannel) {
+//
+//            }
+//
+//            @Override
+//            public void onRenegotiationNeeded() {
+//
+//            }
+//
+//            @Override
+//            public void onAddTrack(RtpReceiver rtpReceiver, MediaStream[] mediaStreams) {
+//
+//            }
+//
+//            @Override
+//            public void onTrack(RtpTransceiver transceiver) {
+//                PeerConnection.Observer.super.onTrack(transceiver);
+//            }
+//        };
+////        ArrayList<PeerConnection.IceServer> iceServers = new ArrayList<>();
+////        String URL = "stun:stun.l.google.com:19302";
+////        iceServers.add(new PeerConnection.IceServer(URL));
+////
+////        PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
+////        MediaConstraints pcConstraints = new MediaConstraints();
+////
+////        PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
+////            @Override
+////            public void onSignalingChange(PeerConnection.SignalingState signalingState) {
+////                Log.d(TAG, "onSignalingChange: ");
+////            }
+////
+////            @Override
+////            public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
+////                Log.d(TAG, "onIceConnectionChange: ");
+////            }
+////
+////            @Override
+////            public void onIceConnectionReceivingChange(boolean b) {
+////                Log.d(TAG, "onIceConnectionReceivingChange: ");
+////            }
+////
+////            @Override
+////            public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
+////                Log.d(TAG, "onIceGatheringChange: ");
+////            }
+////
+////            @Override
+////            public void onIceCandidate(IceCandidate iceCandidate) {
+////                Log.d(TAG, "onIceCandidate: ");
+////                JSONObject message = new JSONObject();
+////
+////                try {
+////                    message.put("type", "candidate");
+////                    message.put("label", iceCandidate.sdpMLineIndex);
+////                    message.put("id", iceCandidate.sdpMid);
+////                    message.put("candidate", iceCandidate.sdp);
+////                    message.put("your_id", anthor_user_id);
+////                    message.put("my_id", classSharedPreferences.getUser().getUserId());
+////
+////
+////                    Log.d(TAG, "onIceCandidate: sending candidate " + message);
+////                    sendMessage(message);
+////                } catch (JSONException e) {
+////                    e.printStackTrace();
+////                }
+////            }
+////
+////            @Override
+////            public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
+////                Log.d(TAG, "onIceCandidatesRemoved: ");
+////            }
+////
+////            @Override
+////            public void onAddStream(MediaStream mediaStream) {
+////                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
+////                VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
+////                AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
+////                remoteAudioTrack.setEnabled(true);
+////                remoteVideoTrack.setEnabled(true);
+////                remoteVideoTrack.addRenderer(new VideoRenderer(binding.surfaceView2));
+////
+////            }
+////
+////            @Override
+////            public void onRemoveStream(MediaStream mediaStream) {
+////                Log.d(TAG, "onRemoveStream: ");
+////            }
+////
+////            @Override
+////            public void onDataChannel(DataChannel dataChannel) {
+////                Log.d(TAG, "onDataChannel: ");
+////            }
+////
+////            @Override
+////            public void onRenegotiationNeeded() {
+////                Log.d(TAG, "onRenegotiationNeeded: ");
+////            }
+////        };
+//
+//        return factory.createPeerConnection(rtcConfig, pcConstraints, pcObserver);
+//    }
+private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
+    ArrayList<PeerConnection.IceServer> iceServers = new ArrayList<>();
+    String URL = "stun:stun.l.google.com:19302";
+    iceServers.add(new PeerConnection.IceServer(URL));
 
-        PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
-        MediaConstraints pcConstraints = new MediaConstraints();
+    PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
+    MediaConstraints pcConstraints = new MediaConstraints();
+    PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
+        @Override
+        public void onSignalingChange(PeerConnection.SignalingState signalingState) {
 
-        PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
-            @Override
-            public void onSignalingChange(PeerConnection.SignalingState signalingState) {
-                Log.d(TAG, "onSignalingChange: ");
+        }
+
+        @Override
+        public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
+
+        }
+
+        @Override
+        public void onStandardizedIceConnectionChange(PeerConnection.IceConnectionState newState) {
+            PeerConnection.Observer.super.onStandardizedIceConnectionChange(newState);
+        }
+
+        @Override
+        public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
+            PeerConnection.Observer.super.onConnectionChange(newState);
+        }
+
+        @Override
+        public void onIceConnectionReceivingChange(boolean b) {
+
+        }
+
+        @Override
+        public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
+
+        }
+
+        @Override
+        public void onIceCandidate(IceCandidate iceCandidate) {
+            Log.d(TAG, "onIceCandidate: ");
+            JSONObject message = new JSONObject();
+
+            try {
+                message.put("type", "candidate");
+                message.put("label", iceCandidate.sdpMLineIndex);
+                message.put("id", iceCandidate.sdpMid);
+                message.put("candidate", iceCandidate.sdp);
+                message.put("your_id", anthor_user_id);
+                message.put("my_id", classSharedPreferences.getUser().getUserId());
+
+
+                Log.d(TAG, "onIceCandidate: sending candidate " + message);
+                sendMessage(message);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
-            @Override
-            public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
-                Log.d(TAG, "onIceConnectionChange: ");
-            }
-
-            @Override
-            public void onIceConnectionReceivingChange(boolean b) {
-                Log.d(TAG, "onIceConnectionReceivingChange: ");
-            }
-
-            @Override
-            public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
-                Log.d(TAG, "onIceGatheringChange: ");
-            }
-
-            @Override
-            public void onIceCandidate(IceCandidate iceCandidate) {
-                Log.d(TAG, "onIceCandidate: ");
-                JSONObject message = new JSONObject();
-
-                try {
-                    message.put("type", "candidate");
-                    message.put("label", iceCandidate.sdpMLineIndex);
-                    message.put("id", iceCandidate.sdpMid);
-                    message.put("candidate", iceCandidate.sdp);
-                    message.put("your_id", anthor_user_id);
-                    message.put("my_id", classSharedPreferences.getUser().getUserId());
+        }
 
 
-                    Log.d(TAG, "onIceCandidate: sending candidate " + message);
-                    sendMessage(message);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
 
-            @Override
-            public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
-                Log.d(TAG, "onIceCandidatesRemoved: ");
-            }
+        @Override
+        public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
 
-            @Override
-            public void onAddStream(MediaStream mediaStream) {
-                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
-                VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
-                AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
-                remoteAudioTrack.setEnabled(true);
-                remoteVideoTrack.setEnabled(true);
-                remoteVideoTrack.addRenderer(new VideoRenderer(binding.surfaceView2));
+        }
 
-            }
+        @Override
+        public void onSelectedCandidatePairChanged(CandidatePairChangeEvent event) {
+            PeerConnection.Observer.super.onSelectedCandidatePairChanged(event);
+        }
 
-            @Override
-            public void onRemoveStream(MediaStream mediaStream) {
-                Log.d(TAG, "onRemoveStream: ");
-            }
+        @Override
+        public void onAddStream(MediaStream mediaStream) {
+            Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
+            VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
+            AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
+            remoteAudioTrack.setEnabled(true);
+            remoteVideoTrack.setEnabled(true);
+            remoteVideoTrack.addSink(binding.surfaceView2);
 
-            @Override
-            public void onDataChannel(DataChannel dataChannel) {
-                Log.d(TAG, "onDataChannel: ");
-            }
 
-            @Override
-            public void onRenegotiationNeeded() {
-                Log.d(TAG, "onRenegotiationNeeded: ");
-            }
-        };
+        }
 
-        return factory.createPeerConnection(rtcConfig, pcConstraints, pcObserver);
-    }
+        @Override
+        public void onRemoveStream(MediaStream mediaStream) {
+
+        }
+
+        @Override
+        public void onDataChannel(DataChannel dataChannel) {
+
+        }
+
+        @Override
+        public void onRenegotiationNeeded() {
+
+        }
+
+        @Override
+        public void onAddTrack(RtpReceiver rtpReceiver, MediaStream[] mediaStreams) {
+
+        }
+
+        @Override
+        public void onTrack(RtpTransceiver transceiver) {
+            PeerConnection.Observer.super.onTrack(transceiver);
+        }
+
+//        PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
+//            @Override
+//            public void onSignalingChange(PeerConnection.SignalingState signalingState) {
+//                Log.d(TAG, "onSignalingChange: ");
+//            }
+//
+//            @Override
+//            public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
+//                Log.d(TAG, "onIceConnectionChange: ");
+//            }
+//
+//            @Override
+//            public void onIceConnectionReceivingChange(boolean b) {
+//                Log.d(TAG, "onIceConnectionReceivingChange: ");
+//            }
+//
+//            @Override
+//            public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
+//                Log.d(TAG, "onIceGatheringChange: ");
+//            }
+//
+//            @Override
+//            public void onIceCandidate(IceCandidate iceCandidate) {
+//                Log.d(TAG, "onIceCandidate: ");
+//                JSONObject message = new JSONObject();
+//
+//                try {
+//                    message.put("type", "candidate");
+//                    message.put("label", iceCandidate.sdpMLineIndex);
+//                    message.put("id", iceCandidate.sdpMid);
+//                    message.put("candidate", iceCandidate.sdp);
+//                    message.put("your_id", anthor_user_id);
+//                    message.put("my_id", classSharedPreferences.getUser().getUserId());
+//
+//
+//                    Log.d(TAG, "onIceCandidate: sending candidate " + message);
+//                    sendMessage(message);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
+//                Log.d(TAG, "onIceCandidatesRemoved: ");
+//            }
+//
+//            @Override
+//            public void onAddStream(MediaStream mediaStream) {
+//                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
+//                VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
+//                AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
+//                remoteAudioTrack.setEnabled(true);
+//                remoteVideoTrack.setEnabled(true);
+//                remoteVideoTrack.addRenderer(new VideoRenderer(binding.surfaceView2));
+//
+//            }
+//
+//
+//            @Override
+//            public void onRemoveStream(MediaStream mediaStream) {
+//                Log.d(TAG, "onRemoveStream: ");
+//            }
+//
+//            @Override
+//            public void onDataChannel(DataChannel dataChannel) {
+//                Log.d(TAG, "onDataChannel: ");
+//            }
+//
+//            @Override
+//            public void onRenegotiationNeeded() {
+//                Log.d(TAG, "onRenegotiationNeeded: ");
+//            }
+//        };
+    };
+    return factory.createPeerConnection(rtcConfig, pcConstraints, pcObserver);
+}
 
     private VideoCapturer createVideoCapturer() {
 //        VideoCapturer videoCapturer;
-        VideoCapturer videoCap;
+//        VideoCapturer videoCap;
 
         if (useCamera2()) {
-            videoCap = createCameraCapturer(new Camera2Enumerator(this));
+            videoCapturer = createCameraCapturer(new Camera2Enumerator(this));
         } else {
-            videoCap = createCameraCapturer(new Camera1Enumerator(true));
+            videoCapturer = createCameraCapturer(new Camera1Enumerator(true));
         }
-        return videoCap;
+        return videoCapturer;
     }
 
     private VideoCapturer createCameraCapturer(CameraEnumerator enumerator) {
@@ -1018,7 +1385,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 
         for (String deviceName : deviceNames) {
             if (enumerator.isFrontFacing(deviceName)) {
-                 videoCapturer = enumerator.createCapturer(deviceName, null);
+               VideoCapturer  videoCapturer = enumerator.createCapturer(deviceName, null);
 
                 if (videoCapturer != null) {
                     return videoCapturer;
@@ -1028,7 +1395,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 
         for (String deviceName : deviceNames) {
             if (!enumerator.isFrontFacing(deviceName)) {
-                 videoCapturer = enumerator.createCapturer(deviceName, null);
+                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
 
                 if (videoCapturer != null) {
                     return videoCapturer;
@@ -1078,7 +1445,8 @@ public class ResponeCallActivity extends AppCompatActivity {
 
 
     }
-    public boolean toggleSpeaker(boolean enable) {
+    public boolean
+    toggleSpeaker(boolean enable) {
         if (audioManager != null) {
 //            isSpeakerOn = enable;
             audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
@@ -1263,5 +1631,47 @@ public class ResponeCallActivity extends AppCompatActivity {
         Notification note = builder.build();
         note.flags |= Notification.FLAG_INSISTENT;
         notificationManager.notify(0,note);
+    }
+    private void callDisconnect() {
+        if (factory != null) {
+            factory.stopAecDump();
+        }
+        Log.d("ZCF", "Closing audio source.");
+        if (audioSource != null) {
+            audioSource.dispose();
+            audioSource = null;
+        }
+        Log.d("ZCF", "Stopping capture.");
+        if (videoCapturer != null) {
+            try {
+                videoCapturer.stopCapture();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            videoCapturer.dispose();
+            videoCapturer = null;
+        }
+        Log.d("ZCF", "Closing video source.");
+        if (videoSource != null) {
+            videoSource.dispose();
+            videoSource = null;
+        }
+
+        Log.d("ZCF", "Closing peer connection.");
+        if (peerConnection != null) {
+            peerConnection.dispose();
+            peerConnection = null;
+        }
+
+        Log.d("ZCF", "Closing peer connection factory.");
+        if (factory != null) {
+            factory.dispose();
+            factory = null;
+        }
+
+        rootEglBase.release();
+        Log.d("ZCF", "Closing peer connection done.");
+        PeerConnectionFactory.stopInternalTracingCapture();
+        PeerConnectionFactory.shutdownInternalTracer();
     }
 }
