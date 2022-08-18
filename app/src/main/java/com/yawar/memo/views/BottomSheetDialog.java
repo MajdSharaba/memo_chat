@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.yawar.memo.R;
 import com.yawar.memo.adapter.UserAdapter;
+import com.yawar.memo.language.BottomSheetFragment;
 import com.yawar.memo.model.UserSeen;
 import com.yawar.memo.utils.BaseApp;
 
@@ -23,7 +24,7 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-public class BottomSheetDialog extends BottomSheetDialogFragment implements Observer {
+public class BottomSheetDialog extends BottomSheetFragment implements Observer {
     RecyclerView recyclerView;
     List<UserSeen> postList = new ArrayList<>();
     UserAdapter itemAdapter;
@@ -61,7 +62,7 @@ public class BottomSheetDialog extends BottomSheetDialogFragment implements Obse
 
         myBase = (BaseApp) getActivity().getApplication();
 //        myBase.getObserver().addObserver(this);
-        postList =  myBase.getStoriesObserve().getMyStatus().getStatusList().get(counter).getUserSeens();
+//        postList =  myBase.getStoriesObserve().getMyStatus().getStatusList().get(counter).getUserSeens();
 
         System.out.println(postList.size()+"postList");
 

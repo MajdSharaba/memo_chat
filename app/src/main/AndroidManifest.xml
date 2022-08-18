@@ -64,6 +64,7 @@
         <activity
             android:name=".call.RequestCallActivity"
             android:exported="false"
+
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity

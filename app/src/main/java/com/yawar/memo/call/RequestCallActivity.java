@@ -4,14 +4,9 @@ import static org.webrtc.SessionDescription.Type.OFFER;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.text.HtmlCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -28,8 +23,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.media.AudioDeviceInfo;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
@@ -38,24 +31,17 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.webkit.PermissionRequest;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.EditText;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.baoyz.swipemenulistview.SwipeMenuView;
-import com.yawar.memo.databinding.ActivityCompleteBinding;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.databinding.ActivityRequestCallBinding;
-import com.yawar.memo.fragment.RequestCallAudioAndVideoFragment;
 import com.yawar.memo.modelView.RequestCallViewModel;
 import com.yawar.memo.notification.CancelCallFromCallOngoingNotification;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -96,9 +82,7 @@ import org.webrtc.VideoTrack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
-import io.socket.client.Socket;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -112,6 +96,9 @@ public class RequestCallActivity extends AppCompatActivity {
     boolean isVideo = false;
     private AudioManager audioManager;
     private boolean isSpeakerOn = false;
+    ImageButton imgBtnSwitchMic;
+    String imageUrl;
+
 
 
     private boolean isInitiator;
@@ -165,15 +152,11 @@ public class RequestCallActivity extends AppCompatActivity {
     AlertDialog.Builder dialogForMe;
 
 
-//    TextView userNameTv;
     UserModel userModel;
     String fcm_token;
-//    String TAG = "RequestCallActivity";
     Boolean isAudio = true;
     LinearLayout layoutCallProperties;
-//    ImageButton imageStopCalling;
-//    ImageButton btnImageOpenCamera;
-//    ImageButton btnImageOpenAudio;
+
     ImageButton imgBtnStopCallLp;
     ImageButton imgBtnOpenCameraCallLp;
     ImageButton imgBtnOpenAudioCallLp;
@@ -190,19 +173,11 @@ public class RequestCallActivity extends AppCompatActivity {
     public static final String ON_RECIVED_SETTINGS_CALL = "RequestCallActivity.ON_RECIVED_SETTINGS_CALL";
 
 
-    private static final String[] permissions = {android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO};
-    EditText friendNameEdit;
-//    WebView webView;
-    TextView incomingCallTxt;
-//    LinearLayout callLayout;
-    RelativeLayout inputLayout;
-    LinearLayout callControlLayout;
-    String callString = null;
+
 
     String userName;
     String my_id;
-//    String PeerIdRecived = "no connect";
-//    public static final String ON_CLOSE_CALL_FROM_NOTIFICATION = "CallNotificationActivity.ON_RINING_REQUEST";
+
 
 
 
@@ -218,7 +193,7 @@ public class RequestCallActivity extends AppCompatActivity {
                     try {
                         message = new JSONObject(reciveCallString);
                          isRining = message.getBoolean("state");
-                         requestCallViewModel.rining.setValue(isRining);
+                         requestCallViewModel.setRining(isRining);
 
 
                     } catch (JSONException e) {
@@ -261,11 +236,14 @@ public class RequestCallActivity extends AppCompatActivity {
                     try {
                         message = new JSONObject(stopCallString);
                         isVideoForYou = message.getBoolean("video");
-                        requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
+//                        requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
+                        requestCallViewModel.setIsVideoForYou(isVideoForYou);
 
                         if (!isVideoForYou){
-                            requestCallViewModel.isVideoForMe.setValue(false);
-                    }
+//
+                            requestCallViewModel.setIsVideoForMe(false);
+
+                        }
                         else {
                             requestCallViewModel.setIsSpeaker(isVideoForYou);
 
@@ -304,7 +282,8 @@ public class RequestCallActivity extends AppCompatActivity {
                          isVideoForYou = message.getBoolean("camera");
                         boolean audioSetting = message.getBoolean("microphone");
 //                        callJavascriptFunction("javascript:toggleStream(\"" +isVideoForYou  + "\")");
-                        requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
+//                        requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
+                        requestCallViewModel.setIsVideoForYou(isVideoForYou);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -331,7 +310,9 @@ public class RequestCallActivity extends AppCompatActivity {
                         message = new JSONObject(stopCallString);
                         isVideoForYou = message.getBoolean("video");
 
-                         requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
+//                         requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
+                        requestCallViewModel.setIsVideoForYou(isVideoForYou);
+
 
 
                         if(isVideoForYou) {
@@ -363,7 +344,9 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String callString = intent.getExtras().getString("fetchPeer");
-                    requestCallViewModel.rining.setValue(false);
+//                    requestCallViewModel.rining.setValue(false);
+                    requestCallViewModel.setRining(false);
+
                     String call_peer_id = "no connect";
                     JSONObject message = null;
                     ///////////
@@ -373,7 +356,8 @@ public class RequestCallActivity extends AppCompatActivity {
                         System.out.println("this is message"+message.getString("peerId"));
                         if(message.getString("peerId")!=null){
                             call_peer_id = message.getString("peerId");
-                            requestCallViewModel.peerIdRecived.setValue(call_peer_id);
+                            requestCallViewModel.setPeerId(call_peer_id);
+
                         }
 
 
@@ -395,7 +379,6 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String stopCallString = intent.getExtras().getString("get stopCalling");
-                    System.out.println("stopCallString");
                     JSONObject message = null;
                     finishCall();
 
@@ -417,7 +400,6 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String unBlockString = intent.getExtras().getString("Call Sdp");
-                    System.out.println("unBlockString"+unBlockString);
 
 
 
@@ -431,17 +413,6 @@ public class RequestCallActivity extends AppCompatActivity {
                         type = jsonObject.getString("type");
                         String anthor_id = jsonObject.getString("my_id");
 
-//                        if (type.equals("got user media")) {
-//                            if(!anthor_id.equals(classSharedPreferences.getUser().getUserId())){
-//                                System.out.println("got user media");
-//                                maybeStart();}
-//
-//                        }
-
-//                        if (type.equals("got user media") && isStarted) {
-//                            maybeStart();
-//
-//                        }
 
 
                         if (type.equals("offer")) {
@@ -452,15 +423,15 @@ public class RequestCallActivity extends AppCompatActivity {
 
 
 
-//                                maybeStart();
 
-//                            peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(ANSWER, message.getString("sdp")));
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
                                 System.out.println("iduser" + sdp);
 
                                 peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(OFFER, sdp));
-                                requestCallViewModel.peerIdRecived.setValue("opwn");
-                                requestCallViewModel.rining.setValue(false);
+                                requestCallViewModel.setPeerId("opwn");
+                                requestCallViewModel.setRining(false);
+
+
 
                                 doAnswer();
                             }
@@ -470,13 +441,11 @@ public class RequestCallActivity extends AppCompatActivity {
                         else if (type.equals("answer") ) {
                             sdp = jsonObject.getString("sdp");
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
-                                System.out.println("answermessageeeee"+sdp);
 
                                 peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(ANSWER, sdp));}}
                         else if (type.equals("candidate")) {
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
 
-                                Log.d(TAG, "connectToSignallingServer: receiving candidates");
                                 IceCandidate candidate = new IceCandidate(jsonObject.getString("id"), jsonObject.getInt("label"), jsonObject.getString("candidate"));
                                 peerConnection.addIceCandidate(candidate);
                             }
@@ -495,10 +464,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
 ///////////////////////////
     private void sendMessage( Object object) {
-//        System.out.println("sendMessage"+object.toString());
-        Log.d(TAG, "sendMessage: "+object.toString());
         Intent service = new Intent(this, SocketIOService.class);
-//        JSONObject object = new JSONObject();
 
         service.putExtra(SocketIOService.EXTRA_SEND_MESSAGE_FOR_CALL_PARAMTES, object.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_MESSAGE_FOR_CALL);
@@ -512,12 +478,12 @@ public class RequestCallActivity extends AppCompatActivity {
         JSONObject data = new JSONObject();
         JSONObject type = new JSONObject();
         JSONObject userObject = new JSONObject();
-//        serverApi.sendNotification(userModel.getUserName(), "call",fcm_token,my_id);
 
         ////
 
         try {
-            type.put("video", requestCallViewModel.isVideoForMe.getValue());
+            type.put("video", requestCallViewModel.getIsVideoForMe().getValue());
+
             type.put("audio", true);
             userObject.put("name", userModel.getUserName());
             userObject.put("image_profile", userModel.getImage());
@@ -538,6 +504,8 @@ public class RequestCallActivity extends AppCompatActivity {
     }
 
     private void startCounter() {
+        binding.callStatue.setText(R.string.calling);
+
         int i=0;
         countDownTimer = new CountDownTimer(30000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
 
@@ -554,24 +522,26 @@ public class RequestCallActivity extends AppCompatActivity {
     }
     private void startEndCallCounter() {
         System.out.println("startEndCallCounter");
+        binding.callStatue.setText(R.string.call_ended);
 
 
-        callStatusTV.setText(getResources().getString(R.string.call_ended));
 
         int j=0;
         countEndCallDownTimer = new CountDownTimer(4000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
 
             public void onTick(long millisUntilFinished) {
-                System.out.println(j+1);
+
             }
             public void onFinish() {
                 System.out.println("EndEndCallCounter");
 
-                if(requestCallViewModel.rining.getValue()){
+                if(requestCallViewModel.getRining().getValue()){
+
                     SendMissingCall();
                     finishCall ();
                 }
-                else  if (!requestCallViewModel.peerIdRecived.getValue().equals("no connect")) {
+                else  if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
+
 
                     closeCall();
                     finishCall();
@@ -635,6 +605,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
     }
     private void SendMissingCall() {
+        System.out.println("SendMissingCall");
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
         JSONObject type = new JSONObject();
@@ -681,8 +652,11 @@ public class RequestCallActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+
+        CallProperty.setStatusBarOrScreenStatus(this);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_request_call);
 
 
@@ -690,7 +664,6 @@ public class RequestCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveRining, new IntentFilter(ON_RINING_REQUEST));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveSettingsCalling, new IntentFilter(ON_RECIVED_SETTINGS_CALL));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveStopCalling, new IntentFilter(ON_STOP_CALLING_REQUEST));
-//        LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAcceptChangeToVideoCall, new IntentFilter(ON_RECIVED_RESPONE_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAskForCall, new IntentFilter(ON_RECIVED_ASK_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveMessageCall, new IntentFilter(ON_RECIVE_MESSAGE_VIDEO_CALL));
@@ -705,135 +678,126 @@ public class RequestCallActivity extends AppCompatActivity {
         userName = bundle.getString("user_name", null);
         fcm_token = bundle.getString("fcm_token", null);
         isVideoForMe = bundle.getBoolean("isVideo", true);
-        if (isVideoForMe) {
-            changeFragment();
-            onGoingTitle = getResources().getString(R.string.ongoing_video_call);
-        } else {
-            onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
-
-        }
-        requestCallViewModel.setIsSpeaker(isVideoForMe);
-
-        requestCallViewModel.isVideoForMe.setValue(isVideoForMe);
-        requestCallViewModel.isVideoForYou.setValue(isVideoForMe);
-//        callLayout = findViewById(R.id.audio_only_Layout);
-
-        binding.userName.setText(userName);
-
-
+        imageUrl = bundle.getString("image_profile", " mm");
+        initalCallProperties();
         layoutCallProperties = findViewById(R.id.video_rl);
-        callStatusTV = findViewById(R.id.txt_view_call_status);
-        callStatusTV.setText(getResources().getString(R.string.calling));
 
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
         imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);
         imgBtnOpenAudioCallLp = findViewById(R.id.image_audio_call_layout);
         imgBtnSwitchCamera = findViewById(R.id.image_switch_camera);
-
-
+        imgBtnSwitchMic = findViewById(R.id.image_switch_mic);
         classSharedPreferences = new ClassSharedPreferences(this);
         my_id = classSharedPreferences.getUser().getUserId();
         userModel = classSharedPreferences.getUser();
         dialogForMe = new AlertDialog.Builder(this);
-        start();
+       start();
+       startCall();
+       starCallVoice();
 
-        startCall();
-        mMediaPlayer = MediaPlayer.create(this, R.raw.outputcall);
-
-        mAudioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-
-
-        mAudioManager.setSpeakerphoneOn(false);
-        mAudioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-//
-        mAudioManager.setStreamVolume(AudioManager.STREAM_VOICE_CALL,
-                mAudioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
-                AudioManager.FX_KEY_CLICK);
-
-        mMediaPlayer.setLooping(true);
-
-        mMediaPlayer.start();
-        binding.audioOnlyLayout.setVisibility(View.VISIBLE);
-        binding.webRtcRelativeLayout.setVisibility(View.GONE);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 
 
-//        webView = findViewById(R.id.webView);
 
-        requestCallViewModel.isVideoForMe.observe(this, new Observer<Boolean>() {
+        requestCallViewModel.getIsVideoForMe().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
-                    if (!requestCallViewModel.peerIdRecived.getValue().equals("no connect")) {
+                    if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
 
                         binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
                         layoutCallProperties.setVisibility(View.VISIBLE);
+                        imgBtnSwitchMic.setVisibility(View.GONE);
+                        imgBtnOpenCameraCallLp.setBackground(null);
+                        imgBtnSwitchCamera.setVisibility(View.VISIBLE);
+//                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(500,500));
+
+
                         if(videoCapturer!=null) {
                             videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
 
                         }
 
                         imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
-                        binding.openCloseVideo.setImageResource(R.drawable.ic_baseline_videocam_off_24);
                     }
                 } else {
+                    imgBtnOpenCameraCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
+
                     try {
                         videoCapturer.stopCapture();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_24);
-                    binding.openCloseVideo.setImageResource(R.drawable.ic_baseline_videocam_24);
-                    if(!requestCallViewModel.isVideoForYou.getValue()) {
+
+                    if(!requestCallViewModel.getIsVideoForYou().getValue()) {
+                        imgBtnSwitchMic.setVisibility(View.VISIBLE);
+                        imgBtnSwitchCamera.setVisibility(View.GONE);
+
 
                         binding.webRtcRelativeLayout.setVisibility(View.GONE);
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
-                        layoutCallProperties.setVisibility(View.GONE);
+                        binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
+
+                    }
+                    else {
+//                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+
 
                     }
 
                 }
-//                local.setEnabled(s);
                 localVideoTrack.setEnabled(s);
 
 
+
             }
         });
-        requestCallViewModel.isVideoForYou.observe(this, new Observer<Boolean>() {
+        requestCallViewModel.getIsVideoForYou().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
-                    if (!requestCallViewModel.peerIdRecived.getValue().equals("no connect")) {
+                    if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
 
                         binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
-                        layoutCallProperties.setVisibility(View.VISIBLE);
+                        imgBtnSwitchMic.setVisibility(View.GONE);
+                        imgBtnSwitchCamera.setVisibility(View.VISIBLE);
+//                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(500,500));
                     }
                 } else {
 
-                    if (!requestCallViewModel.isVideoForMe.getValue()) {
+                    if (!requestCallViewModel.getIsVideoForMe().getValue()) {
+
                         binding.webRtcRelativeLayout.setVisibility(View.GONE);
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
-                        layoutCallProperties.setVisibility(View.GONE);
+                        binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
+                        imgBtnSwitchMic.setVisibility(View.VISIBLE);
+                        imgBtnSwitchCamera.setVisibility(View.GONE);
 
+                    }
+                    else{
+//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+//                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(500,500));
                     }
 
 
                 }
-//               callJavascriptFunction("javascript:toggleStream(\"" + s+ "\")");
 
             }
         });
-        requestCallViewModel.rining.observe(this, new Observer<Boolean>() {
+        requestCallViewModel.getRining().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
-                    if (!requestCallViewModel.endCall.getValue()) {
-                        callStatusTV.setText(getResources().getString(R.string.rining));
+                    if (!requestCallViewModel.getEndCall().getValue()) {
                         mMediaPlayer.release();
                         mMediaPlayer = MediaPlayer.create(RequestCallActivity.this, R.raw.ring);
+                        binding.callStatue.setText(R.string.rining);
                         mMediaPlayer.setLooping(true);
 
                         mMediaPlayer.start();
@@ -846,7 +810,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
             }
         });
-        requestCallViewModel.endCall.observe(this, new Observer<Boolean>() {
+        requestCallViewModel.getEndCall().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
@@ -857,20 +821,19 @@ public class RequestCallActivity extends AppCompatActivity {
             }
         });
 
-        requestCallViewModel.isAudio.observe(this, new Observer<Boolean>() {
+        requestCallViewModel.getAudio().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
-//                callJavascriptFunction("javascript:toggleAudio(\"" + s + "\")");
 
                 if (s) {
+                    imgBtnOpenAudioCallLp.setBackground(null);
 
-                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_off_24);
-                    binding.openCloseAudio.setImageResource(R.drawable.ic_baseline_mic_off_24);
 
 
                 } else {
-                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
-                    binding.openCloseVideo.setImageResource(R.drawable.ic_baseline_mic_24);
+
+                    imgBtnOpenAudioCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
+
 
 
                 }
@@ -878,48 +841,62 @@ public class RequestCallActivity extends AppCompatActivity {
 
             }
         });
-        requestCallViewModel.isSpeaker.observe(this, new Observer<Boolean>() {
+        requestCallViewModel.getIsSpeaker().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
 
                 if (s) {
-                    toggleSpeaker(s);
-                    binding.closeSpeakers.setImageResource(R.drawable.audio_speaker);
+                    imgBtnSwitchMic.setBackground(getDrawable(R.drawable.bv_background_white));
+
+
+
 
 
 
 
                 } else {
-                    toggleSpeaker(s);
-                    binding.closeSpeakers.setImageResource(R.drawable.ic_speakers_off);
-
-
-//                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
-//                    binding.openCloseVideo.setImageResource(R.drawable.ic_baseline_mic_24);
-
+                    imgBtnSwitchMic.setBackground(null);
 
                 }
+                toggleSpeaker(s);
+
             }
         });
 
-        requestCallViewModel.peerIdRecived.observe(this, new Observer<String>() {
+        requestCallViewModel.getPeerId().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-                System.out.println("peer id is" + s);
                 if (s.equals("null")) {
-//                    PeerIdRecived= call_peer_id;
 
                     finishCall();
 
                 } else if (s.equals("no connect")) {
 
                 } else {
-//                    PeerIdRecived = call_peer_id;
 
-                    if (!requestCallViewModel.endCall.getValue()) {
-                        callStatusTV.setText(R.string.replied);
+                    if (!requestCallViewModel.getEndCall().getValue()) {
 
-                        requestCallViewModel.isVideoForMe.setValue(requestCallViewModel.isVideoForMe.getValue());
+                        requestCallViewModel.setIsVideoForMe(requestCallViewModel.getIsVideoForMe().getValue());
+                        requestCallViewModel.setIsSpeaker(isVideoForMe);
+                        binding.callStatue.setText(R.string.ongoing_call);
+                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+                        final float scale = getResources().getDisplayMetrics().density;
+                        int pixelsWidth = (int) (120 * scale + 0.5f);
+                        int pixelsHeight= (int) (170 * scale + 0.5f);
+
+
+//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,300));
+                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                                pixelsWidth,
+                                pixelsHeight
+                        );
+                        params.setMargins(20, 50, 20, 20);
+                        binding.localVideoView.setLayoutParams(params);
+
+
+
+
+
 
 
                         ///for stop 15 sec counter
@@ -930,7 +907,6 @@ public class RequestCallActivity extends AppCompatActivity {
                         showInCallNotification();
 
 
-//                        callJavascriptFunction("javascript:startCall(\"" + s + "\"," + "\"" + isVideoForMe + "\")");
 
                     }
                 }
@@ -938,68 +914,35 @@ public class RequestCallActivity extends AppCompatActivity {
         });
 
 
-        binding.openCloseVideo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (!requestCallViewModel.peerIdRecived.getValue().equals("no connect")) {
-
-                    requestCallViewModel.isVideoForMe.setValue(!requestCallViewModel.isVideoForMe.getValue());
-                    sendAskForVideoCall(requestCallViewModel.isVideoForMe.getValue());
-
-
-//
-//                        }
-                    showSwitchToVideoDialog(getResources().getString(R.string.requesting_to_switch_to_video_call));
-                }
-            }
-        });
-
-
-        binding.openCloseAudio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!requestCallViewModel.peerIdRecived.getValue().equals("no connect")) {
-                    requestCallViewModel.isAudio.setValue(!requestCallViewModel.isAudio.getValue());
-
-
-                }
-
-
-            }
-        });
-        binding.closeSpeakers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requestCallViewModel.setIsSpeaker(!requestCallViewModel.isSpeaker.getValue());
-            }
-        });
-
-
-//        imageStopCalling= findViewById(R.id.img_button_stop_call);
-        binding.imgButtonStopCall.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requestCallViewModel.endCall.setValue(true);
-
-            }
-        });
 
         ////// for call layout_call_properties
         imgBtnStopCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                closeCall();
-                finish();
+
+                startEndCallCounter();
+
             }
         });
         /////
         imgBtnOpenCameraCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+            if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
+                if(!requestCallViewModel.getIsVideoForYou().getValue() && !requestCallViewModel.getIsVideoForMe().getValue()){
+                    requestCallViewModel.setIsVideoForMe(!requestCallViewModel.getIsVideoForMe().getValue());
 
-                closeOpenVideo();
+                    sendAskForVideoCall(requestCallViewModel.getIsVideoForMe().getValue());
+                    showSwitchToVideoDialog(getResources().getString(R.string.requesting_to_switch_to_video_call));
 
+
+                }
+                else{
+                    closeOpenVideo();
+                }
+
+
+                                }
             }
         });
         //////
@@ -1016,17 +959,63 @@ public class RequestCallActivity extends AppCompatActivity {
 
             }
         });
+        imgBtnSwitchMic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestCallViewModel.setIsSpeaker(!requestCallViewModel.isSpeaker.getValue());
+            }
+        });
     }
+    void initalCallProperties(){
+        if (isVideoForMe) {
+            onGoingTitle = getResources().getString(R.string.ongoing_video_call);
+            binding.audioOnlyLayout.setVisibility(View.VISIBLE);
+            binding.audioOnlyLayout.setBackground(null);
+            binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
+            binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+        } else {
+            onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
+            binding.audioOnlyLayout.setVisibility(View.VISIBLE);
+            binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
+            binding.webRtcRelativeLayout.setVisibility(View.GONE);
+
+        }
+        binding.userName.setText(userName);
+        if (!imageUrl.isEmpty()) {
+            Glide.with(binding.imageUserCalling).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(binding.imageUserCalling);
+        }
+        requestCallViewModel.setIsSpeaker(isVideoForMe);
+
+        requestCallViewModel.setIsVideoForYou(isVideoForMe);
+        requestCallViewModel.setIsVideoForMe(isVideoForMe);
+
+        layoutCallProperties = findViewById(R.id.video_rl);
+
+        imgBtnStopCallLp = findViewById(R.id.close_call_layout);
+        imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);
+        imgBtnOpenAudioCallLp = findViewById(R.id.image_audio_call_layout);
+        imgBtnSwitchCamera = findViewById(R.id.image_switch_camera);
+        imgBtnSwitchMic = findViewById(R.id.image_switch_mic);
+    }
+    void starCallVoice(){
+        mMediaPlayer = MediaPlayer.create(this, R.raw.outputcall);
+        requestCallViewModel.isSpeaker.setValue(false);
+
+
+        mMediaPlayer.setLooping(true);
+
+        mMediaPlayer.start();
+    }
+
+
 @AfterPermissionGranted(RC_CALL)
 private void start() {
     String[] perms = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
     if (EasyPermissions.hasPermissions(this, perms)) {
 
-//            connectToSignallingServer();
 
         initializeSurfaceViews();
 
-//        initializePeerConnectionFactory();
         createPeerConnectionFactory();
 
 
@@ -1046,12 +1035,10 @@ private void start() {
 
     @Override
     protected void onDestroy() {
-//        webView.loadUrl("about:blank");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(recivePeerId);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveRining);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveSettingsCalling);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveStopCalling);
-//        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveCloseCallFromNotification);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAcceptChangeToVideoCall);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAskForCall);
 
@@ -1060,33 +1047,17 @@ private void start() {
         mMediaPlayer.release();
 
         countDownTimer.cancel();
-//        countEndCallDownTimer.cancel();
 
-
-        mAudioManager.setSpeakerphoneOn(false);
-        mAudioManager.setMode(AudioManager.MODE_NORMAL);
+        requestCallViewModel.setIsSpeaker(false);
+        audioManager.setMode(AudioManager.MODE_NORMAL);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancel(0);
-        if (!requestCallViewModel.peerIdRecived.getValue().equals("no connect")&&!requestCallViewModel.peerIdRecived.getValue().equals("null")) {
+        if (!requestCallViewModel.getPeerId().getValue().equals("no connect")&&!requestCallViewModel.getPeerId().getValue().equals("null")) {
 
             closeCall();
         }
         callDisconnect();
-//        if (surfaceTextureHelper != null) {
-//            surfaceTextureHelper.dispose();
-//            surfaceTextureHelper = null;
-//
-//        }
-//        if( binding.surfaceView2 != null){
-//            binding.surfaceView2.init(null,null);
-//        }
-//        if( binding.surfaceView != null){
-//            binding.surfaceView.init(null,null);
-//        }
-//        peerConnection.dispose();
-//        videoCapturer.dispose();
-//        factory.dispose();;
-//        rootEglBase.release();
+
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveMessageCall);
         super.onDestroy();
     }
@@ -1098,22 +1069,14 @@ private void start() {
         super.onBackPressed();
     }
     public void closeOpenVideo() {
-        requestCallViewModel.isVideoForMe.setValue(!requestCallViewModel.isVideoForMe.getValue());
-
-
-        sendSettingsCall(requestCallViewModel.isVideoForMe.getValue(),true);
+        requestCallViewModel.setIsVideoForMe(!requestCallViewModel.getIsVideoForMe().getValue());
+        sendSettingsCall(requestCallViewModel.getIsVideoForMe().getValue(),true);
 
 
     }
    public void closeOpenAudio(){
-        requestCallViewModel.isAudio.setValue(!requestCallViewModel.isAudio.getValue());
-//       isAudio = !isAudio;
-//       callJavascriptFunction("javascript:toggleAudio(\"" + isAudio + "\")");
-//                if (isAudio) {
-//                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_off_24);
-//                } else {
-//                    imgBtnOpenAudioCallLp.setImageResource(R.drawable.ic_baseline_mic_24);
-//                }
+        requestCallViewModel.setAudio(!requestCallViewModel.getAudio().getValue());
+
 
     }
 
@@ -1121,13 +1084,11 @@ private void start() {
 
     private void finishCall() {
         countDownTimer.cancel();
-        callStatusTV.setText(R.string.call_ended);
-//        mMediaPlayer.release();
+
 
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                // Do something after 5s = 5000ms
                 finish();
             }
         }, 500);
@@ -1141,9 +1102,10 @@ private void start() {
         dialogForMe.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                requestCallViewModel.isVideoForMe.setValue(!requestCallViewModel.isVideoForMe.getValue());
+                requestCallViewModel.setIsVideoForMe(!requestCallViewModel.getIsVideoForMe().getValue());
 
-                    sendAskForVideoCall(false);
+
+                sendAskForVideoCall(false);
 
 
 
@@ -1166,12 +1128,13 @@ private void start() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
 
-                       requestCallViewModel.isVideoForMe.setValue(!requestCallViewModel.isVideoForMe.getValue());
+                        requestCallViewModel.setIsVideoForMe(!requestCallViewModel.getIsVideoForMe().getValue());
+
                         requestCallViewModel.setIsSpeaker(true);
 
 
 
-                        SendSwitchTOVideoCallRespone(requestCallViewModel.isVideoForMe.getValue());
+                        SendSwitchTOVideoCallRespone(requestCallViewModel.getIsVideoForMe().getValue());
                         dialog.dismiss();
 
                     }
@@ -1179,9 +1142,10 @@ private void start() {
         dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                 requestCallViewModel.isVideoForYou.setValue(!requestCallViewModel.isVideoForYou.getValue());
+                requestCallViewModel.setIsVideoForYou(!requestCallViewModel.getIsVideoForYou().getValue());
 
-                SendSwitchTOVideoCallRespone(requestCallViewModel.isVideoForMe.getValue());
+
+                SendSwitchTOVideoCallRespone(requestCallViewModel.getIsVideoForMe().getValue());
                                 dialog.dismiss();
 
 
@@ -1214,15 +1178,13 @@ private void start() {
         intentCancel.putExtra("id", anthor_user_id);
 
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(FirebaseMessageReceiver.this, 0,
-//                        intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
+
         PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(this, 0,
                 intentCancel, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         String channel_id = "notification_channel";
 
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-//                intent, PendingIntent.FLAG_IMMUTABLE);
+
 
         NotificationCompat.Builder builder
                 = new NotificationCompat
@@ -1289,7 +1251,7 @@ private void start() {
     }
     //MirtDPM4
     private void doAnswer() {
-        System.out.println("doAnswermajdddd");
+
 
         peerConnection.createAnswer(new SimpleSdpObserver() {
             @Override
@@ -1305,10 +1267,8 @@ private void start() {
                     message.put("my_id", classSharedPreferences.getUser().getUserId());
                     message.put("your_id", anthor_user_id);
                 } catch (JSONException e) {
-                    System.out.println("ERRRRRORRRRRRR");
                     e.printStackTrace();
                 }
-                System.out.println("message.message");
 
                 sendMessage(message);
 
@@ -1317,7 +1277,6 @@ private void start() {
     }
 
     private void maybeStart() {
-        Log.d(TAG, "maybeStart: " + isStarted + " " + isChannelReady);
         if (!isStarted && isChannelReady) {
             isStarted = true;
             if (isInitiator) {
@@ -1345,10 +1304,8 @@ private void start() {
                     message.put("your_id", anthor_user_id);
                     message.put("my_id", classSharedPreferences.getUser().getUserId());
 
-//                    if(!classSharedPreferences.getUser().getUserId().equals("191")){
                     sendMessage(message);
-//                }
-//                    System.out.println("messageeeeeeeee"+message);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1356,9 +1313,7 @@ private void start() {
         }, sdpMediaConstraints);
     }
 
-//    private void sendMessage(Object message) {
-//        socket.emit("message", message);
-//    }
+
 
 
     private void initializeSurfaceViews() {
@@ -1374,85 +1329,9 @@ private void start() {
         //add one more
     }
 
-//    private void initializePeerConnectionFactory() {
-//        System.out.println("initializePeerConnectionFactory");
-////        PeerConnectionFactory.initializeAndroidGlobals(this, true, true, true);
-////        PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
-////
-////
-////        factory = new PeerConnectionFactory(options);
-////        factory.setVideoHwAccelerationOptions(rootEglBase.getEglBaseContext(), rootEglBase.getEglBaseContext());
-//        PeerConnectionFactory.InitializationOptions initializationOptions =
-//                PeerConnectionFactory.InitializationOptions.builder(this)
-//                        .createInitializationOptions();
-////        PeerConnectionFactory.initialize(PeerConnectionFactory.InitializationOptions.builder(this).createInitializationOptions());
-//
-//
-//        PeerConnectionFactory.initialize(initializationOptions);
-//        PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
-//
-//        VideoEncoderFactory encoderFactory = new DefaultVideoEncoderFactory(rootEglBase.getEglBaseContext(), true, true);
-//        VideoDecoderFactory decoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
-//
-//        factory = PeerConnectionFactory.builder()
-//                .setOptions(options)
-//                .setVideoDecoderFactory(decoderFactory)
-//                .setVideoEncoderFactory(encoderFactory)
-//                .createPeerConnectionFactory();
-//    }
-//private void createPeerConnectionFactory() {
-//    PeerConnectionFactory.InitializationOptions initializationOptions =
-//            PeerConnectionFactory.InitializationOptions.builder(this)
-//                    .createInitializationOptions();
-//    PeerConnectionFactory.initialize(initializationOptions);
-//
-//    //Create a new PeerConnectionFactory instance - using Hardware encoder and decoder.
-//    PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
-//    DefaultVideoEncoderFactory defaultVideoEncoderFactory = new DefaultVideoEncoderFactory(
-//            rootEglBase.getEglBaseContext(),  /* enableIntelVp8Encoder */true,  /* enableH264HighProfile */true);
-//    DefaultVideoDecoderFactory defaultVideoDecoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
-////    peerConnectionFactory = new PeerConnectionFactory(options, defaultVideoEncoderFactory, defaultVideoDecoderFactory);
-////    PeerConnectionFactory.InitializationOptions initializationOptions =
-////            PeerConnectionFactory.InitializationOptions.builder(this)
-////                    .createInitializationOptions();
-//
-////    PeerConnectionFactory.initialize(null);
-////    PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
-////
-////    EglBase eglBase = EglBase.create();
-////    VideoDecoderFactory decoderFactory = new DefaultVideoDecoderFactory(eglBase.getEglBaseContext());
-////
-////    factory = PeerConnectionFactory.builder()
-////            .setOptions(options)
-////            .setVideoDecoderFactory(decoderFactory)
-////            .createPeerConnectionFactory();
-//
-////    PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(new ArrayList<>());
-////    createPeerConnection(rtcConfig);
-//}
 
     private void createVideoTrackFromCameraAndShowIt() {
-//        audioConstraints = new MediaConstraints();
-//        VideoCapturer videoCap = createVideoCapturer();
-////        VideoSource videoSource = factory.createVideoSource(videoCap);
-//        if (videoCapturer != null) {
-//            SurfaceTextureHelper surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
-//            videoSource = factory.createVideoSource(videoCapturer.isScreencast());
-//            videoCapturer.initialize(surfaceTextureHelper, this, videoSource.getCapturerObserver());
-//        }
-//        VideoSource videoSource = factory.createVideoSource(videoCap.isScreencast());
-//
-//        videoCap.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
-//
-//        videoTrackFromCamera = factory.createVideoTrack(VIDEO_TRACK_ID, videoSource);
-//        videoTrackFromCamera.setEnabled(true);
-//        localVideoTrack.addSink(binding.surfaceView);
-//
-////        videoTrackFromCamera.addRenderer(new VideoRenderer(binding.surfaceView));
-//
-//        //create an AudioSource instance
-//        audioSource = factory.createAudioSource(audioConstraints);
-//        localAudioTrack = factory.createAudioTrack("101", audioSource);
+
 
         VideoCapturer videoCapturer = createVideoCapturer();
 //        VideoSource videoSource;
@@ -1465,7 +1344,6 @@ private void start() {
 
         }
 
-//        videoSource = factory.createVideoSource(videoCapturer.isScreencast());
 
         localVideoTrack = factory.createVideoTrack("100", videoSource);
         localVideoTrack.setEnabled(true);
@@ -1496,8 +1374,7 @@ private void start() {
 
     private void startStreamingVideo() {
         MediaStream mediaStream = factory.createLocalMediaStream("ARDAMS");
-//        mediaStream.addTrack(videoTrackFromCamera);
-   mediaStream.addTrack(localVideoTrack);
+        mediaStream.addTrack(localVideoTrack);
 
 
         mediaStream.addTrack(localAudioTrack);
@@ -1508,14 +1385,11 @@ private void start() {
             message.put("your_id", anthor_user_id);
             message.put("my_id", classSharedPreferences.getUser().getUserId());
 
-//            if(!classSharedPreferences.getUser().getUserId().equals("171")){
-//            sendMessage(message);
-//            System.out.println("messageeeeeeeee"+message);}
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-//        sendMessage("got user media");
     }
 
     private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
@@ -1626,80 +1500,7 @@ private void start() {
                 PeerConnection.Observer.super.onTrack(transceiver);
             }
 
-//        PeerConnection.Observer pcObserver = new PeerConnection.Observer() {
-//            @Override
-//            public void onSignalingChange(PeerConnection.SignalingState signalingState) {
-//                Log.d(TAG, "onSignalingChange: ");
-//            }
-//
-//            @Override
-//            public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
-//                Log.d(TAG, "onIceConnectionChange: ");
-//            }
-//
-//            @Override
-//            public void onIceConnectionReceivingChange(boolean b) {
-//                Log.d(TAG, "onIceConnectionReceivingChange: ");
-//            }
-//
-//            @Override
-//            public void onIceGatheringChange(PeerConnection.IceGatheringState iceGatheringState) {
-//                Log.d(TAG, "onIceGatheringChange: ");
-//            }
-//
-//            @Override
-//            public void onIceCandidate(IceCandidate iceCandidate) {
-//                Log.d(TAG, "onIceCandidate: ");
-//                JSONObject message = new JSONObject();
-//
-//                try {
-//                    message.put("type", "candidate");
-//                    message.put("label", iceCandidate.sdpMLineIndex);
-//                    message.put("id", iceCandidate.sdpMid);
-//                    message.put("candidate", iceCandidate.sdp);
-//                    message.put("your_id", anthor_user_id);
-//                    message.put("my_id", classSharedPreferences.getUser().getUserId());
-//
-//
-//                    Log.d(TAG, "onIceCandidate: sending candidate " + message);
-//                    sendMessage(message);
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            @Override
-//            public void onIceCandidatesRemoved(IceCandidate[] iceCandidates) {
-//                Log.d(TAG, "onIceCandidatesRemoved: ");
-//            }
-//
-//            @Override
-//            public void onAddStream(MediaStream mediaStream) {
-//                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
-//                VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
-//                AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
-//                remoteAudioTrack.setEnabled(true);
-//                remoteVideoTrack.setEnabled(true);
-//                remoteVideoTrack.addRenderer(new VideoRenderer(binding.surfaceView2));
-//
-//            }
-//
-//
-//            @Override
-//            public void onRemoveStream(MediaStream mediaStream) {
-//                Log.d(TAG, "onRemoveStream: ");
-//            }
-//
-//            @Override
-//            public void onDataChannel(DataChannel dataChannel) {
-//                Log.d(TAG, "onDataChannel: ");
-//            }
-//
-//            @Override
-//            public void onRenegotiationNeeded() {
-//                Log.d(TAG, "onRenegotiationNeeded: ");
-//            }
-//        };
+
         };
         return factory.createPeerConnection(rtcConfig, pcConstraints, pcObserver);
     }
@@ -1797,15 +1598,11 @@ private void start() {
                         AudioManager.FX_KEY_CLICK);
                 audioManager.setSpeakerphoneOn(true);
             } else {
-                //5.0以上
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    //设置mode
                     audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 } else {
-                    //设置mode
                     audioManager.setMode(AudioManager.MODE_IN_CALL);
                 }
-                //设置音量，解决有些机型切换后没声音或者声音突然变大的问题
                 audioManager.setStreamVolume(
                         AudioManager.STREAM_VOICE_CALL,
                         audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL),
@@ -1818,11 +1615,7 @@ private void start() {
         return false;
 
     }
-    void changeFragment(){
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.title_fragment, new RequestCallAudioAndVideoFragment()).commit();
-    }
+
     private void createPeerConnectionFactory() {
         PeerConnectionFactory.InitializationOptions initializationOptions =
                 PeerConnectionFactory.InitializationOptions.builder(this)
@@ -1848,12 +1641,10 @@ private void start() {
         if (factory != null) {
             factory.stopAecDump();
         }
-        Log.d("ZCF", "Closing audio source.");
         if (audioSource != null) {
             audioSource.dispose();
             audioSource = null;
         }
-        Log.d("ZCF", "Stopping capture.");
         if (videoCapturer != null) {
             try {
                 videoCapturer.stopCapture();
@@ -1863,29 +1654,51 @@ private void start() {
             videoCapturer.dispose();
             videoCapturer = null;
         }
-        Log.d("ZCF", "Closing video source.");
         if (videoSource != null) {
             videoSource.dispose();
             videoSource = null;
         }
 
-        Log.d("ZCF", "Closing peer connection.");
         if (peerConnection != null) {
-            peerConnection.dispose();
+            peerConnection.close();
             peerConnection = null;
         }
 
-        Log.d("ZCF", "Closing peer connection factory.");
         if (factory != null) {
             factory.dispose();
             factory = null;
         }
 
         rootEglBase.release();
-        Log.d("ZCF", "Closing peer connection done.");
         PeerConnectionFactory.stopInternalTracingCapture();
         PeerConnectionFactory.shutdownInternalTracer();
+        if (surfaceTextureHelper != null) {
+            surfaceTextureHelper.dispose();
+            surfaceTextureHelper = null;
+
+        }
+        if (binding.surfaceView != null) {
+            binding.surfaceView.release();
+
+        }
+        if (binding.surfaceView2 != null) {
+            binding.surfaceView2.release();
+
+        }
     }
+//    private void askForFullScreen()
+//    {
+//        getWindow().getDecorView().setSystemUiVisibility(
+//                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+//                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+//                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+//                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+//    }
+
+
+
 
 }
 

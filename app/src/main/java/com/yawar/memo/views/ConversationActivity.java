@@ -1302,6 +1302,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 intent.putExtra("user_name", userName);
                 intent.putExtra("isVideo", true);
                 intent.putExtra("fcm_token", fcmToken);
+                intent.putExtra("image_profile", imageUrl);
+
 
 
 
@@ -1320,6 +1322,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 intent.putExtra("user_name", userName);
                 intent.putExtra("isVideo", false);
                 intent.putExtra("fcm_token", fcmToken);
+                intent.putExtra("image_profile", imageUrl);
+
 
 
                 startActivity(intent);
