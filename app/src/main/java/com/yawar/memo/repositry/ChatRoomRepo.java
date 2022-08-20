@@ -47,14 +47,14 @@ public class ChatRoomRepo {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s->{
-            System.out.println("respone"+s.getData());
+            System.out.println("eerespone"+s.getData());
 
             chatRoomsList = s.getData();
             chatRoomListMutableLiveData.setValue(chatRoomsList);
 
 //            System.out.println("respone chat room "+s.getData().get(0).getState());
         } ,s -> {
-            System.out.println("respone"+s);
+            System.out.println("responebbb"+s.getMessage());
             chatRoomListMutableLiveData.setValue(null);
             });
 
@@ -156,8 +156,9 @@ public class ChatRoomRepo {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
+            System.out.println("responee" + s);
 
-        for(ChatRoomModel chatRoom:chatRoomsList){
+            for(ChatRoomModel chatRoom:chatRoomsList){
             if(chatRoom.getOther_id().equals(your_id)){
                 chatRoomsList.remove(chatRoom);
                 break;

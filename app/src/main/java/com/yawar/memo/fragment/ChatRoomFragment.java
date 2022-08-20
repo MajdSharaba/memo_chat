@@ -29,9 +29,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
 import com.tsuryo.swipeablerv.SwipeableRecyclerView;
 import com.yawar.memo.Api.ServerApi;
+//import com.yawar.memo.call.CompleteActivity;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ChatRoomViewModel;
 import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.views.ArchivedActivity;
 import com.yawar.memo.views.ContactNumberActivity;
@@ -45,6 +47,9 @@ import java.util.List;
 
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.GroupSelectorActivity;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +66,22 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+//    private void sendMesssage() {
+//        Intent service = new Intent(getContext(), SocketIOService.class);
+//        JSONObject object = new JSONObject();
+//        try {
+//            object.put("my_id", user_id);
+//            object.put("your_id", anthor_user_id);
+////            socket.emit("check connect", object);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        service.putExtra(SocketIOService.EXTRA_SEND_MESSAGE_FOR_CALL_PARAMTES, object.toString());
+//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_MESSAGE_FOR_CALL);
+//        getContext().startService(service);
+//    }
 
     public ChatRoomFragment() {
         // Required empty public constructor
@@ -258,9 +279,11 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Intent intent = new Intent(getContext(), ContactNumberActivity.class);
-                startActivity(intent);
+//
+//                Intent intent = new Intent(getContext(), ContactNumberActivity.class);
+//                startActivity(intent);
+//                Intent intent = new Intent(getContext(), CompleteActivity.class);
+//                startActivity(intent);
 
             }
 
@@ -399,106 +422,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     }
 
 
-//    private void addToArchived(ChatRoomModel chatRoomModel) {
-//        System.out.println(chatRoomModel.lastMessage);
-//        final ProgressDialog progressDialo = new ProgressDialog(getContext());
-//        // url to post our data
-////        String url = "http://192.168.1.8:8000/archivechat";
-//        progressDialo.setMessage(getResources().getString(R.string.prograss_message));
-//        progressDialo.show();
-//        // creating a new variable for our request queue
-//        RequestQueue queue = Volley.newRequestQueue(getContext());
-//        // on below line we are calling a string
-//        // request method to post the data to our API
-//        // in this we are calling a post method.
-//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.add_to_archived_url, new com.android.volley.Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                progressDialo.dismiss();
-//                System.out.println("Data added to API+"+response);
-//                chatRoomRepo.setState(chatRoomModel.chatId,myId);
-////                myBase.getObserver().setState(chatRoomModel.chatId,myId);
-////                itemAdapter.notifyDataSetChanged();
-//
-//
-//
-//            }
-//        }, new com.android.volley.Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                // method to handle errors.
-////                Toast.makeText(getContext(), "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
-//            }
-//        }) {
-//            @Override
-//            protected Map<String, String> getParams() {
-//                // below line we are creating a map for
-//                // storing our values in key and value pair.
-//                Map<String, String> params = new HashMap<String, String>();
-//
-//                // on below line we are passing our key
-//                // and value pair to our parameters.
-//                params.put("my_id",myId );
-//                params.put("your_id", chatRoomModel.userId);
-//
-//                // at last we are
-//                // returning our params.
-//                return params;
-//            }
-//        };
-//        // below line is to make
-//        // a json object request.
-//        queue.add(request);
-//    }
-//    private void delete(ChatRoomModel chatRoomModel) {
-//        System.out.println(chatRoomModel.userId+"hatRoomModel.reciverId"+myId);
-//        final ProgressDialog progressDialo = new ProgressDialog(getContext());
-//        // url to post our data
-//        progressDialo.setMessage(getResources().getString(R.string.prograss_message));
-//        progressDialo.show();
-//        // creating a new variable for our request queue
-//        RequestQueue queue = Volley.newRequestQueue(getContext());
-//        // on below line we are calling a string
-//        // request method to post the data to our API
-//        // in this we are calling a post method.
-//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.delete_conversation, new com.android.volley.Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                progressDialo.dismiss();
-//                System.out.println("Data added to API+"+response);
-////                myBase.getObserver().deleteChatRoom(chatRoomModel.chatId);
-////                itemAdapter.notifyDataSetChanged();
-////                chatRoomRepo.deleteChatRoom(chatRoomModel.chatId);
-//
-//
-//            }
-//        }, new com.android.volley.Response.ErrorListener() {
-//            @Override
-//            public void onErrorResponse(VolleyError error) {
-//                // method to handle errors.
-////                Toast.makeText(getContext(), "Fail to get response = " + error, Toast.LENGTH_SHORT).show();
-//            }
-//        }) {
-//            @Override
-//            protected Map<String, String> getParams() {
-//                // below line we are creating a map for
-//                // storing our values in key and value pair.
-//                Map<String, String> params = new HashMap<String, String>();
-//
-//                // on below line we are passing our key
-//                // and value pair to our parameters.
-//                params.put("my_id",myId );
-//                params.put("your_id", chatRoomModel.userId);
-//
-//                // at last we are
-//                // returning our params.
-//                return params;
-//            }
-//        };
-//        // below line is to make
-//        // a json object request.
-//        queue.add(request);
-//    }
+
 
 
 

@@ -24,6 +24,7 @@ import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.repositry.RequestCallRepo;
 import com.yawar.memo.repositry.UserInformationRepo;
 
 public class BaseApp extends Application implements LifecycleObserver {
@@ -36,6 +37,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     private RequestQueue mRequestQueue;
     private static BaseApp sInstance;
     ChatRoomRepo chatRoomRepo;
+    RequestCallRepo requestCallRepo;
     BlockUserRepo blockUserRepo;
     AuthRepo authRepo;
     ChatMessageRepo chatMessageRepo;
@@ -127,6 +129,12 @@ public class BaseApp extends Application implements LifecycleObserver {
             chatRoomRepo = new ChatRoomRepo(this);
         }
         return chatRoomRepo;
+    }
+    public RequestCallRepo getRequestCallRepo() {
+        if(requestCallRepo== null){
+            requestCallRepo = new RequestCallRepo(this);
+        }
+        return requestCallRepo;
     }
     public UserInformationRepo getUserInformationRepo() {
         if(userInformationRepo== null){

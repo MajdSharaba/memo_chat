@@ -41,7 +41,7 @@ public class DashBord extends AppCompatActivity implements Observer {
 // test //
 
 //    private ChipNavigationBar navigationBar;
-BottomNavigationView bottomNavigation;
+    BottomNavigationView bottomNavigation;
     private Fragment fragment = null;
     BaseApp myBase;
     ChatRoomRepo chatRoomRepo;

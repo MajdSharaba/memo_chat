@@ -183,6 +183,12 @@ public class NotificationWorker extends Worker {
 
                         @Override
                         public void onLoadCleared(@Nullable Drawable placeholder) {
+//                            super.onLoadCleared(placeholder);
+
+                            builder.setLargeIcon(ImageProperties.getCircleBitmap(BitmapFactory.decodeResource(applicationContext.getResources(),
+                                    R.drawable.th)));
+                            notificationManager.notify(Integer.parseInt(channel), builder.build());
+
                         }
 
                         @Override

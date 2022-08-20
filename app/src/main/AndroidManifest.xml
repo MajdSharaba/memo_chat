@@ -2,12 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yawar.memo">
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"></uses-permission>
-    <uses-permission android:name="android.permission.INTERNET" />
-<!--    <uses-permission android:name="" />-->
 
-
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- <uses-permission android:name="" /> -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -33,10 +31,9 @@
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-        tools:ignore="ProtectedPermissions"/>
-<!--    <uses-permission android:name="android.permission.WAKE_LOCK" />-->
-
+    <uses-permission
+        android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:name=".utils.BaseApp"
@@ -51,30 +48,34 @@
         android:theme="@style/Theme.ChatMemo"
         android:usesCleartextTraffic="true"
         tools:replace="android:theme">
-
+        <activity
+            android:name=".call.AnswerActivity"
+            android:exported="false" />
+        <activity
+            android:name=".call.CompleteActivity"
+            android:exported="false" />
         <activity
             android:name=".call.CallNotificationActivity"
-            android:showOnLockScreen="true"
+            android:exported="false"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
-            android:exported="false" />
+            android:showOnLockScreen="true"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".call.RequestCallActivity"
             android:exported="false"
+
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".call.ResponeCallActivity"
-            android:launchMode="singleTop"
-            android:taskAffinity=""
             android:excludeFromRecents="true"
             android:exported="true"
-            android:showOnLockScreen="false"
-            android:theme="@style/AppTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            />
-
+            android:showOnLockScreen="false"
+            android:taskAffinity=""
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".views.BlockedUsersActivity"
             android:screenOrientation="portrait" />
@@ -117,20 +118,18 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <receiver android:name=".notification.CancelCallFromCallNotification" />
         <receiver android:name=".notification.CancelCallFromCallOngoingNotification" />
 
-
-
         <service
-            android:name="com.yawar.memo.videocalltest.ConnService"
-            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-            android:exported="true">
+            android:name=".videocalltest.ConnService"
+            android:exported="true"
+            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
             <intent-filter>
                 <action android:name="android.telecom.ConnectionService" />
             </intent-filter>
         </service>
-
 
         <activity
             android:name=".views.VideoActivity"
@@ -141,8 +140,8 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.DashBord"
-            android:showOnLockScreen="true"
             android:screenOrientation="portrait"
+            android:showOnLockScreen="true"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.ArchivedActivity"
@@ -168,7 +167,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity android:name=".views.SettingsActivity" />
-
         <activity
             android:name=".views.SplashScreen"
             android:exported="true"

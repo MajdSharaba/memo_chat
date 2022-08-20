@@ -8,7 +8,7 @@ class JavascriptInterface(val ResponeCallActivity: ResponeCallActivity) {
     @JavascriptInterface
     fun onPeerConnected(string: String) {
         println("this is javaScript code")
-        ResponeCallActivity.onPeerConnected(string)
+//        ResponeCallActivity.onPeerConnected(string)
     }
     @JavascriptInterface
     fun print(string:String) {

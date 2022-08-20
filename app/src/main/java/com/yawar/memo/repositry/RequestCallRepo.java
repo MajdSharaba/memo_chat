@@ -1,33 +1,27 @@
-package com.yawar.memo.modelView;
+package com.yawar.memo.repositry;
+
+import android.app.Application;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
-import com.yawar.memo.repositry.RequestCallRepo;
-import com.yawar.memo.utils.BaseApp;
-
-public class RequestCallViewModel extends ViewModel {
-//    RequestCallRepo  requestCallRepo = BaseApp.getInstance().getRequestCallRepo();
-
+public class RequestCallRepo {
     public MutableLiveData<String> peerIdRecived;
     //    private   Boolean _isVideoForMe;
     public MutableLiveData<Boolean> isVideoForMe;
-//    private   Boolean _isVideoForYou;
+    //    private   Boolean _isVideoForYou;
     public MutableLiveData<Boolean> isVideoForYou;
-//    private   Boolean _endCall;
+    //    private   Boolean _endCall;
     public MutableLiveData<Boolean> endCall;
-//    private   Boolean _rining;
+    //    private   Boolean _rining;
     public MutableLiveData<Boolean> rining;
 
     public MutableLiveData<Boolean> isAudio;
-
-
-
     public MutableLiveData<Boolean> isSpeaker;
 
 
 
-    public RequestCallViewModel() {
+    public RequestCallRepo(Application application) {
+
         this.isVideoForMe = new MutableLiveData<>(false);
         this.isVideoForYou=new MutableLiveData<>(false);
         this.endCall = new MutableLiveData<>(false);
@@ -37,18 +31,19 @@ public class RequestCallViewModel extends ViewModel {
         this.isSpeaker = new MutableLiveData<>(true);
 
 
-    }
 
+
+    }
     public MutableLiveData<Boolean> getIsVideoForMe() {
-        return this.isVideoForMe;
+        return isVideoForMe;
     }
 
-    public void setIsVideoForMe(boolean isVideoForMe) {
-        this.isVideoForMe.setValue(isVideoForMe);
+    public void setIsVideoForMe(MutableLiveData<Boolean> isVideoForMe) {
+        this.isVideoForMe = isVideoForMe;
     }
 
     public MutableLiveData<Boolean> getIsVideoForYou() {
-        return this.isVideoForYou;
+        return isVideoForYou;
     }
 
     public void setIsVideoForYou( boolean isVideoForYou) {
@@ -56,7 +51,7 @@ public class RequestCallViewModel extends ViewModel {
     }
 
     public MutableLiveData<Boolean> getEndCall() {
-        return this.endCall;
+        return endCall;
     }
 
     public void setEndCall(boolean endCall) {
@@ -64,7 +59,7 @@ public class RequestCallViewModel extends ViewModel {
     }
 
     public MutableLiveData<Boolean> getRining() {
-        return this.rining;
+        return rining;
     }
 
     public void setRining(boolean rining) {
@@ -72,24 +67,10 @@ public class RequestCallViewModel extends ViewModel {
     }
 
     public MutableLiveData<Boolean> getIsSpeaker() {
-        return this.isSpeaker;
+        return isSpeaker;
     }
 
     public void setIsSpeaker(boolean isSpeaker) {
         this.isSpeaker.setValue(isSpeaker);
     }
-    public void setPeerId(String peerId) {
-        this.peerIdRecived.setValue(peerId);
-    }
-    public MutableLiveData<String> getPeerId( ) {
-       return this.peerIdRecived;
-    }
-    public void setAudio(Boolean audio) {
-        this.isAudio.setValue(audio);
-    }
-    public MutableLiveData<Boolean> getAudio( ) {
-        return this.isAudio;
-    }
-
-
 }
