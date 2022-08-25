@@ -8,18 +8,22 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -114,7 +118,46 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     }
     private void initAction() {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item,spennerItem);
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(this,  android.R.layout.simple_spinner_dropdown_item,spennerItem){
+            @Override
+            public boolean isEnabled(int position){
+                if(position == 0)
+                {
+                    // Disable the first item from Spinner
+                    // First item will be use for hint
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+            }
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
 
+                View v = super.getView(position, convertView, parent);
+                if (position == 0) {
+                    ((CheckedTextView)v.findViewById(android.R.id.text1)).setText("");
+                    ((CheckedTextView)v.findViewById(android.R.id.text1)).setHint(getResources().getString(R.string.choose_special_number)); //"Hint to be displayed"
+                }
+
+                return v;
+            }
+            @Override
+            public View getDropDownView(int position, View convertView,
+                                        ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                CheckedTextView tv = (CheckedTextView) view;
+                if(position == 0){
+                    // Set the hint text color gray
+                    tv.setTextColor(Color.GRAY);
+                }
+                else {
+//                    tv.setTextColor(Color.BLACK);
+                }
+                return view;
+            }
+        };
         spennerItem.add(getResources().getString(R.string.choose_special_number));
         authRepo.jsonObjectMutableLiveData.observe(this ,new androidx.lifecycle.Observer<JSONObject>() {
             @Override
@@ -132,6 +175,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                             spennerItem.add(item);
                         }
                         adapter.notifyDataSetChanged();
+                        adapter1.notifyDataSetChanged();
 
 
                 } catch (JSONException e) {
@@ -152,7 +196,8 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 //                spennerItem.add(item);
 //            }
 
-            dropdown.setAdapter(adapter);
+//            dropdown.setAdapter(adapter);
+            dropdown.setAdapter(adapter1);
             dropdown.setOnItemSelectedListener(this);
 
 
