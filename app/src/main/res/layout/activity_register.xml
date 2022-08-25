@@ -6,153 +6,176 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
     tools:context=".views.RegisterActivity">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
         android:orientation="vertical">
 
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageProfile"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             android:layout_gravity="center"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="50dp"
-            android:layout_marginRight="8dp"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginLeft="8dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp"
-            android:layout_margin="30dp"
-            android:src="@drawable/th"
-            app:civ_border_color="@color/green_500"
-            app:civ_border_width="2dp" />
+            app:srcCompat="@drawable/ic_splash"
+            android:visibility="visible"
+            android:layout_margin="50dp"
+            tools:ignore="VectorDrawableCompat" />
 
-<!--        <Spinner-->
+     <LinearLayout
+         android:layout_width="match_parent"
+         android:layout_height="wrap_content"
+         android:orientation="vertical">
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_marginTop="30dp"
+             android:orientation="horizontal">
 
-<!--            android:background="@drawable/et_custom"-->
-<!--            android:popupBackground = "@color/backgroundColor"-->
-<!--            android:textColor="@color/textColor"-->
-<!--            android:textColorHint="#808080"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:layout_marginRight="20dp"-->
-<!--            android:layout_marginTop="50dp"-->
-<!--            android:id="@+id/spinner1"-->
-<!--            android:fontFamily="@font/roboto_regular"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:padding="5dp" />-->
+             <de.hdodenhof.circleimageview.CircleImageView
+                 android:id="@+id/imageProfile"
+                 android:layout_width="0dp"
+                 android:layout_weight="1"
+                 android:layout_height="130dp"
+                 android:layout_gravity="center"
+                 android:layout_margin="30dp"
+                 android:layout_marginLeft="8dp"
+                 android:layout_marginTop="50dp"
+                 android:layout_marginRight="8dp"
+                 android:layout_marginBottom="8dp"
+                 android:src="@drawable/th"
+                 app:civ_border_color="@color/green_500"
+                 app:civ_border_width="2dp"
+                 app:layout_constraintBottom_toBottomOf="parent"
+                 app:layout_constraintLeft_toLeftOf="parent"
+                 app:layout_constraintRight_toRightOf="parent"
+                 app:layout_constraintTop_toTopOf="parent" />
+
+             <LinearLayout
+                 android:layout_width="0dp"
+                 android:layout_weight="3"
+                 android:layout_height="wrap_content"
+                 android:orientation="vertical"
+                 android:layout_gravity="end|center_vertical">
+
+                 <EditText
+                     android:id="@+id/et_fName"
+                     android:layout_width="match_parent"
+                     android:layout_height="50dp"
+                     android:layout_marginEnd="20dp"
+                     android:layout_marginTop="20dp"
+                     android:background="@drawable/et_custom"
+                     android:fallbackLineSpacing="false"
+                     android:fontFamily="@font/roboto_regular"
+                     android:hint="@string/first_name"
+                     android:padding="15dp"
+                     android:textColor="@color/textColor"
+                     android:textColorHint="@color/gray"
+                     android:textSize="15sp" />
+
+                 <EditText
+                     android:id="@+id/et_lName"
+                     android:layout_width="match_parent"
+                     android:layout_height="50dp"
+                     android:layout_marginEnd="20dp"
+                     android:layout_marginTop="20dp"
+                     android:background="@drawable/et_custom"
+                     android:fontFamily="@font/roboto_regular"
+                     android:hint="@string/last_name"
+                     android:padding="15dp"
+                     android:textColor="@color/textColor"
+                     android:textColorHint="@color/gray"
+                     android:textSize="15sp" />
 
 
+             </LinearLayout>
+         </LinearLayout>
+         <Spinner
 
-
-        <EditText
-            android:id="@+id/et_fName"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/gray"
-            android:hint="@string/first_name"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="50dp"
-            android:padding="15dp"
-            android:fontFamily="@font/roboto_regular"
-            android:background="@drawable/et_custom"
-            android:fallbackLineSpacing="false"
-
-            android:textSize="15sp" />
-        <EditText
-            android:id="@+id/et_lName"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:hint="@string/last_name"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="50dp"
-            android:textColor="@color/textColor"
-            android:textColorHint="@color/gray"
-            android:padding="15dp"
-            android:fontFamily="@font/roboto_regular"
-            android:background="@drawable/et_custom"
-            android:textSize="15sp" />
-
-        <Spinner
-
-            android:background="@drawable/et_custom"
-            android:popupBackground = "@color/backgroundColor"
-            android:textColor="@color/textColor"
-            android:popupElevation="1dp"
-            android:textColorHint="#808080"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="50dp"
-            android:id="@+id/spinner1"
-
-            android:fontFamily="@font/roboto_regular"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:padding="5dp" />
-<!--        <EditText-->
-<!--            android:id="@+id/et_em"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="50dp"-->
-<!--            android:hint="@string/email"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:layout_marginRight="20dp"-->
-<!--            android:textColor="@color/colorBlack"-->
-<!--            android:textColorHint="@color/gray"-->
-<!--            android:layout_marginTop="50dp"-->
-<!--            android:padding="15dp"-->
-<!--            android:fontFamily="@font/roboto_regular"-->
-<!--            android:background="@drawable/et_custom"-->
-<!--            android:textSize="15sp" />-->
-
+             android:id="@+id/spinner1"
+             android:layout_width="match_parent"
+             android:layout_height="50dp"
+             android:layout_marginEnd="20dp"
+             android:layout_marginTop="5dp"
+             android:layout_marginStart="20dp"
+             android:layout_marginBottom="0dp"
+             android:background="@drawable/et_custom"
+             android:fontFamily="@font/roboto_regular"
+             android:padding="5dp"
+             android:popupBackground="@color/backgroundColor"
+             android:popupElevation="1dp"
+             android:textColor="@color/textColor"
+             android:textColorHint="#808080" />
+     </LinearLayout>
 
         <Button
             android:id="@+id/btn_Register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/btn_custom_blue_back"
             android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
             android:layout_marginTop="50dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/btn_custom_blue_back"
             android:fontFamily="@font/roboto_regular"
-            android:textColor="@android:color/white"
-            android:text="@string/register"/>
-
-
-
-<!--        <Button-->
-<!--            android:id="@+id/btn_skip"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_below="@id/btn_Register"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:layout_marginRight="20dp"-->
-<!--            android:layout_marginTop="50dp"-->
-<!--            android:layout_gravity="center"-->
-<!--            android:background="@null"-->
-<!--            android:fontFamily="@font/roboto_regular"-->
-<!--            android:textColor="@color/green_500"-->
-<!--            android:textSize="20dp"-->
-<!--            android:text="SkIP"/>-->
-
-
-
-
-
-
-
+            android:text="@string/register"
+            android:textColor="@android:color/white" />
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="20dp"
+            app:srcCompat="@drawable/line" />
 
     </LinearLayout>
 
 
-
-
-
 </ScrollView>
+
+    <!--        <Spinner-->
+
+    <!--            android:background="@drawable/et_custom"-->
+    <!--            android:popupBackground = "@color/backgroundColor"-->
+    <!--            android:textColor="@color/textColor"-->
+    <!--            android:textColorHint="#808080"-->
+    <!--            android:layout_marginLeft="20dp"-->
+    <!--            android:layout_marginRight="20dp"-->
+    <!--            android:layout_marginTop="50dp"-->
+    <!--            android:id="@+id/spinner1"-->
+    <!--            android:fontFamily="@font/roboto_regular"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="50dp"-->
+    <!--            android:padding="5dp" />-->
+
+    <!--        <EditText-->
+    <!--            android:id="@+id/et_em"-->
+    <!--            android:layout_width="match_parent"-->
+    <!--            android:layout_height="50dp"-->
+    <!--            android:hint="@string/email"-->
+    <!--            android:layout_marginLeft="20dp"-->
+    <!--            android:layout_marginRight="20dp"-->
+    <!--            android:textColor="@color/colorBlack"-->
+    <!--            android:textColorHint="@color/gray"-->
+    <!--            android:layout_marginTop="50dp"-->
+    <!--            android:padding="15dp"-->
+    <!--            android:fontFamily="@font/roboto_regular"-->
+    <!--            android:background="@drawable/et_custom"-->
+    <!--            android:textSize="15sp" />-->
+
+
+
+    <!--        <Button-->
+    <!--            android:id="@+id/btn_skip"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:layout_below="@id/btn_Register"-->
+    <!--            android:layout_marginLeft="20dp"-->
+    <!--            android:layout_marginRight="20dp"-->
+    <!--            android:layout_marginTop="50dp"-->
+    <!--            android:layout_gravity="center"-->
+    <!--            android:background="@null"-->
+    <!--            android:fontFamily="@font/roboto_regular"-->
+    <!--            android:textColor="@color/green_500"-->
+    <!--            android:textSize="20dp"-->
+    <!--            android:text="SkIP"/>-->
 
