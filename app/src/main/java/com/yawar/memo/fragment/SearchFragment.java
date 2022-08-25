@@ -106,7 +106,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     boolean end = false ;
 
     TextView search ;
-    float textSize = 14.0F ;
+//    float textSize = 14.0F ;
     SharedPreferences sharedPreferences ;
 
 
@@ -161,8 +161,8 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         toolbar = view.findViewById(R.id.toolbar);
         search = view.findViewById(R.id.search);
 
-        search.setTextSize(textSize);
-        search.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        search.setTextSize(textSize);
+//        search.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 //      toolbar.setTitle("Memo");
 //      this.setSupportActionBar(toolbar);
 

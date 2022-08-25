@@ -809,7 +809,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
             e.printStackTrace();
         }
         System.out.println(chat.toString()+"send stop calling");
-        mSocket.emit("closeContact", id);
+        mSocket.emit("closeContact", chat);
 
     }
     private void sendSettingsCalling(String messageObject) {

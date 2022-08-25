@@ -48,12 +48,7 @@
         android:theme="@style/Theme.ChatMemo"
         android:usesCleartextTraffic="true"
         tools:replace="android:theme">
-        <activity
-            android:name=".call.AnswerActivity"
-            android:exported="false" />
-        <activity
-            android:name=".call.CompleteActivity"
-            android:exported="false" />
+
         <activity
             android:name=".call.CallNotificationActivity"
             android:exported="false"
@@ -64,18 +59,20 @@
         <activity
             android:name=".call.RequestCallActivity"
             android:exported="false"
-
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".call.ResponeCallActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
+            android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:showOnLockScreen="false"
-            android:taskAffinity=""
             android:theme="@style/AppTheme" />
+<!--        android:excludeFromRecents="true"-->
+<!--        android:taskAffinity=""-->
+
+
         <activity
             android:name=".views.BlockedUsersActivity"
             android:screenOrientation="portrait" />

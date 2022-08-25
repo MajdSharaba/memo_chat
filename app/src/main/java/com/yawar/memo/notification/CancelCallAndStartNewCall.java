@@ -9,6 +9,7 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.yawar.memo.call.ResponeCallActivity;
+import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 
@@ -28,7 +29,7 @@ public class CancelCallAndStartNewCall extends BroadcastReceiver {
         String id = bundle.getString("id","0");
         ////for close ongoing notification
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.cancel(Integer.parseInt("0"));
+        notificationManager.cancel(AllConstants.onGoingCallChannelId);
         //// for close current call
 //        Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY);
 //        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);

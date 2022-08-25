@@ -39,6 +39,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.databinding.ActivityCallMainBinding;
 import com.yawar.memo.language.BottomSheetFragment;
 import com.yawar.memo.modelView.ResponeCallViewModel;
@@ -78,6 +81,8 @@ import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import io.socket.client.Socket;
 import pub.devrel.easypermissions.AfterPermissionGranted;
@@ -90,6 +95,10 @@ public class ResponeCallActivity extends AppCompatActivity {
     String title = "";
     String onGoingTitle = "";
     private AudioManager audioManager;
+    int time = 0;
+    Timer callTimer = new Timer();
+    String calltType;
+
 
 
     public static final String ON_CALL_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
@@ -111,6 +120,7 @@ public class ResponeCallActivity extends AppCompatActivity {
     Boolean isVideoForMe = false;
     Boolean isVideoForyou = false;
     VideoCapturer videoCapturer;
+    String imageUrl;
 
     LinearLayout layoutCallProperties;
     ImageButton imgBtnStopCallLp;
@@ -127,9 +137,9 @@ public class ResponeCallActivity extends AppCompatActivity {
     private static final String TAG = "CompleteActivity";
     private static final int RC_CALL = 111;
     public static final String VIDEO_TRACK_ID = "ARDAMSv0";
-    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
-    public static final int VIDEO_RESOLUTION_HEIGHT = 720;
-    public static final int FPS = 30;
+    public static final int VIDEO_RESOLUTION_WIDTH = 480;
+    public static final int VIDEO_RESOLUTION_HEIGHT = 360;
+    public static final int FPS = 25;
 
     private boolean isInitiator = true;
     private boolean isChannelReady = true;
@@ -236,8 +246,23 @@ public class ResponeCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String stopCallString = intent.getExtras().getString("get stopCalling");
-                    finish();
+                    System.out.println("stopCallString"+stopCallString);
                     JSONObject message = null;
+                    try {
+
+                        message = new JSONObject(stopCallString);
+                        String id = message.getString("snd_id");
+                        if(id.equals(anthor_user_id)){
+                            finish();
+
+                        }
+
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
 
 
                 }
@@ -426,7 +451,9 @@ public class ResponeCallActivity extends AppCompatActivity {
         JSONObject data = new JSONObject();
         try {
 //            data.put("close_call", true);
-            data.put("id", anthor_user_id);//            data.put("snd_id", classSharedPreferences.getUser().getUserId());
+            data.put("id", anthor_user_id);//
+            data.put("snd_id", classSharedPreferences.getUser().getUserId());
+//          data.put("snd_id", classSharedPreferences.getUser().getUserId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -463,6 +490,39 @@ public class ResponeCallActivity extends AppCompatActivity {
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_MESSAGE_FOR_CALL);
         this.startService(service);
     }
+    private void startCallTimeCounter() {
+
+        //Set the schedule function and rate
+        callTimer.scheduleAtFixedRate(new TimerTask() {
+
+                                          public void run()
+                                          {
+                                              //Called each time when 1000 milliseconds (1 second) (the period parameter)
+                                              runOnUiThread(new Runnable() {
+
+                                                  public void run()
+                                                  {
+
+                                                      time += 1;
+                                                      int seconds = time % 60;
+                                                      int minutes = time / 60;
+                                                      int hour = minutes/60;
+                                                      String stringTime = String.format("%02d:%02d:%02d",hour, minutes, seconds);
+                                                      System.out.println("stringTime"+stringTime);
+                                                      binding.callStatue.setText(stringTime);
+
+                                                  }
+
+                                              });
+                                          }
+
+                                      },
+                //Set how long before to start calling the TimerTask (in milliseconds)
+                0,
+                //Set the amount of time between each execution (in milliseconds)
+                1000);
+
+    }
 
 
 
@@ -473,6 +533,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         CallProperty.setStatusBarOrScreenStatus(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_call_main);
         start();
+        startCallTimeCounter();
 
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveStopCalling, new IntentFilter(ON_STOP_CALLING_REQUEST));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveSettingsCalling, new IntentFilter(ON_RECIVED_SETTINGS_CALL));
@@ -670,7 +731,6 @@ public class ResponeCallActivity extends AppCompatActivity {
         imgBtnStopCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                closeCall();
                 finish();
             }
         });
@@ -727,26 +787,23 @@ public class ResponeCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveStopCalling);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveSettingsCalling);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-        notificationManager.cancel(Integer.parseInt("0"));
+        notificationManager.cancel( AllConstants.onGoingCallChannelId);
+
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveclosecallfromnotification);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAskForCall);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveMessageCall);
 
         callDisconnect();
-
-
-
-
-
-
         closeCall();
+        callTimer.cancel();
 
         super.onDestroy();
     }
     @Override
     public void onBackPressed() {
-                finish();
+     closeCall();
+      finish();
 
         super.onBackPressed();
     }
@@ -846,6 +903,8 @@ public class ResponeCallActivity extends AppCompatActivity {
 
 
                     message.put("type" ,"offer");
+                    message.put("callType",calltType);
+
                     message.put("sdp", sessionDescription.description);
                     message.put("your_id", anthor_user_id);
                     message.put("my_id", classSharedPreferences.getUser().getUserId());
@@ -1232,7 +1291,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         PendingIntent pendingIntent
                 = PendingIntent.getActivity(ResponeCallActivity.this
                 , 0, intent,
-                PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_IMMUTABLE);
         /////////intent for reject
         Intent intentCancel
                 = new Intent(this, CancelCallFromCallOngoingNotification.class);
@@ -1256,13 +1315,14 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                 channel_id)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
 
-                .setFullScreenIntent(null, false)
+                .setFullScreenIntent(pendingIntent, true)
 
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setSound(null)
                 .setOngoing(true)
                 .setGroup(anthor_user_id)
+                .setUsesChronometer(true)
 
 
                 .setVibrate(new long[]{10000, 10000})
@@ -1283,7 +1343,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     = new NotificationChannel(
                     channel_id, "Memo",
 
-                    NotificationManager.IMPORTANCE_LOW);
+                    NotificationManager.IMPORTANCE_HIGH);
             notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
             notificationManager.createNotificationChannel(
@@ -1294,8 +1354,8 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
 
 
         Notification note = builder.build();
-        note.flags |= Notification.FLAG_INSISTENT;
-        notificationManager.notify(0,note);
+//        note.flags |= Notification.FLAG_INSISTENT;
+        notificationManager.notify( AllConstants.onGoingCallChannelId,note);
     }
     private void callDisconnect() {
         responeCallViewModel.setIsSpeaker(false);
@@ -1351,7 +1411,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         }
     }
 
-     void initalCallProperties ( ) {
+     void initalCallProperties() {
             JSONObject message = null;
             JSONObject userObject;
             JSONObject typeObject;
@@ -1361,6 +1421,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                 userObject = new JSONObject(message.getString("user"));
                 typeObject = new JSONObject(message.getString("type"));
                 isVideoForyou = typeObject.getBoolean("video");
+
                 responeCallViewModel.isVideoForMe.setValue(isVideoForyou);
                 responeCallViewModel.isVideoForYou.setValue(isVideoForyou);
                 if(isVideoForyou){
@@ -1368,9 +1429,8 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setBackground(null);
                     binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
-//                    binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+                    calltType = "video";
 
-//                    binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                 }
 
                 else {
@@ -1378,11 +1438,17 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
                     binding.webRtcRelativeLayout.setVisibility(View.GONE);
+                    calltType = "audio";
+
 
                 }
 
                 responeCallViewModel.isSpeaker.setValue(isVideoForyou);
                 username = userObject.getString("name");
+                imageUrl = userObject.getString("image_profile");
+                if (imageUrl!=null) {
+                    Glide.with(binding.imageUserCalling).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(binding.imageUserCalling);
+                }
                 anthor_user_id = message.getString("snd_id");
                 binding.userName.setText(username);
 

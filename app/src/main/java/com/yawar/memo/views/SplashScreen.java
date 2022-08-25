@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -52,8 +53,8 @@ public class SplashScreen extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        CallProperty.setStatusBarOrScreenStatus(this);
+
         final String[] darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
         // The apps theme is decided depending upon the saved preferences on app startup
         String pref = PreferenceManager.getDefaultSharedPreferences(this)

@@ -98,7 +98,7 @@ public class NotificationCallWorker extends Worker {
 
             for (StatusBarNotification statusBarNotification : notificationManager.getActiveNotifications()) {
                 System.out.println(statusBarNotification.getId()+"statusBarNotification.getId()");
-                if(statusBarNotification.getId()==0){
+                if(statusBarNotification.getId()==AllConstants.onGoingCallChannelId){
                     System.out.println(statusBarNotification.getTag()+"statusBarNotification.getTag()");
                     inCall=true;
 //                     call_ongoing_call_user_id = statusBarNotification.getGroupKey();
@@ -115,6 +115,8 @@ public class NotificationCallWorker extends Worker {
             intent.putExtra("id", anthor_user_id);
             intent.putExtra("title", title);
             intent.putExtra("name", name);
+            intent.putExtra("imageUrl", imageUrl);
+
 
 
 
@@ -133,6 +135,8 @@ public class NotificationCallWorker extends Worker {
             intentAnsware.putExtra("id", anthor_user_id);
             intentAnsware.putExtra("title", title);
             intentAnsware.putExtra("name", name);
+            intent.putExtra("imageUrl", imageUrl);
+
 
 
 
@@ -140,7 +144,7 @@ public class NotificationCallWorker extends Worker {
 //                PendingIntent answarePendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
 //                        intentAnsware, PendingIntent.FLAG_UPDATE_CURRENT);
             PendingIntent answarePendingIntent = PendingIntent.getActivity(applicationContext, 0,
-                    intentAnsware, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+                    intentAnsware, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
 
             /////////intent for reject
             Intent intentCancel
@@ -163,11 +167,11 @@ public class NotificationCallWorker extends Worker {
             intentCancelAndStart.putExtra("callRequest", message);
             intentCancelAndStart.putExtra("id", anthor_user_id);
 
-            intentCancelAndStart.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intentCancelAndStart.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 //                PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(FirebaseMessageReceiver.this, 0,
 //                        intentCancel,   PendingIntent.FLAG_UPDATE_CURRENT);
-            PendingIntent pendingIntentCancelAndStart = PendingIntent.getActivity(applicationContext, 0,
-                    intentCancelAndStart, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntentCancelAndStart = PendingIntent.getActivity(applicationContext, 1,
+                    intentCancelAndStart, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_CANCEL_CURRENT);
 ////////////////////////
             NotificationCompat.Builder builder
                     = new NotificationCompat
@@ -189,10 +193,13 @@ public class NotificationCallWorker extends Worker {
                     .setColorized(true)
                     .setSmallIcon(R.drawable.ic_memo_logo);
             if(!inCall) {
+                System.out.println("!!!!!inCall");
 
                 builder.addAction(R.drawable.btx_custom, HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(applicationContext, R.color.green) + "\">" + applicationContext.getResources().getString(R.string.recive_call) + " </font>", HtmlCompat.FROM_HTML_MODE_LEGACY), answarePendingIntent);
             }
             else {
+
+                System.out.println("inCall");
 
                 builder.addAction(R.drawable.btx_custom, HtmlCompat.fromHtml("<font color=\"" + ContextCompat.getColor(applicationContext, R.color.green) + "\">" + applicationContext.getResources().getString(R.string.recive_call_and_close) + " </font>", HtmlCompat.FROM_HTML_MODE_LEGACY), pendingIntentCancelAndStart);
 

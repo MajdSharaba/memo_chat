@@ -42,6 +42,7 @@
 
         </TextView>
   <LinearLayout
+      android:id="@+id/liner"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:layout_below="@+id/text"
@@ -109,6 +110,9 @@
         android:textColor="@android:color/white"
         android:text="@string/send_code"/>
 
+
+
+
 <!--        <TextView-->
 <!--            android:layout_margin="10dp"-->
 <!--            android:id="@+id/orText"-->
@@ -135,6 +139,14 @@
 <!--        </com.google.android.gms.common.SignInButton>-->
 
   </LinearLayout>
+
+<!--        <ImageView-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginTop="20dp"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:layout_alignBottom="@id/liner"-->
+<!--            app:srcCompat="@drawable/line_green" />-->
     </RelativeLayout>
 
 

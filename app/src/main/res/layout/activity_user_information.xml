@@ -18,7 +18,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
-
             android:gravity="center"
             android:orientation="vertical">
 
@@ -36,7 +35,6 @@
         android:layout_width="wrap_content"
         android:layout_height="33dp"
         android:textSize="25sp"
-
         android:layout_margin="10dp"
         android:text="majd sharabah"
         />
@@ -59,7 +57,7 @@
                     <ImageButton
                         android:layout_width="43dp"
                         android:layout_height="43dp"
-                        android:background="@drawable/btx_custom"
+                        android:background="@drawable/btn_background_circle_green"
                         android:src="@drawable/ic_call"
                         app:tint="@color/white">
                     </ImageButton>
@@ -84,8 +82,8 @@
                     <ImageButton
                         android:layout_width="43dp"
                         android:layout_height="43dp"
-                        android:background="@drawable/btx_custom"
-                        android:src="@drawable/ic_video_blue"
+                        android:background="@drawable/btn_background_circle_green"
+                        android:src="@drawable/ic_video_information"
                         app:tint="@color/white">
                     </ImageButton>
                     <TextView
@@ -109,7 +107,7 @@
                     <ImageButton
                         android:id="@+id/ib_message"
                         android:layout_width="43dp"
-                        android:background="@drawable/btx_custom"
+                        android:background="@drawable/btn_background_circle_green"
                         android:layout_height="43dp"
                         android:src="@drawable/ic_message"
                         app:tint="@color/white">
@@ -135,7 +133,7 @@
                     <ImageButton
                         android:layout_width="43dp"
                         android:layout_height="43dp"
-                        android:background="@drawable/btx_custom"
+                        android:background="@drawable/btn_background_circle_green"
                         android:src="@drawable/ic_bell"
                         app:tint="@color/white">
                     </ImageButton>
@@ -159,7 +157,7 @@
                     android:orientation="vertical">
                     <ImageButton
                         android:layout_width="43dp"
-                        android:background="@drawable/btx_custom"
+                        android:background="@drawable/btn_background_circle_green"
                         android:layout_height="43dp"
                         android:src="@drawable/ic_more"
                         app:tint="@color/white"
@@ -360,7 +358,7 @@
             android:layout_width="wrap_content"
             android:layout_height="26dp"
             android:textSize="19sp"
-            android:textColor="#249E48"
+            android:textColor="@color/memo_background_color"
             android:textDirection="ltr"
             android:text="+963935013485"
             android:layout_marginTop="5dp"/>
@@ -384,7 +382,7 @@
              android:id="@+id/media"
              android:layout_width="wrap_content"
              android:layout_height="20dp"
-             android:textColor="#249E48"
+             android:textColor="@color/memo_background_color"
              android:text="@string/media"/>
 
          <androidx.recyclerview.widget.RecyclerView
