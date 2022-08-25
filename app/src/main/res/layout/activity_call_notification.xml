@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/call2"
+    android:background="@drawable/background_call"
     tools:context=".call.CallNotificationActivity">
 
     <LinearLayout
@@ -14,59 +14,43 @@
         android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_marginTop="50dp"
+        android:layout_gravity="center"
         app:cardCornerRadius="70dp"
         app:cardElevation="10dp">
-
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/image_user_calling"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img" />
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/th"
+            android:visibility="visible" />
+
+
     </androidx.cardview.widget.CardView>
-
-
-
-
-<!--    <de.hdodenhof.circleimageview.CircleImageView-->
-<!--    android:id="@+id/image_user_calling"-->
-<!--    android:padding="20dp"-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:layout_centerInParent="true"-->
-<!--    android:background="@color/memo_background_color"-->
-<!--    android:src="@drawable/th"-->
-<!--    android:visibility="visible" />-->
-
-<!--<RelativeLayout-->
-<!--    android:layout_width="match_parent"-->
-<!--    android:layout_height="wrap_content"-->
-<!--    android:visibility="visible"-->
-<!--    android:layout_margin="15dp"-->
-<!--    android:layout_alignBottom="@+id/image_user_calling"-->
-<!--    android:id="@+id/audio_only_Layout">-->
-
-        <TextView
-            android:id="@+id/user_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginTop="20dp"
-            android:text="user_name"
-            android:textColor="@color/white"
-            android:textSize="30sp" />
 
         <TextView
             android:id="@+id/type_call"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5dp"
+            android:layout_marginTop="20dp"
             android:text="@string/video"
             android:textColor="@color/white" />
+
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="5dp"
+            android:text="user_name"
+            android:textColor="@color/white"
+            android:textSize="30sp" />
+
+
     </LinearLayout>
 
 

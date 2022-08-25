@@ -413,8 +413,8 @@ public class ServerApi {
                         String chat_id = jsonObject.getString("chat_id");
                          String fcm_token = jsonObject.getString("user_token");
                         String state = jsonObject.getString("state");
-                        String blockedFor = jsonObject.getString("blocked_for");
-                        sendContactNumberResponses.add(new SendContactNumberResponse(id, name, number, image, state,chat_id,fcm_token,blockedFor));
+//                        String blockedFor = jsonObject.getString("blocked_for");
+                        sendContactNumberResponses.add(new SendContactNumberResponse(id, name, number, image, state,chat_id,fcm_token,""));
                     }
                     myBase.getContactNumberObserve().setContactNumberResponseList(sendContactNumberResponses);
 

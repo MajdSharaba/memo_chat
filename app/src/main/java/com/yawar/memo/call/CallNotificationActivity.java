@@ -8,16 +8,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
@@ -29,6 +33,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import me.mutasem.slidetoanswer.SwipeToAnswerView;
 
 public class CallNotificationActivity extends AppCompatActivity {
@@ -39,11 +44,13 @@ public class CallNotificationActivity extends AppCompatActivity {
     String callString;
     String id;
     TextView tvName,tvType;
+    CircleImageView imageView;
     JSONObject message = null;
     JSONObject data = new JSONObject();
     JSONObject type = new JSONObject();
     String userName = "User Name ";
     String title = " ";
+    String imageUrl;
     JSONObject userObject = new JSONObject();
     private final BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
         @Override
@@ -85,11 +92,13 @@ public class CallNotificationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CallProperty.setStatusBarOrScreenStatus(this);
         showWhenLockedAndTurnScreenOn();
         setContentView(R.layout.activity_call_notification);
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION));
 
         tvName = findViewById(R.id.user_name);
+        imageView = findViewById(R.id.image_user_calling);
         tvType = findViewById(R.id.type_call);
 
         Bundle bundle = getIntent().getExtras();
@@ -97,6 +106,10 @@ public class CallNotificationActivity extends AppCompatActivity {
         callString = bundle.getString("callRequest", "code");
         title = bundle.getString("title","");
         userName = bundle.getString("name","User Name");
+        imageUrl = bundle.getString("imageUrl","");
+        if (!imageUrl.isEmpty()) {
+            Glide.with(imageView).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(imageView);
+        }
 
         tvName.setText(userName);
         tvType.setText(title);
@@ -114,7 +127,7 @@ public class CallNotificationActivity extends AppCompatActivity {
                 Intent intent = new Intent(CallNotificationActivity.this, ResponeCallActivity.class);
                 intent.putExtra("callRequest",callString);
                 intent.putExtra("id",id);
-
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
             }

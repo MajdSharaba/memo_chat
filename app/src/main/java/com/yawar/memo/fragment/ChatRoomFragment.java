@@ -280,8 +280,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             @Override
             public void onClick(View view) {
 //
-//                Intent intent = new Intent(getContext(), ContactNumberActivity.class);
-//                startActivity(intent);
+                Intent intent = new Intent(getContext(), ContactNumberActivity.class);
+                startActivity(intent);
 //                Intent intent = new Intent(getContext(), CompleteActivity.class);
 //                startActivity(intent);
 
@@ -314,8 +314,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
         chat = view.findViewById(R.id.chat);
-        chat.setTextSize(textSize);
-        chat.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
 
 
 

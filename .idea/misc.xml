@@ -31,12 +31,15 @@
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_download_audio.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_email.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_file.xml" value="0.1255" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_message.xml" value="0.1255" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_more.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_more_option.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_pause.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_play_audio.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_speakers_off.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_switch_camera.xml" value="0.11" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_video_blue.xml" value="0.1" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-anydpi/ic_video_information.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-hdpi/ic_baseline_call_24.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-hdpi/ic_baseline_call_end_24.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable-hdpi/ic_baseline_mic_24.xml" value="0.11" />
@@ -50,6 +53,7 @@
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/bottom_cheet_background.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/bottom_navigation_selector.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/btn_background.xml" value="0.1" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/btn_background_circle_green.xml" value="0.1255" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/btn_custom_blue_back.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/btn_custom_white_back.xml" value="0.1" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/drawable/btx_custom.xml" value="0.1" />
@@ -70,14 +74,18 @@
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_contact_number.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_conversation.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_intro.xml" value="0.18854166666666666" />
-        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_login.xml" value="0.1" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_login.xml" value="0.18" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_received_phone_call.xml" value="0.1" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_register.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_request_call.xml" value="0.18" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_splash_screen.xml" value="0.25" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_stories.xml" value="0.16077898550724637" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_user_information.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/activity_verification.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/bottom_sheet_layout.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/call_bottom_cheet.xml" value="0.18854166666666666" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/chat_room_row.xml" value="0.1" />
+        <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/contact_item_chat_message.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/content_scrolling2.xml" value="0.18854166666666666" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/dialog_select_shoice.xml" value="0.16077898550724637" />
         <entry key="..\:/New folder (4)/yawar/app/src/main/res/layout/example.xml" value="0.18" />

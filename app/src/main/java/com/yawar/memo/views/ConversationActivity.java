@@ -901,13 +901,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         fowordImageBtn = findViewById(R.id.image_button_foword);
 
         tv_name = findViewById(R.id.name);
-        tv_name.setTextSize(textSize);
-        tv_name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        tv_name.setTextSize(textSize);
+//        tv_name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         tv_state = findViewById(R.id.state);
-        tv_state.setTextSize(textSize);
-        tv_state.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        tv_state.setTextSize(textSize);
+//        tv_state.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         gallery = findViewById(R.id.gallery);
