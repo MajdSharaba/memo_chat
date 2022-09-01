@@ -162,6 +162,7 @@ import io.reactivex.schedulers.Schedulers;
                     String blokedForRespone = "";
                     boolean blockedRespone = false;
                     try {
+                        System.out.println("blockedddddddd");
                         JSONObject jsonObject = new JSONObject(s);
                         blokedForRespone = jsonObject.getString("blocked_for");
                         blockedRespone= jsonObject.getBoolean("blocked");
@@ -171,8 +172,10 @@ import io.reactivex.schedulers.Schedulers;
                         e.printStackTrace();
                     }
                     blockedForRepo.setValue(blokedForRespone);
-                    blockedRepo.setValue(blockedRespone);
+
                     chatRoomRepo.setBlockedState(anthor_user_id,blokedForRespone);
+                    blockedRepo.setValue(true);
+
 //
 
 
@@ -193,6 +196,7 @@ import io.reactivex.schedulers.Schedulers;
 
             observable.subscribe(s -> {
                         try {
+                            System.out.println("unnnnBlockeddddddd");
 
                             String blokedForRespone = "";
                             Boolean unBlockedRespone = false;

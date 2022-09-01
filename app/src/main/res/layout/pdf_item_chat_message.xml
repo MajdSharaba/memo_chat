@@ -12,7 +12,6 @@
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:orientation="vertical">
 
 
@@ -65,6 +64,7 @@
                     <ImageView
                         android:id="@+id/image_file"
                         android:layout_width="0dp"
+                        android:paddingStart="5dp"
                         android:layout_gravity="center"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
@@ -82,7 +82,8 @@
                         android:ellipsize="end"
                         android:gravity="center_vertical"
                         android:singleLine="true"
-                        android:textSize="12sp">
+                        android:padding="5dp"
+                        android:textSize="14sp">
 
                     </TextView>
 

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -28,6 +29,7 @@ import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -98,6 +100,8 @@ public class ResponeCallActivity extends AppCompatActivity {
     int time = 0;
     Timer callTimer = new Timer();
     String calltType;
+    float dX, dY;
+
 
 
 
@@ -526,6 +530,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -546,8 +551,6 @@ public class ResponeCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveMessageCall, new IntentFilter(ON_RECIVE_MESSAGE));
 
 
-
-
         responeCallViewModel = new ViewModelProvider(this).get(ResponeCallViewModel.class);
 
 
@@ -564,6 +567,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 //
         layoutCallProperties = findViewById(R.id.video_rl);
         layoutCallProperties.setVisibility(View.VISIBLE);
+        binding.localVideoView.bringToFront();
 
         Bundle bundle = getIntent().getExtras();
         id = bundle.getString("id", "0");
@@ -577,33 +581,31 @@ public class ResponeCallActivity extends AppCompatActivity {
         maybeStart();
 
 
-
-
         responeCallViewModel.isVideoForMe.observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
-                if(s){
-;
+                if (s) {
+                    ;
                     imgBtnOpenCameraCallLp.setBackground(null);
                     imgBtnSwitchMic.setVisibility(View.GONE);
                     imgBtnSwitchCamera.setVisibility(View.VISIBLE);
 
 
-                    binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
+                    binding.remoteVideoView.setVisibility(View.VISIBLE);
+                    binding.localVideoView.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setVisibility(View.GONE);
                     layoutCallProperties.setVisibility(View.VISIBLE);
 //                    binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //                    binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,500));
 //                    binding.remoteVideoView.setPadding(2,2,2,2);
 
-                    if(videoCapturer!=null) {
+                    if (videoCapturer != null) {
                         videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
 
                     }
 
 
-                }
-                else {
+                } else {
                     imgBtnOpenCameraCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
 
                     try {
@@ -613,16 +615,17 @@ public class ResponeCallActivity extends AppCompatActivity {
                     }
 
 
-                    if(!responeCallViewModel.isVideoForYou.getValue()) {
+                    if (!responeCallViewModel.isVideoForYou.getValue()) {
                         imgBtnSwitchMic.setVisibility(View.VISIBLE);
                         imgBtnSwitchCamera.setVisibility(View.GONE);
 
-                        binding.webRtcRelativeLayout.setVisibility(View.GONE);
+                        binding.remoteVideoView.setVisibility(View.GONE);
+                        binding.localVideoView.setVisibility(View.GONE);
+
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
 
-                    }
-                    else {
+                    } else {
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,500));
 //                        binding.localVideoView.setPadding(2,2,2,2);
 //
@@ -634,17 +637,15 @@ public class ResponeCallActivity extends AppCompatActivity {
                 }
 
 
-
-
-
-
             }
         });
         responeCallViewModel.isVideoForYou.observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
-                if(s){
-                    binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
+                if (s) {
+                    binding.remoteVideoView.setVisibility(View.VISIBLE);
+                    binding.localVideoView.setVisibility(View.VISIBLE);
+
 
                     layoutCallProperties.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setVisibility(View.GONE);
@@ -653,10 +654,11 @@ public class ResponeCallActivity extends AppCompatActivity {
 //                    binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //                    binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,500));
 
-                }
-                else{
-                    if(!responeCallViewModel.isVideoForMe.getValue()){
-                        binding.webRtcRelativeLayout.setVisibility(View.GONE);
+                } else {
+                    if (!responeCallViewModel.isVideoForMe.getValue()) {
+                        binding.remoteVideoView.setVisibility(View.GONE);
+                        binding.localVideoView.setVisibility(View.GONE);
+
                         layoutCallProperties.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
@@ -664,8 +666,7 @@ public class ResponeCallActivity extends AppCompatActivity {
                         imgBtnSwitchCamera.setVisibility(View.GONE);
 
 
-                    }
-                    else{
+                    } else {
 
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //
@@ -674,8 +675,6 @@ public class ResponeCallActivity extends AppCompatActivity {
 
 
                     }
-
-
 
 
                 }
@@ -688,34 +687,30 @@ public class ResponeCallActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean s) {
 
-                if(s){
+                if (s) {
                     imgBtnOpenAudioCallLp.setBackground(null);
 
 
-                }
-                else{
+                } else {
                     imgBtnOpenAudioCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
-
 
 
                 }
                 localAudioTrack.setEnabled(s);
 
 
-
-                }
+            }
 
 
         });
         responeCallViewModel.isSpeaker.observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
-                if(s){
+                if (s) {
                     imgBtnSwitchMic.setBackground(getDrawable(R.drawable.bv_background_white));
 
 
-                }
-                else{
+                } else {
                     imgBtnSwitchMic.setBackground(null);
 
 
@@ -724,7 +719,6 @@ public class ResponeCallActivity extends AppCompatActivity {
                 toggleSpeaker(s);
             }
         });
-
 
 
         ////// for call layout_call_properties
@@ -739,12 +733,12 @@ public class ResponeCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(!responeCallViewModel.isVideoForMe.getValue()&&!responeCallViewModel.isVideoForYou.getValue()){
+                if (!responeCallViewModel.isVideoForMe.getValue() && !responeCallViewModel.isVideoForYou.getValue()) {
                     showSwitchToVideoWhenIAskDialog(getResources().getString(R.string.alert_switch_to_video_message));
-                   responeCallViewModel.isVideoForMe.setValue(!responeCallViewModel.isVideoForMe.getValue());
+                    responeCallViewModel.isVideoForMe.setValue(!responeCallViewModel.isVideoForMe.getValue());
                     sendAskForVideoCall(responeCallViewModel.isVideoForMe.getValue());
 
-                }else {
+                } else {
                     closeOpenVideo();
                 }
 
@@ -776,11 +770,34 @@ public class ResponeCallActivity extends AppCompatActivity {
             }
         });
         //////////////////////////////
+        binding.localVideoView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction()) {
+
+                    case MotionEvent.ACTION_DOWN:
+
+                        dX = view.getX() - motionEvent.getRawX();
+                        dY = view.getY() - motionEvent.getRawY();
+                        break;
+
+                    case MotionEvent.ACTION_MOVE:
+
+                        view.animate()
+                                .x(motionEvent.getRawX() + dX)
+                                .y(motionEvent.getRawY() + dY)
+                                .setDuration(0)
+                                .start();
+                        break;
+                    default:
+                        return false;
+                }
+                return true;
+            }
 
 
+        });
     }
-
-
     @Override
     protected void onDestroy() {
 //        webView.loadUrl("about:blank");
@@ -1343,7 +1360,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     = new NotificationChannel(
                     channel_id, "Memo",
 
-                    NotificationManager.IMPORTANCE_HIGH);
+                    NotificationManager.IMPORTANCE_DEFAULT);
             notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
             notificationManager.createNotificationChannel(
@@ -1428,7 +1445,9 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     onGoingTitle = getResources().getString(R.string.ongoing_video_call);
                     binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setBackground(null);
-                    binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
+                    binding.remoteVideoView.setVisibility(View.VISIBLE);
+                    binding.localVideoView.setVisibility(View.VISIBLE);
+
                     calltType = "video";
 
                 }
@@ -1437,7 +1456,9 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
                     binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
-                    binding.webRtcRelativeLayout.setVisibility(View.GONE);
+                    binding.remoteVideoView.setVisibility(View.GONE);
+                    binding.localVideoView.setVisibility(View.GONE);
+
                     calltType = "audio";
 
 

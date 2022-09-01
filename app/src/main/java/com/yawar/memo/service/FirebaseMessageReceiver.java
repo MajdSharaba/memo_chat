@@ -175,12 +175,12 @@ public class FirebaseMessageReceiver
                             notificationManager.cancel(-1);
 
                             Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
-//                            int channel_id=Integer.parseInt(channelId)+10000;
+                             channel_id=Integer.parseInt(channelId);
 
                             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
 //                            new showNotification(this).execute(userMissCallName, userMissCallimage, getResources().getString(R.string.missing_call), String.valueOf(channelId));
 
-                            Data inputDataNotification = new Data.Builder().putString("name",userMissCallName).putString("image",userMissCallimage).putString("body",getResources().getString(R.string.missing_call)).putString("channel", String.valueOf(channelId)).build();
+                            Data inputDataNotification = new Data.Builder().putString("name",userMissCallName).putString("image",userMissCallimage).putString("body",getResources().getString(R.string.missing_call)).putString("channel", String.valueOf(channelId+AllConstants.CHANNEL_ID)).build();
 
 
                             OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)
@@ -225,7 +225,10 @@ public class FirebaseMessageReceiver
                 if (!chatRoomRepo.checkInChat(remoteMessage.getData().get("sender_id"))) {
 
 //                    new showNotification(this).execute(remoteMessage.getData().get("title"), remoteMessage.getData().get("image"), message, remoteMessage.getData().get("sender_id"));
-                    Data inputDataNotification = new Data.Builder().putString("name",remoteMessage.getData().get("title")).putString("image",remoteMessage.getData().get("image")).putString("body",message).putString("channel", remoteMessage.getData().get("sender_id")).build();
+                    Data inputDataNotification = new Data.Builder().putString("name",remoteMessage.getData().get("title")).putString("image",remoteMessage.getData().get("image"))
+                            .putString("body",message).putString("channel", remoteMessage.getData().get("sender_id"))
+                            .putString("blockedFor", remoteMessage.getData().get("blockedFor")).putString("special", remoteMessage.getData().get("special"))
+                            .putString("fcm_token", remoteMessage.getData().get("fcm_token")).build();
 
 
                     OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)

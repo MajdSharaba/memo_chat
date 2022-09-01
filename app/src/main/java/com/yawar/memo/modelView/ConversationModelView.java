@@ -25,6 +25,7 @@ public class ConversationModelView extends ViewModel {
     public MutableLiveData<String> state ;
     private   String _isTyping;
     public MutableLiveData<String> isTyping ;
+    public MutableLiveData<Boolean> isFirst ;
 
 
 
@@ -34,6 +35,8 @@ public class ConversationModelView extends ViewModel {
 
         this.state=new MutableLiveData<>();
         this.isTyping = new MutableLiveData<>();
+        this.isFirst = new MutableLiveData<>(true);
+
     }
 
 
@@ -42,6 +45,7 @@ public class ConversationModelView extends ViewModel {
         blockUserRepo.setBlockedForRepo(blockedFor);
     }
     public MutableLiveData<String> blockedFor(){
+        System.out.println("block for changeeeeeee");
         return blockUserRepo.blockedForRepo;
     }
 

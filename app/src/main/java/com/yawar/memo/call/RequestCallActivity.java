@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -30,6 +31,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -94,9 +96,11 @@ public class RequestCallActivity extends AppCompatActivity {
     public static final String VIDEO_TRACK_ID = "ARDAMSv0";
 //    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
     public static final int VIDEO_RESOLUTION_WIDTH = 480;
+    float dX, dY;
 
 
-//    public static final int VIDEO_RESOLUTION_HEIGHT = 720;
+
+    //    public static final int VIDEO_RESOLUTION_HEIGHT = 720;
     public static final int VIDEO_RESOLUTION_HEIGHT = 360;
 
 
@@ -721,6 +725,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
 
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -766,7 +771,6 @@ public class RequestCallActivity extends AppCompatActivity {
         dialogForMe = new AlertDialog.Builder(this);
         start();
         startCall();
-
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
 
@@ -778,7 +782,8 @@ public class RequestCallActivity extends AppCompatActivity {
                 if (s) {
                     if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
 
-                        binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
+                        binding.remoteVideoView.setVisibility(View.VISIBLE);
+                        binding.localVideoView.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
                         layoutCallProperties.setVisibility(View.VISIBLE);
                         imgBtnSwitchMic.setVisibility(View.GONE);
@@ -809,7 +814,8 @@ public class RequestCallActivity extends AppCompatActivity {
                         imgBtnSwitchCamera.setVisibility(View.GONE);
 
 
-                        binding.webRtcRelativeLayout.setVisibility(View.GONE);
+                        binding.remoteVideoView.setVisibility(View.GONE);
+                        binding.localVideoView.setVisibility(View.GONE);
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
 
@@ -834,7 +840,8 @@ public class RequestCallActivity extends AppCompatActivity {
                 if (s) {
                     if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
 
-                        binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
+                        binding.remoteVideoView.setVisibility(View.VISIBLE);
+                        binding.localVideoView.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
                         imgBtnSwitchMic.setVisibility(View.GONE);
                         imgBtnSwitchCamera.setVisibility(View.VISIBLE);
@@ -845,7 +852,8 @@ public class RequestCallActivity extends AppCompatActivity {
 
                     if (!requestCallViewModel.getIsVideoForMe().getValue()) {
 
-                        binding.webRtcRelativeLayout.setVisibility(View.GONE);
+                        binding.remoteVideoView.setVisibility(View.GONE);
+                        binding.localVideoView.setVisibility(View.GONE);
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
                         imgBtnSwitchMic.setVisibility(View.VISIBLE);
@@ -977,6 +985,8 @@ public class RequestCallActivity extends AppCompatActivity {
                         );
                         params.setMargins((int) (7 * scale + 0.5f), (int) (15 * scale + 0.5f), (int) (7 * scale + 0.5f), 0);
                         binding.localVideoView.setLayoutParams(params);
+                        binding.localVideoView.bringToFront();
+
                         ///for stop 15 sec counter
 //                        countDownTimer.cancel();
 //                        ////for close rining
@@ -1042,6 +1052,36 @@ public class RequestCallActivity extends AppCompatActivity {
                 requestCallViewModel.setIsSpeaker(!requestCallViewModel.isSpeaker.getValue());
             }
         });
+        binding.localVideoView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
+                    switch (motionEvent.getAction()) {
+
+                        case MotionEvent.ACTION_DOWN:
+
+                            dX = view.getX() - motionEvent.getRawX();
+                            dY = view.getY() - motionEvent.getRawY();
+                            break;
+
+                        case MotionEvent.ACTION_MOVE:
+
+                            view.animate()
+                                    .x(motionEvent.getRawX() + dX)
+                                    .y(motionEvent.getRawY() + dY)
+                                    .setDuration(0)
+
+                                    .start();
+                            break;
+                        default:
+                            return false;
+                    }
+                }
+                    return true;
+                }
+
+
+        });
 
 
 //        binding.localVideoView.setOnClickListener(new View.OnClickListener() {
@@ -1097,14 +1137,16 @@ public class RequestCallActivity extends AppCompatActivity {
             onGoingTitle = getResources().getString(R.string.ongoing_video_call);
             binding.audioOnlyLayout.setVisibility(View.VISIBLE);
             binding.audioOnlyLayout.setBackground(null);
-            binding.webRtcRelativeLayout.setVisibility(View.VISIBLE);
+            binding.remoteVideoView.setVisibility(View.VISIBLE);
+            binding.localVideoView.setVisibility(View.VISIBLE);
             binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
             typeCall = "video";
         } else {
             onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
             binding.audioOnlyLayout.setVisibility(View.VISIBLE);
             binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
-            binding.webRtcRelativeLayout.setVisibility(View.GONE);
+            binding.remoteVideoView.setVisibility(View.GONE);
+            binding.localVideoView.setVisibility(View.GONE);
             typeCall = "audio";
 
 
@@ -1813,7 +1855,7 @@ private void start() {
                     = new NotificationChannel(
                     channel_id, "Memo",
 
-                    NotificationManager.IMPORTANCE_HIGH);
+                    NotificationManager.IMPORTANCE_DEFAULT);
             notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
             notificationManager.createNotificationChannel(

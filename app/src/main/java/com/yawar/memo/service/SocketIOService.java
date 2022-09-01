@@ -439,7 +439,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     }
                     break;
                 case EVENT_TYPE_UN_BLOCK:
-                    System.out.println("EVENT_TYPE_block");
+                    System.out.println("EVENT_TYPE_UNblock");
 
                     String unBlock_paramter = intent.getExtras().getString(EXTRA_UN_BLOCK_PARAMTERS);
 

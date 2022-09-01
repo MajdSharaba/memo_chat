@@ -8,15 +8,18 @@ import android.graphics.Color;
 import android.os.Handler;
 import android.text.TextUtils;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
+import androidx.preference.PreferenceManager;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.yawar.memo.R;
 import com.yawar.memo.observe.ContactNumberObserve;
 import com.yawar.memo.observe.FireBaseTokenObserve;
 import com.yawar.memo.observe.StoriesObserve;
@@ -26,6 +29,7 @@ import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.repositry.RequestCallRepo;
 import com.yawar.memo.repositry.UserInformationRepo;
+import com.yawar.memo.sessionManager.ClassSharedPreferences;
 
 public class BaseApp extends Application implements LifecycleObserver {
 
@@ -42,6 +46,9 @@ public class BaseApp extends Application implements LifecycleObserver {
     AuthRepo authRepo;
     ChatMessageRepo chatMessageRepo;
     UserInformationRepo userInformationRepo;
+     String[] darkModeValues ;
+     ClassSharedPreferences classSharedPreferences;
+
 
     String peerId = null;
 
@@ -50,8 +57,11 @@ public class BaseApp extends Application implements LifecycleObserver {
     @Override
     public void onCreate() {
         super.onCreate();
+        setMode();
+
         sInstance = this;
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+        classSharedPreferences = new ClassSharedPreferences(this);
     }
 
      public  String isActivityVisible(){
@@ -127,6 +137,8 @@ public class BaseApp extends Application implements LifecycleObserver {
     public ChatRoomRepo getChatRoomRepo() {
         if(chatRoomRepo== null){
             chatRoomRepo = new ChatRoomRepo(this);
+            chatRoomRepo.callAPI(classSharedPreferences.getUser().getUserId());
+
         }
         return chatRoomRepo;
     }
@@ -177,6 +189,18 @@ public class BaseApp extends Application implements LifecycleObserver {
     public <T> void addToRequestQueue(Request<T> req) {
         req.setTag(TAG);
         getRequestQueue().add(req);
+    }
+    public  void setMode(){
+        darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
+        String pref = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
+        // Comparing to see which preference is selected and applying those theme settings
+        if (pref.equals(darkModeValues[0])){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
+        else if (pref.equals(darkModeValues[1])){
+
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
+
     }
 
     public void cancelPendingRequests(Object tag) {

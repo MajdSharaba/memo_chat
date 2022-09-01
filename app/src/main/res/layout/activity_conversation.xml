@@ -19,6 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:layout_gravity="center"
+            android:foreground="?android:attr/actionBarItemBackground"
             android:background="@color/green"
             android:gravity="center"
             android:text="@string/location"
@@ -40,6 +41,7 @@
             android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:foreground="?android:attr/actionBarItemBackground"
             android:background="@drawable/btn_custom_blue_back"
             android:text="@string/sendCurrentLocation"
             android:textColor="#fff"
@@ -78,6 +80,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="5dp"
                 android:src="@drawable/ic_arrow_back"
+                android:background="?android:attr/actionBarItemBackground"
                 app:tint="@color/white">
 
             </ImageView>
@@ -130,6 +133,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
+                    android:background="?android:attr/actionBarItemBackground"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_video_blue"
 
@@ -141,10 +145,11 @@
                     android:id="@+id/audio_call"
                     android:layout_width="0dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginEnd="2dp"
                     android:layout_weight="0.5"
                     android:layout_gravity="center"
                     android:layout_height="wrap_content"
+                    android:background="?android:attr/actionBarItemBackground"
                     android:src="@drawable/ic_call_blue">
 
                 </ImageView>
@@ -181,27 +186,28 @@
                     android:id="@+id/image_button_delete"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@null"
+                    android:background="?android:attr/actionBarItemBackground"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_delete"/>
 
                 <ImageButton
                     android:id="@+id/image_button_foword"
+                    android:background="?android:attr/actionBarItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@null"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:src="@drawable/ic_forword"/>
 
                 <ImageButton
                     android:id="@+id/image_button_reply"
+                    android:background="?android:attr/actionBarItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@null"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
+                    android:visibility="gone"
                     android:src="@drawable/ic_forword"/>
 
             </LinearLayout>
@@ -297,7 +303,8 @@
                             android:layout_marginTop="5dp"
                             android:layout_weight="1"
                             android:visibility="gone"
-                            android:background="@null"
+                            android:background="?android:attr/actionBarItemBackground"
+
                             android:src="@drawable/ic_close"/>
 
                     </LinearLayout>
@@ -335,12 +342,12 @@
                 android:visibility="visible">
             <ImageButton
                 android:id="@+id/btn_send_message_image"
+                android:background="?android:attr/actionBarItemBackground"
                 android:layout_width="0dp"
                 android:layout_height="38dp"
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
                 android:layout_weight="0.2"
-                android:background="@null"
                 android:src="@drawable/ic_add_blue"
                 android:textColor="@color/background_material_light" />
 
@@ -381,7 +388,7 @@
                 android:layout_margin="5dp"
                 android:visibility="gone"
                 android:layout_weight="0.2"
-                android:background="@null"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/ic_arrow_send"
                 />
             <com.devlomi.record_view.RecordButton
@@ -423,6 +430,8 @@
                 android:layout_alignParentStart="true"
                 android:layout_margin="10dp"
                 android:gravity="start"
+                android:background="?android:attr/actionBarItemBackground"
+
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -448,6 +457,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:gravity="center"
+                android:background="?android:attr/actionBarItemBackground"
                 android:layout_centerHorizontal="true"
                 android:orientation="vertical">
 
@@ -473,6 +483,7 @@
                 android:id="@+id/pickFile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?android:attr/actionBarItemBackground"
                 android:layout_alignParentEnd="true"
                 android:layout_margin="10dp"
                 android:orientation="vertical">
@@ -499,6 +510,7 @@
                 android:id="@+id/pick_contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?android:attr/actionBarItemBackground"
                 android:layout_below="@id/lytCameraPick"
                 android:layout_margin="10dp"
                 android:orientation="vertical">
@@ -526,6 +538,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/pickFile"
+                android:background="?android:attr/actionBarItemBackground"
                 android:layout_alignParentEnd="true"
                 android:layout_margin="10dp"
                 android:orientation="vertical">

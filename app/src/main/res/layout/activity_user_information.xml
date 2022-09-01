@@ -48,18 +48,22 @@
                 android:orientation="horizontal">
 
                 <LinearLayout
-                    android:id="@+id/liner_call"
+                    android:id="@+id/liner_audio_call"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
+                        android:id="@+id/img_audio_call"
                         android:layout_width="43dp"
                         android:layout_height="43dp"
+                        android:foreground="?android:attr/actionBarItemBackground"
                         android:background="@drawable/btn_background_circle_green"
                         android:src="@drawable/ic_call"
-                        app:tint="@color/white">
+                        app:tint="@color/white"
+
+                        >
                     </ImageButton>
                     <TextView
                         android:id="@+id/call"
@@ -73,16 +77,18 @@
 
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/liner_video"
+                    android:id="@+id/liner_video_call"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:gravity="center"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
+                        android:id="@+id/img_video_call"
                         android:layout_width="43dp"
                         android:layout_height="43dp"
                         android:background="@drawable/btn_background_circle_green"
+                        android:foreground="?android:attr/actionBarItemBackground"
                         android:src="@drawable/ic_video_information"
                         app:tint="@color/white">
                     </ImageButton>
@@ -105,9 +111,10 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
-                        android:id="@+id/ib_message"
+                        android:id="@+id/img_message"
                         android:layout_width="43dp"
                         android:background="@drawable/btn_background_circle_green"
+                        android:foreground="?android:attr/actionBarItemBackground"
                         android:layout_height="43dp"
                         android:src="@drawable/ic_message"
                         app:tint="@color/white">
@@ -135,6 +142,7 @@
                         android:layout_height="43dp"
                         android:background="@drawable/btn_background_circle_green"
                         android:src="@drawable/ic_bell"
+                        android:foreground="?android:attr/actionBarItemBackground"
                         app:tint="@color/white">
                     </ImageButton>
                     <TextView
@@ -156,10 +164,12 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
+                        android:id="@+id/img_more"
                         android:layout_width="43dp"
                         android:background="@drawable/btn_background_circle_green"
                         android:layout_height="43dp"
                         android:src="@drawable/ic_more"
+                        android:foreground="?android:attr/actionBarItemBackground"
                         app:tint="@color/white"
                         >
                     </ImageButton>

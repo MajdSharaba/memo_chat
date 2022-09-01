@@ -65,6 +65,7 @@ public class IntroActivity extends AppCompatActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
         System.out.println( android.os.Build.MANUFACTURER+"String deviceMan = android.os.Build.MANUFACTURER;\n");
@@ -91,7 +92,7 @@ public class IntroActivity extends AppCompatActivity  {
 //        serverApi = new ServerApi(this);
        myBase = BaseApp.getInstance();
 //        myBase.getObserver().addObserver(this);
-        chatRoomRepo=myBase.getChatRoomRepo();
+//        chatRoomRepo=myBase.getChatRoomRepo();
         blockUserRepo = myBase.getBlockUserRepo();
         introActModelView = new ViewModelProvider(this).get(IntroActModelView.class);
         permissions = new Permissions();
@@ -106,8 +107,13 @@ public class IntroActivity extends AppCompatActivity  {
 
                             // Get new FCM registration token
                             String token = task.getResult();
+
+
+
 //                            sendToken(token);
+
                             introActModelView.sendFcmToken(myId,token);
+                            classSharedPreferences.setFcmToken(token);
 
                             // Log and toast
                             Log.d("jjj", token);
@@ -185,7 +191,7 @@ public class IntroActivity extends AppCompatActivity  {
             createDirectory("memo/send/video");
             createDirectory("memo/recive/video");
             System.out.println("permission granted call");
-            chatRoomRepo.callAPI(myId);
+//            chatRoomRepo.callAPI(myId);
 
         }
         else permissions.requestStorage(IntroActivity.this);
@@ -218,7 +224,7 @@ public class IntroActivity extends AppCompatActivity  {
                     createDirectory("memo/recive/voiceRecord");
                     createDirectory("memo/send/video");
                     createDirectory("memo/recive/video");
-                    chatRoomRepo.callAPI(myId);
+//                    chatRoomRepo.callAPI(myId);
                 }
                 else
                     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
@@ -302,7 +308,7 @@ public class IntroActivity extends AppCompatActivity  {
                     createDirectory("memo/recive/voiceRecord");
                     createDirectory("memo/send/video");
                     createDirectory("memo/recive/video");
-                    chatRoomRepo.callAPI(myId);
+//                    chatRoomRepo.callAPI(myId);
                 }
                 break;
 

@@ -116,7 +116,9 @@ public class DashBord extends AppCompatActivity implements Observer {
                             message.getString("state"),
                             message.getString("created_at"),
                              false,
-                               "null"
+                               "null",
+                            user.getString("id")
+
 
 
 
@@ -141,7 +143,6 @@ public class DashBord extends AppCompatActivity implements Observer {
     private final BroadcastReceiver reciveNwMessage = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            System.out.println("newMessssssssssssssssssssssssssssssssssssssssssssge");
             String objectString = intent.getExtras().getString("message");
             JSONObject message = null;
             try {
@@ -160,10 +161,13 @@ public class DashBord extends AppCompatActivity implements Observer {
             String fileName = "";
             String chatId = "";
             String dateTime = "";
+            String id_user = "";
 
             try {
 
                 /// JSONObject jsonObject= (JSONObject) messageJson.get("data");
+                id = message.getString("message_id");
+                id_user = message.getString("id");
                 text = message.getString("message");
                 type = message.getString("message_type");
                 state = message.getString("state");
@@ -185,11 +189,16 @@ public class DashBord extends AppCompatActivity implements Observer {
             else {
                 anthor_id = senderId;
             }
+            System.out.println("set last message"+message.toString());
 
-            if(!state.equals("3")){
-                System.out.println("set Last Messageeeeeeeeeeeeeeeee");
-                chatRoomRepo.setLastMessage(text,chatId,myId,anthor_id,type,state,dateTime);
+
+                if (!id.equals("0000")){
+                    chatRoomRepo.setLastMessage(text, chatId, myId, anthor_id, type, state, dateTime, senderId);
             }
+                else{
+                    chatRoomRepo.updateLastMessageState(state,chatId);
+                }
+
         }
 
 
@@ -315,7 +324,9 @@ public class DashBord extends AppCompatActivity implements Observer {
         myId = classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
         chatRoomRepo= myBase.getChatRoomRepo();
-                        LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
+//        chatRoomRepo.callAPI(myId);
+
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.navigationChip);
                 if (savedInstanceState == null) {

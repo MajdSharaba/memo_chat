@@ -6,6 +6,7 @@
     app:cardElevation="0dp"
     app:cardCornerRadius="5dp"
     app:cardBackgroundColor="@color/backgroundColor"
+    android:foreground="?attr/selectableItemBackground"
     app:cardMaxElevation="5dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="false"

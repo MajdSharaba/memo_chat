@@ -6,12 +6,14 @@
     app:cardElevation="5dp"
     app:cardCornerRadius="5dp"
     app:cardBackgroundColor="@color/backgroundColor"
+    android:foreground="?attr/selectableItemBackground"
     app:cardMaxElevation="5dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="false"
     android:orientation="horizontal">
     <LinearLayout
         android:layout_width="match_parent"
+        android:layout_gravity="center_vertical"
         android:layout_height="wrap_content"
         android:orientation="vertical">
     <LinearLayout
@@ -64,7 +66,7 @@
                 android:maxLines="1"
                 android:text="@string/hellohowareyou"
                 android:textColor="#808080"
-                android:textSize="12sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
         <Button
@@ -89,7 +91,6 @@
     <include layout="@layout/item_divider"
         android:layout_marginStart="50dp"
         android:layout_width="match_parent"
-
         android:layout_height="0.2dp">
 
     </include>

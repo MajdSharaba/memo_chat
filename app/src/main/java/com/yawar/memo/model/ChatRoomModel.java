@@ -3,24 +3,7 @@ package com.yawar.memo.model;
 import java.util.Objects;
 
 public class ChatRoomModel implements Comparable, Cloneable {
-//    public String username;
-//    public String other_id;
-//    public String lastMessage;
-//    public String image;
-//    public boolean isChecked;
-//    public  String numberMessage;
-//    public String  chatId;
-//    public  String state;
-//    public  String numberUnRMessage;
-//    public  boolean inChat;
-//    public String fcmToken;
-//    public String lastMessageType;
-//    public String lastMessageState;
-//    public String specialNumber;
-//    public  String lastMessageTime;
-//    public boolean isTyping;
-//    public  String blockedFor;
-    ////
+
     public String username;
     public String other_id;
     public String last_message;
@@ -34,6 +17,10 @@ public class ChatRoomModel implements Comparable, Cloneable {
     public String user_token;
     public String message_type;
     public String mstate;
+
+
+
+    public String msg_sender;
     public String sn;
     public  String created_at;
     public boolean isTyping;
@@ -47,7 +34,7 @@ public class ChatRoomModel implements Comparable, Cloneable {
 
 
     public ChatRoomModel(String name,String senderId, String lastMessage, String image, boolean isChecked, String numberMessage,String chatId,String state,String numberUnRMessage,
-                         boolean inChat,String fcmToken,String specialNumber, String lastMessageType, String lastMessageState,String lastMessageTime, boolean isTyping, String blockedFor) {
+                         boolean inChat,String fcmToken,String specialNumber, String lastMessageType, String lastMessageState,String lastMessageTime, boolean isTyping, String blockedFor,String msg_sender) {
         this.username = name;
         this.other_id = senderId;
         this.last_message = lastMessage;
@@ -65,6 +52,7 @@ public class ChatRoomModel implements Comparable, Cloneable {
         this.created_at = lastMessageTime;
         this.isTyping = isTyping;
         this.blocked_for = blockedFor;
+        this.msg_sender = msg_sender;
     }
 
     public String getUsername() {
@@ -197,6 +185,13 @@ public class ChatRoomModel implements Comparable, Cloneable {
     public String getBlocked_for() {
         return blocked_for;
     }
+    public String getMsg_sender() {
+        return msg_sender;
+    }
+
+    public void setMsg_sender(String msg_sender) {
+        this.msg_sender = msg_sender;
+    }
 
     public void setBlocked_for(String blocked_for) {
         this.blocked_for = blocked_for;
@@ -205,8 +200,8 @@ public class ChatRoomModel implements Comparable, Cloneable {
     @Override
     public int compareTo(Object o) {
         ChatRoomModel compare = (ChatRoomModel) o;
-        if (compare.getOther_id().equals(this.getOther_id()) && compare.last_message.equals(this.last_message) && compare.isTyping == (this.isTyping)&& Objects.equals(compare.getBlocked_for(),this.getBlocked_for())
-        ) {
+        if (compare.getOther_id().equals(this.getOther_id()) && compare.last_message.equals(this.last_message) && compare.isTyping == (this.isTyping)&& Objects.equals(compare.getBlocked_for(),this.getBlocked_for()
+        ) && Objects.equals(compare.getNum_msg(),this.getNum_msg()) && Objects.equals(compare.mstate,this.mstate)) {
             return 0;
         }
         return 1;

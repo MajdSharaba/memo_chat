@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.github.chrisbanes.photoview.PhotoView;
+import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
@@ -71,6 +73,8 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
             //.. should log the error or throw and exception
         }
         this.listsearch.addAll(getCurrentList());
+        classSharedPreferences = new ClassSharedPreferences(context);
+
     }
 
     @NonNull
@@ -95,61 +99,169 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         holder.name.setText(chatRoomModel.getUsername());
         holder.textTime.setText(timeProperties.getFormattedDate(context,Long.parseLong(chatRoomModel.getCreated_at())));
+        if(!chatRoomModel.isTyping()) {
+            holder.lastMessage.setTextColor(context.getResources().getColor(R.color.gray));
+            System.out.println(chatRoomModel.message_type +"list.get(position).lastMessageType");
+            switch (chatRoomModel.message_type) {
+                case "imageWeb":
+                    lastMessage = context.getResources().getString(R.string.photo);
+                    holder.imageType.setVisibility(View.VISIBLE);
+                    holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_select_image));
 
-        switch (chatRoomModel.getLast_message()){
-            case "imageWeb":
-                lastMessage = context.getResources().getString(R.string.photo);
-                holder.imageType.setVisibility(View.VISIBLE);
+                    break;
+                case "voice":
+                    lastMessage = context.getResources().getString(R.string.voice);
+                    holder.imageType.setVisibility(View.VISIBLE);
 
-                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_select_image));
+                    holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_voice));
 
-                break;
-            case "voice":
-                lastMessage = context.getResources().getString(R.string.voice);
-                holder.imageType.setVisibility(View.VISIBLE);
+                    break;
+                case "video":
+                    lastMessage = context.getResources().getString(R.string.video);
+                    holder.imageType.setVisibility(View.VISIBLE);
 
-                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_voice));
+                    holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_video));
+                    break;
+                case "file":
+                    lastMessage = context.getResources().getString(R.string.file);
+                    holder.imageType.setVisibility(View.VISIBLE);
 
-                break;
-            case "video":
-                lastMessage = context.getResources().getString(R.string.video);
-                holder.imageType.setVisibility(View.VISIBLE);
+                    holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_file));
 
-                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_video));
-                break;
-            case "file":
-                lastMessage = context.getResources().getString(R.string.file);
-                holder.imageType.setVisibility(View.VISIBLE);
+                    break;
+                case "contact":
+                    lastMessage = context.getResources().getString(R.string.contact);
+                    holder.imageType.setVisibility(View.VISIBLE);
 
-                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_file));
+                    holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_person));
 
-                break;
-            case "contact":
-                lastMessage = context.getResources().getString(R.string.contact);
-                holder.imageType.setVisibility(View.VISIBLE);
+                    break;
+                case "location":
+                    lastMessage = context.getResources().getString(R.string.location);
+                    holder.imageType.setVisibility(View.VISIBLE);
 
-                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_person));
+                    holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_location));
 
-                break;
-            case "location":
-                lastMessage = context.getResources().getString(R.string.location);
-                holder.imageType.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    holder.imageType.setVisibility(View.GONE);
 
-                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_location));
+                    lastMessage = chatRoomModel.last_message;
 
-                break;
-            default:
-                holder.imageType.setVisibility(View.GONE);
+            }
+            holder.lastMessage.setText(lastMessage);
+            if (chatRoomModel.num_msg.equals("0"))
+                holder.numUMessage.setVisibility(View.GONE);
+            else {
+                holder.numUMessage.setVisibility(View.VISIBLE);
+                holder.numUMessage.setText(chatRoomModel.num_msg);
+                System.out.println(chatRoomModel.num_msg +chatRoomModel.num_msg);
+            }
 
-                lastMessage = chatRoomModel.getLast_message() ;
+            if(chatRoomModel.msg_sender.equals(classSharedPreferences.getUser().getUserId())) {
+                holder.imageLasrMessageType.setVisibility(View.VISIBLE);
+
+                switch (chatRoomModel.getMstate()) {
+
+
+                    case "1":
+
+                        holder.imageLasrMessageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_send_done));
+                        holder.imageLasrMessageType.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.gray)));
+
+
+                        break;
+                    case "2":
+
+                        holder.imageLasrMessageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done));
+                        holder.imageLasrMessageType.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.gray)));
+
+                        break;
+                    case "3":
+
+                        holder.imageLasrMessageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_recive_done_green));
+                        holder.imageLasrMessageType.setImageTintList(null);
+
+
+                        break;
+
+                    default:
+                        holder.imageLasrMessageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_not_send));
+                        holder.imageLasrMessageType.setImageTintList(ColorStateList.valueOf(context.getResources().getColor(R.color.gray)));
+
+
+                }
+            }
+            else{
+                holder.imageLasrMessageType.setVisibility(View.GONE);
+
+            }
 
         }
-        holder.lastMessage.setText(lastMessage);
-        if(chatRoomModel.getNum_msg().equals("0"))
+        else{
+            holder.lastMessage.setTextColor(context.getResources().getColor(R.color.green));
+            holder.imageType.setVisibility(View.GONE);
+            holder.imageLasrMessageType.setVisibility(View.GONE);
+
+            holder.lastMessage.setText(context.getResources().getString(R.string.writing_now));
             holder.numUMessage.setVisibility(View.GONE);
-        else {
-            holder.numUMessage.setVisibility(View.VISIBLE);
-            holder.numUMessage.setText(chatRoomModel.getNum_msg());}
+
+        }
+
+//        switch (chatRoomModel.getLast_message()){
+//            case "imageWeb":
+//                lastMessage = context.getResources().getString(R.string.photo);
+//                holder.imageType.setVisibility(View.VISIBLE);
+//
+//                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_select_image));
+//
+//                break;
+//            case "voice":
+//                lastMessage = context.getResources().getString(R.string.voice);
+//                holder.imageType.setVisibility(View.VISIBLE);
+//
+//                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_voice));
+//
+//                break;
+//            case "video":
+//                lastMessage = context.getResources().getString(R.string.video);
+//                holder.imageType.setVisibility(View.VISIBLE);
+//
+//                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_video));
+//                break;
+//            case "file":
+//                lastMessage = context.getResources().getString(R.string.file);
+//                holder.imageType.setVisibility(View.VISIBLE);
+//
+//                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_file));
+//
+//                break;
+//            case "contact":
+//                lastMessage = context.getResources().getString(R.string.contact);
+//                holder.imageType.setVisibility(View.VISIBLE);
+//
+//                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_person));
+//
+//                break;
+//            case "location":
+//                lastMessage = context.getResources().getString(R.string.location);
+//                holder.imageType.setVisibility(View.VISIBLE);
+//
+//                holder.imageType.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_location));
+//
+//                break;
+//            default:
+//                holder.imageType.setVisibility(View.GONE);
+//
+//                lastMessage = chatRoomModel.getLast_message() ;
+//
+//        }
+//        holder.lastMessage.setText(lastMessage);
+//        if(chatRoomModel.getNum_msg().equals("0"))
+//            holder.numUMessage.setVisibility(View.GONE);
+//        else {
+//            holder.numUMessage.setVisibility(View.VISIBLE);
+//            holder.numUMessage.setText(chatRoomModel.getNum_msg());}
         if(!chatRoomModel.getImage().isEmpty()){
             System.out.println("not freeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
 //            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl +chatRoomModel.getImage()).error(context.getResources().getDrawable(R.drawable.th)).into(holder.imageView);
@@ -233,6 +345,24 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
 
                     }
                 });
+                ImageButton imgBtnCall = mView.findViewById(R.id.btimg_call);
+                imgBtnCall.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(context, RequestCallActivity.class);
+                        intent.putExtra("anthor_user_id", chatRoomModel.getOther_id());
+                        intent.putExtra("user_name", chatRoomModel.getUsername());
+                        intent.putExtra("isVideo", false);
+                        intent.putExtra("fcm_token", chatRoomModel.user_token);
+                        intent.putExtra("image_profile", chatRoomModel.getImage());
+
+
+
+                        view.getContext().startActivity(intent);
+                        mDialog.dismiss();
+
+                    }
+                });
 
 
 
@@ -294,6 +424,8 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
         TextView lastMessage;
         ImageView imageView;
         LinearLayout linearLayout;
+        ImageView imageLasrMessageType;
+
         TextView numUMessage;
         ImageView imageType;
         TextView textTime;
@@ -311,6 +443,8 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
 
             imageView = itemView.findViewById(R.id.image);
             linearLayout = itemView.findViewById(R.id.liner_chat_room_row);
+            imageLasrMessageType = (ImageView) itemView.findViewById(R.id.img_state);
+
 
             numUMessage = itemView.findViewById(R.id.num_message);
             imageType = itemView.findViewById(R.id.img_type);
