@@ -5,4 +5,9 @@
     <solid android:color="@color/memo_background_color" />
     <size android:height="20dp"
         android:width="20dp"/>
+    <alpha
+        android:fromAlpha="0.0"
+        android:toAlpha="1."
+        android:duration="1000">
+    </alpha>
 </shape>

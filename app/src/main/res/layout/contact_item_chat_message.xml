@@ -177,7 +177,7 @@
                         android:id="@+id/addContact"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Add Contact"
+                        android:text="@string/addContact"
                         android:textColor="@color/white"
                         android:layout_marginRight="5dp"
                         android:layout_marginLeft="10dp"

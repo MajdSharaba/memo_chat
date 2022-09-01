@@ -18,12 +18,15 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
+import android.text.format.Time;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.text.HtmlCompat;
 import androidx.work.Worker;
@@ -45,6 +48,8 @@ import com.yawar.memo.service.FirebaseMessageReceiver;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
+import com.yawar.memo.views.ConversationActivity;
+import com.yawar.memo.views.DashBord;
 import com.yawar.memo.views.SplashScreen;
 
 import java.io.IOException;
@@ -52,14 +57,21 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class NotificationWorker extends Worker {
 
     public static final String WORK_NAME ="NotificationWorker" ;
     private static final String TAG ="NotificationWorker" ;
     String call_ongoing_call_user_id;
+    NotificationCompat.MessagingStyle inboxStyle ;
+    ClassSharedPreferences classSharedPreferences;
+
 
     /**
      * Creates an instance of the {@link Worker}.
@@ -76,13 +88,23 @@ public class NotificationWorker extends Worker {
     @NonNull
     @Override
     public Worker.Result doWork() {
+        classSharedPreferences = new ClassSharedPreferences(getApplicationContext());
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
-
+        ArrayList<String> arrayList = new ArrayList<String>();
+//        inboxStyle = new NotificationCompat.InboxStyle();
+       inboxStyle =  new NotificationCompat.MessagingStyle("Me");
         final String imageUrl = getInputData().getString("image");
         final String name = getInputData().getString("name" );
         final String message = getInputData().getString("body" );
         final String channel = getInputData().getString("channel" );
+        final String fcmToken = getInputData().getString("fcm_token" );
+        final String specialNumber = getInputData().getString("special" );
+        final String blockedFor = getInputData().getString("blockedFor" );
+
+
+
+
         int id =1;
         String GROUP_KEY_WORK_EMAIL = "com.android.example.WORK_EMAIL";
         String title = "";
@@ -96,17 +118,30 @@ public class NotificationWorker extends Worker {
         try {
 
             Intent intent
-                    = new Intent(applicationContext, SplashScreen.class);
+                    = new Intent(applicationContext, ConversationActivity.class);
+
+           ///// add paramters
+            intent.putExtra("reciver_id",channel);
+            intent.putExtra("sender_id", classSharedPreferences.getUser().getUserId());
+            intent.putExtra("fcm_token",fcmToken);
+            intent.putExtra("name",name);
+            intent.putExtra("image",imageUrl);
+            intent.putExtra("chat_id","");
+            intent.putExtra("special", specialNumber);
+            intent.putExtra("blockedFor",blockedFor);
 
 
 
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            TaskStackBuilder stackBuilder = TaskStackBuilder.create(applicationContext);
+            stackBuilder.addNextIntentWithParentStack(intent);
+
             // Pass the intent to PendingIntent to start the
             // next Activity
             PendingIntent pendingIntent
-                    = PendingIntent.getActivity(applicationContext
-                    , 0, intent,
-                    PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
+                    = stackBuilder.getPendingIntent(
+                     0,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
 
 
@@ -121,10 +156,11 @@ public class NotificationWorker extends Worker {
                     .Builder(getApplicationContext(),
                     channel_id)
                     .setNumber(id++)
-                    .setPriority(NotificationCompat.PRIORITY_MAX).
-                            setContentTitle(name)
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+//                            .setContentTitle(name)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+
                     .setContentText(message)
 
 
@@ -158,6 +194,21 @@ public class NotificationWorker extends Worker {
                         channel_id, "Memo",
 
                         NotificationManager.IMPORTANCE_HIGH);
+
+                /// for check current notification
+                for (StatusBarNotification statusBarNotification : notificationManager.getActiveNotifications()) {
+                    System.out.println(statusBarNotification.getId() + "statusBarNotification.getId()");
+                    if (statusBarNotification.getId() == Integer.parseInt(channel)) {
+                        Notification notification = statusBarNotification.getNotification();
+                        Bundle bundle = notification.extras;
+                        arrayList = bundle.getStringArrayList("majd");
+                        System.out.println("getStringArrayList"+arrayList.toString());
+
+
+
+                        break;
+                    }
+                }
                 notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
                 notificationManager.createNotificationChannel(
@@ -169,6 +220,22 @@ public class NotificationWorker extends Worker {
 
 
             }
+            //// add new text
+
+            arrayList.add(message);
+            //// show all last message
+            for(String s : arrayList){
+
+                inboxStyle.addMessage(s,System.currentTimeMillis() ,name );
+            }
+
+//            inboxStyle.setBigContentTitle(name);
+            builder.setStyle(inboxStyle);
+            //// for save current messages
+            Bundle bundle = new Bundle();
+            bundle.putStringArrayList("majd",arrayList);
+            builder.setExtras(bundle);
+
 
             Glide.with(applicationContext)
                     .asBitmap()

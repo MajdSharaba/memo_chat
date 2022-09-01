@@ -134,6 +134,7 @@
         <activity
             android:name=".views.ConversationActivity"
             android:screenOrientation="portrait"
+            android:parentActivityName=".views.IntroActivity"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.DashBord"

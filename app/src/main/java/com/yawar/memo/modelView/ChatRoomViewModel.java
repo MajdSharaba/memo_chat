@@ -29,6 +29,9 @@ public class ChatRoomViewModel extends ViewModel {
     public  MutableLiveData<ArrayList<ChatRoomModel>> chatRoomListMutableLiveData;
     public final ArrayList<ChatRoomModel> chatRoomsList = new ArrayList<>();
 
+    public ChatRoomViewModel() {
+    }
+
 
 //    public IntroActModelView(@NonNull Application application) {
 //        super(application);

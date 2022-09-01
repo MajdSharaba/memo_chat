@@ -46,8 +46,8 @@ public class ServerApi {
     BaseApp myBase =BaseApp.getInstance() ;
       boolean isArchived ;
      boolean isResponeSucess;
-    ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
-    BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
+//    ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
+//    BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
     AuthRepo authRepo =myBase.getAuthRepo();
 
 
@@ -556,30 +556,30 @@ public class ServerApi {
 
 
 
-                        postList.add(new ChatRoomModel(
-                                username,
-                                jsonObject.getString("other_id"),
-                                jsonObject.getString("last_message"),
-
-
-                                image,
-                                false,
-                                jsonObject.getString("num_msg"),
-                                jsonObject.getString("id"),
-                                state,
-                                numberUnRMessage,
-                                false,
-                                jsonObject.getString("user_token")
-                                ,special_number
-                                ,lastMessageType
-                                ,lastMeesageState
-                                ,lastMeesageTime
-                                ,false
-                                ,"null"
-
-//                                "https://th.bing.com/th/id/OIP.2s7VxdmHEoDKji3gO_i-5QHaHa?pid=ImgDet&rs=1"
-
-                        ));
+//                        postList.add(new ChatRoomModel(
+//                                username,
+//                                jsonObject.getString("other_id"),
+//                                jsonObject.getString("last_message"),
+//
+//
+//                                image,
+//                                false,
+//                                jsonObject.getString("num_msg"),
+//                                jsonObject.getString("id"),
+//                                state,
+//                                numberUnRMessage,
+//                                false,
+//                                jsonObject.getString("user_token")
+//                                ,special_number
+//                                ,lastMessageType
+//                                ,lastMeesageState
+//                                ,lastMeesageTime
+//                                ,false
+//                                ,"null"
+//
+////                                "https://th.bing.com/th/id/OIP.2s7VxdmHEoDKji3gO_i-5QHaHa?pid=ImgDet&rs=1"
+//
+//                        ));
 //                        System.out.println(AllConstants.base_url + "uploads/profile/" + jsonObject.getString("image"));
                     }
 //                    if (isArchived) {
@@ -640,8 +640,10 @@ public class ServerApi {
 
 
         classSharedPreferences = new ClassSharedPreferences(context);
+        BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
 
-                ProgressDialog progressDialog = new ProgressDialog(context);
+
+        ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
         progressDialog.show();
 
@@ -727,6 +729,7 @@ public class ServerApi {
     //unBlock user
     ///////////////////////////////
     public void unbBlockUser(String my_id,ChatRoomModel userModel) {
+        ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
 
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
@@ -810,7 +813,10 @@ public class ServerApi {
         myBase.addToRequestQueue(request);
     }
     public void deleteAccount() {
+        ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
         classSharedPreferences = new ClassSharedPreferences(context);
+        BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
+
         final ProgressDialog progressDialo = new ProgressDialog(context);
         // url to post our data
         progressDialo.setMessage(context.getResources().getString(R.string.prograss_message));
@@ -874,7 +880,7 @@ public class ServerApi {
         // a json object request.
         queue.add(request);
     }
-    public void sendNotification(String message, String type,String fcmToken, String chat_id) {
+    public void sendNotification(String message, String type,String fcmToken, String chat_id, String blockedFor) {
         classSharedPreferences = new ClassSharedPreferences(context);
 
 
@@ -891,6 +897,12 @@ public class ServerApi {
             data.put("image", classSharedPreferences.getUser().getImage());
             data.put("chat_id", chat_id);
             data.put("sender_id", classSharedPreferences.getUser().getUserId());
+            data.put("fcm_token", classSharedPreferences.getFcmToken());
+            data.put("special", classSharedPreferences.getSecretNumbers());
+            data.put("blockedFor", blockedFor);
+
+
+
 
             data.put("type", type);
 

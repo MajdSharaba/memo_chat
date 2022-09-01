@@ -508,6 +508,8 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
 
                 params.put("sn", searchParamters);
                 params.put("page", String.valueOf(page));
+                params.put("my_id", classSharedPreferences.getUser().getUserId());
+
 
 //              params.put("email", email);
 //              params.put("first_name", firstName);
@@ -532,7 +534,6 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
 
         contactIntent.putExtra(ContactsContract.Intents.Insert.NAME , searchRespone.getName())
                 .putExtra(ContactsContract.Intents.Insert.PHONE, searchRespone.getPhone());
-
         startActivityForResult(contactIntent, 1);
     }
 

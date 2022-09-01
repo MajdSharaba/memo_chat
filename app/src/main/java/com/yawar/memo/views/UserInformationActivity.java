@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,12 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
-import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.modelView.UserInformationViewModel;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -40,13 +35,10 @@ import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -56,7 +48,7 @@ public class UserInformationActivity extends AppCompatActivity {
     private ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
     ServerApi serverApi;
     CircleImageView circleImageView;
-    LinearLayout linerMore;
+    LinearLayout linerMore, linerAudioCall,linerVideoCall;
     TextView txtUserName;
     TextView txtSpecialNumber;
     BlockUserRepo blockUserRepo;
@@ -83,6 +75,7 @@ public class UserInformationActivity extends AppCompatActivity {
     ChatRoomRepo chatRoomRepo;
     String blockedFor;
     boolean isBlockForMe = false;
+    ImageView imageVideoCall, imageAudioCall, imageMore, imageChat;
 
     float textSize = 14.0F ;
     SharedPreferences sharedPreferences ;
@@ -236,15 +229,29 @@ public class UserInformationActivity extends AppCompatActivity {
                 if (s != null) {
                     if (s.equals(my_id)||s.equals("0")) {
                         isBlockForMe = true;
+                        imageAudioCall.setEnabled(false);
+                        imageVideoCall.setEnabled(false);
            }
+                    else if (s.equals(another_user_id)) {
+
+                        isBlockForMe = false;
+                        imageAudioCall.setEnabled(false);
+                        imageVideoCall.setEnabled(false);
+
+
+                    }
              else {
                         isBlockForMe = false;
+                        imageAudioCall.setEnabled(true);
+                        imageVideoCall.setEnabled(true);
 
 
                     }
             }
                 else{
                     isBlockForMe = false;
+                    imageAudioCall.setEnabled(true);
+                    imageVideoCall.setEnabled(true);
 
                 }
 
@@ -255,11 +262,25 @@ public class UserInformationActivity extends AppCompatActivity {
 
 
         serverApi = new ServerApi(this);
-        linerMore=findViewById(R.id.liner_more);
+        linerMore = findViewById(R.id.liner_more);
+        linerVideoCall=findViewById(R.id.liner_video_call);
+        linerAudioCall=findViewById(R.id.liner_audio_call);
+        imageVideoCall=findViewById(R.id.img_video_call);
+        imageAudioCall=findViewById(R.id.img_audio_call);
+        imageMore=findViewById(R.id.img_more);
+        imageChat=findViewById(R.id.img_message);
 
 
 
-        
+
+
+
+
+
+
+
+
+
         circleImageView = findViewById(R.id.imageView);
         txtUserName = findViewById(R.id.txt_user_name);
         txtUserName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
@@ -300,7 +321,6 @@ public class UserInformationActivity extends AppCompatActivity {
         String lastString = specialNumber.substring(7);
 
         txtSpecialNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
-        imgBtnMessage =  findViewById(R.id.ib_message);
         userInformationViewModel.mediaRequest(my_id,another_user_id);
 //        getMedia();
 
@@ -309,7 +329,7 @@ public class UserInformationActivity extends AppCompatActivity {
 
     }
     private void initAction() {
-        imgBtnMessage.setOnClickListener(new View.OnClickListener() {
+        imageChat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
@@ -324,7 +344,7 @@ public class UserInformationActivity extends AppCompatActivity {
                 bundle.putString("name",userName);
                 bundle.putString("image",imageUrl);
                 bundle.putString("chat_id",chatId);
-                bundle.putString("blockedFor", blockedFor);
+                bundle.putString("blockedFor", userInformationViewModel.blockedFor().getValue());
 
 
 
@@ -335,7 +355,7 @@ public class UserInformationActivity extends AppCompatActivity {
             }
         });
         //////
-        linerMore.setOnClickListener(new View.OnClickListener() {
+        imageMore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 //                block();
@@ -343,7 +363,41 @@ public class UserInformationActivity extends AppCompatActivity {
 
             }
         });
-    }
+        imageAudioCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                block();
+                Intent intent = new Intent(UserInformationActivity.this, RequestCallActivity.class);
+                intent.putExtra("anthor_user_id", another_user_id);
+                intent.putExtra("user_name", userName);
+                intent.putExtra("isVideo", false);
+                intent.putExtra("fcm_token", fcm_token);
+                intent.putExtra("image_profile", imageUrl);
+
+
+
+                startActivity(intent);
+            }
+        });
+
+        imageVideoCall.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+//                block();
+            Intent intent = new Intent(UserInformationActivity.this, RequestCallActivity.class);
+//                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
+            intent.putExtra("anthor_user_id", another_user_id);
+            intent.putExtra("user_name", userName);
+            intent.putExtra("isVideo", true);
+            intent.putExtra("fcm_token", fcm_token);
+            intent.putExtra("image_profile", imageUrl);
+            startActivity(intent);
+
+        }
+    });
+}
+
+
     private void popupMenuExample() {
         PopupMenu p = new PopupMenu(this, linerMore);
         p.getMenuInflater().inflate(R.menu.main_menu, p .getMenu());

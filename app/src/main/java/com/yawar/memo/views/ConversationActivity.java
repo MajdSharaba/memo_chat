@@ -19,6 +19,8 @@ import android.Manifest;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -45,6 +47,7 @@ import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.service.notification.StatusBarNotification;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -527,9 +530,21 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         if (!state.equals("3") && chat_id.equals(user_id + anthor_user_id)) {
 //                            myBase.getObserver().setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
                             if (!recive_chat_id.isEmpty()) {
-                                chatRoomRepo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
+                                chatRoomRepo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate,user_id);
 
                                 chat_id = recive_chat_id;
+                            }
+                        }
+                        ////set last message
+                        else{
+                            if (!id.equals("0000")){
+                                System.out.println("not id equels true");
+                                chatRoomRepo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate, senderId);
+                            }
+                            else{
+                                System.out.println("elseeeeeeeeeeeeeeeeeeeee");
+
+                                chatRoomRepo.updateLastMessageState(state,chat_id);
                             }
                         }
 
@@ -687,10 +702,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
         if (chat_id.isEmpty()) {
             chat_id = user_id + anthor_user_id;
-            chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false, "null"));
+            chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false, "null",user_id));
         }
 
-        serverApi.sendNotification(message, type,fcmToken,chat_id);
+        serverApi.sendNotification(message, type,fcmToken,chat_id, conversationModelView.blockedFor().getValue());
         Intent service = new Intent(this, SocketIOService.class);
         service.putExtra(SocketIOService.EXTRA_NEW_MESSAGE_PARAMTERS, chatMessage.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_MESSAGE);
@@ -717,31 +732,35 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     }
     private void sendBlockFor(Boolean blocked) {
-
+        //                    item.put("blocked_for",conversationModelView.blockedFor().getValue());
+//                    item.put("Block",blocked);
                  JSONObject userBlocked = new JSONObject();
                 JSONObject item = new JSONObject();
+                UserModel userModel = classSharedPreferences.getUser();
+
 
                 try {
-                    item.put("blocked_for",conversationModelView.blockedFor().getValue());
-                    item.put("Block",blocked);
+                    System.out.println("before rBlocked"+userBlocked.toString());
                     userBlocked.put("my_id", user_id);
                     userBlocked.put("user_id",anthor_user_id );
                     userBlocked.put("blocked_for",conversationModelView.blockedFor().getValue());
-//"item :blockedFor,Block"
-                    userBlocked.put("userDoBlockName",classSharedPreferences.getUser().getUserName());
-                    userBlocked.put("userDoBlockSpecialNumber",classSharedPreferences.getUser().getSecretNumber());
-                    userBlocked.put("userDoBlockImage",classSharedPreferences.getUser().getImage());
-
+                    userBlocked.put("userDoBlockName",userModel.getUserName());
+                    userBlocked.put("userDoBlockSpecialNumber",userModel.getSecretNumber());
+                    userBlocked.put("userDoBlockImage",userModel.getImage());
+                 System.out.println("userBlocked"+userBlocked.toString());
 
                 } catch (JSONException e) {
+                    System.out.println(e+"errorrrrrrrr");
                     e.printStackTrace();
                 }
+
         Intent service = new Intent(this, SocketIOService.class);
 
 
         service.putExtra(SocketIOService.EXTRA_BLOCK_PARAMTERS, userBlocked.toString());
                 service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_BLOCK);
-                startService(service);
+
+        startService(service);
 
 
     }
@@ -791,8 +810,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     public static CardView cardview;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_conversation);
         toolbar = findViewById(R.id.toolbar);
@@ -803,8 +821,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         if (!isPermissionGranted()) {
             askPermissions();
         }
-//       getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//       WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
          reply    = (TextView)findViewById(R.id.reply);
          username = (TextView)findViewById(R.id.username);
@@ -834,9 +851,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     protected void onResume() {
         super.onResume();
-        first=true;
-//        checkConnect();
-//        adapter.notifyDataSetChanged();
 
     }
 
@@ -873,8 +887,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         specialNumber = bundle.getString("special", "");
         chat_id = bundle.getString("chat_id", "");
         if (chat_id.isEmpty()) {
-            System.out.println("anthor_user_id" + anthor_user_id);
-            chat_id = chatRoomRepo.getChatId(anthor_user_id);
+            if(chatRoomRepo!=null) {
+                chat_id = chatRoomRepo.getChatId(anthor_user_id);
+            }
         }
         fcmToken = bundle.getString("fcm_token", "");
         personImage = findViewById(R.id.user_image);
@@ -884,6 +899,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         String blockedFor
          = bundle.getString("blockedFor", null);
         conversationModelView.setBlockedFor(blockedFor);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            closeCurrentNotification();
+        }
 
         chatMessageRepo = myBase.getChatMessageRepo();
         chatMessageRepo.getChatHistory(user_id, anthor_user_id);
@@ -901,30 +919,22 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         fowordImageBtn = findViewById(R.id.image_button_foword);
 
         tv_name = findViewById(R.id.name);
-//        tv_name.setTextSize(textSize);
-//        tv_name.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         tv_state = findViewById(R.id.state);
-//        tv_state.setTextSize(textSize);
-//        tv_state.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         gallery = findViewById(R.id.gallery);
         gallery.setTextSize(textSize);
-        gallery.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         pdf = findViewById(R.id.pdf);
         pdf.setTextSize(textSize);
-        pdf.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         contact = findViewById(R.id.contact);
         contact.setTextSize(textSize);
-        contact.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         location = findViewById(R.id.location);
         location.setTextSize(textSize);
-        location.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         CharSequence charSequence = searchView.getQuery();
@@ -952,11 +962,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         recordButton.setListenForRecord(false);
         deletImageBtn = findViewById(R.id.image_button_delete);
         classSharedPreferences = new ClassSharedPreferences(this);
-
-        if (classSharedPreferences.getList() != null) {
-            unSendMessage = classSharedPreferences.getList();
-
-        }
+//
+//        if (classSharedPreferences.getList() != null) {
+//            unSendMessage = classSharedPreferences.getList();
+//
+//        }
 
         chatRoomRepo.setInChat(anthor_user_id, true);
         container = findViewById(R.id.container);
@@ -973,6 +983,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (s != null) {
                     if (s.equals(user_id)) {
                         textForBlock.setText(getResources().getString(R.string.block_message));
+                        audioCallBtn.setEnabled(false);
+                        videoCallBtn.setEnabled(false);
+                        tv_state.setVisibility(View.GONE);
                         textForBlock.setVisibility(View.VISIBLE);
                         messageLiner.setVisibility(View.GONE);
                         blockedForMe = true;
@@ -980,7 +993,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     } else if (s.equals(anthor_user_id)) {
                         textForBlock.setVisibility(View.VISIBLE);
                         messageLiner.setVisibility(View.GONE);
-
+                        audioCallBtn.setEnabled(false);
+                        videoCallBtn.setEnabled(false);
+                        tv_state.setVisibility(View.GONE);
                         textForBlock.setText(getResources().getString(R.string.block_message2));
                         blockedForMe = false;
                         isAnyOneBlock = true;
@@ -989,6 +1004,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     } else if (s.equals("0")) {
                         textForBlock.setVisibility(View.VISIBLE);
                         messageLiner.setVisibility(View.GONE);
+                        audioCallBtn.setEnabled(false);
+                        videoCallBtn.setEnabled(false);
+                        tv_state.setVisibility(View.GONE);
                         textForBlock.setText(getResources().getString(R.string.block_message2));
                         blockedForMe = true;
                         isAnyOneBlock = true;
@@ -1007,6 +1025,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (!isAnyOneBlock) {
                     textForBlock.setVisibility(View.GONE);
                     messageLiner.setVisibility(View.VISIBLE);
+                    audioCallBtn.setEnabled(true);
+                    videoCallBtn.setEnabled(true);
+                    tv_state.setVisibility(View.VISIBLE);
                     blockedForMe = false;
                 }
             }
@@ -1052,13 +1073,11 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                        isCoonect = true;
                         System.out.println("dialay"+s);
                         tv_state.setText(R.string.connect_now);
-                        tv_state.setVisibility(View.VISIBLE);
                     } else if (s.equals("false")) {
 //                        isCoonect = false;
 
                         if (!lastSeen.equals("null")) {
                             tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(lastSeen)));
-                            tv_state.setVisibility(View.VISIBLE);
                         }
 
 
@@ -1074,21 +1093,19 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if(!s.equals(null)){
                     if (s.equals("true")) {
                         tv_state.setText(R.string.writing_now);
-                        tv_state.setVisibility(View.VISIBLE);
                     } else if (conversationModelView.state.getValue().equals("true")) {
                         tv_state.setText(R.string.connect_now);
                     } else {
                         tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(lastSeen)));
 
 
-//                        tv_state.setVisibility(View.GONE);
                     }
 
                 }
             }
         });
 
-        conversationModelView.getChatMessaheHistory().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
+        conversationModelView.getChatMessaheHistory().observe(this, new Observer<ArrayList<ChatMessage>>() {
             @Override
             public void onChanged(ArrayList<ChatMessage> chatMessages) {
                 if (chatMessages != null) {
@@ -1096,13 +1113,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     System.out.println("chatmessage.size"+chatMessages.size()+""+chatHistory.size());
                     for(ChatMessage chatMessage:chatMessages){
                     list.add(chatMessage.clone());}
-                    System.out.println("notifyyyyyyyyyyy");
 
                     chatHistory = list;
 //                    adapter.add(chatHistory);
                     adapter.setData(list);
-                    if(!chatMessages.isEmpty())
+                    if(!chatMessages.isEmpty() && conversationModelView.isFirst.getValue()){
+                        conversationModelView.isFirst.setValue(false);
                     scroll();
+                    }
 
 
                 }
@@ -1111,7 +1129,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             }
         });
 //        scroll();
-        conversationModelView.getSelectedMessage().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatMessage>>() {
+        conversationModelView.getSelectedMessage().observe(this, new Observer<ArrayList<ChatMessage>>() {
             @Override
             public void onChanged(ArrayList<ChatMessage> chatMessages) {
                 if (chatMessages != null) {
@@ -1339,10 +1357,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 String message_id = System.currentTimeMillis() + "_" + user_id;
 
-                if (classSharedPreferences.getList() != null) {
-                    unSendMessage = classSharedPreferences.getList();
-
-                }
+//                if (classSharedPreferences.getList() != null) {
+//                    unSendMessage = classSharedPreferences.getList();
+//
+//                }
                 String messageText = messageET.getText().toString();
 
                 if (TextUtils.isEmpty(messageText)) {
@@ -1376,13 +1394,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 messageET.setText("");
                 displayMessage(chatMessage);
-                unSendMessage.clear();
-
-                unSendMessage.add(jsonObject);
+//                unSendMessage.clear();
+//
+//                unSendMessage.add(jsonObject);
 //              unSendMessage.clear();
 
 
-                classSharedPreferences.setList("list", unSendMessage);
 
 
                 newMeesage(jsonObject);
@@ -1808,6 +1825,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     public void
     displayMessage(ChatMessage message) {
         conversationModelView.addMessage(message);
+        scroll();
 //        scroll();
     }
 
@@ -2378,6 +2396,27 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
 
     }
+    @Override
+    public void onBackPressed() {
+        if(conversationModelView.getSelectedMessage().getValue()!=null) {
+            if (conversationModelView.getSelectedMessage().getValue().size() > 0){
+                conversationModelView.clearSelectedMessage();
+            }
+              else if(viewVisability){
+                hideLayout();
+            }
+             else {
+                  finish();
+            }
+        }
+
+       else if(viewVisability){
+            hideLayout();
+        }
+        else {
+            finish();
+        }
+    }
 
     //// on click in message
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -2790,7 +2829,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         toolsLiner.setVisibility(View.VISIBLE);
 
         if (isChecked) {
-//            System.out.println(chatMessage.getMessage() + conversationModelView.selectedMessage.getValue().size() + "getMessage");
             conversationModelView.addSelectedMessage(chatMessage);
             deleteMessage.add("\"" + chatMessage.getId() + "\"");
         } else {
@@ -2807,7 +2845,6 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         }
 
-        System.out.println(deleteMessage.size() + "is sizeeee");
     }
 
     @Override
@@ -2824,36 +2861,27 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     @Override
     public void PickiTonUriReturned() {
-        System.out.println("PickiTonUriReturned");
 
     }
 
     @Override
     public void PickiTonStartListener() {
-        System.out.println("PickiTonStartListener");
 
     }
 
     @Override
     public void PickiTonProgressUpdate(int progress) {
-        System.out.println("PickiTonProgressUpdate");
 
     }
 
     @Override
     public void PickiTonCompleteListener(String path, boolean wasDriveFile, boolean wasUnknownProvider, boolean wasSuccessful, String Reason) {
-//        System.out.println("PickiTonCompleteListener");
         FileUtil.copyFileOrDirectory(path, this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send").getAbsolutePath());
-//                    ll;l
 
     }
 
     @Override
     public void PickiTonMultipleCompleteListener(ArrayList<String> paths, boolean wasSuccessful, String Reason) {
-        System.out.println("PickiTonMultipleCompleteListener" + paths + wasSuccessful);
-        System.out.println(paths.size() + "sizee");
-
-
     }
 
 
@@ -3267,8 +3295,17 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         return true;
     }
+   @RequiresApi(api = Build.VERSION_CODES.M)
+   public void closeCurrentNotification(){
 
-}
+       NotificationManager mNotificationManager = (NotificationManager)
+                       getSystemService(Context. NOTIFICATION_SERVICE ) ;
+       mNotificationManager.cancel(Integer.parseInt(anthor_user_id));
+
+
+   }
+
+   }
 
 
 

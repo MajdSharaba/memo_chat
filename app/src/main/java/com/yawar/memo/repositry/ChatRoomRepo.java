@@ -47,14 +47,14 @@ public class ChatRoomRepo {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s->{
-            System.out.println("eerespone"+s.getData());
 
             chatRoomsList = s.getData();
+            System.out.println("eerespone"+chatRoomsList.get(0));
+
             chatRoomListMutableLiveData.setValue(chatRoomsList);
 
 //            System.out.println("respone chat room "+s.getData().get(0).getState());
         } ,s -> {
-            System.out.println("responebbb"+s.getMessage());
             chatRoomListMutableLiveData.setValue(null);
             });
 
@@ -176,14 +176,16 @@ public class ChatRoomRepo {
         chatRoomsList.add( 0,chatRoomModel);
         chatRoomListMutableLiveData.setValue(chatRoomsList);
     }
-    public void setLastMessage(String message , String chatId,String senderId, String reciverId,String type,String state,String dateTime){
+    public void setLastMessage(String message , String chatId,String senderId, String reciverId,String type,String state,String dateTime,String sender_id){
         boolean inList=false;
         for(ChatRoomModel chatRoom:chatRoomsList){
             if(chatRoom.getId().equals(chatId)){
+                System.out.println("typeMessage"+type);
                 chatRoom.setLast_message(message);
                 chatRoom.setMessage_type(type);
                 chatRoom.setMstate(state);
                 chatRoom.setCreated_at(dateTime);
+                chatRoom.setMsg_sender(sender_id);
 
 
 
@@ -200,6 +202,7 @@ public class ChatRoomRepo {
                 break;
             }
         }
+
 
         if(!inList){
             for(ChatRoomModel chatRoom:chatRoomsList){
@@ -222,8 +225,21 @@ public class ChatRoomRepo {
 
         chatRoomListMutableLiveData.setValue(chatRoomsList);
     }
+    public void updateLastMessageState(String state,String chat_id) {
+        for (ChatRoomModel chatRoom : chatRoomsList) {
+            if (chatRoom.getId().equals(chat_id)) {
+                System.out.println("update State");
+                chatRoom.setMstate("3");
+                 break;
 
-    public boolean isArchived() {
+            }
+
+        }
+        chatRoomListMutableLiveData.setValue(chatRoomsList);
+
+    }
+
+        public boolean isArchived() {
         return isArchived;
     }
 
@@ -247,32 +263,40 @@ public class ChatRoomRepo {
     }
 
     public void setInChat(String user_id,boolean state){
-        for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.getOther_id().equals(user_id)){
+        for(ChatRoomModel chatRoom:chatRoomsList) {
+            if (chatRoom.getOther_id().equals(user_id)) {
                 chatRoom.setInChat(state);
-                if(state){
-                    chatRoom.setNum_msg("0");}
+                if (state) {
+                    chatRoom.setNum_msg("0");
+                }
 
                 break;
             }
-
-            chatRoomListMutableLiveData.setValue(chatRoomsList);
-
-
-
-
         }
+
+
+
+
+
+
+        chatRoomListMutableLiveData.setValue(chatRoomsList);
+
     }
     public String getChatId(String anthorUserId){
         System.out.println("getChatId"+anthorUserId);
-        for(ChatRoomModel chatRoom:chatRoomsList){
-            if(chatRoom.getOther_id().equals(anthorUserId)){
-                return chatRoom.getId();
+        if(chatRoomsList!=null) {
+            for (ChatRoomModel chatRoom : chatRoomsList) {
+                if (chatRoom.getOther_id().equals(anthorUserId)) {
+                    return chatRoom.getId();
+                }
+
+
             }
-
-
+            return "";
         }
-        return "";
+        else{
+            return "";
+        }
 
     }
     public  boolean checkInChat(String anthor_user_id) {
@@ -300,6 +324,8 @@ public class ChatRoomRepo {
         chatRoomListMutableLiveData.setValue(chatRoomsList);
     }
     public  void setBlockedState(String anthor_user_id,String blockedFor) {
+        System.out.println("setBlockedStateBefore");
+
         for (ChatRoomModel chatRoom : chatRoomsList) {
             if (chatRoom.other_id.equals(anthor_user_id)) {
                 chatRoom.setBlocked_for(blockedFor);

@@ -12,45 +12,48 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
             <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:id="@+id/liner_archived"
-                            android:visibility="gone"
-                            android:orientation="vertical">
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="20dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginBottom="10dp"
-                                android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:id="@+id/liner_archived"
+            android:visibility="gone"
+            android:orientation="vertical">
+            <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?attr/selectableItemBackground"
+            android:paddingStart="20dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:orientation="horizontal">
 
-                                <ImageView
-                                    android:layout_width="18dp"
-                                    android:layout_height="17dp"
-                                    android:layout_gravity="center_vertical"
-                                    android:src="@drawable/ic_archived">
+            <ImageView
+            android:layout_width="18dp"
+            android:layout_height="17dp"
+            android:layout_gravity="center_vertical"
+             android:src="@drawable/ic_archived">
+             </ImageView>
 
-                                </ImageView>
+             <TextView
+             android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginStart="20dp"
+              android:text="@string/archived"
+              android:fontFamily="@font/roboto_bold"
+              android:textColor="@color/textColor"
+              android:textSize="25sp"
+              >
 
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_marginStart="20dp"
-                                    android:text="@string/archived"
-                                    android:fontFamily="@font/roboto_bold"
-                                    android:textColor="@color/textColor"
-                                    android:textSize="25sp"
-                                    >
-
-                                </TextView>
-
+              </TextView>
 
 
-                            </LinearLayout>
 
-                            <include layout="@layout/item_divider">
-                            </include>
+              </LinearLayout>
+
+              <include layout="@layout/item_divider"
+
+              >
+              </include>
 
                         </LinearLayout>
                             <com.tsuryo.swipeablerv.SwipeableRecyclerView

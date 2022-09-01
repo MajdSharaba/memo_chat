@@ -78,9 +78,19 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <ImageView
+                    android:id="@+id/img_state"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:layout_marginEnd="3dp"
+                    android:src="@drawable/ic_recive_done"
+                   >
+
+                </ImageView>
+                <ImageView
                     android:id="@+id/img_type"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
                     android:layout_marginTop="7dp"
                     android:layout_marginEnd="3dp"
                     android:visibility="gone"
@@ -91,12 +101,11 @@
             android:id="@+id/lastMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-           android:layout_marginTop="5dp"
+            android:layout_marginTop="5dp"
             android:maxLines="1"
-        android:maxLength="30"
-
-        android:textColor="#808080"
-            android:textSize="12sp" />
+            android:maxLength="30"
+            android:textColor="#808080"
+            android:textSize="14sp" />
 
 
             </LinearLayout>

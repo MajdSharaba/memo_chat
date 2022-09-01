@@ -174,6 +174,8 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
         bundle.putString("image",chatRoomModel.getImage());
         bundle.putString("chat_id",chatRoomModel.getId());
         bundle.putString("special", chatRoomModel.getSn());
+        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+
 
 
 //        bundle.putString("sender_id", myId);

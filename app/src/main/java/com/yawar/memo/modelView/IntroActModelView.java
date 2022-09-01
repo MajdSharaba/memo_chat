@@ -11,8 +11,9 @@ import java.util.ArrayList;
 
 
 import android.app.Application;
+import android.content.Context;
 
-        import androidx.annotation.NonNull;
+import androidx.annotation.NonNull;
         import androidx.lifecycle.AndroidViewModel;
         import androidx.lifecycle.LiveData;
         import androidx.lifecycle.MutableLiveData;
@@ -80,7 +81,6 @@ public class IntroActModelView extends ViewModel {
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
 
-            System.out.println(s+"dataadddddddddddddd");
 
         },s-> {
             System.out.println("Errorrrrrrrr" + s);

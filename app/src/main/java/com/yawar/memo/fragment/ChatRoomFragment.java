@@ -1,18 +1,28 @@
 package com.yawar.memo.fragment;
 
+import static android.content.Context.NOTIFICATION_SERVICE;
+
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.service.notification.StatusBarNotification;
 import android.view.LayoutInflater;
 
 import android.view.Menu;
@@ -30,6 +40,7 @@ import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
 import com.tsuryo.swipeablerv.SwipeableRecyclerView;
 import com.yawar.memo.Api.ServerApi;
 //import com.yawar.memo.call.CompleteActivity;
+import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ChatRoomViewModel;
 import com.yawar.memo.repositry.ChatRoomRepo;
@@ -93,8 +104,10 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     public static final String ON_MESSAGE_RECEIVED = "ConversationActivity.ON_MESSAGE_RECEIVED";
     public static final String TYPING = "ConversationActivity.ON_TYPING";
 
-    public static final String NEW_MESSAGE ="new Message" ;
-
+    public static final String NOTIFICATION_CHANNEL_ID = "10001" ;
+    private final static String default_notification_channel_id = "default" ;
+    int value = 0;
+    NotificationCompat.InboxStyle inboxStyle ;
 
 
 //    private static final String TAG = BasicActivity.class.getSimpleName();
@@ -218,13 +231,13 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
                     System.out.println("update items");
                     ArrayList<ChatRoomModel> list = new ArrayList<>();
                     postList.clear();
-                    System.out.println("chatRoomModels.sizaee"+chatRoomModels);
+                    System.out.println("chatRoomModels.sizaee"+chatRoomModels.get(0).username);
 
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
                         System.out.println(chatRoomModel.blocked_for+"chatRoomModels.sizaee");
                         if(chatRoomModel.getState()==null){
 
-
+                            System.out.println("chatRoomModel.number"+chatRoomModel.getNum_msg());
                             list.add(chatRoomModel.clone());
                             postList.add(chatRoomModel);
                         }
@@ -276,15 +289,73 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         ////////////////FloatingActionButton
         FloatingActionButton fab = view.findViewById(R.id.fab);
 
+
+
+
         fab.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(View view) {
-//
+//                ArrayList<String> arrayList = new ArrayList<String>();
+//                inboxStyle = new NotificationCompat.InboxStyle();
+////;
                 Intent intent = new Intent(getContext(), ContactNumberActivity.class);
                 startActivity(intent);
-//                Intent intent = new Intent(getContext(), CompleteActivity.class);
-//                startActivity(intent);
-
+//                value++;
+//
+//                NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getActivity(), default_notification_channel_id )
+//                        .setSmallIcon(R.drawable. ic_launcher_foreground )
+//                        .setContentTitle( "Test" )
+//                        .setSubText("ll")
+//                .setGroup("GROUP_ID_STRING")
+//                 .setCategory(NotificationCompat.CATEGORY_MESSAGE);
+//
+//
+////
+////                inboxStyle.addLine("line"+value);
+////                inboxStyle.setBigContentTitle("Enter Content Text");
+////                mBuilder.setStyle(inboxStyle);
+//
+//                NotificationManager mNotificationManager = (NotificationManager)
+//                        getActivity().getSystemService(Context. NOTIFICATION_SERVICE ) ;
+//                if (android.os.Build.VERSION. SDK_INT >= android.os.Build.VERSION_CODES. O ) {
+//                    int importance = NotificationManager. IMPORTANCE_HIGH ;
+//                    NotificationChannel notificationChannel = new NotificationChannel( NOTIFICATION_CHANNEL_ID , "NOTIFICATION_CHANNEL_NAME" , importance) ;
+//                    mBuilder.setChannelId( NOTIFICATION_CHANNEL_ID ) ;
+//                    assert mNotificationManager != null;
+//                    mNotificationManager.createNotificationChannel(notificationChannel) ;
+//                    new NotificationChannelGroup(NOTIFICATION_CHANNEL_ID, "Memo");
+//
+//                }
+//                for (StatusBarNotification statusBarNotification : mNotificationManager.getActiveNotifications()) {
+//                    System.out.println(statusBarNotification.getId() + "statusBarNotification.getId()");
+//                    if (statusBarNotification.getId() == 1) {
+//                        Notification notification = statusBarNotification.getNotification();
+//                        Bundle bundle = notification.extras;
+//                        arrayList = bundle.getStringArrayList("majd");
+//                        System.out.println("getStringArrayList"+arrayList.toString());
+//
+//
+//
+////                     call_ongoing_call_user_id = statusBarNotification.getGroupKey();
+//                        break;
+//                    }
+//                }
+//                arrayList.add(String.valueOf(value));
+//
+//                for(String s : arrayList){
+//                    System.out.println("arrayList"+s);
+//                inboxStyle.addLine("line"+s);
+//                }
+//
+//                inboxStyle.setBigContentTitle("Enter Content Text");
+//                mBuilder.setStyle(inboxStyle);
+//                Bundle bundle = new Bundle();
+//                bundle.putStringArrayList("majd",arrayList);
+//                mBuilder.setExtras(bundle);
+//                assert mNotificationManager != null;
+//                mNotificationManager.notify(1 ,
+//                        mBuilder.build()) ;
             }
 
         });

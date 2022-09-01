@@ -55,16 +55,16 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         CallProperty.setStatusBarOrScreenStatus(this);
 
-        final String[] darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
-        // The apps theme is decided depending upon the saved preferences on app startup
-        String pref = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
-        // Comparing to see which preference is selected and applying those theme settings
-        if (pref.equals(darkModeValues[0])){
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
-        else if (pref.equals(darkModeValues[1])){
-
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
+//        final String[] darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
+//        // The apps theme is decided depending upon the saved preferences on app startup
+//        String pref = PreferenceManager.getDefaultSharedPreferences(this)
+//                .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
+//        // Comparing to see which preference is selected and applying those theme settings
+//        if (pref.equals(darkModeValues[0])){
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
+//        else if (pref.equals(darkModeValues[1])){
+//
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 

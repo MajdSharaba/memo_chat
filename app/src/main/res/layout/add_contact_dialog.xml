@@ -16,16 +16,19 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="@color/colorPrimaryDark"
+            android:background="@color/memo_background_color"
             android:gravity="start|center"
             >
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:padding="7dp"
-                android:src="@drawable/ic_memo_logo" />
-                android:layoutDirection="locale"
-                 />
+                android:id="@+id/profile"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="2dp"
+                android:padding="5dp"
+                android:src="@mipmap/ic_logo"
+                />
+
 
             <TextView
                 android:id="@+id/name"
@@ -52,7 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/memo_background_color"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textStyle="bold"
@@ -65,7 +68,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="18sp"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/memo_background_color"
                 android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:layout_gravity="center"
@@ -80,7 +83,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:text="@string/add"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/memo_background_color"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="center"
                 android:background="@drawable/btn_background"

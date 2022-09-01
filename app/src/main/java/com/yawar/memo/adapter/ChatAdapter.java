@@ -7,18 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.ContactsContract;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
-import android.util.Log;
-import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -46,51 +40,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.app.adprogressbarlib.AdCircleProgress;
 import com.bumptech.glide.Glide;
 import com.github.chrisbanes.photoview.PhotoView;
-import com.hbisoft.pickit.PickiT;
-import com.hbisoft.pickit.PickiTCallbacks;
 import com.yawar.memo.BuildConfig;
 import com.yawar.memo.R;
-import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.utils.ImageProperties;
-import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
-import com.yawar.memo.views.ConversationActivity;
 
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolder> {
-    //    public final List<ChatMessage> chatMessages;
     private final Activity context;
+
     private ChatAdapter.CallbackInterface mCallback;
 
       public  String userNameeee ;
-//    float textSize = 14.0F ;
-//    SharedPreferences sharedPreferences ;
-
 
     public interface CallbackInterface {
 
-        /*
 
-         * Callback invoked when clicked
-         * @param   position             - the position
-         * @param   groupSelectorRespone - the text to pass back
-
-         */
         void onHandleSelection(int position, ChatMessage groupSelectorRespone, boolean myMessage);
 
         void downloadFile(int position, ChatMessage chatMessage, boolean myMessage);
@@ -203,8 +177,8 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 //        return holder;
 
     }
- float prex;
-    boolean isdraged ;
+    float prex;
+    boolean isdraged;
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
@@ -820,6 +794,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 //                ((ViewHolder)holder).txtInfo.setText(chatMessage.getDate());
         if (chatMessage.isChecked) {
             holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.background_onLong_click));
+            holder.itemView.getBackground().setAlpha(60);
 
         } else {
             holder.itemView.setBackground(null);
@@ -833,20 +808,18 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                     if (mCallback != null) {
 
                         mCallback.onLongClick(position, chatMessage, true);
-                        System.out.println(chatMessage.getMessage() + "mjjjjjjjjjjjllklkl");
 
                     }
 
 
                     chatMessage.setChecked(true);
                     holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.background_onLong_click));
+                    holder.itemView.getBackground().setAlpha(60);
 
 
                 } else {
                     if (mCallback != null) {
-
                         mCallback.onLongClick(position, chatMessage, false);
-                        System.out.println(chatMessage.getMessage() + "mjjjjjjjjjjj");
 
                     }
                     chatMessage.setChecked(false);
