@@ -33,14 +33,7 @@ public class ChatRoomViewModel extends ViewModel {
     }
 
 
-//    public IntroActModelView(@NonNull Application application) {
-//        super(application);
-//        repository = new ChatRoomRepo(application);
-//        baseApp = BaseApp.getInstance();
-//        chatRoomsList = new ArrayList<>();
-//        chatRoomListMutableLiveData = new MutableLiveData<>();
-//
-//    }
+
 
 
 

@@ -81,6 +81,10 @@ public interface api {
     @FormUrlEncoded
     @POST("deleteblock")//endpoint
     Single<String> unBlockUser(@Field("my_id") String my_id,@Field("user_id") String anthor_user_id);
+
+    @FormUrlEncoded
+    @POST("APIS/search_for_user.php")//endpoint
+    Single<String> search(@Field("sn") String search_parameters,@Field("page") String page, @Field("my_id") String my_id );
 }
 
 

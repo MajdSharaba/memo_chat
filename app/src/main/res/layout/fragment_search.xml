@@ -71,12 +71,12 @@
 </LinearLayout>
 <!--    <include layout="@layout/item_divider"-->
 <!--        />-->
-    <androidx.core.widget.NestedScrollView
+<!--    <androidx.core.widget.NestedScrollView-->
 
-        android:id="@+id/idNestedSV"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+<!--        android:id="@+id/idNestedSV"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        >-->
 
         <!--linear layout for displaying
             our recycler view-->
@@ -99,13 +99,13 @@
 
             <!--we are adding progress bar
                 for the purpose of loading-->
-            <ProgressBar
-                android:visibility="gone"
-                android:id="@+id/idPBLoading"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+<!--            <ProgressBar-->
+<!--                android:visibility="gone"-->
+<!--                android:id="@+id/idPBLoading"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+<!--    </androidx.core.widget.NestedScrollView>-->
         </LinearLayout>
 
 

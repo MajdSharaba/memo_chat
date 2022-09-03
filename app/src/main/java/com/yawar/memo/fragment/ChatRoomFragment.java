@@ -228,32 +228,24 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             @Override
             public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
                 if(chatRoomModels!=null){
-                    System.out.println("update items");
                     ArrayList<ChatRoomModel> list = new ArrayList<>();
                     postList.clear();
-                    System.out.println("chatRoomModels.sizaee"+chatRoomModels.get(0).username);
 
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
-                        System.out.println(chatRoomModel.blocked_for+"chatRoomModels.sizaee");
                         if(chatRoomModel.getState()==null){
-
-                            System.out.println("chatRoomModel.number"+chatRoomModel.getNum_msg());
                             list.add(chatRoomModel.clone());
                             postList.add(chatRoomModel);
                         }
 
                         else if (!chatRoomModel.getState().equals("0")&&!chatRoomModel.getState().equals(myId)) {
-//                            System.out.println(chatRoomModel.getState() + "statttttttttttttttttttttte");
                             list.add(chatRoomModel.clone());
                             postList.add(chatRoomModel);
 
                         }
                         else {
-                            System.out.println(chatRoomModel.getState()+"statttttttttttte");
                             chatRoomRepo.isArchivedMutableLiveData.setValue(true);
                         }
                     }
-                    System.out.println(list.size()+"list"+postList.size());
 
                      itemAdapter.setData((ArrayList<ChatRoomModel>) list);
 
