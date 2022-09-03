@@ -44,4 +44,8 @@
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
 
+    <style name="ThemeOverlay.ChatMemo.CallReq" parent="AppTheme">
+        <item name="background">@color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
 </resources>
