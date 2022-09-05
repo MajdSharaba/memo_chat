@@ -7,16 +7,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -28,27 +24,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.PixelFormat;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
-import android.provider.Settings;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -107,7 +94,7 @@ public class RequestCallActivity extends AppCompatActivity {
     private static final String TAG = "CompleteActivity";
     private static final int RC_CALL = 111;
     public static final String VIDEO_TRACK_ID = "ARDAMSv0";
-//    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
+    //    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
     public static final int VIDEO_RESOLUTION_WIDTH = 480;
     float dX, dY;
 
@@ -122,7 +109,6 @@ public class RequestCallActivity extends AppCompatActivity {
     private AudioManager audioManager;
     private boolean isSpeakerOn = false;
     ImageButton imgBtnSwitchMic;
-    LinearLayout ly_image_switch_mic;
     String imageUrl;
     String typeCall;
     int time = 0;
@@ -194,7 +180,7 @@ public class RequestCallActivity extends AppCompatActivity {
     ImageButton imgBtnOpenAudioCallLp;
     ImageButton imgBtnSwitchCamera;
     final Handler handler = new Handler();
-    boolean isMinimize = false;
+
 
 
 
@@ -209,7 +195,6 @@ public class RequestCallActivity extends AppCompatActivity {
 
     String userName;
     String my_id;
-    private ImageView minimizeBtn;
 
 
 
@@ -225,9 +210,9 @@ public class RequestCallActivity extends AppCompatActivity {
                     JSONObject message = null;
                     try {
                         message = new JSONObject(reciveCallString);
-                         isRining = message.getBoolean("state");
-                         System.out.println("requestCallViewModel.setRining(rining)");
-                         requestCallViewModel.setRining("rining");
+                        isRining = message.getBoolean("state");
+                        System.out.println("requestCallViewModel.setRining(rining)");
+                        requestCallViewModel.setRining("rining");
 
 
                     } catch (JSONException e) {
@@ -282,10 +267,10 @@ public class RequestCallActivity extends AppCompatActivity {
                             requestCallViewModel.setIsSpeaker(isVideoForYou);
 
                         }
-                     if(alertDialogForME!=null){
+                        if(alertDialogForME!=null){
 
-                        alertDialogForME.dismiss();
-                     }
+                            alertDialogForME.dismiss();
+                        }
 
 
 
@@ -314,7 +299,7 @@ public class RequestCallActivity extends AppCompatActivity {
                     JSONObject message = null;
                     try {
                         message = new JSONObject(stopCallString);
-                         isVideoForYou = message.getBoolean("camera");
+                        isVideoForYou = message.getBoolean("camera");
                         boolean audioSetting = message.getBoolean("microphone");
 //                        callJavascriptFunction("javascript:toggleStream(\"" +isVideoForYou  + "\")");
 //                        requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
@@ -514,7 +499,7 @@ public class RequestCallActivity extends AppCompatActivity {
         }
     };
 
-///////////////////////////
+    ///////////////////////////
     private void sendMessage( Object object) {
         Intent service = new Intent(this, SocketIOService.class);
 
@@ -603,10 +588,10 @@ public class RequestCallActivity extends AppCompatActivity {
                 }
                 else if (requestCallViewModel.getPeerId().getValue().equals("no connect")){
 
-                        finishCall ();
-                   SendMissingCall();
+                    finishCall ();
+                    SendMissingCall();
 
-                    }
+                }
             }
         }.start();
 
@@ -617,27 +602,27 @@ public class RequestCallActivity extends AppCompatActivity {
         //Set the schedule function and rate
         callTimer.scheduleAtFixedRate(new TimerTask() {
 
-                                  public void run()
-                                  {
-                                      //Called each time when 1000 milliseconds (1 second) (the period parameter)
-                                      runOnUiThread(new Runnable() {
-
                                           public void run()
                                           {
+                                              //Called each time when 1000 milliseconds (1 second) (the period parameter)
+                                              runOnUiThread(new Runnable() {
 
-                                              time += 1;
-                                              int seconds = time % 60;
-                                              int minutes = time / 60;
-                                              int hour = minutes/60;
-                                              String stringTime = String.format("%02d:%02d:%02d",hour, minutes, seconds);
-                                              binding.callStatue.setText(stringTime);
+                                                  public void run()
+                                                  {
 
+                                                      time += 1;
+                                                      int seconds = time % 60;
+                                                      int minutes = time / 60;
+                                                      int hour = minutes/60;
+                                                      String stringTime = String.format("%02d:%02d:%02d",hour, minutes, seconds);
+                                                      binding.callStatue.setText(stringTime);
+
+                                                  }
+
+                                              });
                                           }
 
-                                      });
-                                  }
-
-                              },
+                                      },
                 //Set how long before to start calling the TimerTask (in milliseconds)
                 0,
                 //Set the amount of time between each execution (in milliseconds)
@@ -739,7 +724,6 @@ public class RequestCallActivity extends AppCompatActivity {
     }
 
 
-    private int LAYOUT_TYPE;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -760,6 +744,8 @@ public class RequestCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAcceptChangeToVideoCall, new IntentFilter(ON_RECIVED_RESPONE_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAskForCall, new IntentFilter(ON_RECIVED_ASK_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveMessageCall, new IntentFilter(ON_RECIVE_MESSAGE_VIDEO_CALL));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY));
+
 
 
         requestCallViewModel = new ViewModelProvider(this).get(RequestCallViewModel.class);
@@ -774,7 +760,6 @@ public class RequestCallActivity extends AppCompatActivity {
         imageUrl = bundle.getString("image_profile", " mm");
         initalCallProperties();
         layoutCallProperties = findViewById(R.id.video_rl);
-
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
         imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);
         imgBtnOpenAudioCallLp = findViewById(R.id.image_audio_call_layout);
@@ -899,8 +884,21 @@ public class RequestCallActivity extends AppCompatActivity {
                         countDownTimer.cancel();
                         countDownTimer.start();
                     }
+                }
+                else if (s.equals("connect")){
+                    binding.callStatue.setText(R.string.calling);
+                    starCallVoice();
 
 
+                }
+
+                else {
+                    System.out.println("countDownTimer.cancel()");
+
+                    countDownTimer.cancel();
+
+                    ////for close rining
+                    mMediaPlayer.release();
                 }
 
             }
@@ -910,8 +908,6 @@ public class RequestCallActivity extends AppCompatActivity {
             public void onChanged(Boolean s) {
                 if (s) {
                     startEndCallCounter();
-
-
                 }
             }
         });
@@ -962,6 +958,7 @@ public class RequestCallActivity extends AppCompatActivity {
             @Override
             public void onChanged(String s) {
                 if (s.equals("null")) {
+                    requestCallViewModel.setEndCall(true);
 
                     finishCall();
 
@@ -973,7 +970,8 @@ public class RequestCallActivity extends AppCompatActivity {
 
                         requestCallViewModel.setIsVideoForMe(requestCallViewModel.getIsVideoForMe().getValue());
                         requestCallViewModel.setIsSpeaker(isVideoForMe);
-                        binding.callStatue.setText(R.string.ongoing_call);
+//                        binding.callStatue.setText(R.string.ongoing_call);
+                        startCallTimeCounter();
                         binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                         final float scale = getResources().getDisplayMetrics().density;
                         int pixelsWidth = (int) (120 * scale + 0.5f);
@@ -985,23 +983,16 @@ public class RequestCallActivity extends AppCompatActivity {
                                 pixelsWidth,
                                 pixelsHeight
                         );
-                        params.setMargins(20, 50, 20, 20);
+                        params.setMargins((int) (7 * scale + 0.5f), (int) (15 * scale + 0.5f), (int) (7 * scale + 0.5f), 0);
                         binding.localVideoView.setLayoutParams(params);
-
-
-
-
-
-
+                        binding.localVideoView.bringToFront();
 
                         ///for stop 15 sec counter
-                        countDownTimer.cancel();
-                        ////for close rining
-                        mMediaPlayer.release();
+//                        countDownTimer.cancel();
+//                        ////for close rining
+//                        mMediaPlayer.release();
                         ///for shw call notification
                         showInCallNotification();
-
-
 
                     }
                 }
@@ -1015,7 +1006,8 @@ public class RequestCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                startEndCallCounter();
+//                startEndCallCounter();
+                requestCallViewModel.setEndCall(true);
 
             }
         });
@@ -1023,21 +1015,21 @@ public class RequestCallActivity extends AppCompatActivity {
         imgBtnOpenCameraCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
-                if(!requestCallViewModel.getIsVideoForYou().getValue() && !requestCallViewModel.getIsVideoForMe().getValue()){
-                    requestCallViewModel.setIsVideoForMe(!requestCallViewModel.getIsVideoForMe().getValue());
+                if (!requestCallViewModel.getPeerId().getValue().equals("no connect")) {
+                    if(!requestCallViewModel.getIsVideoForYou().getValue() && !requestCallViewModel.getIsVideoForMe().getValue()){
+                        requestCallViewModel.setIsVideoForMe(!requestCallViewModel.getIsVideoForMe().getValue());
 
-                    sendAskForVideoCall(requestCallViewModel.getIsVideoForMe().getValue());
-                    showSwitchToVideoDialog(getResources().getString(R.string.requesting_to_switch_to_video_call));
+                        sendAskForVideoCall(requestCallViewModel.getIsVideoForMe().getValue());
+                        showSwitchToVideoDialog(getResources().getString(R.string.requesting_to_switch_to_video_call));
+
+
+                    }
+                    else{
+                        closeOpenVideo();
+                    }
 
 
                 }
-                else{
-                    closeOpenVideo();
-                }
-
-
-                                }
             }
         });
         //////
@@ -1050,7 +1042,7 @@ public class RequestCallActivity extends AppCompatActivity {
         imgBtnSwitchCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-              switchCamera();
+                switchCamera();
 
             }
         });
@@ -1085,8 +1077,8 @@ public class RequestCallActivity extends AppCompatActivity {
                             return false;
                     }
                 }
-                    return true;
-                }
+                return true;
+            }
 
 
         });
@@ -1137,89 +1129,6 @@ public class RequestCallActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //If API Level is more than 26, we need TYPE_APPLICATION_OVERLAY
-            LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-        } else {
-            //If API Level is lesser than 26, then we can use TYPE_SYSTEM_ERROR,
-            //TYPE_SYSTEM_OVERLAY, TYPE_PHONE, TYPE_PRIORITY_PHONE. But these are all
-            //deprecated in API 26 and later. Here TYPE_TOAST works best.
-            LAYOUT_TYPE = WindowManager.LayoutParams.TYPE_TOAST;
-        }
-        DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
-        int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
-        WindowManager.LayoutParams floatWindowLayoutParam = new WindowManager.LayoutParams(
-                (int) (width * (0.55f)),
-                (int) (height * (0.58f)),
-                LAYOUT_TYPE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT
-        );
-
-        //The Gravity of the Floating Window is set. The Window will appear in the center of the screen
-        floatWindowLayoutParam.gravity = Gravity.CENTER;
-        //X and Y value of the window is set
-        floatWindowLayoutParam.x = 0;
-        floatWindowLayoutParam.y = 0;
-
-        //The ViewGroup that inflates the floating_layout.xml is
-        //added to the WindowManager with all the parameters
-        LayoutInflater inflater = (LayoutInflater) getBaseContext().getSystemService(LAYOUT_INFLATER_SERVICE);
-        //inflate a new view hierarchy from the floating_layout xml
-         RelativeLayout floatView = findViewById(R.id.parent);
-        floatView.setOnTouchListener(new View.OnTouchListener() {
-
-            final WindowManager.LayoutParams floatWindowLayoutUpdateParam = floatWindowLayoutParam;
-            double x;
-            double y;
-            double px;
-            double py;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
-                switch (event.getAction()) {
-                    //When the window will be touched, the x and y position of that position will be retrieved
-                    case MotionEvent.ACTION_DOWN:
-                        x = floatWindowLayoutUpdateParam.x;
-                        y = floatWindowLayoutUpdateParam.y;
-                        //returns the original raw X coordinate of this event
-                        px = event.getRawX();
-                        //returns the original raw Y coordinate of this event
-                        py = event.getRawY();
-                        break;
-                    //When the window will be dragged around, it will update the x, y of the Window Layout Parameter
-                    case MotionEvent.ACTION_MOVE:
-                        floatWindowLayoutUpdateParam.x = (int) ((x + event.getRawX()) - px);
-                        floatWindowLayoutUpdateParam.y = (int) ((y + event.getRawY()) - py);
-
-                        //updated parameter is applied to the WindowManager
-
-                        v.setLayoutParams(floatWindowLayoutUpdateParam);
-                        getWindowManager().updateViewLayout(v, floatWindowLayoutUpdateParam);
-                        break;
-                }
-
-                return false;
-            }
-        });
-
-        //The Main Button that helps to minimize the app
-        minimizeBtn = findViewById(R.id.iv_minimize);
-        minimizeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //First it confirms whether the 'Display over other apps' permission in given
-                if (checkOverlayDisplayPermission()) {
-                    setWindowParams();
-                } else {
-                    requestOverlayDisplayPermission();
-                }
-
-            }
-        });
     }
 
     void initalCallProperties(){
@@ -1270,30 +1179,30 @@ public class RequestCallActivity extends AppCompatActivity {
     }
 
 
-@AfterPermissionGranted(RC_CALL)
-private void start() {
-    String[] perms = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
-    if (EasyPermissions.hasPermissions(this, perms)) {
+    @AfterPermissionGranted(RC_CALL)
+    private void start() {
+        String[] perms = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
+        if (EasyPermissions.hasPermissions(this, perms)) {
 
 
-        initializeSurfaceViews();
+            initializeSurfaceViews();
 
-        createPeerConnectionFactory();
-
-
-        createVideoTrackFromCameraAndShowIt();
+            createPeerConnectionFactory();
 
 
-        initializePeerConnections();
-
-        startStreamingVideo();
-        connectToSignallingServer();
+            createVideoTrackFromCameraAndShowIt();
 
 
-    } else {
-        EasyPermissions.requestPermissions(this, "Need some permissions", RC_CALL, perms);
+            initializePeerConnections();
+
+            startStreamingVideo();
+            connectToSignallingServer();
+
+
+        } else {
+            EasyPermissions.requestPermissions(this, "Need some permissions", RC_CALL, perms);
+        }
     }
-}
 
     @Override
     protected void onDestroy() {
@@ -1318,7 +1227,7 @@ private void start() {
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancel(AllConstants.onGoingCallChannelId);
         if (!requestCallViewModel.getPeerId().getValue().equals("no connect")&&!requestCallViewModel.getPeerId().getValue().equals("null")) {
-              System.out.println("send close call");
+            System.out.println("send close call");
             closeCall();
         }
         callDisconnect();
@@ -1340,7 +1249,7 @@ private void start() {
 
 
     }
-   public void closeOpenAudio(){
+    public void closeOpenAudio(){
         requestCallViewModel.setAudio(!requestCallViewModel.getAudio().getValue());
 
 
@@ -1413,7 +1322,7 @@ private void start() {
 
 
                 SendSwitchTOVideoCallRespone(requestCallViewModel.getIsVideoForMe().getValue());
-                                dialog.dismiss();
+                dialog.dismiss();
 
 
             }
@@ -1523,7 +1432,7 @@ private void start() {
 //        VideoSource videoSource;
         //Create a VideoSource instance
         if (videoCapturer != null) {
-             surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
+            surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", rootEglBase.getEglBaseContext());
             videoSource = factory.createVideoSource(videoCapturer.isScreencast());
             videoCapturer.initialize(surfaceTextureHelper, this, videoSource.getCapturerObserver());
             System.out.println("my video camera");
@@ -1651,7 +1560,7 @@ private void start() {
 
             @Override
             public void onAddStream(MediaStream mediaStream) {
-                                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
+                Log.d(TAG, "onAddStream: " + mediaStream.videoTracks.size());
                 VideoTrack remoteVideoTrack = mediaStream.videoTracks.get(0);
                 AudioTrack remoteAudioTrack = mediaStream.audioTracks.get(0);
                 remoteAudioTrack.setEnabled(true);
@@ -1814,7 +1723,7 @@ private void start() {
         VideoEncoderFactory encoderFactory = new DefaultVideoEncoderFactory(rootEglBase.getEglBaseContext(), true, true);
         VideoDecoderFactory decoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
 
-         factory = PeerConnectionFactory.builder()
+        factory = PeerConnectionFactory.builder()
                 .setOptions(options)
                 .setVideoDecoderFactory(decoderFactory)
                 .setVideoEncoderFactory(encoderFactory)
@@ -1960,71 +1869,5 @@ private void start() {
         note.flags |= Notification.FLAG_ONGOING_EVENT;
         notificationManager.notify(AllConstants.onGoingCallChannelId,note);
     }
-    public void setWindowParams() {
-        isMinimize = !isMinimize;
-
-        WindowManager.LayoutParams wlp = getWindow().getAttributes();
-        if(isMinimize) {
-            wlp.flags =
-                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-
-            wlp.gravity = Gravity.BOTTOM | Gravity.END;
-            wlp.format = PixelFormat.TRANSLUCENT;
-            wlp.width = 600;
-            wlp.height = 1000;
-            wlp.y = (int) (wlp.height * 0.18);
-        }
-        else{
-            wlp.gravity = Gravity.CENTER;
-            wlp.format = PixelFormat.TRANSLUCENT;
-            wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
-            wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        }
-        getWindow().setAttributes(wlp);
-    }
-    androidx.appcompat.app.AlertDialog dialog;
-
-    private void requestOverlayDisplayPermission() {
-        //An AlertDialog is created
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
-        //This dialog can be closed, just by taping anywhere outside the dialog-box
-        builder.setCancelable(true);
-        //The title of the Dialog-box is set
-        builder.setTitle("Screen Overlay Permission Needed");
-        //The message of the Dialog-box is set
-        builder.setMessage("Enable 'Display over other apps' from System Settings.");
-        //The event of the Positive-Button is set
-        builder.setPositiveButton("Open Settings", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                //The app will redirect to the 'Display over other apps' in Settings.
-                //This is an Implicit Intent. This is needed when any Action is needed to perform, here it is
-                //redirecting to an other app(Settings).
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
-                //This method will start the intent. It takes two parameter, one is the Intent and the other is
-                //an requestCode Integer. Here it is -1.
-                startActivityForResult(intent, RESULT_OK);
-            }
-        });
-        dialog = builder.create();
-        //The Dialog will show in the screen
-        dialog.show();
-    }
-
-    private boolean checkOverlayDisplayPermission() {
-        //Android Version is lesser than Marshmallow or the API is lesser than 23
-        //doesn't need 'Display over other apps' permission enabling.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
-            //If 'Display over other apps' is not enabled it will return false or else true
-            if (!Settings.canDrawOverlays(this)) {
-                return false;
-            } else {
-                return true;
-            }
-        } else {
-            return true;
-        }
-    }
 
 }
-

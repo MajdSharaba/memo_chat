@@ -199,7 +199,7 @@ public class AuthApi implements Observer {
 //        System.out.println(globle.getVerificationId()+"mnnnnnnnnnnnnnnnnn");
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
-        progressDialog.show();
+//        progressDialog.show();
         SharedPreferences prefs = context.getSharedPreferences("auth", MODE_PRIVATE);
 
         String name = prefs.getString("verificationid",null);

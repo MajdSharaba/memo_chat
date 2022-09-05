@@ -47,7 +47,7 @@ public class ChatRoomRepo {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s->{
-
+            System.out.println(s+"dssss");
             chatRoomsList = s.getData();
 //            System.out.println("eerespone"+chatRoomsList.get(0));
 
@@ -55,6 +55,7 @@ public class ChatRoomRepo {
 
 //            System.out.println("respone chat room "+s.getData().get(0).getState());
         } ,s -> {
+            System.out.println("errorr"+s);
             chatRoomListMutableLiveData.setValue(null);
             });
 

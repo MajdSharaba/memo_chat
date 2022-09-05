@@ -42,10 +42,10 @@ public interface AllConstants {
 
 
     String ip="109";
-//    public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
-        String base_url = "https://memoback1.herokuapp.com/";
-//    public  String base_node_url =  "http://192.168.0."+ip+":3000/";
-        String base_node_url =  "https://memoback1.herokuapp.com/";
+    public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
+//        String base_url = "https://memoback1.herokuapp.com/";
+    public  String base_node_url =  "http://192.168.0."+ip+":3000/";
+//        String base_node_url =  "https://memoback1.herokuapp.com/";
     String delet_from_archived_url = base_node_url+"deletearchive";
     String delete_conversation = base_node_url+"deleteconversation";
 
