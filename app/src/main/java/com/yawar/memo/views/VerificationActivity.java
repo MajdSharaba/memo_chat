@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.yawar.memo.Api.AuthApi;
+import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
@@ -52,6 +53,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
+        CallProperty.setStatusBarOrScreenStatus(this);
         setContentView(R.layout.activity_verification);
 
         sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
