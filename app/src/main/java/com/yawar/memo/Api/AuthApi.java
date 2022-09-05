@@ -74,6 +74,7 @@ public class AuthApi implements Observer {
                         } else {
                             // if the code is not correct then we are
                             // displaying an error message to the user.
+                            progressDialog.dismiss();
                             Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
@@ -196,6 +197,9 @@ public class AuthApi implements Observer {
         // credentials from our verification id and code.
 //        Globle globle = new Globle();
 //        System.out.println(globle.getVerificationId()+"mnnnnnnnnnnnnnnnnn");
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
+        progressDialog.show();
         SharedPreferences prefs = context.getSharedPreferences("auth", MODE_PRIVATE);
 
         String name = prefs.getString("verificationid",null);

@@ -230,6 +230,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
                 if(chatRoomModels!=null){
                     ArrayList<ChatRoomModel> list = new ArrayList<>();
                     postList.clear();
+//                    System.out.println("chatRoomModels.sizaee"+chatRoomModels.get(0).username);
 
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
                         if(chatRoomModel.getState()==null){

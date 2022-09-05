@@ -65,8 +65,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
         sendBtn = findViewById(R.id.btn_send_code);
         ccp = findViewById(R.id.ccp);
-
+        ccp.showNameCode(false);
         edtPhone = findViewById(R.id.editTextPhone);
         sendBtn.setOnClickListener(new View.OnClickListener() {
             @Override

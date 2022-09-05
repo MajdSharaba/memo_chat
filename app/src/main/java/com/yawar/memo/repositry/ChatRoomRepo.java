@@ -49,7 +49,7 @@ public class ChatRoomRepo {
         observable.subscribe(s->{
 
             chatRoomsList = s.getData();
-            System.out.println("eerespone"+chatRoomsList.get(0));
+//            System.out.println("eerespone"+chatRoomsList.get(0));
 
             chatRoomListMutableLiveData.setValue(chatRoomsList);
 

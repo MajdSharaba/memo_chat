@@ -12,141 +12,142 @@
 
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="100dp"
-            android:layout_marginStart="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="false"
-            app:srcCompat="@drawable/ic_splash"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginRight="8dp"
-            app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginStart="100dp"
             android:layout_marginLeft="8dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginRight="8dp"
             android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_splash"
             tools:ignore="VectorDrawableCompat" />
+
         <TextView
             android:id="@+id/text"
-            android:layout_marginTop="50dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginLeft="8dp"
-            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
             android:layout_below="@+id/imageView"
-            android:text="@string/sendText">
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center"
+            android:text="@string/sendText"
+            android:textSize="20sp"
+            android:textStyle="bold">
 
         </TextView>
-  <LinearLayout
-      android:id="@+id/liner"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent"
-      android:layout_below="@+id/text"
-      android:orientation="vertical">
-       <LinearLayout
-          android:layout_width="match_parent"
-          android:layout_height="50dp"
-           android:layoutDirection="ltr"
-          android:layout_marginTop="50dp"
-          android:layout_marginRight="10dp"
-          android:layout_marginLeft="10dp"
-          android:layout_marginBottom="10dp"
-           android:orientation="horizontal">
 
-          <com.hbb20.CountryCodePicker
-              android:id="@+id/ccp"
-              app:ccp_arrowColor="@color/textColor"
-              app:ccp_flagBorderColor="@color/textColor"
-              app:ccpDialog_textColor="@color/textColor"
-              app:ccp_contentColor="@color/textColor"
-              android:layout_width="wrap_content"
-              android:layout_height="match_parent"
-              app:ccp_defaultNameCode="IQ"
-              />
+        <LinearLayout
+            android:id="@+id/liner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/text"
+            android:orientation="vertical">
 
-          <EditText
-              android:id="@+id/editTextPhone"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:padding="5dp"
-              android:ems="12"
-              android:textColor="@color/textColor"
-              android:textColorHint="@color/gray"
-              android:background="@drawable/et_custom"
-              android:layout_marginStart="3dp"
-              android:hint="(415) 555 - 2671"
-              android:inputType="phone"
-              />
-       </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="10dp"
+                android:layoutDirection="ltr"
+                android:orientation="horizontal">
 
-      <!--    <EditText-->
-<!--        android:id="@+id/et_password"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="50dp"-->
-<!--        android:hint="+964"-->
-<!--        android:layout_marginLeft="20dp"-->
-<!--        android:layout_marginRight="20dp"-->
-<!--        android:layout_marginTop="50dp"-->
-<!--        android:padding="15dp"-->
-<!--        android:fontFamily="@font/roboto_regular"-->
-<!--        android:inputType="phone"-->
-<!--        android:background="@drawable/et_custom"-->
-<!--        android:textSize="15sp" />-->
+                <com.hbb20.CountryCodePicker
+                    android:id="@+id/ccp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:ccpDialog_textColor="@color/textColor"
+                    app:ccp_arrowColor="@color/textColor"
+                    app:ccp_contentColor="@color/textColor"
+                    app:ccp_defaultNameCode="IQ"
+                    app:ccp_flagBorderColor="@color/textColor" />
 
+                <EditText
+                    android:id="@+id/editTextPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:background="@drawable/et_custom"
+                    android:ems="12"
+                    android:hint="(415) 555 - 2671"
+                    android:inputType="phone"
+                    android:padding="5dp"
+                    android:textColor="@color/textColor"
+                    android:textColorHint="@color/gray" />
+            </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_send_code"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn_custom_blue_back"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="50dp"
-        android:fontFamily="@font/roboto_regular"
-        android:textColor="@android:color/white"
-        android:text="@string/send_code"/>
+            <!--    <EditText-->
+            <!--        android:id="@+id/et_password"-->
+            <!--        android:layout_width="match_parent"-->
+            <!--        android:layout_height="50dp"-->
+            <!--        android:hint="+964"-->
+            <!--        android:layout_marginLeft="20dp"-->
+            <!--        android:layout_marginRight="20dp"-->
+            <!--        android:layout_marginTop="50dp"-->
+            <!--        android:padding="15dp"-->
+            <!--        android:fontFamily="@font/roboto_regular"-->
+            <!--        android:inputType="phone"-->
+            <!--        android:background="@drawable/et_custom"-->
+            <!--        android:textSize="15sp" />-->
 
 
+            <Button
+                android:id="@+id/btn_send_code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="50dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="15dp"
+                android:background="@drawable/btn_custom_blue_back"
+                android:elevation="10dp"
+                android:fontFamily="@font/roboto_regular"
+                android:text="@string/send_code"
+                android:textColor="@android:color/white" />
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginTop="50dp"
+                app:srcCompat="@drawable/line_green" />
+
+            <!--        <TextView-->
+            <!--            android:layout_margin="10dp"-->
+            <!--            android:id="@+id/orText"-->
+            <!--            android:layout_width="wrap_content"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:text="@string/or"-->
+            <!--            android:fontFamily="@font/roboto_regular"-->
+            <!--            android:textSize="15sp"-->
+            <!--            android:textColor="@color/green_500">-->
+
+            <!--        </TextView>-->
 
 
-<!--        <TextView-->
-<!--            android:layout_margin="10dp"-->
-<!--            android:id="@+id/orText"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/or"-->
-<!--            android:fontFamily="@font/roboto_regular"-->
-<!--            android:textSize="15sp"-->
-<!--            android:textColor="@color/green_500">-->
+            <!--        <com.google.android.gms.common.SignInButton-->
+            <!--            android:id="@+id/sign_in_button"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginLeft="20dp"-->
+            <!--            android:layout_marginRight="20dp"-->
+            <!--            android:layout_marginBottom="20dp"-->
+            <!--            android:textSize="36sp"-->
+            <!--            app:buttonSize="icon_only">-->
 
-<!--        </TextView>-->
+            <!--        </com.google.android.gms.common.SignInButton>-->
 
-
-<!--        <com.google.android.gms.common.SignInButton-->
-<!--            android:id="@+id/sign_in_button"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginLeft="20dp"-->
-<!--            android:layout_marginRight="20dp"-->
-<!--            android:layout_marginBottom="20dp"-->
-<!--            android:textSize="36sp"-->
-<!--            app:buttonSize="icon_only">-->
-
-<!--        </com.google.android.gms.common.SignInButton>-->
-
-  </LinearLayout>
-
-<!--        <ImageView-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginTop="20dp"-->
-<!--            android:layout_alignParentBottom="true"-->
-<!--            android:layout_alignBottom="@id/liner"-->
-<!--            app:srcCompat="@drawable/line_green" />-->
+        </LinearLayout>
     </RelativeLayout>
 
 

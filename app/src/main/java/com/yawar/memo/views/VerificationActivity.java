@@ -32,7 +32,7 @@ import java.util.TimerTask;
 
 public class VerificationActivity extends AppCompatActivity implements Observer {
     Button virvectbtn;
-    Button resendbtn;
+    TextView resendbtn;
     ClassSharedPreferences classSharedPreferences;
     private EditText  edtOTP;
     BaseApp myBase;
@@ -49,8 +49,8 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verification);
 
