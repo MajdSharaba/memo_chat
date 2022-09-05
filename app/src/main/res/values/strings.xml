@@ -10,8 +10,8 @@
     <string name="update">Update</string>
     <string name="logout">LogOut</string>
     <string name="active">active</string>
-    <string name="verifiction_code">verifiction code</string>
-    <string name="verifiction">verifiction</string>
+    <string name="verifiction_code">Verification code</string>
+    <string name="verifiction">verify</string><!--verification-->
     <string name="type_message">type message</string>
     <string name="light_mode_selected">Light Mode Selected</string>
     <string name="dark_mode_selected"> Dark Mode Selected</string>
@@ -70,7 +70,7 @@
     <string name="cancel">Cancel</string>
     <string name="send">Send</string>
     <string name="sendText">Please enter your number and we will send code for you  </string>
-    <string name="verifictionText">Please enter your code that we have sent to your number  </string>
+    <string name="verifictionText">"Please enter the code that we've sent to your number"</string>
     <string name="choose_special_number">choose special number</string>
     <string name="register">Register</string>
     <string name="alert_delete_message">Delete Messages?</string>

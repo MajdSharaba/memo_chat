@@ -231,7 +231,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
                     System.out.println("update items");
                     ArrayList<ChatRoomModel> list = new ArrayList<>();
                     postList.clear();
-                    System.out.println("chatRoomModels.sizaee"+chatRoomModels.get(0).username);
+//                    System.out.println("chatRoomModels.sizaee"+chatRoomModels.get(0).username);
 
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
                         System.out.println(chatRoomModel.blocked_for+"chatRoomModels.sizaee");

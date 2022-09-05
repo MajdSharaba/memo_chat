@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yawar.memo">
 
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.INTERNET" /> <!-- <uses-permission android:name="" /> -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -61,7 +62,7 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:theme="@style/ThemeOverlay.ChatMemo.CallReq" />
         <activity
             android:name=".call.ResponeCallActivity"
             android:exported="false"
