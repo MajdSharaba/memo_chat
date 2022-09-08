@@ -116,8 +116,7 @@ public class AuthApi implements Observer {
                         .build();
         PhoneAuthProvider.verifyPhoneNumber(options);
     }
-    //"+9647510487448"
-///7517863790
+
     private final PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
             // initializing our callbacks for on

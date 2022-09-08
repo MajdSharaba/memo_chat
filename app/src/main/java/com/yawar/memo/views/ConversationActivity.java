@@ -151,6 +151,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private ImageView fowordImageBtn;
     private ImageView videoCallBtn;
     private ImageView audioCallBtn;
+    private LinearLayout linerNoMessage;
+
+
 
     WebView webView;
     private final int requestcode = 1;
@@ -827,6 +830,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
          username = (TextView)findViewById(R.id.username);
          close    = (ImageButton)findViewById(R.id.close);
          cardview = (CardView) findViewById(R.id.cardview);
+         linerNoMessage = findViewById(R.id.liner_no_messsage);
          sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
          pickiT   = new PickiT(this, this, this);
 
@@ -1109,14 +1113,23 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             @Override
             public void onChanged(ArrayList<ChatMessage> chatMessages) {
                 if (chatMessages != null) {
-                    ArrayList<ChatMessage> list = new ArrayList<>();
-                    System.out.println("chatmessage.size"+chatMessages.size()+""+chatHistory.size());
-                    for(ChatMessage chatMessage:chatMessages){
-                    list.add(chatMessage.clone());}
+                    if(chatMessages.isEmpty()){
+                        linerNoMessage.setVisibility(View.VISIBLE);
+                        messagesContainer.setVisibility(View.GONE);
+                    }
+                    else {
+                        linerNoMessage.setVisibility(View.GONE);
+                        messagesContainer.setVisibility(View.VISIBLE);
+                        ArrayList<ChatMessage> list = new ArrayList<>();
+                        System.out.println("chatmessage.size" + chatMessages.size() + "" + chatHistory.size());
+                        for (ChatMessage chatMessage : chatMessages) {
+                            list.add(chatMessage.clone());
+                        }
 
-                    chatHistory = list;
+                        chatHistory = list;
 //                    adapter.add(chatHistory);
-                    adapter.setData(list);
+                        adapter.setData(list);
+                    }
                     if(!chatMessages.isEmpty() && conversationModelView.isFirst.getValue()){
                         conversationModelView.isFirst.setValue(false);
                     scroll();

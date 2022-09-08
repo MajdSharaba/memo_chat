@@ -8,9 +8,14 @@ public class ResponeCallViewModel extends ViewModel {
 
     public MutableLiveData<Boolean> isVideoForMe ;
 
+
     public MutableLiveData<Boolean> isVideoForYou ;
     public MutableLiveData<Boolean> isAudio ;
     public MutableLiveData<Boolean> isSpeaker;
+    private int time = 0;
+    private String callId;
+
+
 
 
 
@@ -43,6 +48,31 @@ public class ResponeCallViewModel extends ViewModel {
 
     public void setIsSpeaker(boolean isSpeaker) {
         this.isSpeaker.setValue(isSpeaker);
+    }
+
+
+    public String getCallId( ) {
+        return this.callId;
+    }
+
+    public void setCallId(String callId) {
+
+        this.callId = callId;
+    }
+    public  void setTime (int time){
+        this.time = time;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+    public  String getTimeString(){
+        int seconds = this.time % 60;
+        int minutes = this.time / 60;
+        int hour = minutes/60;
+        String stringTime = String.format("%02d:%02d:%02d",hour, minutes, seconds);
+        return  stringTime;
     }
 
 

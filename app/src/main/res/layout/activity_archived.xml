@@ -59,6 +59,37 @@
 <!--                </androidx.appcompat.widget.Toolbar>-->
 <!--            </com.google.android.material.appbar.AppBarLayout>-->
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/liner_no_chat_history"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:orientation="vertical"
+        >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_no_chat">
+
+        </ImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textStyle="italic"
+            android:padding="5dp"
+            android:textSize="17sp"
+            android:layout_gravity="center"
+            android:text="@string/you_have_no_archived_chat" />
+
+
+
+    </LinearLayout>
+
 
 
 

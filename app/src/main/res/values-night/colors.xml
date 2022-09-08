@@ -22,10 +22,10 @@
 
     <color name="backgroundColor">#A3000000</color>
     <color name="background_send_message">#0D2934</color>
-    <color name="background_recive_message">#19A15F</color>
+    <color name="background_recive_message">#00A79D</color>
     <color name="background_chat_page">#FF000000</color>
     <color name="memo_background_color">#000000</color>
-    <color name="memo_background_color_new">#FFFFFF</color>
+    <color name="memo_background_color_new">#00A79D</color>
     <color name="btn_color">#303030</color>
     <color name="call_background_color">#20232B</color>
 

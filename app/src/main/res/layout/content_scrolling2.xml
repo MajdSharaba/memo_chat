@@ -11,6 +11,52 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/liner_no_chat"
+                android:layout_marginTop="50dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:orientation="vertical"
+                >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_no_chat">
+
+            </ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="30dp"
+                    android:textStyle="italic"
+                    android:padding="5dp"
+                    android:textSize="17sp"
+                    android:layout_gravity="center"
+                    android:text="@string/you_have_no_chats_yet" />
+
+                <Button
+                    android:id="@+id/btn_start_chat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:foreground="?android:attr/selectableItemBackground"                    android:layout_gravity="center"
+                    android:background="@drawable/border_file"
+                    android:textSize="12sp"
+                    android:padding="6dp"
+                    android:text="@string/start_new_chat"
+
+                    android:textColor="@color/memo_background_color_new"
+                    android:layout_marginTop="30dp"
+                    >
+
+                </Button>
+
+            </LinearLayout>
+
             <LinearLayout
             android:layout_width="match_parent"
             android:layout_gravity="center_vertical"
@@ -58,6 +104,7 @@
                         </LinearLayout>
                             <com.tsuryo.swipeablerv.SwipeableRecyclerView
                                 android:id="@+id/recycler"
+                                android:visibility="gone"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 app:leftBgColor="@color/green"
@@ -77,16 +124,7 @@
 
         </LinearLayout>
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/fab"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="end"-->
-<!--        android:backgroundTint="@color/green"-->
-<!--        android:layout_margin="@dimen/fab_margin"-->
-<!--        app:srcCompat="@drawable/ic_add"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"/>-->
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

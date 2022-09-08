@@ -6,12 +6,12 @@
         android:id="@+id/profile"
         android:title="@string/tab_text_4"
         android:icon="@drawable/ic_memo_logo"
-        app:cnb_iconColor="@color/green"/>
+        app:cnb_iconColor="@color/green"/>-->
     <item
         android:id="@+id/calls"
-        android:title="@string/tab_text_3"
+        android:title="@string/item_call"
         android:icon="@drawable/ic_call"
-        app:cnb_iconColor="@color/green"/>-->
+        app:cnb_iconColor="@color/green"/>
     <item
         android:id="@+id/searchSn"
         android:title="@string/tab_text_2"

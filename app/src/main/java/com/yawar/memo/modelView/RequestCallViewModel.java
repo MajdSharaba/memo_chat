@@ -3,8 +3,7 @@ package com.yawar.memo.modelView;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.yawar.memo.repositry.RequestCallRepo;
-import com.yawar.memo.utils.BaseApp;
+import java.util.UUID;
 
 public class RequestCallViewModel extends ViewModel {
 //    RequestCallRepo  requestCallRepo = BaseApp.getInstance().getRequestCallRepo();
@@ -20,10 +19,13 @@ public class RequestCallViewModel extends ViewModel {
     public MutableLiveData<String> rining;
 
     public MutableLiveData<Boolean> isAudio;
+    private int time = 0;
 
 
 
     public MutableLiveData<Boolean> isSpeaker;
+
+    private String callId;
 
 
 
@@ -90,6 +92,28 @@ public class RequestCallViewModel extends ViewModel {
     public MutableLiveData<Boolean> getAudio( ) {
         return this.isAudio;
     }
+    public String getCallId( ) {
+        return this.callId;
+    }
 
+    public void setCallId() {
+
+        this.callId = UUID.randomUUID().toString();
+    }
+   public  void setTime (int time){
+        this.time = time;
+   }
+
+    public int getTime() {
+        return time;
+    }
+
+    public  String getTimeString(){
+       int seconds = this.time % 60;
+       int minutes = this.time / 60;
+       int hour = minutes/60;
+       String stringTime = String.format("%02d:%02d:%02d",hour, minutes, seconds);
+       return  stringTime;
+   }
 
 }

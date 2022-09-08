@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.yawar.memo.fragment.CallHistoryFragment;
 import com.yawar.memo.language.helper.LocaleHelper;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
@@ -342,17 +343,15 @@ public class DashBord extends AppCompatActivity implements Observer {
                     case  R.id.chat:
                         fragment = new ChatRoomFragment();
                         break;
-               //     case  R.id.profile:
-//                        fragment = new ProfileFragment();
-                    //    break;
+
                     case R.id.searchSn:
                         fragment = new SearchFragment();
                         break;
                      case R.id.block:
                         fragment = new SettingsFragment();
                         break;
-               //     case  R.id .calls:
-//                        fragment = new StoriesFragment();
+                    case  R.id .calls:
+                        fragment = new CallHistoryFragment();
                 }
                 if (fragment != null)
                     getSupportFragmentManager().beginTransaction().replace(R.id.dashboardContainer, fragment).commit();

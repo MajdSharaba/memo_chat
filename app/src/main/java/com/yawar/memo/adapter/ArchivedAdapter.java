@@ -363,6 +363,17 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
 
                     }
                 });
+                if(chatRoomModel.blocked_for!=null) {
+                    if (chatRoomModel.blocked_for != "null") {
+                        imgBtnCall.setEnabled(false);
+                    } else {
+                        imgBtnCall.setEnabled(true);
+
+                    }
+                }
+                else {
+                    imgBtnCall.setEnabled(true);
+                }
 
 
 

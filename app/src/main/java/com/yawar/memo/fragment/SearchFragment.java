@@ -29,6 +29,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -89,6 +90,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     TextView search ;
     SharedPreferences sharedPreferences;
     SearchModelView searchModelView;
+    LinearLayout linerNOSearchResult;
 
 
 
@@ -115,6 +117,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         toolbar = view.findViewById(R.id.toolbar);
         search = view.findViewById(R.id.search);
         searchView = view.findViewById(R.id.search_by_secret_number);
+        linerNOSearchResult = view.findViewById(R.id.liner_no_search_result);
         searchModelView = new ViewModelProvider(this).get(SearchModelView.class);
         checkpermission();
 
@@ -213,15 +216,21 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
             public void onChanged(ArrayList<SearchRespone> searchResponeArrayList) {
 //                list.clear();
                 list = new ArrayList<>();
-                if(searchResponeArrayList!=null){
-                    for(SearchRespone searchRespone : searchResponeArrayList) {
-                        list.add(searchRespone.clone());
-                    }
-                 System.out.println("list"+list);
-                 searchAdapter.setData((ArrayList<SearchRespone>) list);
+                if(searchResponeArrayList!=null) {
+                    if (searchResponeArrayList.isEmpty()) {
+                        linerNOSearchResult.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    } else {
+                        linerNOSearchResult.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        for (SearchRespone searchRespone : searchResponeArrayList) {
+                            list.add(searchRespone.clone());
+                        }
+                        System.out.println("list" + list);
+                        searchAdapter.setData((ArrayList<SearchRespone>) list);
 //                 searchAdapter.notifyDataSetChanged();
+                    }
                 }
-
             }
         });
 

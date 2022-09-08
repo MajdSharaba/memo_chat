@@ -515,6 +515,7 @@ public class RequestCallActivity extends AppCompatActivity {
         JSONObject data = new JSONObject();
         JSONObject type = new JSONObject();
         JSONObject userObject = new JSONObject();
+        requestCallViewModel.setCallId();
 
         ////
 
@@ -530,6 +531,8 @@ public class RequestCallActivity extends AppCompatActivity {
             data.put("type", type);
             data.put("message", "");
             data.put("snd_id", my_id);
+            data.put("call_id", requestCallViewModel.getCallId());
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -602,27 +605,24 @@ public class RequestCallActivity extends AppCompatActivity {
         //Set the schedule function and rate
         callTimer.scheduleAtFixedRate(new TimerTask() {
 
-                                          public void run()
-                                          {
+        public void run()
+        {
                                               //Called each time when 1000 milliseconds (1 second) (the period parameter)
-                                              runOnUiThread(new Runnable() {
+        runOnUiThread(new Runnable() {
 
-                                                  public void run()
-                                                  {
+        public void run()
+        {
+            requestCallViewModel.setTime(requestCallViewModel.getTime()+1);
 
-                                                      time += 1;
-                                                      int seconds = time % 60;
-                                                      int minutes = time / 60;
-                                                      int hour = minutes/60;
-                                                      String stringTime = String.format("%02d:%02d:%02d",hour, minutes, seconds);
-                                                      binding.callStatue.setText(stringTime);
 
-                                                  }
+         binding.callStatue.setText(requestCallViewModel.getTimeString());
 
-                                              });
-                                          }
+         }
 
-                                      },
+         });
+         }
+
+         },
                 //Set how long before to start calling the TimerTask (in milliseconds)
                 0,
                 //Set the amount of time between each execution (in milliseconds)
@@ -633,11 +633,16 @@ public class RequestCallActivity extends AppCompatActivity {
     private void closeCall() {
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
-        JSONObject type = new JSONObject();
-        JSONObject userObject = new JSONObject();
+
         try {
             data.put("id", anthor_user_id);
             data.put("snd_id", my_id);
+            data.put("call_id", requestCallViewModel.getCallId());
+            data.put("call_duration", requestCallViewModel.getTimeString());
+
+
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -893,7 +898,6 @@ public class RequestCallActivity extends AppCompatActivity {
                 }
 
                 else {
-                    System.out.println("countDownTimer.cancel()");
 
                     countDownTimer.cancel();
 
@@ -970,7 +974,6 @@ public class RequestCallActivity extends AppCompatActivity {
 
                         requestCallViewModel.setIsVideoForMe(requestCallViewModel.getIsVideoForMe().getValue());
                         requestCallViewModel.setIsSpeaker(isVideoForMe);
-//                        binding.callStatue.setText(R.string.ongoing_call);
                         startCallTimeCounter();
                         binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                         final float scale = getResources().getDisplayMetrics().density;

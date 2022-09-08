@@ -116,6 +116,8 @@ public class FirebaseMessageReceiver
                 switch (remoteMessage.getData().get("type")) {
                     case "call":
                         isCall = true;
+                        String callId="";
+
                         JSONObject messagebody = null;
                         JSONObject userObject;
                         JSONObject typeObject;
@@ -124,12 +126,14 @@ public class FirebaseMessageReceiver
                         String image ="";
                         boolean isVideoCall = true;
 
+
                         try {
                             messagebody = new JSONObject(remoteMessage.getData().get("body"));
                             userObject = new JSONObject(messagebody.getString("user"));
                             typeObject = new JSONObject(messagebody.getString("type"));
                             isVideoCall = typeObject.getBoolean("video");
                             anthorUserCallId = messagebody.getString("snd_id");
+                            callId = messagebody.getString("call_id");
                             username = userObject.getString("name");
                             image = userObject.getString("image_profile");
 
@@ -140,7 +144,7 @@ public class FirebaseMessageReceiver
                         int channel_id=Integer.parseInt(anthorUserCallId)+10000;
 
 
-                        Data inputData = new Data.Builder().putString("name",username).putString("image",image).putString("body",remoteMessage.getData().get("body")).putString("anthorUserCallId", anthorUserCallId).putString("channel", String.valueOf(channel_id)).putBoolean("isVideoCall",isVideoCall).build();
+                        Data inputData = new Data.Builder().putString("name",username).putString("image",image).putString("body",remoteMessage.getData().get("body")).putString("anthorUserCallId", anthorUserCallId).putString("channel", String.valueOf(channel_id)).putBoolean("isVideoCall",isVideoCall).putString("call_id",callId).build();
 
 
                         OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationCallWorker.class)

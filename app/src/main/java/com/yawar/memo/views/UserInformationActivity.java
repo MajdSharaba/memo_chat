@@ -61,7 +61,7 @@ public class UserInformationActivity extends AppCompatActivity {
     TextView special_number;
     TextView media;
     String userName;
-    String specialNumber;
+    String sn;
     String chatId;
     String another_user_id;
     String my_id;
@@ -170,7 +170,7 @@ public class UserInformationActivity extends AppCompatActivity {
         blockUserRepo= myBase.getBlockUserRepo();
         Bundle bundle = getIntent().getExtras();
        userName = bundle.getString("name", "Default");
-       specialNumber = bundle.getString("special", "Default");
+       sn = bundle.getString("special", "Default");
        chatId = bundle.getString("chat_id", "Default");
        another_user_id = bundle.getString("user_id", "Default");
         fcm_token = bundle.getString("fcm_token", "Default");
@@ -315,12 +315,15 @@ public class UserInformationActivity extends AppCompatActivity {
         if(!imageUrl.isEmpty()){
             Glide.with(circleImageView.getContext()).load(AllConstants.imageUrl+imageUrl).into(circleImageView);}
        txtUserName.setText(userName);
-        String firstString = specialNumber.substring(0,1);
-        String secondString = specialNumber.substring(1,4);
-        String thirtyString = specialNumber.substring(4,7);
-        String lastString = specialNumber.substring(7);
+        System.out.println(sn+"special_number");
+        if(!sn.isEmpty()) {
+            String firstString = sn.substring(0, 1);
+            String secondString = sn.substring(1, 4);
+            String thirtyString = sn.substring(4, 7);
+            String lastString = sn.substring(7);
 
-        txtSpecialNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
+            txtSpecialNumber.setText(firstString + "-" + secondString + "-" + thirtyString + "-" + lastString);
+        }
         userInformationViewModel.mediaRequest(my_id,another_user_id);
 //        getMedia();
 
@@ -412,7 +415,7 @@ public class UserInformationActivity extends AppCompatActivity {
 
         p.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                UserModel userModel = new UserModel(another_user_id,userName,userName,"","",specialNumber,imageUrl,"");
+                UserModel userModel = new UserModel(another_user_id,userName,userName,"","", sn,imageUrl,"");
 
                 switch (item.getItemId()){
                     case R.id.block:

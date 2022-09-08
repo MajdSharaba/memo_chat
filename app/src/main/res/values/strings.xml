@@ -18,7 +18,7 @@
     <string name="title_activity_chat_room">ChatRoomActivity</string>
     <string name="tab_text_1">Chats</string>
     <string name="tab_text_2">search</string>
-    <string name="tab_text_3">Calls</string>
+    <string name="item_call">Calls</string>
     <string name="tab_text_4">Profile</string>
     <string name="tab_text_5">Settings</string>
 
@@ -196,6 +196,15 @@
 
 
     <string name="voice_call">Voice call</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="you_have_no_chats_yet">You have no chats yet!</string>
+    <string name="start_new_chat">Start New Chat</string>
+    <string name="you_have_no_archived_chat">You have no archived chats</string>
+    <string name="you_have_no_call_yet">You have no calls yet!</string>
+    <string name="no_search_result">No results!</string>
+    <string name="no_contacts_number">No contacts number!</string>
+    <string name="say_hi_or_send_an_emoji">Say Hi or Send an Emoji!</string>
 
 
 </resources>

@@ -28,21 +28,7 @@
 
     </TextView>
 
-<!--    <com.google.android.material.appbar.AppBarLayout-->
 
-<!--        android:layout_width="match_parent"-->
-<!--        android:background="@null"-->
-<!--        android:layout_height="wrap_content">-->
-
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:paddingEnd="15dp"-->
-<!--            android:paddingStart="15dp"-->
-<!--            android:id="@+id/toolbar"-->
-<!--            android:minHeight="?attr/actionBarSize"-->
-
-<!--            >-->
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/search_by_secret_number"
                 android:background="@drawable/ed_text_background"
@@ -58,8 +44,36 @@
                 />
 
 
-<!--        </androidx.appcompat.widget.Toolbar>-->
-<!--    </com.google.android.material.appbar.AppBarLayout>-->
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/liner_no_contacts_number"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:orientation="vertical"
+        >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_no_call">
+
+        </ImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textStyle="italic"
+            android:padding="5dp"
+            android:textSize="17sp"
+            android:layout_gravity="center"
+            android:text="@string/no_contacts_number" />
+
+
 
     </LinearLayout>
 

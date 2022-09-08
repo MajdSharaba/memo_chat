@@ -70,6 +70,7 @@ public class NotificationCallWorker extends Worker {
     public Worker.Result doWork() {
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
+        final String callId = getInputData().getString("call_id");
 
         final String imageUrl = getInputData().getString("image");
         final String name = getInputData().getString("name" );
@@ -113,9 +114,12 @@ public class NotificationCallWorker extends Worker {
                     = new Intent(applicationContext, CallNotificationActivity.class);
             intent.putExtra("callRequest", message);
             intent.putExtra("id", anthor_user_id);
-            intent.putExtra("title", title);
-            intent.putExtra("name", name);
-            intent.putExtra("imageUrl", imageUrl);
+//            intent.putExtra("title", title);
+//            intent.putExtra("name", name);
+//            intent.putExtra("imageUrl", imageUrl);
+//            intent.putExtra("call_id", callId);
+
+
 
 
 
@@ -133,9 +137,11 @@ public class NotificationCallWorker extends Worker {
                     = new Intent(applicationContext, ResponeCallActivity.class);
             intentAnsware.putExtra("callRequest", message);
             intentAnsware.putExtra("id", anthor_user_id);
-            intentAnsware.putExtra("title", title);
-            intentAnsware.putExtra("name", name);
-            intent.putExtra("imageUrl", imageUrl);
+//            intentAnsware.putExtra("title", title);
+//            intentAnsware.putExtra("name", name);
+//            intent.putExtra("imageUrl", imageUrl);
+//            intent.putExtra("call_id", callId);
+
 
 
 
@@ -165,6 +171,7 @@ public class NotificationCallWorker extends Worker {
                     = new Intent(applicationContext, ResponeCallActivity.class);
 
             intentCancelAndStart.putExtra("callRequest", message);
+            intentAnsware.putExtra("title", title);
             intentCancelAndStart.putExtra("id", anthor_user_id);
 
             intentCancelAndStart.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

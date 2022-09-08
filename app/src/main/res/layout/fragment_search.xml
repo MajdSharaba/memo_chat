@@ -12,7 +12,6 @@
 <LinearLayout
     android:layout_width="match_parent"
     android:paddingTop="40dp"
-    android:layout_marginBottom="20dp"
     android:layout_height="wrap_content"
     android:background="@color/memo_background_color"
     android:orientation="vertical">
@@ -28,59 +27,59 @@
 
     </TextView>
 
-<!--            <com.google.android.material.appbar.AppBarLayout-->
-<!--                android:id="@+id/app_bar"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:background="@null"-->
-<!--                android:layout_height="wrap_content">-->
 
-<!--                <androidx.appcompat.widget.Toolbar-->
-<!--                    android:id="@+id/toolbar"-->
-<!--                    android:layout_width="match_parent"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:paddingEnd="15dp"-->
-<!--                    android:paddingStart="15dp"-->
-
-<!--                    android:minHeight="?attr/actionBarSize"-->
-
-<!--                    >-->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_by_secret_number"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_height="40dp"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/ed_text_background"
+        android:baselineAligned="false"
+        android:nestedScrollingEnabled="false"
+        app:queryHint="@string/search" />
 
 
 
 
-
-                        <androidx.appcompat.widget.SearchView
-                            android:id="@+id/search_by_secret_number"
-                            android:layout_width="match_parent"
-                            android:layout_gravity="center"
-                            android:gravity="center"
-                            android:layout_height="40dp"
-                            android:layout_margin="20dp"
-                            android:layout_marginBottom="30dp"
-                            android:background="@drawable/ed_text_background"
-                            android:baselineAligned="false"
-                            android:nestedScrollingEnabled="false"
-                            app:queryHint="@string/search" />
-
-
-
-<!--                </androidx.appcompat.widget.Toolbar>-->
-<!--            </com.google.android.material.appbar.AppBarLayout>-->
 
 
 </LinearLayout>
-<!--    <include layout="@layout/item_divider"-->
-<!--        />-->
-<!--    <androidx.core.widget.NestedScrollView-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/liner_no_search_result"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:orientation="vertical"
+        >
 
-<!--        android:id="@+id/idNestedSV"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        >-->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_no_chat">
 
-        <!--linear layout for displaying
-            our recycler view-->
-        <LinearLayout
+        </ImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textStyle="italic"
+            android:padding="5dp"
+            android:textSize="17sp"
+            android:layout_gravity="center"
+            android:text="@string/no_search_result" />
+
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">

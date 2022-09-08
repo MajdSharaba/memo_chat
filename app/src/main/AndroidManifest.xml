@@ -185,11 +185,7 @@
             android:name=".views.RegisterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".StoriesActivity"
-            android:configChanges="orientation|screenSize|keyboard"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

@@ -28,11 +28,11 @@ public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
         notificationManager.cancel(AllConstants.onGoingCallChannelId);
         Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY);
 
-        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);
-        Intent closeRequestCallActivity = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
-
-        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeRequestCallActivity);
-        closeCall(context,id);
+//        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);
+//        Intent closeRequestCallActivity = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
+//
+//        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeRequestCallActivity);
+//        closeCall(context,id);
     }
     private void closeCall(Context context,String id) {
         ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(context.getApplicationContext());
@@ -43,7 +43,6 @@ public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
 //            data.put("close_call", true);
             data.put("id",id );//
             data.put("snd_id", classSharedPreferences.getUser().getUserId());
-//            data.put("snd_id", classSharedPreferences.getUser().getUserId());
         } catch (JSONException e) {
             e.printStackTrace();
         }

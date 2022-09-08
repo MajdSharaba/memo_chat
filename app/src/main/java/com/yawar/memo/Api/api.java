@@ -85,6 +85,10 @@ public interface api {
     @FormUrlEncoded
     @POST("APIS/search_for_user.php")//endpoint
     Single<String> search(@Field("sn") String search_parameters,@Field("page") String page, @Field("my_id") String my_id );
+
+    @FormUrlEncoded
+    @POST("mycalls")//endpoint
+    Single<String> getMyCalls(@Field("my_id") String my_id );
 }
 
 

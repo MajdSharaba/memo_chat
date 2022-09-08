@@ -83,26 +83,7 @@ android:orientation="horizontal">
         android:textColor="@color/green"
         android:fontFamily="@font/roboto_regular"
         android:textSize="10sp" />
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/btn_share"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="bottom|end"-->
-<!--        android:layout_margin="@dimen/fab_margin"-->
-<!--        app:srcCompat="@android:drawable/ic_dialog_email" />-->
-<!--    <Button-->
-<!--        android:id="@+id/btn_share"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_weight="0.7"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_toRightOf="@id/iv_image"-->
-<!--        android:background="@drawable/btn_custom_green_back"-->
-<!--        android:layout_marginLeft="20dp"-->
-<!--        android:layout_marginRight="20dp"-->
-<!--        android:layout_marginTop="50dp"-->
-<!--        android:fontFamily="@font/roboto_regular"-->
-<!--        android:textColor="@android:color/white"-->
-<!--        android:text="@string/send_code"/>-->
+
 
 
 </LinearLayout>

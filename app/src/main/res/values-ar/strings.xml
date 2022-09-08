@@ -19,7 +19,7 @@
     <string name="title_activity_chat_room">ChatRoomActivity</string>
     <string name="tab_text_1">المحادثات</string>
     <string name="tab_text_2">بحث</string>
-    <string name="tab_text_3">اتصال</string>
+    <string name="item_call">المكالمات</string>
     <string name="tab_text_4">الملف الشخصي</string>
     <string name="tab_text_5">الأعدادات</string>
     <string name="delete">حذف</string>
@@ -236,6 +236,21 @@
 
 
     <string name="voice_call">مكالمة صوتية</string>
+    <string name="you_have_no_chats_yet"> لا يوجد محادثات حالية! </string>ا يوجد محادثات
+    <string name="start_new_chat">ابدأ محادثة جديدة</string>
+    <string name="you_have_no_archived_chat">ليس لديك محادثات مؤرشفة</string>
+    <string name="you_have_no_call_yet">لا يوجد مكالمات حالية!</string>
+    <string name="no_search_result"> لا يوجد نتائج!</string>
+    <string name="no_contacts_number">لا يوجد جهات اتصال!</string>
+    <string name="say_hi_or_send_an_emoji"> ارسل تحية او ايموجي!</string>
+
+
+
+
+
+
+
+
 
 
 </resources>
