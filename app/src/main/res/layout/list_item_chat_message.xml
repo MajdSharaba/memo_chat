@@ -126,7 +126,7 @@
                     android:layout_height="wrap_content"
                     android:maxWidth="240dp"
                     android:text="11:45 Am"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:textSize="11sp"
                     android:textStyle="bold" />
 

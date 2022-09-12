@@ -23,6 +23,7 @@ import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.CallModel;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.TimeProperties;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class CallAdapter extends ListAdapter<CallModel,CallAdapter.View_Holder> 
         super(new MyDiffUtilCall());
         this.context = context;
         listsearch.addAll(getCurrentList());
-        classSharedPreferences = new ClassSharedPreferences(context);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
     }
 
     @NonNull

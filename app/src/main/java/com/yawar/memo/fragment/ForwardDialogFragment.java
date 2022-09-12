@@ -141,7 +141,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
 
 
 //        view.setBackground(getActivity().getResources().getDrawable(R.drawable.dialog_bg));
-        classSharedPreferences = new ClassSharedPreferences(getContext());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         my_id= classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
         forwardDialogViewModel =  new ViewModelProvider(this).get(ForwardDialogViewModel.class);

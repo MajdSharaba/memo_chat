@@ -92,8 +92,8 @@
                         android:text="11:45"
                         android:layout_gravity="end"
                         android:gravity="end"
-                        android:visibility="gone"
-                        android:textColor="@color/textColor"
+                        android:visibility="visible"
+                        android:textColor="@color/white"
                         android:textSize="11sp" />
 
                     <ImageView

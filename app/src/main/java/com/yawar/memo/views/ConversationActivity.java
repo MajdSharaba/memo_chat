@@ -300,15 +300,20 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             String check = intent.getExtras().getString("check");
             JSONObject checkObject = null;
             String checkConnect = "false";
+            String userId ;
 
             try {
                 checkObject = new JSONObject(check);
-                checkConnect = checkObject.getString("is_connect");
-                lastSeen = checkObject.getString("last_seen");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            conversationModelView.set_state(checkConnect);
+                userId = checkObject.getString("user_id");
+                if (userId.equals(anthor_user_id)) {
+                    checkConnect = checkObject.getString("is_connect");
+
+                    lastSeen = checkObject.getString("last_seen");
+                    conversationModelView.set_state(checkConnect);
+                }
+                } catch(JSONException e){
+                    e.printStackTrace();
+                }
 
 
         }
@@ -819,7 +824,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//        sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
         pickiT = new PickiT(this, this, this);
         if (!isPermissionGranted()) {
             askPermissions();
@@ -965,7 +970,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         recordButton.setListenForRecord(false);
         deletImageBtn = findViewById(R.id.image_button_delete);
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 //
 //        if (classSharedPreferences.getList() != null) {
 //            unSendMessage = classSharedPreferences.getList();

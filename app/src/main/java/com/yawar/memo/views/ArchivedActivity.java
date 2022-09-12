@@ -76,7 +76,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
         archive =  findViewById(R.id.archived);
 //        archive.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        classSharedPreferences= new ClassSharedPreferences(this);
+        classSharedPreferences= BaseApp.getInstance().getClassSharedPreferences();
         myId = classSharedPreferences.getUser().getUserId();
         archivedActViewModel = new ViewModelProvider(this).get(ArchivedActViewModel.class);
         myBase = (BaseApp) getApplication();

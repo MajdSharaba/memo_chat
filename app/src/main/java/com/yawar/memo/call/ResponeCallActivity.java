@@ -44,6 +44,7 @@ import com.yawar.memo.notification.CancelCallFromCallOngoingNotification;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -271,6 +272,7 @@ public class ResponeCallActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    System.out.println("reciveclosecallfromnotification");
                     finish();
                     ///////////
 
@@ -542,7 +544,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         responeCallViewModel = new ViewModelProvider(this).get(ResponeCallViewModel.class);
 
 
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);

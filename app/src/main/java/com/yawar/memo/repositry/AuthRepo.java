@@ -22,25 +22,29 @@ public class AuthRepo {
 
 
  public MutableLiveData<JSONObject> jsonObjectMutableLiveData;
+    public MutableLiveData<Boolean> loading;
+    public MutableLiveData<Boolean> showErrorMessage;
 
 
 
 
-        public AuthRepo(Application application) {
+
+
+    public AuthRepo(Application application) {
             jsonObjectMutableLiveData = new MutableLiveData<JSONObject>();
             jsonObjectMutableLiveData.setValue(null);
-
-
+            loading = new MutableLiveData<>(false);
+            showErrorMessage = new MutableLiveData<>(false);
 
 
 
         }
 
         @SuppressLint("CheckResult")
-        public void getspecialNumbers(String phoneNumber) {
+        public MutableLiveData<JSONObject> getspecialNumbers(String phoneNumber) {
             System.out.println(jsonObjectMutableLiveData.getValue()+"jsonObjectMutableLiveData");
 
-
+            loading.setValue(true);
             Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getSpecialNumbers(phoneNumber)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
@@ -48,13 +52,22 @@ public class AuthRepo {
                 JSONObject respObj = new JSONObject(s);
                 JSONObject data = respObj.getJSONObject("data");
                 jsonObjectMutableLiveData.setValue(data);
+                loading.setValue(false);
+                showErrorMessage.setValue(false);
                 System.out.println(jsonObjectMutableLiveData.getValue()+"data");
 
             },s-> {
                 System.out.println("Error" + s);
+                loading.setValue(false);
+                showErrorMessage.setValue(true);
                 jsonObjectMutableLiveData.setValue(null);});
 
+            return jsonObjectMutableLiveData;
+
         }
+
+
+
 
 
     }

@@ -87,7 +87,7 @@ public class IntroActivity extends AppCompatActivity  {
 //        goToNotificationSettings(this);
 //        askCallPermission();
 
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         myId = classSharedPreferences.getUser().getUserId();
 //        serverApi = new ServerApi(this);
        myBase = BaseApp.getInstance();

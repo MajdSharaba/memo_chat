@@ -48,6 +48,7 @@ import com.yawar.memo.R;
 import com.yawar.memo.adapter.SearchAdapter;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.SearchRespone;
+import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.permissions.Permissions;
 
@@ -104,7 +105,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
 //        nestedSV  = view.findViewById(R.id.idNestedSV);
 
         permissions = new Permissions();
-        classSharedPreferences = new ClassSharedPreferences(getContext());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         my_id = classSharedPreferences.getUser().getUserId();
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);

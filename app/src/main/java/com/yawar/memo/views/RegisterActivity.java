@@ -35,6 +35,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -93,6 +94,8 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
+        CallProperty.setStatusBarOrScreenStatus(this);
+
         setContentView(R.layout.activity_register);
 
         initView();
@@ -112,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         image = findViewById(R.id.imageProfile);
         btnRegister = findViewById(R.id.btn_Register);
 //        btnSkip = findViewById(R.id.btn_skip);
-        classSharedPreferences = new ClassSharedPreferences(RegisterActivity.this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         serverApi = new  ServerApi(RegisterActivity.this);
         dropdown = findViewById(R.id.spinner1);
     }

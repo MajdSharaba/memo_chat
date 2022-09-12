@@ -90,7 +90,7 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
 //        toolbar = findViewById(R.id.toolbar);
 //        toolbar.setTitle("Memo");
 //        setSupportActionBar(toolbar);
-        classSharedPreferences= new ClassSharedPreferences(this);
+        classSharedPreferences= BaseApp.getInstance().getClassSharedPreferences();
         myId = classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
 //        checkContactpermission();

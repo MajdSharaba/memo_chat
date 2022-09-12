@@ -45,6 +45,14 @@
     <color name="call_background_color">#20232B</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="btn_color">#00A79D</color>
+    <color name="background_search_bar">#EEEEEE</color>
+    <color name="converstion_editText_color">#EEEEEE</color>
+    <color name="icon_converstion_color">#00A79D</color>
+    <color name="background_conversation_toolbar">#00A79D</color>
+
+
+
+
 
 
 </resources>

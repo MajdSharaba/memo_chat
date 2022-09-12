@@ -205,6 +205,9 @@
     <string name="no_search_result">No results!</string>
     <string name="no_contacts_number">No contacts number!</string>
     <string name="say_hi_or_send_an_emoji">Say Hi or Send an Emoji!</string>
+    <string name="internet_message">Check your internet connection!</string>
+
+
 
 
 </resources>

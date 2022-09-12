@@ -9,6 +9,8 @@
     <color name="teal_700">#FF018786</color>
     <color name="textColor">#FFFFFF</color>
     <color name="background_search">#020014</color>
+    <color name="background_search_bar">#222222</color>
+
     <color name="background_bottom_navigation">#171717</color>
     <color name="browser_actions_bg">#171717</color>
     <color name="background_editText_color">#171717</color>
@@ -20,14 +22,20 @@
     <color name="black">#000000</color>
 
 
-    <color name="backgroundColor">#A3000000</color>
-    <color name="background_send_message">#0D2934</color>
+    <color name="backgroundColor">#000000</color>
+    <color name="background_send_message">#313741</color>
     <color name="background_recive_message">#00A79D</color>
     <color name="background_chat_page">#FF000000</color>
     <color name="memo_background_color">#000000</color>
     <color name="memo_background_color_new">#00A79D</color>
     <color name="btn_color">#303030</color>
     <color name="call_background_color">#20232B</color>
+    <color name="converstion_editText_color">#0F0F0F</color>
+    <color name="icon_converstion_color">#FFFFFF</color>
+    <color name="background_conversation_toolbar">#222222</color>
+
+
+
 
 
 </resources>

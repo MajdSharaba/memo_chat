@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +22,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yawar.memo.call.CallProperty;
+import com.yawar.memo.modelView.SplachActViewModel;
+import com.yawar.memo.modelView.VerficationViewModel;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -40,14 +44,13 @@ public class SplashScreen extends AppCompatActivity {
     ClassSharedPreferences classSharedPreferences;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
-    ServerApi serverApi;
 
-     float textSize = 14.0F ;
-    SharedPreferences sharedPreferences ;
     TextView text ;
     TextView powerd ;
     AuthRepo authRepo;
     BaseApp myBase;
+    SplachActViewModel splachActViewModel;
+    ProgressDialog progressDialog;
 
 
 
@@ -55,22 +58,11 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         CallProperty.setStatusBarOrScreenStatus(this);
 
-//        final String[] darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
-//        // The apps theme is decided depending upon the saved preferences on app startup
-//        String pref = PreferenceManager.getDefaultSharedPreferences(this)
-//                .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
-//        // Comparing to see which preference is selected and applying those theme settings
-//        if (pref.equals(darkModeValues[0])){
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
-//        else if (pref.equals(darkModeValues[1])){
-//
-//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
 
-        classSharedPreferences = new ClassSharedPreferences(this);
-//        serverApi = new ServerApi(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
 
         myBase = BaseApp.getInstance();
@@ -78,19 +70,13 @@ public class SplashScreen extends AppCompatActivity {
 
         authRepo = myBase.getAuthRepo();
 
-
-
-//
-
-
-        sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
-        text = findViewById(R.id.text);
-        text.setTextSize(textSize);
-        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+       text = findViewById(R.id.text);
 
         powerd = findViewById(R.id.powerd);
-        powerd.setTextSize(textSize);
-        powerd.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+
+        splachActViewModel = new ViewModelProvider(this).get(SplachActViewModel.class);
+
+
 
 
 
@@ -115,11 +101,10 @@ public class SplashScreen extends AppCompatActivity {
                     finish();
                         }
                 else {
-                    authRepo.getspecialNumbers(classSharedPreferences.getVerficationNumber());
-                    authRepo.jsonObjectMutableLiveData.observe(SplashScreen.this ,new androidx.lifecycle.Observer<JSONObject>() {
+//                    authRepo.getspecialNumbers(classSharedPreferences.getVerficationNumber());
+                    splachActViewModel.getSpecialNumber(classSharedPreferences.getVerficationNumber()).observe(SplashScreen.this ,new androidx.lifecycle.Observer<JSONObject>() {
                         @Override
                         public void onChanged(JSONObject jsonObject) {
-                            Log.d("getUserrr", "all not null ");
 
                             if(jsonObject!=null) {
                                 Log.d("getUserrr", "onChanged: "+jsonObject);
@@ -166,6 +151,37 @@ public class SplashScreen extends AppCompatActivity {
                                     startActivity(intent);
                                     finish();
 
+                                }
+                            }
+                        }
+                    });
+
+
+                    splachActViewModel.getLoading().observe(SplashScreen.this, new androidx.lifecycle.Observer<Boolean>() {
+                        @Override
+                        public void onChanged(Boolean aBoolean) {
+                            if (aBoolean!=null) {
+                                if (aBoolean) {
+                                    System.out.println("boleannnn");
+                                    progressDialog = new ProgressDialog(SplashScreen.this);
+                                    progressDialog.setMessage(getResources().getString(R.string.prograss_message));
+                                    progressDialog.show();
+                                } else {
+                                    if(progressDialog!=null){
+                                        progressDialog.dismiss();
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    splachActViewModel.getErrorMessage().observe(SplashScreen.this, new androidx.lifecycle.Observer<Boolean>() {
+                        @Override
+                        public void onChanged(Boolean aBoolean) {
+                            if (aBoolean!=null) {
+                                if (aBoolean) {
+                                    Toast.makeText(SplashScreen.this, R.string.internet_message, Toast.LENGTH_LONG).show();
+                                    splachActViewModel.setErrorMessage(null);
                                 }
                             }
                         }

@@ -36,6 +36,7 @@ import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.ChatRoomFragment;
+import com.yawar.memo.utils.BaseApp;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -59,28 +60,24 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private GoogleSignInOptions gso;
     String idToken;
     ClassSharedPreferences classSharedPreferences;
-    float textSize = 14.0F ;
-    SharedPreferences sharedPreferences ;
+//    float textSize = 14.0F ;
+//    SharedPreferences sharedPreferences ;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
         super.onCreate(savedInstanceState);
         CallProperty.setStatusBarOrScreenStatus(this);
 
         setContentView(R.layout.activity_login);
 
-        sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
         text = findViewById(R.id.text);
-        text.setTextSize(textSize);
-        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        classSharedPreferences= new ClassSharedPreferences(this);
+        classSharedPreferences= BaseApp.getInstance().getClassSharedPreferences();
         firebaseAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener(){
             @Override
@@ -137,7 +134,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     String code = ccp.getSelectedCountryCode();
 
                     String phone = "+"+code+ edtPhone.getText().toString();
-                    System.out.println(phone+"phoneeeeeeeeeeee");
                     classSharedPreferences.setNumber(phone);
 
                     AuthApi authApi = new AuthApi(LoginActivity.this);
@@ -164,7 +160,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             GoogleSignInAccount account = result.getSignInAccount();
             idToken = account.getIdToken();
             name = account.getDisplayName();
-            System.out.println(name+"mmmmmmmmmmmmmmmmmmmmmm");
             email = account.getEmail();
             classSharedPreferences.setName(name);
             // you can store user data to SharedPreference

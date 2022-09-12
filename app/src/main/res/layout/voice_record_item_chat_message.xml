@@ -151,7 +151,7 @@
                     android:textStyle="bold"
                     android:maxWidth="240dp"
                     android:text="11:45 Am"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:textSize="11sp" />
 
                 <ImageView

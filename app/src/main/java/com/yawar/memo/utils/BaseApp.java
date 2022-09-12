@@ -29,6 +29,7 @@ import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.repositry.RequestCallRepo;
 import com.yawar.memo.repositry.UserInformationRepo;
+import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 
 public class BaseApp extends Application implements LifecycleObserver {
@@ -54,15 +55,17 @@ public class BaseApp extends Application implements LifecycleObserver {
 
 
 
+
     @Override
     public void onCreate() {
+        System.out.println("onCreateeeeeeee");
         super.onCreate();
         setMode();
 
         sInstance = this;
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-        classSharedPreferences = new ClassSharedPreferences(this);
     }
+
 
      public  String isActivityVisible(){
          return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().name();
@@ -82,7 +85,7 @@ public class BaseApp extends Application implements LifecycleObserver {
 
     @Override
     public void onTrimMemory(int level) {
-        System.out.println("onTrimMemory");
+        System.out.println("onTrimMemory BaseApp");
 
         super.onTrimMemory(level);
     }
@@ -172,6 +175,13 @@ public class BaseApp extends Application implements LifecycleObserver {
         }
         return chatMessageRepo;
     }
+
+    public ClassSharedPreferences getClassSharedPreferences() {
+        if(classSharedPreferences== null){
+            classSharedPreferences = new ClassSharedPreferences(this);
+        }
+        return classSharedPreferences;
+    }
     public void setPeerId(String peer_id) {
         if(peerId== null){
             this.peerId = peer_id;
@@ -212,13 +222,11 @@ public class BaseApp extends Application implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onMoveToForeground() {
 
-//        System.out.println("on move to Forgroundgroundddddddddd");
-//        Intent service = new Intent(this, SocketIOService.class);
-//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
-//        this.startService(service);
-//            Intent service = new Intent(this, SocketIOService.class);
-//            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
-//            this.startService(service);
+        if(classSharedPreferences.getUser()!=null){
+        Intent service = new Intent(this, SocketIOService.class);
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
+        this.startService(service);}
+
 
 //        notifyAll();
 
@@ -228,16 +236,18 @@ public class BaseApp extends Application implements LifecycleObserver {
     @SuppressLint("CheckResult")
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onMoveToBackground() {
-//        System.out.println("on move background");
-//        Intent service = new Intent(this, SocketIOService.class);
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
-//                startService(service);
-//            }
-//        }, 100000);
+        if(classSharedPreferences.getUser()!=null) {
+            System.out.println("on Move to bacground");
+            Intent service = new Intent(this, SocketIOService.class);
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
+                    startService(service);
+                }
+            }, 30000);
+        }
 
 
 

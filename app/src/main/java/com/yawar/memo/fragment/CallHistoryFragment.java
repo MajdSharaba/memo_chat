@@ -24,6 +24,7 @@ import com.yawar.memo.model.SearchRespone;
 import com.yawar.memo.modelView.CallHistoryModelView;
 import com.yawar.memo.modelView.ChatRoomViewModel;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.utils.BaseApp;
 
 import java.util.ArrayList;
 
@@ -50,7 +51,7 @@ CallHistoryModelView callHistoryModelView;
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
-        classSharedPreferences = new ClassSharedPreferences(getActivity());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         itemAdapter = new CallAdapter( getActivity());
 
         callHistoryModelView = new ViewModelProvider(this).get(CallHistoryModelView.class);

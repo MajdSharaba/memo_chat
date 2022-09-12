@@ -27,6 +27,7 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ChatRoomFragment;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.views.ConversationActivity;
@@ -75,7 +76,7 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
             //.. should log the error or throw and exception
         }
         listsearch.addAll(getCurrentList());
-        classSharedPreferences = new ClassSharedPreferences(context.getActivity());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
     }
 
     @NonNull

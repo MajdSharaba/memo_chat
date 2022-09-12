@@ -42,9 +42,10 @@ import java.util.Map;
 public class ServerApi {
     Activity context;
     ProgressDialog progressDialog;
-    ClassSharedPreferences classSharedPreferences;
     BaseApp myBase =BaseApp.getInstance() ;
-      boolean isArchived ;
+    ClassSharedPreferences classSharedPreferences = myBase.getClassSharedPreferences();
+
+    boolean isArchived ;
      boolean isResponeSucess;
 //    ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
 //    BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
@@ -60,7 +61,7 @@ public class ServerApi {
 
    /// public void register(String firstName, String lastName, String email, String imageString) {
    public void register() {
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
         System.out.println( classSharedPreferences.getVerficationNumber()+"classSharedPreferences.getVerficationNumber()");
         // url to post our data
         String url = AllConstants.base_url+"APIS/signup.php";
@@ -118,7 +119,7 @@ public class ServerApi {
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////c
 
     public void CompleteRegister(String firstName, String lastName, String email, String imageString,String secretNumber,String userId) {
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
         // url to post our data
         String url = AllConstants.base_url+"APIS/completesignup.php";
         progressDialog = new ProgressDialog(context);
@@ -202,7 +203,7 @@ public class ServerApi {
     }
     //////////////////////////////////
     public void updateProfile(String firstName, String lastName, String status, String imageString,String userId) {
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
         // url to post our data
         String url = AllConstants.base_url+"APIS/updateprofile.php";
         progressDialog = new ProgressDialog(context);
@@ -377,7 +378,7 @@ public class ServerApi {
     public void sendContactNumber(ArrayList<ContactModel> arrayList) {
         ArrayList<SendContactNumberResponse> sendContactNumberResponses = new ArrayList<SendContactNumberResponse>();
         System.out.println(arrayList.size()+"sizeeeeeeeeee");
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
         myBase = BaseApp.getInstance();
         String myId = classSharedPreferences.getUser().getUserId();
 
@@ -459,7 +460,7 @@ public class ServerApi {
         myBase.addToRequestQueue(request);
     }
     public void sendNotification(String message,String fcmToken,String chat_id) {
-        ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(context);
+//        ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(context);
 
         try {
             RequestQueue queue = Volley.newRequestQueue(context);
@@ -505,7 +506,7 @@ public class ServerApi {
     }
     public boolean getChatRoom() {
         List<ChatRoomModel> postList = new ArrayList<>();
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
 
 
         ProgressDialog progressDialog = new ProgressDialog(context);
@@ -639,7 +640,7 @@ public class ServerApi {
         System.out.println("block User");
 
 
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
         BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
 
 
@@ -814,7 +815,7 @@ public class ServerApi {
     }
     public void deleteAccount() {
         ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
         BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
 
         final ProgressDialog progressDialo = new ProgressDialog(context);
@@ -881,7 +882,7 @@ public class ServerApi {
         queue.add(request);
     }
     public void sendNotification(String message, String type,String fcmToken, String chat_id, String blockedFor) {
-        classSharedPreferences = new ClassSharedPreferences(context);
+//        classSharedPreferences = new ClassSharedPreferences(context);
 
 
         try {

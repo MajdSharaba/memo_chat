@@ -90,7 +90,7 @@ public class FirebaseMessageReceiver
         chatRoomRepo=myBase.getChatRoomRepo();
 //        myBase.getObserver().addObserver(this);
         String message = "";
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         Map<String, String> data = remoteMessage.getData();
         String myCustomKey = data.get("body");
         // First case when notifications are received via

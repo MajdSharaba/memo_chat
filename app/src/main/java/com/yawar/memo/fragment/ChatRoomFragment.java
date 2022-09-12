@@ -41,6 +41,7 @@ import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
 import com.tsuryo.swipeablerv.SwipeableRecyclerView;
 import com.yawar.memo.Api.ServerApi;
 //import com.yawar.memo.call.CompleteActivity;
+import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ChatRoomViewModel;
@@ -104,28 +105,17 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_chat_room, container, false);
+
 
         myBase = BaseApp.getInstance();
 
-        classSharedPreferences = new ClassSharedPreferences(getContext());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
         myId = classSharedPreferences.getUser().getUserId();
 
 
-
-        ////////////for toolbar
-        toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle("");
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-        activity.setSupportActionBar(toolbar);
-
-
-
-
-
-//        };
         linerArchived = view.findViewById(R.id.liner_archived);
         lineerNoMessage = view.findViewById(R.id.liner_no_chat);
         startNewChat =  view.findViewById(R.id.btn_start_chat);
@@ -182,6 +172,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
                         for (ChatRoomModel chatRoomModel : chatRoomModels) {
                             if (chatRoomModel.getState() == null) {
+                                System.out.println(chatRoomModel.username+"username"+myId);
                                 list.add(chatRoomModel.clone());
                                 postList.add(chatRoomModel);
                             } else if (!chatRoomModel.getState().equals("0") && !chatRoomModel.getState().equals(myId)) {

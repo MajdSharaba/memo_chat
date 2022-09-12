@@ -90,20 +90,19 @@
                 android:layout_height="41dp"
                 android:src="@drawable/th"
                 app:civ_border_color="@color/textColor"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
                 app:civ_border_width="2dp" />
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="3"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:gravity="center_vertical"
-                android:layout_weight="0.5"
                 android:text="@string/name"
                 android:textSize="17sp"
                 android:textColor="@color/white"
@@ -114,11 +113,10 @@
 
                         android:id="@+id/state"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
-                        android:layout_weight="0.5"
+                        android:layout_height="wrap_content"
                         android:visibility="gone"
+                        android:layout_marginStart="15dp"
                         android:text="@string/state"
-                        android:layout_marginStart="10dp"
                         android:layout_marginTop="5dp"
                         android:textSize="13sp"
                         android:textColor="@color/white"
@@ -145,7 +143,7 @@
                     android:id="@+id/audio_call"
                     android:layout_width="0dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="2dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_weight="0.5"
                     android:layout_gravity="center"
                     android:layout_height="wrap_content"
@@ -369,7 +367,7 @@
             android:id="@+id/liner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/green_500"
+            android:background="@color/background_bottom_navigation"
             android:layout_alignParentBottom="true"
             android:visibility="visible"
             android:orientation="horizontal">
@@ -395,7 +393,7 @@
 
         <EditText
             android:id="@+id/messageEdit"
-            android:background="@drawable/et_custom"
+            android:background="@drawable/background_conversition_edit_text"
             android:layout_width="0dp"
             android:layout_weight="2"
             android:padding="5dp"
@@ -440,7 +438,7 @@
                 android:layout_weight=".2"
                 android:background="@null"
                 android:scaleType="center"
-                android:tint="@color/memo_background_color"
+                android:tint="@color/icon_converstion_color"
                 app:mic_icon="@drawable/ic_mic" />
 
         </LinearLayout>

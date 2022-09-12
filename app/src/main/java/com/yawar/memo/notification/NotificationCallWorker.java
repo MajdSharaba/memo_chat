@@ -307,7 +307,7 @@ public class NotificationCallWorker extends Worker {
     }
     public void isRining(String yout_id,Context context) {
         BaseApp myBase = BaseApp.getInstance();
-        ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(context);
+        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
         // creating a new variable for our request queue
         RequestQueue queue = Volley.newRequestQueue(context);

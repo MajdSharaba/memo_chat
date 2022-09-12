@@ -18,6 +18,9 @@ public class UserInformationViewModel extends ViewModel {
     BaseApp baseApp = BaseApp.getInstance();
     private final UserInformationRepo repository = baseApp.getUserInformationRepo();
     private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
+    public MutableLiveData<String> state ;
+    private String lastSeen;
+
 
 
 
@@ -28,6 +31,7 @@ public class UserInformationViewModel extends ViewModel {
 
     public UserInformationViewModel() {
         isBlocked = new MutableLiveData<>(null);
+        state = new MutableLiveData<>(null);
 
     }
 
@@ -65,10 +69,17 @@ public class UserInformationViewModel extends ViewModel {
         return  repository.mediaModelsMutableLiveData;
     }
 
+    public void set_state(String _state) {
+        System.out.println("stateTooles"+_state);
+        state.setValue(_state);
+    }
 
 
+    public String getLastSeen() {
+        return lastSeen;
+    }
 
-
-
-
+    public void setLastSeen(String lastSeen) {
+        this.lastSeen = lastSeen;
+    }
 }

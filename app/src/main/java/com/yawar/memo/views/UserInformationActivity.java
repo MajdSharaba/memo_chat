@@ -3,13 +3,16 @@ package com.yawar.memo.views;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -34,6 +37,7 @@ import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
+import com.yawar.memo.utils.TimeProperties;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +55,9 @@ public class UserInformationActivity extends AppCompatActivity {
     LinearLayout linerMore, linerAudioCall,linerVideoCall;
     TextView txtUserName;
     TextView txtSpecialNumber;
+    TextView txtState;
+    TimeProperties timeProperties;
+
     BlockUserRepo blockUserRepo;
     UserInformationViewModel userInformationViewModel;
     TextView call;
@@ -76,9 +83,37 @@ public class UserInformationActivity extends AppCompatActivity {
     String blockedFor;
     boolean isBlockForMe = false;
     ImageView imageVideoCall, imageAudioCall, imageMore, imageChat;
+    public static final String CHEK = "ConversationActivity.CHECK_CONNECT";
 
-    float textSize = 14.0F ;
-    SharedPreferences sharedPreferences ;
+
+//    float textSize = 14.0F ;
+//    SharedPreferences sharedPreferences ;
+
+
+    private final BroadcastReceiver check = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String check = intent.getExtras().getString("check");
+            JSONObject checkObject = null;
+            String checkConnect = "false";
+            String user_id;
+
+            try {
+
+                checkObject = new JSONObject(check);
+                user_id = checkObject.getString("user_id");
+                if(user_id.equals(another_user_id)) {
+                    checkConnect = checkObject.getString("is_connect");
+                    userInformationViewModel.setLastSeen(checkObject.getString("last_seen"));
+                    userInformationViewModel.set_state(checkConnect);
+                }
+                } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+    };
     private void sendBlockFor(Boolean blocked) {
 
         JSONObject userBlocked = new JSONObject();
@@ -90,7 +125,6 @@ public class UserInformationActivity extends AppCompatActivity {
             userBlocked.put("my_id", my_id);
             userBlocked.put("user_id",another_user_id );
             userBlocked.put("blocked_for",userInformationViewModel.blockedFor().getValue());
-//"item :blockedFor,Block"
             userBlocked.put("userDoBlockName",classSharedPreferences.getUser().getUserName());
             userBlocked.put("userDoBlockSpecialNumber",classSharedPreferences.getUser().getSecretNumber());
             userBlocked.put("userDoBlockImage",classSharedPreferences.getUser().getImage());
@@ -100,8 +134,6 @@ public class UserInformationActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         Intent service = new Intent(this, SocketIOService.class);
-
-
         service.putExtra(SocketIOService.EXTRA_BLOCK_PARAMTERS, userBlocked.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_BLOCK);
         startService(service);
@@ -130,6 +162,21 @@ public class UserInformationActivity extends AppCompatActivity {
 
 
     }
+    private void checkConnect() {
+        Intent service = new Intent(this, SocketIOService.class);
+        JSONObject object = new JSONObject();
+        try {
+            object.put("my_id", my_id);
+            object.put("your_id", another_user_id);
+//            socket.emit("check connect", object);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        service.putExtra(SocketIOService.EXTRA_CHECK_CONNECT_PARAMTERS, object.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_CHECK_CONNECT);
+        startService(service);
+    }
 
 
     @Override
@@ -138,13 +185,8 @@ public class UserInformationActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_user_information);
-
-        
+        LocalBroadcastManager.getInstance(this).registerReceiver(check, new IntentFilter(CHEK));
         recyclerView = findViewById(R.id.idCourseRV);
-
-
-        sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
-
          adapter = new MediaAdapter(recyclerDataArrayList, this);
 
 
@@ -162,8 +204,10 @@ public class UserInformationActivity extends AppCompatActivity {
 
 
     private void initViews() {
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         userInformationViewModel = new ViewModelProvider(this).get(UserInformationViewModel.class);
+        timeProperties = new TimeProperties();
+
 
         myBase = BaseApp.getInstance();
         chatRoomRepo = myBase.getChatRoomRepo();
@@ -177,7 +221,31 @@ public class UserInformationActivity extends AppCompatActivity {
         imageUrl = bundle.getString("image", "Default");
         blockedFor = bundle.getString("blockedFor","");
         my_id = classSharedPreferences.getUser().getUserId();
+        checkConnect();
         userInformationViewModel.setBlockedFor(blockedFor);
+        txtState = findViewById(R.id.last_seen);
+        userInformationViewModel.state.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                System.out.println("stateee"+s);
+                if(s!=null){
+                    if (s.equals("true")) {
+//                        isCoonect = true;
+                        System.out.println("dialay"+s);
+                        txtState.setText(R.string.connect_now);
+                    } else if (s.equals("false")) {
+//                        isCoonect = false;
+
+                        if (!userInformationViewModel.getLastSeen().equals("null")) {
+                            txtState.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(UserInformationActivity.this, Long.parseLong(userInformationViewModel.getLastSeen())));
+                        }
+
+
+                    }
+
+                }
+            }
+        });
 
         userInformationViewModel.getMedia().observe(this, new androidx.lifecycle.Observer<ArrayList<MediaModel>>() {
                     @Override
@@ -194,6 +262,7 @@ public class UserInformationActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
                 });
+
 
 
 //////////////////////////
@@ -283,32 +352,32 @@ public class UserInformationActivity extends AppCompatActivity {
 
         circleImageView = findViewById(R.id.imageView);
         txtUserName = findViewById(R.id.txt_user_name);
-        txtUserName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        txtUserName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         txtSpecialNumber = findViewById(R.id.txt_special_number);
-        txtSpecialNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        txtSpecialNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         call = findViewById(R.id.call);
-        call.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        call.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         video = findViewById(R.id.video);
-        video.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        video.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         message = findViewById(R.id.message);
-        message.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        message.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         mute = findViewById(R.id.mute);
-        mute.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        mute.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
         more = findViewById(R.id.more);
-        more.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        more.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         special_number = findViewById(R.id.special_number);
-        special_number.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        special_number.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         media = findViewById(R.id.media);
-        media.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        media.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 
@@ -483,7 +552,10 @@ public class UserInformationActivity extends AppCompatActivity {
         p.show();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(check);
 
-
-
+    }
 }

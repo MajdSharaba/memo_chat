@@ -45,30 +45,21 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.RecyclerView
         if(!recyclerData.getImgid().isEmpty()){
 //        Glide.with( holder.courseIV.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().error(mcontext.getResources().getDrawable(R.drawable.th))
 //                .into(holder.courseIV);
-            Glide.with(holder.courseIV.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.courseIV);
+            Glide.with(holder.courseIV.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().apply(RequestOptions.placeholderOf(R.color.black).error(R.color.black)).into(holder.courseIV);
 
             holder.courseIV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                        androidx.appcompat.app.AlertDialog.Builder mBuilder = new androidx.appcompat.app.AlertDialog.Builder(view.getContext());
-//                        View mView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_image_cht, null);
-//                        ImageView photoView =  mView.findViewById(R.id.photo_view);
-////                        Glide.with(photoView.getContext()).load("https://th.bing.com/th/id/OIP.DP48uGkldTg01Wx5KTExXAHaE6?pid=ImgDet&rs=1").into(photoView);
-//                        photoView.setImageResource(R.drawable.ic_send_done);
-//                        mBuilder.setView(mView);
-////                        androidx.appcompat.app.AlertDialog mDialog = mBuilder.create();
-//                        mBuilder.show();
+
                     Dialog dialog = new Dialog(mcontext);
                     dialog.setContentView(R.layout.dialog_image_cht);
                     dialog.setTitle("Title...");
 
-                    // set the custom dialog components - text, image and button
                     dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
 
 
                     PhotoView image = dialog.findViewById(R.id.photo_view);
-//                    Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().into(image);
-                    Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(image);
+                    Glide.with(image.getContext()).load(AllConstants.imageUrlInConversation+recyclerData.getImgid()).centerCrop().apply(RequestOptions.placeholderOf(R.color.black).error(R.color.black)).into(image);
 
                     dialog.show();
 

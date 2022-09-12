@@ -22,6 +22,7 @@ import com.yawar.memo.R;
 import com.yawar.memo.adapter.DeviceLinkAdapter;
 import com.yawar.memo.model.DeviceLinkModel;
 import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -154,7 +155,7 @@ public class DevicesLinkActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(recivecheckQr, new IntentFilter(SCAN_QR));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveGetQr, new IntentFilter(GET_QR));
 
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         myId=classSharedPreferences.getUser().getUserId();
         recyclerView = findViewById(R.id.recycler_view);
 //        deviceLinkModels.add(new DeviceLinkModel("chrome",""));

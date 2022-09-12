@@ -33,8 +33,8 @@ public class ContactNumberAdapter extends RecyclerView.Adapter<ContactNumberAdap
     List<SendContactNumberResponse> listsearch2= new ArrayList<SendContactNumberResponse>();
     public ContactNumberAdapter.CallbackInterface mCallback;
 
-    float textSize = 14.0F ;
-    SharedPreferences sharedPreferences ;
+//    float textSize = 14.0F ;
+//    SharedPreferences sharedPreferences ;
 
 
     public interface CallbackInterface {
@@ -70,7 +70,7 @@ public class ContactNumberAdapter extends RecyclerView.Adapter<ContactNumberAdap
         ///Initialize view
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_contact_number,parent,false);
 
-        sharedPreferences = activity.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//        sharedPreferences = activity.getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
 
         return new ViewHolder(view);
@@ -154,13 +154,13 @@ public class ContactNumberAdapter extends RecyclerView.Adapter<ContactNumberAdap
             super(itemView);
             ////Assign variable
             tvName = itemView.findViewById(R.id.tv_name);
-            tvName.setTextSize(textSize);
-            tvName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//            tvName.setTextSize(textSize);
+//            tvName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
             tvNumber = itemView.findViewById(R.id.tv_number);
-            tvNumber.setTextSize(textSize);
-            tvNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//            tvNumber.setTextSize(textSize);
+//            tvNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
             imageView = itemView.findViewById(R.id.iv_image);
             button = itemView.findViewById(R.id.btn_share);

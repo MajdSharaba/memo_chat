@@ -72,7 +72,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
         if (supportActionBar != null)
             supportActionBar.setDisplayHomeAsUpEnabled(true);
 
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         myBase=BaseApp.getInstance();
         blockedActViewModel = new ViewModelProvider(this).get(BlockedActViewModel.class);
 

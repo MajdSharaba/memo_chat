@@ -88,7 +88,7 @@ public class NotificationWorker extends Worker {
     @NonNull
     @Override
     public Worker.Result doWork() {
-        classSharedPreferences = new ClassSharedPreferences(getApplicationContext());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
         ArrayList<String> arrayList = new ArrayList<String>();

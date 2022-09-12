@@ -51,6 +51,7 @@ import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.service.SocketIOService;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -770,7 +771,7 @@ public class RequestCallActivity extends AppCompatActivity {
         imgBtnOpenAudioCallLp = findViewById(R.id.image_audio_call_layout);
         imgBtnSwitchCamera = findViewById(R.id.image_switch_camera);
         imgBtnSwitchMic = findViewById(R.id.image_switch_mic);
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         my_id = classSharedPreferences.getUser().getUserId();
         userModel = classSharedPreferences.getUser();
         dialogForMe = new AlertDialog.Builder(this);

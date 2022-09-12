@@ -41,8 +41,8 @@
 
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/imageView"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
+                        android:layout_width="130dp"
+                        android:layout_height="130dp"
                         android:layout_gravity="center"
                         android:src="@drawable/circle"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -50,36 +50,22 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:riv_corner_radius="50sp" />
 
-<!--                    <TextView-->
-<!--                        android:id="@+id/name"-->
-<!--                        android:layout_width="match_parent"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:foregroundGravity="center"-->
-<!--                        android:gravity="center"-->
-<!--                        android:text="name"-->
-<!--                        android:textSize="17dp"-->
-<!--                        android:textColor="@color/white"-->
-<!--                        app:layout_constraintBottom_toBottomOf="@+id/imageView"-->
-<!--                        app:layout_constraintEnd_toEndOf="@+id/imageView"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/imageView"-->
-<!--                        app:layout_constraintTop_toTopOf="@+id/imageView" />-->
+
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <TextView
                     android:id="@+id/username"
-                    android:layout_marginTop="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/user_name"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:textStyle="bold"
-                    android:textSize="20dp"
-                    android:textColor="@color/textColor"
+                    android:layout_marginTop="5dp"
                     android:fontFamily="@font/font"
-                    />
+                    android:gravity="center"
+                    android:text="@string/user_name"
+                    android:textColor="@color/textColor"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
                 <TextView
                     android:id="@+id/phoneNumber"
                     android:layout_width="match_parent"
@@ -87,9 +73,10 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:textStyle="bold"
-                    android:textSize="18dp"
-                    android:layout_marginBottom="10dp"
+                    android:textSize="16sp"
                     android:fontFamily="@font/font"
+                    android:layout_marginBottom="10dp"
+                    android:textColor="@color/textColor"
                     />
                 <TextView
                     android:id="@+id/selectImage"
@@ -97,13 +84,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:gravity="start"
-                    android:layout_marginStart="5dp"
+                    android:layout_marginStart="10dp"
                     android:layout_marginBottom="10dp"
                     android:drawableStart="@drawable/ic_addphoto"
                     android:drawablePadding="5dp"
                     android:text="@string/set_photo"
                     android:textColor="@color/textColor"
-                    android:textSize="18dp"
+                    android:fontFamily="@font/font"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -113,16 +101,15 @@
                     android:text="@string/set_user_name"
                     android:layout_gravity="end"
                     android:gravity="start"
-                    android:drawableStart="@drawable/ic_add"
-                    android:drawableTint="@color/green"
+                    android:drawableTint="@color/memo_background_color_new"
                     android:layout_marginStart="5dp"
                     android:drawablePadding="5dp"
                     android:textColor="@color/textColor"
                     android:textStyle="bold"
-                    android:textSize="18dp"
+                    android:textSize="16sp"
                     android:layout_marginBottom="10dp"
                     android:fontFamily="@font/font"
-                    />
+                    app:drawableStartCompat="@drawable/ic_add" />
 
 
             </LinearLayout>
@@ -172,7 +159,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/devices"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:gravity="start"
                             android:textColor="@color/textColor"
                             />
@@ -216,7 +205,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/recent_call"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -259,7 +250,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/notification_sounds"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -302,7 +295,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/appearance"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -344,7 +339,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/language"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -389,7 +386,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/font_size"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -433,7 +432,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/contact_number_blocked"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -477,7 +478,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/tell_friend"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -518,7 +521,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/delete_account"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 
@@ -563,7 +568,9 @@
                             android:layout_height="wrap_content"
                             android:text="@string/logout"
                             android:layout_marginStart="10dp"
-                            android:textSize="16dp"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            android:fontFamily="@font/font"
                             android:textColor="@color/textColor"
                             />
 

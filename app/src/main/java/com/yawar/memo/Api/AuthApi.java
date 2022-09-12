@@ -24,6 +24,7 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.VerificationActivity;
 
+import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.TimeUnit;
@@ -54,7 +55,7 @@ public class AuthApi implements Observer {
     private void signInWithCredential(PhoneAuthCredential credential) {
         serverApi = new  ServerApi(context);
 
-        ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(context);
+        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
         // inside this method we are checking if
         // the code entered is correct or not.
@@ -75,7 +76,7 @@ public class AuthApi implements Observer {
                             // if the code is not correct then we are
                             // displaying an error message to the user.
                             progressDialog.dismiss();
-                            Toast.makeText(context, task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(context, Objects.requireNonNull(task.getException()).getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -83,6 +84,7 @@ public class AuthApi implements Observer {
     public void sendVerificationCode(String number,Activity activity) {
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
+        progressDialog.setCancelable(false);
         progressDialog.show();
         // this method is used for getting
         // OTP on user phone number.

@@ -16,6 +16,8 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import javax.inject.Singleton;
+
 public class ClassSharedPreferences {
     Context context;
 

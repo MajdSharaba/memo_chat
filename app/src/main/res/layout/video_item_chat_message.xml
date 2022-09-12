@@ -108,7 +108,7 @@
                     android:layout_width="15dp"
                     android:layout_height="15dp"
                     android:layout_gravity="end"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:visibility="gone" />
                             </LinearLayout>
 

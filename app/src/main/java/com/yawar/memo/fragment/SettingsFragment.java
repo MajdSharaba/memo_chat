@@ -39,6 +39,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -107,9 +108,9 @@ public class SettingsFragment extends Fragment {
     CardView logOut;
     TextView hel ;
     int progressNew = 0 ;
-    float textSize = 14.0F ;
+//    float textSize = 14.0F ;
     UserModel userModel;
-    SharedPreferences sharedPreferences ;
+//    SharedPreferences sharedPreferences ;
     ClassSharedPreferences classSharedPreferences;
     String imageString = "";
     String firstName = "";
@@ -125,10 +126,11 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+//        CallProperty.setStatusBarOrScreenStatus(getActivity());
         currentLanguage = getActivity().getIntent().getStringExtra(currentLang);
 
-        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
-        classSharedPreferences = new ClassSharedPreferences(getContext());
+//        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
         userModel = classSharedPreferences.getUser();
         serverApi = new ServerApi(getActivity());
@@ -155,13 +157,13 @@ public class SettingsFragment extends Fragment {
 //
 
         userName = view.findViewById(R.id.username);
-        userName.setTextSize(textSize);
+//        userName.setTextSize(textSize);
         userName.setText(userModel.getUserName()+" "+userModel.getLastName());
-        userName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        userName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         phoneNumber = view.findViewById(R.id.phoneNumber);
-        phoneNumber.setTextSize(textSize);
-        phoneNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        phoneNumber.setTextSize(textSize);
+//        phoneNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
         String firstString = userModel.getSecretNumber().substring(0,1);
         String secondString = userModel.getSecretNumber().substring(1,4);
         String thirtyString =  userModel.getSecretNumber().substring(4,7);
@@ -171,62 +173,62 @@ public class SettingsFragment extends Fragment {
 
 
         setPhoto = view.findViewById(R.id.selectImage);
-        setPhoto.setTextSize(textSize);
-        setPhoto.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        setPhoto.setTextSize(textSize);
+//        setPhoto.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         setUserName = view.findViewById(R.id.setUserName);
-        setUserName.setTextSize(textSize);
-        setUserName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        setUserName.setTextSize(textSize);
+//        setUserName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         devises = view.findViewById(R.id.devices);
         dev = view.findViewById(R.id.dev);
-        dev.setTextSize(textSize);
-        dev.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        dev.setTextSize(textSize);
+//        dev.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         recentCalls = view.findViewById(R.id.recentCalls);
         recentCall = view.findViewById(R.id.recentCall);
-        recentCall.setTextSize(textSize);
-        recentCall.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        recentCall.setTextSize(textSize);
+//        recentCall.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         notificationAndSounds = view.findViewById(R.id.notificationAndSound);
         notificationAnd = view.findViewById(R.id.notificationAnd);
-        notificationAnd.setTextSize(textSize);
-        notificationAnd.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        notificationAnd.setTextSize(textSize);
+//        notificationAnd.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         appearance = view.findViewById(R.id.Appearance);
         Appearanc = view.findViewById(R.id.Appearanc);
-        Appearanc.setTextSize(textSize);
-        Appearanc.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        Appearanc.setTextSize(textSize);
+//        Appearanc.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         language = view.findViewById(R.id.language);
         languag = view.findViewById(R.id.languag);
-        languag.setTextSize(textSize);
-        languag.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        languag.setTextSize(textSize);
+//        languag.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         fontSize = view.findViewById(R.id.fontSize);
         fontSiz = view.findViewById(R.id.fontSiz);
-        fontSiz.setTextSize(textSize);
-        fontSiz.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        fontSiz.setTextSize(textSize);
+//        fontSiz.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         blockList = view.findViewById(R.id.contact_number_blocked);
         askMemoQuesti = view.findViewById(R.id.askMemoQuesti);
-        askMemoQuesti.setTextSize(textSize);
-        askMemoQuesti.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        askMemoQuesti.setTextSize(textSize);
+//        askMemoQuesti.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         deleteAccount = view.findViewById(R.id.delete_accont);
         preferene = view.findViewById(R.id.preferene);
-        preferene.setTextSize(textSize);
-        preferene.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        preferene.setTextSize(textSize);
+//        preferene.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         tellafriend = view.findViewById(R.id.tellAFriend);
         tellafri = view.findViewById(R.id.tellafri);
-        tellafri.setTextSize(textSize);
-        tellafri.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        tellafri.setTextSize(textSize);
+//        tellafri.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         logOut = view.findViewById(R.id.log_out);
         hel = view.findViewById(R.id.hel);
-        hel.setTextSize(textSize);
-        hel.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//        hel.setTextSize(textSize);
+//        hel.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         getOnClick();
     }

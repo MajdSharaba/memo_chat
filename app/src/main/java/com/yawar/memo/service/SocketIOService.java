@@ -155,7 +155,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private boolean mTyping;
     private Queue<Message> chatQueue;
     String my_id;
-    BlockUserRepo blockUserRepo;
+//    BlockUserRepo blockUserRepo;
      ClassSharedPreferences classSharedPreferences;
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
@@ -210,7 +210,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         IOOption = new IO.Options();
 //        IOOption.query = "public_key=" + new SessionManager(getApplicationContext()).getPublicKey();
         chatQueue = new LinkedList<>();
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 //        if(!(classSharedPreferences.getUser() ==null)){
 //        my_id = classSharedPreferences.getUser().getUserId();}
         listenersMap = new ConcurrentHashMap<>();
@@ -222,7 +222,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mServiceLooper = thread.getLooper();
         mServiceHandler = new ServiceHandler(mServiceLooper);
         myBase = (BaseApp) getApplication();
-        blockUserRepo = myBase.getBlockUserRepo();
+//        blockUserRepo = myBase.getBlockUserRepo();
 //        myBase.getObserver().addObserver(this);
 
 
@@ -895,15 +895,13 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public void onDestroy() {
         super.onDestroy();
 
-//        System.out.println("destroyyyyyyyyyyyyyyyy");
         mSocket.disconnect();
         mSocket.close();
         heartBeat.stop();
         for (Map.Entry<String, SocketEventListener> entry : listenersMap.entrySet()) {
             mSocket.off(entry.getKey(), entry.getValue());
         }
-        Log.i(TAG, "onDestroy: ");
-//        stopService(getSystemService("name"));
+        Log.i(TAG, "onDestroyeeeeee: ");
 
 
     }

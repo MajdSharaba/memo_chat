@@ -26,14 +26,14 @@
             android:layout_weight="2"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
-            app:tint="@color/green"
+            app:tint="@color/memo_background_color_new"
             android:src="@drawable/ic_call" />
         <ImageButton
             android:id="@+id/btimg_chat"
             android:layout_width="0dp"
             android:layout_weight="2"
             android:background="?android:attr/actionBarItemBackground"
-            app:tint="@color/green"
+            app:tint="@color/memo_background_color_new"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:src="@drawable/ic_message" />
@@ -43,7 +43,7 @@
         android:layout_width="0dp"
         android:layout_weight="2"
         android:layout_height="wrap_content"
-           app:tint="@color/green"
+           app:tint="@color/memo_background_color_new"
         android:layout_margin="@dimen/activity_horizontal_margin"
            android:background="?android:attr/actionBarItemBackground"
 
