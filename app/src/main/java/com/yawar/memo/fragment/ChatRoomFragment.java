@@ -98,7 +98,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     FloatingActionButton fab;
 
     TextView chat ;
-    SharedPreferences sharedPreferences ;
+//    SharedPreferences sharedPreferences ;
 
 
     @Override
@@ -257,7 +257,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 /////// for Bottom nav
 
 
-        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
         chat = view.findViewById(R.id.chat);
 

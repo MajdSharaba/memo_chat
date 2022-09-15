@@ -49,14 +49,12 @@ public class IntroActModelView extends ViewModel {
     public final MutableLiveData<ArrayList<UserModel>> userBlockListMutableLiveData= new MutableLiveData<>();
 
 
-//    public IntroActModelView(@NonNull Application application) {
-//        super(application);
-//        repository = new ChatRoomRepo(application);
-//        baseApp = BaseApp.getInstance();
-//        chatRoomsList = new ArrayList<>();
-//        chatRoomListMutableLiveData = new MutableLiveData<>();
-//
-//    }
+    public IntroActModelView() {
+        repository.callAPI(baseApp.getClassSharedPreferences().getUser().getUserId());
+
+
+    }
+
 
 
 
@@ -85,6 +83,20 @@ public class IntroActModelView extends ViewModel {
         },s-> {
             System.out.println("Errorrrrrrrr" + s);
           });
+    }
+
+    public MutableLiveData<Boolean> getLoading(){
+        return repository.loading;
+    }
+
+    public MutableLiveData<Boolean> getErrorMessage(){
+        return repository.showErrorMessage;
+    }
+    public void setLoading(Boolean check){
+        repository.loading.setValue(check);
+    }
+    public void setErrorMessage(Boolean check){
+        repository.showErrorMessage.setValue(check);
     }
 
     @Override

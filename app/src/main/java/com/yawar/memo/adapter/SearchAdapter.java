@@ -103,6 +103,9 @@ import java.util.ArrayList;
                         Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl + model.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.imageView);
 
                     }
+                    else {
+                        holder.imageView.setImageDrawable(activity.getResources().getDrawable(R.drawable.th));
+                    }
                     if (!contactExists(model.getPhone())) {
                         holder.button.setVisibility(View.VISIBLE);
                     } else {

@@ -45,6 +45,10 @@ public class ChatMessage implements Comparable, Cloneable  {
     private  String state;
     private  String fileName;
     private boolean isDownload = false;
+    private boolean upload = false;
+
+
+
 
     public String getIsUpdate() {
         return isUpdate;
@@ -78,7 +82,7 @@ public class ChatMessage implements Comparable, Cloneable  {
     public boolean isChecked;
 
 
-    public ChatMessage(String id, boolean isMe, String message, String userId, String dateTime,String type,String state,String fileName) {
+    public ChatMessage(String id, boolean isMe, String message, String userId, String dateTime,String type,String state,String fileName,boolean isDownload ) {
         this.id = id;
         this.isMe = isMe;
         //this.message = new SpannableString(message);
@@ -88,6 +92,7 @@ public class ChatMessage implements Comparable, Cloneable  {
         this.type = type;
         this.state = state;
         this.fileName = fileName;
+        this.isDownload  = isDownload;
     }
 
     public ChatMessage() {
@@ -163,14 +168,18 @@ public class ChatMessage implements Comparable, Cloneable  {
 //                compare.getMessage().equals(this.getMessage()) &&
                 Objects.equals(compare.state, this.state) &&
                 compare.isDownload == (this.isDownload)&&
-                compare.isChecked == (this.isChecked)&&
+                        compare.isUpload() == (this.isUpload())&&
+
+                        compare.isChecked == (this.isChecked)&&
                         Objects.equals(compare.isUpdate, this.isUpdate)
 
         ) {
+            System.out.println(compare.getMessage()+this.getMessage()+"compareTo"+1);
 
             return 0;
         }
-        System.out.println(compare.getMessage()+this.getMessage()+"compareTo"+1);
+        System.out.println(compare.getMessage()+this.getMessage()+"Not compareTo"+1);
+
         return 1;
 
     }
@@ -186,5 +195,13 @@ public class ChatMessage implements Comparable, Cloneable  {
         }
 
         return clone;
+    }
+
+    public boolean isUpload() {
+        return upload;
+    }
+
+    public void setUpload(boolean upload) {
+        this.upload = upload;
     }
 }

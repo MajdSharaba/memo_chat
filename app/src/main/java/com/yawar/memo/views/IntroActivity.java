@@ -19,6 +19,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -52,6 +54,7 @@ public class IntroActivity extends AppCompatActivity  {
     IntroActModelView introActModelView;
     ChatRoomRepo chatRoomRepo;
     BlockUserRepo blockUserRepo;
+    ProgressBar progressBar;
 
 
     boolean isResponeSucces = false;
@@ -69,6 +72,7 @@ public class IntroActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_intro);
         System.out.println( android.os.Build.MANUFACTURER+"String deviceMan = android.os.Build.MANUFACTURER;\n");
+        progressBar = findViewById(R.id.progress_circular);
 //        if(android.os.Build.MANUFACTURER.equals("xhaomi")){
 //        openAppPermission();}
 //        askCallPermission();
@@ -89,13 +93,9 @@ public class IntroActivity extends AppCompatActivity  {
 
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         myId = classSharedPreferences.getUser().getUserId();
-//        serverApi = new ServerApi(this);
        myBase = BaseApp.getInstance();
-//        myBase.getObserver().addObserver(this);
-//        chatRoomRepo=myBase.getChatRoomRepo();
-        blockUserRepo = myBase.getBlockUserRepo();
+
         introActModelView = new ViewModelProvider(this).get(IntroActModelView.class);
-        permissions = new Permissions();
             FirebaseMessaging.getInstance().getToken()
                     .addOnCompleteListener(new OnCompleteListener<String>() {
                         @Override
@@ -105,19 +105,10 @@ public class IntroActivity extends AppCompatActivity  {
                                 return;
                             }
 
-                            // Get new FCM registration token
                             String token = task.getResult();
-
-
-
-//                            sendToken(token);
-
                             introActModelView.sendFcmToken(myId,token);
                             classSharedPreferences.setFcmToken(token);
-
-                            // Log and toast
                             Log.d("jjj", token);
-//                            Toast.makeText(IntroActivity.this, token, Toast.LENGTH_SHORT).show();
                         }
                     });
 //        }
@@ -127,7 +118,6 @@ public class IntroActivity extends AppCompatActivity  {
             public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
                 if(chatRoomModels!=null){
                     introActModelView.loadData().removeObserver(this);
-//                    blockUserRepo.getUserBlock(myId);
                     Intent intent = new Intent(IntroActivity.this, DashBord.class);
 
                     startActivity(intent);
@@ -137,206 +127,40 @@ public class IntroActivity extends AppCompatActivity  {
 
             }
         });
-//
 
+        introActModelView.getLoading().observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null) {
+                    if (aBoolean) {
+                        System.out.println("boleannnn");
+                        progressBar.setVisibility(View.VISIBLE);
 
+                    } else {
+                        progressBar.setVisibility(View.GONE);
 
-        checkPermission();
-
-
-
-    }
-
-
-
-
-
-    private void requestPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (!Environment.isExternalStorageManager()) {
-                try {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                    intent.addCategory("android.intent.category.DEFAULT");
-                    intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
-                    startActivityForResult(intent, 2296);
-                } catch (Exception e) {
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
-                    startActivityForResult(intent, 2296);
-                }
-            } else {
-                createDirectory("memo");
-                createDirectory("memo/send");
-                createDirectory("memo/recive");
-                createDirectory("memo/send/voiceRecord");
-                createDirectory("memo/recive/voiceRecord");
-                createDirectory("memo/send/video");
-                createDirectory("memo/recive/video");
-                chatRoomRepo.callAPI(myId);
-            }
-        } else {
-            checkPermission();
-        }
-    }
-
-    public void checkPermission() {
-
-
-        if (permissions.isStorageWriteOk(IntroActivity.this) ) {
-            createDirectory("memo");
-            createDirectory("memo/send");
-            createDirectory("memo/recive");
-            createDirectory("memo/send/voiceRecord");
-            createDirectory("memo/recive/voiceRecord");
-            createDirectory("memo/send/video");
-            createDirectory("memo/recive/video");
-            System.out.println("permission granted call");
-//            chatRoomRepo.callAPI(myId);
-
-        }
-        else permissions.requestStorage(IntroActivity.this);
-
-    }
-
-    private void checkContactpermission() {
-
-        if (permissions.isContactOk(this)) {
-//            getContactList();
-        checkPermission();
-
-        } else {
-            permissions.requestContact(this);
-        }
-    }
-
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-
-        switch (requestCode) {
-            case AllConstants.STORAGE_REQUEST_CODE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    createDirectory("memo");
-                    createDirectory("memo/send");
-                    createDirectory("memo/recive");
-                    createDirectory("memo/send/voiceRecord");
-                    createDirectory("memo/recive/voiceRecord");
-                    createDirectory("memo/send/video");
-                    createDirectory("memo/recive/video");
-//                    chatRoomRepo.callAPI(myId);
-                }
-                else
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                showPermissionDialog(getResources().getString(R.string.write_premission),STORAGE_PERMISSION_CODE);}
-
-                break;
-            case AllConstants.CONTACTS_REQUEST_CODE:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    serverApi.getContactList();
-                            checkPermission();
-
-                } else{
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
-                        showPermissionDialog(getResources().getString(R.string.contact_permission),Contact_PERMISSION_CODE);
 
                     }
-
-
-                   }
-                break;
-
-
-        }
-
-        super.onRequestPermissionsResult(requestCode,
-                permissions,
-                grantResults);
-    }
-
-    void createDirectory(String dName) {
-//        File yourAppDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + dName);
-        File yourAppDir = new File(this.getExternalFilesDir(Environment.DIRECTORY_DCIM) + File.separator + dName);
-
-        if (!yourAppDir.exists() && !yourAppDir.isDirectory()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                try {
-                    Files.createDirectory(Paths.get(yourAppDir.getAbsolutePath()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Toast.makeText(getApplicationContext(), "problem", Toast.LENGTH_LONG).show();
                 }
-            } else {
-                yourAppDir.mkdir();
             }
+        });
 
-        } else {
-            Log.i("CreateDir", "App dir already exists");
-        }
+        introActModelView.getErrorMessage().observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null) {
+                    if (aBoolean) {
+                        Toast.makeText(IntroActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
+                        introActModelView.setErrorMessage(null);
+                    }
+                }
+            }
+        });
+
 
 
     }
 
-
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode){
-            case Contact_PERMISSION_CODE:
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED) {
-                            showPermissionDialog(getResources().getString(R.string.contact_permission),Contact_PERMISSION_CODE);
-
-                        }
-                        else{
-//
-                            checkPermission();
-                        }
-                        break;
-            case STORAGE_PERMISSION_CODE:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-
-//                    showPermissionDialog(getResources().getString(R.string.write_premission),STORAGE_PERMISSION_CODE);
-
-                }
-                else{
-                    createDirectory("memo");
-                    createDirectory("memo/send");
-                    createDirectory("memo/recive");
-                    createDirectory("memo/send/voiceRecord");
-                    createDirectory("memo/recive/voiceRecord");
-                    createDirectory("memo/send/video");
-                    createDirectory("memo/recive/video");
-//                    chatRoomRepo.callAPI(myId);
-                }
-                break;
-
-            }
-        }
-        public void showPermissionDialog(String message,int RequestCode){
-        System.out.println(message+"message");
-            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-            alertBuilder.setCancelable(true);
-            alertBuilder.setTitle(getResources().getString(R.string.permission_necessary));
-            alertBuilder.setMessage(getResources().getString(R.string.contact_permission));
-            alertBuilder.setMessage(message);
-
-            alertBuilder.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
-
-                @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivityForResult(intent, RequestCode);                                     }
-            });
-
-            AlertDialog alert = alertBuilder.create();
-            alert.show();
-
-
-        }
 
     @Override
     protected void onDestroy() {

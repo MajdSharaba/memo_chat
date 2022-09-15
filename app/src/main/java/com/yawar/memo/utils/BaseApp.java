@@ -49,6 +49,9 @@ public class BaseApp extends Application implements LifecycleObserver {
     UserInformationRepo userInformationRepo;
      String[] darkModeValues ;
      ClassSharedPreferences classSharedPreferences;
+     Handler handler = new Handler();
+    private Runnable myRunnable ;
+
 
 
     String peerId = null;
@@ -61,6 +64,9 @@ public class BaseApp extends Application implements LifecycleObserver {
         System.out.println("onCreateeeeeeee");
         super.onCreate();
         setMode();
+        handler= new Handler();
+
+
 
         sInstance = this;
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
@@ -140,7 +146,8 @@ public class BaseApp extends Application implements LifecycleObserver {
     public ChatRoomRepo getChatRoomRepo() {
         if(chatRoomRepo== null){
             chatRoomRepo = new ChatRoomRepo(this);
-            chatRoomRepo.callAPI(classSharedPreferences.getUser().getUserId());
+//            if(getClassSharedPreferences().getUser()!=null)
+//            chatRoomRepo.callAPI(classSharedPreferences.getUser().getUserId());
 
         }
         return chatRoomRepo;
@@ -222,7 +229,15 @@ public class BaseApp extends Application implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onMoveToForeground() {
 
+
         if(classSharedPreferences.getUser()!=null){
+            if (myRunnable!=null){
+
+                System.out.println("onMoveToForeground()");
+
+                handler.removeCallbacks(myRunnable);
+            }
+
         Intent service = new Intent(this, SocketIOService.class);
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
         this.startService(service);}
@@ -237,16 +252,17 @@ public class BaseApp extends Application implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onMoveToBackground() {
         if(classSharedPreferences.getUser()!=null) {
-            System.out.println("on Move to bacground");
+
             Intent service = new Intent(this, SocketIOService.class);
-            final Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
+            myRunnable = new Runnable() {
                 @Override
                 public void run() {
+                    System.out.println("on Move to bacground");
                     service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
                     startService(service);
                 }
-            }, 30000);
+            };
+            handler.postDelayed(myRunnable, 30000);
         }
 
 

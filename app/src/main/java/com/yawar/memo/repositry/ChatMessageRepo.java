@@ -74,10 +74,20 @@ public class ChatMessageRepo {
     public void addSelectedMessage(ChatMessage message){
         _selectedMessage.add(message);
         selectedMessage.setValue(_selectedMessage);
+        System.out.println("addSelectedMessage"+_selectedMessage.size());
+
     }
     public void removeSelectedMessage(ChatMessage message){
-        _selectedMessage.remove(message);
+
+        for (int i=0 ; i<_selectedMessage.size();i++) {
+            if(message.getId().equals(_selectedMessage.get(i).getId())){
+                _selectedMessage.remove(_selectedMessage.get(i));
+                break;
+            }
+
+        }
         selectedMessage.setValue(_selectedMessage);
+        System.out.println("removeSelectedMessage"+_selectedMessage.size());
     }
     public void clearSelectedMessage(){
         for(ChatMessage chatMessage: selectedMessage.getValue()){
@@ -90,8 +100,12 @@ public class ChatMessageRepo {
 
     @SuppressLint("CheckResult")
     public void getChatHistory(String my_id, String anthor_user_id) {
-        chatMessageList.clear();
+        try {
 
+
+        if(chatMessageList!=null) {
+            chatMessageList.clear();
+        }
 
         Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().getChatMessgeHistory(my_id, anthor_user_id)
                 .subscribeOn(Schedulers.io())
@@ -148,15 +162,19 @@ public class ChatMessageRepo {
 
                 },
                 s -> {
-                    chatMessageList = null;
-                    chatMessageistMutableLiveData.setValue(null);
+                    chatMessageList = new ArrayList<>();
+                    chatMessageistMutableLiveData.setValue(chatMessageList);
 
 
                 });
+        }
+        catch (Exception error){
+            System.out.println("error");
+        }
     }
 
     public void addMessage(ChatMessage chatMessage) {
-//        System.out.println("addddddddddddddddddddddddddddddddddd");
+        System.out.println("addddddddddddddddddddddddddddddddddd"+chatMessage.getId());
         chatMessageList.add(chatMessage);
         chatMessageistMutableLiveData.setValue(chatMessageList);
     }
@@ -238,7 +256,19 @@ public class ChatMessageRepo {
 //        chatMessageList.remove(chatMessage);
         for (ChatMessage chatMessage : chatMessageList) {
             if (chatMessage.getId().equals(message_id)) {
+                System.out.println(chatMessage.isDownload()+"chatMessage");
                 chatMessage.setDownload(isDownload);
+                break;
+            }
+        }
+        chatMessageistMutableLiveData.setValue(chatMessageList);
+    }
+
+    public void setMessageUpload(String message_id,boolean isDownload) {
+//        chatMessageList.remove(chatMessage);
+        for (ChatMessage chatMessage : chatMessageList) {
+            if (chatMessage.getId().equals(message_id)) {
+                chatMessage.setUpload(isDownload);
                 break;
             }
         }

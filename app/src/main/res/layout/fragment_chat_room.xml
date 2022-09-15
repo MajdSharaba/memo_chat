@@ -6,8 +6,6 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/backgroundColor"
-
-
     tools:context=".fragment.ChatRoomFragment">
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
@@ -15,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
-        android:theme="@style/Theme.ChatMemo.AppBarOverlay"
+        android:theme="@style/Theme.ChatMemo.PopupOverlay"
         >
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -45,7 +43,6 @@
                 </TextView>
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/search"
-                    android:background="@drawable/ed_text_background"
                     app:queryHint="@string/search"
                     android:layout_gravity="center"
                     android:gravity="center"
@@ -55,6 +52,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:layout_marginBottom="30dp"
+                    android:background="@drawable/ed_text_background"
+
                     />
 
             </LinearLayout>

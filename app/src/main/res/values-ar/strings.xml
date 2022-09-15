@@ -104,7 +104,7 @@
     <string name="voice">تسجيل صوتي</string>
     <string name="contact">جهة اتصال</string>
     <string name="yesterday">الأمس</string>
-    <string name="yesterdayAt">الأمس عند </string>
+    <string name="yesterdayAt">الأمس  </string>
 
 
     <string name="connect_now">متصل الان </string>
@@ -242,9 +242,15 @@
     <string name="you_have_no_call_yet">لا يوجد مكالمات حالية!</string>
     <string name="no_search_result"> لا يوجد نتائج!</string>
     <string name="no_contacts_number">لا يوجد جهات اتصال!</string>
-    <string name="say_hi_or_send_an_emoji"> ارسل تحية او ايموجي!</string>
+    <string name="say_hi_or_send_an_emoji">أرسل تحية او ايموجي!</string>
 
     <string name="internet_message">تحقق من اتصالك بالأنترنيت!!</string>
+    <string name="gps_message">نظام GPS غير مفعل على جهازك, هل تريد تفعيل هذه الميزة؟</string>
+    <string name="enable_gps">أذهب الى صفخة الاعدادت وفعل الموقع</string>
+    <string name="gps">>نظام GPS غير مفعل على جهازك, يرجى تفعيل الميزة واعادة المحاولة </string>
+
+
+
 
 
 

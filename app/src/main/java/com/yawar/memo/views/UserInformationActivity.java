@@ -366,7 +366,7 @@ public class UserInformationActivity extends AppCompatActivity {
         message = findViewById(R.id.message);
 //        message.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        mute = findViewById(R.id.mute);
+//        mute = findViewById(R.id.mute);
 //        mute.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 

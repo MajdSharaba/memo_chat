@@ -43,24 +43,30 @@ public class AuthRepo {
         @SuppressLint("CheckResult")
         public MutableLiveData<JSONObject> getspecialNumbers(String phoneNumber) {
             System.out.println(jsonObjectMutableLiveData.getValue()+"jsonObjectMutableLiveData");
+            try {
 
-            loading.setValue(true);
-            Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getSpecialNumbers(phoneNumber)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread());
-            observable.subscribe(s -> {
-                JSONObject respObj = new JSONObject(s);
-                JSONObject data = respObj.getJSONObject("data");
-                jsonObjectMutableLiveData.setValue(data);
-                loading.setValue(false);
-                showErrorMessage.setValue(false);
-                System.out.println(jsonObjectMutableLiveData.getValue()+"data");
+                loading.setValue(true);
+                Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getSpecialNumbers(phoneNumber)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread());
+                observable.subscribe(s -> {
+                    JSONObject respObj = new JSONObject(s);
+                    JSONObject data = respObj.getJSONObject("data");
+                    jsonObjectMutableLiveData.setValue(data);
+                    loading.setValue(false);
+                    showErrorMessage.setValue(false);
+                    System.out.println(jsonObjectMutableLiveData.getValue() + "data");
 
-            },s-> {
-                System.out.println("Error" + s);
-                loading.setValue(false);
-                showErrorMessage.setValue(true);
-                jsonObjectMutableLiveData.setValue(null);});
+                }, s -> {
+                    System.out.println("Error" + s);
+                    loading.setValue(false);
+                    showErrorMessage.setValue(true);
+                    jsonObjectMutableLiveData.setValue(null);
+                });
+            }catch (Exception error) {
+                System.out.println("l,l,");
+            }
+
 
             return jsonObjectMutableLiveData;
 

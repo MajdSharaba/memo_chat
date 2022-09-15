@@ -23,8 +23,13 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.api.Api;
+import com.google.gson.Gson;
+import com.yawar.memo.Api.api;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
+import com.yawar.memo.repositry.ChatMessageRepo;
+import com.yawar.memo.retrofit.RetrofitClient;
 import com.yawar.memo.views.ConversationActivity;
 
 import org.json.JSONException;
@@ -43,6 +48,14 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.logging.Logger;
+
+import io.reactivex.annotations.NonNull;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 public class FileUtil {
 
@@ -469,6 +482,7 @@ public class FileUtil {
     }
     ////////////////////
     public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id) {
+        ChatMessageRepo chatMessageRepo = BaseApp.getInstance().getChatMessageRepo();
         BaseApp myBase = BaseApp.getInstance();
         String message_id = System.currentTimeMillis() + "_" + user_id;
 
@@ -482,6 +496,7 @@ public class FileUtil {
         chatMessage.setMe(true);
         chatMessage.setType("imageWeb");
         chatMessage.setState("0");
+        chatMessage.setUpload(true);
 //        messageET.setText("");
 //        chatMessage.setDate(String.valueOf(cal.getTimeInMillis()));
         chatMessage.setChecked(false);
@@ -526,7 +541,7 @@ public class FileUtil {
                                 sendObject.put("orginalName", jsonObject.getString("orginalName"));
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
-
+                                chatMessageRepo.setMessageUpload(message_id,false);
                                 activity.newMeesage(sendObject);
 
 
@@ -595,6 +610,8 @@ public class FileUtil {
     ///////////////////
     public static ChatMessage uploadVideo(String pdfname, Uri pdffile, ConversationActivity activity, String user_id, String anthor_user_id) {
         BaseApp myBase = BaseApp.getInstance();
+        ChatMessageRepo chatMessageRepo = myBase.getChatMessageRepo();
+
 
         String message_id = System.currentTimeMillis() + "_" + user_id;
 
@@ -602,6 +619,8 @@ public class FileUtil {
         chatMessage.setId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());
         chatMessage.setFileName(pdfname);
+        chatMessage.setUpload(true);
+
 
         chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
         chatMessage.setMe(true);
@@ -647,7 +666,7 @@ public class FileUtil {
                                 sendObject.put("orginalName", jsonObject.getString("orginalName"));
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
-
+                                chatMessageRepo.setMessageUpload(message_id,false);
                                 activity.newMeesage(sendObject);
 
 
@@ -714,6 +733,8 @@ public class FileUtil {
     ////////////////
     public static ChatMessage uploadVoice(String voiceName, Uri voicedPath, ConversationActivity activity, String user_id, String anthor_user_id) {
         BaseApp myBase = BaseApp.getInstance();
+        ChatMessageRepo chatMessageRepo = myBase.getChatMessageRepo();
+
         String message_id = System.currentTimeMillis() + "_" + user_id;
         System.out.println("the message id is" + message_id);
 
@@ -727,6 +748,7 @@ public class FileUtil {
         chatMessage.setMe(true);
         chatMessage.setType("voice");
         chatMessage.setState("0");
+        chatMessage.setUpload(true);
         chatMessage.setChecked(false);
 
 
@@ -762,7 +784,7 @@ public class FileUtil {
 
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
-
+                                chatMessageRepo.setMessageUpload(message_id,false);
                                 activity.newMeesage(sendObject);
 
 
@@ -835,6 +857,7 @@ public class FileUtil {
     public static ChatMessage uploadPDF(String pdfname, Uri pdffile, ConversationActivity activity, String user_id, String anthor_user_id) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
         BaseApp myBase = BaseApp.getInstance();
+        ChatMessageRepo chatMessageRepo = myBase.getChatMessageRepo();
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());
@@ -846,6 +869,7 @@ public class FileUtil {
         chatMessage.setMe(true);
         chatMessage.setType("file");
         chatMessage.setState("0");
+        chatMessage.setUpload(true);
         chatMessage.setChecked(false);
 
 
@@ -889,7 +913,7 @@ public class FileUtil {
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
 
-
+                                chatMessageRepo.setMessageUpload(message_id,false);
                                 activity.newMeesage(sendObject);
 
 
@@ -959,7 +983,40 @@ public class FileUtil {
 
 
 
-
+//    public static void fileUpload(String filePath) {
+//
+//        api apiInterface = RetrofitClient.getInstance(AllConstants.base_node_url).getapi();
+////        Logger.addLogAdapter(new AndroidLogAdapter());
+//
+//        File file = new File(filePath);
+//        //create RequestBody instance from file
+//        RequestBody requestFile = RequestBody.create(MediaType.parse("image"), file);
+//
+//        // MultipartBody.Part is used to send also the actual file name
+//        MultipartBody.Part body = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
+//
+//        Gson gson = new Gson();
+////        String patientData = gson.toJson(imageSenderInfo);
+//
+////        RequestBody description = RequestBody.create(okhttp3.MultipartBody.FORM);
+//
+//        // finally, execute the request
+//        Call<String> call = apiInterface.fileUpload( body);
+//        call.enqueue(new Callback<String>() {
+//
+//
+//            @Override
+//            public void onResponse(Call<String> call, retrofit2.Response<String> response) {
+//              System.out.println(call+"responeeeeeeeeee"+response);
+//            }
+//
+//            @Override
+//            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+//                System.out.println(call+"eroorrrrrrrrrrrr");
+//
+//            }
+//        });
+//    }
 
 
 }

@@ -30,6 +30,7 @@ public class ChatRoomViewModel extends ViewModel {
     public final ArrayList<ChatRoomModel> chatRoomsList = new ArrayList<>();
 
     public ChatRoomViewModel() {
+
     }
 
 

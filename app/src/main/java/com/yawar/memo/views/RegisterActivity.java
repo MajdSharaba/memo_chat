@@ -36,6 +36,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.yawar.memo.call.CallProperty;
+import com.yawar.memo.constant.AllConstants;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -68,6 +70,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
     EditText edFname,edLname;
     byte[] inputData = new byte[]{};
+    ChatRoomRepo chatRoomRepo;
 
     ClassSharedPreferences classSharedPreferences;
 
@@ -107,6 +110,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         spennerItemChooser=getResources().getString(R.string.choose_special_number);
         myBase = BaseApp.getInstance();
         authRepo = myBase.getAuthRepo();
+        chatRoomRepo = myBase.getChatRoomRepo();
 
 
 //        edEmail = findViewById(R.id.et_em);
@@ -488,8 +492,8 @@ private void uploadImage(final String imageName, Uri pdfFile) {
         //"file:///storage/emulated/0/memo/1640514470604.3gp"
           inputData = getBytes(iStream);}
 
-//      String url = AllConstants.base_url+"uploadImgProfile";
-        String url = "http://192.168.0.109:3000/uploadImgProfile";
+      String url = AllConstants.base_url+"uploadImgProfile";
+//        String url = "http://192.168.0.109:3000/uploadImgProfile";
 
 //              "http://192.168.1.7:3000/uploadImgProfile";
 //        AllConstants.base_url+"uploadImgProfile"

@@ -22,6 +22,8 @@ public class ChatRoomRepo {
     private ArrayList<ChatRoomModel> chatRoomsList;
     public final MutableLiveData<Boolean> isArchivedMutableLiveData;
     public final MutableLiveData<ChatRoomModel> chatRoomModelMutableLiveData;
+    public MutableLiveData<Boolean> loading;
+    public MutableLiveData<Boolean> showErrorMessage;
 
     boolean isArchived = false;
 
@@ -32,6 +34,8 @@ public class ChatRoomRepo {
         chatRoomListMutableLiveData = new MutableLiveData<>();
         isArchivedMutableLiveData = new MutableLiveData<>();
         chatRoomModelMutableLiveData = new MutableLiveData<>();
+        loading = new MutableLiveData<>(false);
+        showErrorMessage = new MutableLiveData<>(false);
 
 
 
@@ -39,21 +43,31 @@ public class ChatRoomRepo {
 
     @SuppressLint("CheckResult")
     public MutableLiveData<ArrayList<ChatRoomModel>> callAPI(String user_id) {
-        chatRoomsList=new ArrayList<>();
-        chatRoomsList.clear();
+        try {
+            chatRoomsList = new ArrayList<>();
+            chatRoomsList.clear();
+            loading.setValue(true);
 
 
-        Single<ChatRoomRespone> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getChatRoom(user_id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        observable.subscribe(s->{
-            chatRoomsList = s.getData();
+            Single<ChatRoomRespone> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getChatRoom(user_id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
+            observable.subscribe(s -> {
+                chatRoomsList = s.getData();
 
-            chatRoomListMutableLiveData.setValue(chatRoomsList);
+                chatRoomListMutableLiveData.setValue(chatRoomsList);
+                loading.setValue(false);
+                showErrorMessage.setValue(false);
 
-        } ,s -> {
-            chatRoomListMutableLiveData.setValue(null);
+            }, s -> {
+                chatRoomListMutableLiveData.setValue(null);
+                loading.setValue(false);
+                showErrorMessage.setValue(true);
             });
+        }
+        catch (Exception e){
+            System.out.println("error");
+        }
 
 
 //        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getChatRoom(user_id)

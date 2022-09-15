@@ -80,6 +80,7 @@ import io.reactivex.schedulers.Schedulers;
 
         @SuppressLint("CheckResult")
         public void getUserBlock(String user_id) {
+            userBlockList= new ArrayList<>();
             userBlockList.clear();
 
 

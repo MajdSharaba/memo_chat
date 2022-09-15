@@ -38,6 +38,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -147,8 +148,9 @@ public class SettingsFragment extends Fragment {
     private void getFindViewById(View view) {
 
         imageView = view.findViewById(R.id.imageView);
-        if(!userModel.getImage().isEmpty()){
-            Glide.with(imageView.getContext()).load(AllConstants.imageUrl+userModel.getImage()).error(getResources().getDrawable(R.drawable.th)).into(imageView);}
+        if (!userModel.getImage().isEmpty()) {
+            Glide.with(imageView.getContext()).load(AllConstants.imageUrl+userModel.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(imageView);
+        }
 
 //
 //        name =(TextView) view.findViewById(R.id.name);
@@ -185,13 +187,13 @@ public class SettingsFragment extends Fragment {
 //        dev.setTextSize(textSize);
 //        dev.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        recentCalls = view.findViewById(R.id.recentCalls);
-        recentCall = view.findViewById(R.id.recentCall);
+//        recentCalls = view.findViewById(R.id.recentCalls);
+//        recentCall = view.findViewById(R.id.recentCall);
 //        recentCall.setTextSize(textSize);
 //        recentCall.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        notificationAndSounds = view.findViewById(R.id.notificationAndSound);
-        notificationAnd = view.findViewById(R.id.notificationAnd);
+//        notificationAndSounds = view.findViewById(R.id.notificationAndSound);
+//        notificationAnd = view.findViewById(R.id.notificationAnd);
 //        notificationAnd.setTextSize(textSize);
 //        notificationAnd.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
@@ -205,8 +207,8 @@ public class SettingsFragment extends Fragment {
 //        languag.setTextSize(textSize);
 //        languag.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        fontSize = view.findViewById(R.id.fontSize);
-        fontSiz = view.findViewById(R.id.fontSiz);
+//        fontSize = view.findViewById(R.id.fontSize);
+//        fontSiz = view.findViewById(R.id.fontSiz);
 //        fontSiz.setTextSize(textSize);
 //        fontSiz.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
@@ -220,8 +222,8 @@ public class SettingsFragment extends Fragment {
 //        preferene.setTextSize(textSize);
 //        preferene.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        tellafriend = view.findViewById(R.id.tellAFriend);
-        tellafri = view.findViewById(R.id.tellafri);
+//        tellafriend = view.findViewById(R.id.tellAFriend);
+//        tellafri = view.findViewById(R.id.tellafri);
 //        tellafri.setTextSize(textSize);
 //        tellafri.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
@@ -339,14 +341,14 @@ public class SettingsFragment extends Fragment {
                 startActivity(intent);
             }
         });
-        notificationAndSounds.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Toast.makeText(getActivity(), "This Name", Toast.LENGTH_SHORT).show();
-
-            }
-        });
+//        notificationAndSounds.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                Toast.makeText(getActivity(), "This Name", Toast.LENGTH_SHORT).show();
+//
+//            }
+//        });
         appearance.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -476,131 +478,131 @@ public class SettingsFragment extends Fragment {
         });
 */
 
-        fontSize.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "This Font Size", Toast.LENGTH_SHORT).show();
-
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                LayoutInflater inflater = LayoutInflater.from(getActivity());
-                View dialogView = inflater.inflate(R.layout.fon_size_layout, null);
-                builder.setView(dialogView);
-                AlertDialog dialogadd = builder.create();
-
-
-                TextView textViewFont , resultFontSize ;
-
-                Button btnChange  ;
-                SharedPreferences sharedPreferences ;
-                SeekBar seekBar ;
-
-
-//              textViewFont   = dialogView.findViewById(R.id.textViewFont);
-                resultFontSize = dialogView.findViewById(R.id.resultFontSize);
-//              btnChange   = dialogView.findViewById(R.id.btnChange);
-                sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
-                seekBar = dialogView.findViewById(R.id.seekbar);
-
-//              textViewFont.setTextSize(textSize); // size 20sp
-                resultFontSize.setTextSize(seekValue);
-
-
-                resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
-                        seekValue = progress;
-
-                        resultFontSize.setText("Memo Font Size");
-                        resultFontSize.setTextSize(seekValue);
-                        //   name.setTextSize(seekValue);
-                        userName.setTextSize(seekValue);
-                        phoneNumber.setTextSize(seekValue);
-                        setUserName.setTextSize(seekValue);
-                        setPhoto.setTextSize(seekValue);
-                        dev.setTextSize(seekValue);
-                        recentCall.setTextSize(seekValue);
-                        notificationAnd.setTextSize(seekValue);
-                        Appearanc.setTextSize(seekValue);
-                        languag.setTextSize(seekValue);
-                        fontSiz.setTextSize(seekValue);
-                        askMemoQuesti.setTextSize(seekValue);
-                        preferene.setTextSize(seekValue);
-                        tellafri.setTextSize(seekValue);
-                        hel.setTextSize(seekValue);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-                        String temp = "Processing...";
-                        resultFontSize.setText(temp);
-
-                    }
-
-                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-                        //textViewSize.setText(progressNew + "/" + seekBar.getMax());
-
-                        seekBar.getAccessibilityTraversalAfter();
-                        //   seekBar.get
-
-                        resultFontSize.setText("Memo Font Size");
-                        resultFontSize.setTextSize(seekValue);
-                        //    name.setTextSize(seekValue);
-                        userName.setTextSize(seekValue);
-                        phoneNumber.setTextSize(seekValue);
-                        setUserName.setTextSize(seekValue);
-                        setPhoto.setTextSize(seekValue);
-                        dev.setTextSize(seekValue);
-                        recentCall.setTextSize(seekValue);
-                        notificationAnd.setTextSize(seekValue);
-                        Appearanc.setTextSize(seekValue);
-                        languag.setTextSize(seekValue);
-                        fontSiz.setTextSize(seekValue);
-                        askMemoQuesti.setTextSize(seekValue);
-                        preferene.setTextSize(seekValue);
-                        tellafri.setTextSize(seekValue);
-                        hel.setTextSize(seekValue);
-
-
-                        SharedPreferences.Editor editor  = sharedPreferences.edit();
-                        editor.putString("txtFontSize", String.valueOf(seekValue));
-                        editor.commit();
-
-                        resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-                    }
-                });
-
-//                btnChange.setOnClickListener(new View.OnClickListener() {
+//        fontSize.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getActivity(), "This Font Size", Toast.LENGTH_SHORT).show();
+//
+//
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                LayoutInflater inflater = LayoutInflater.from(getActivity());
+//                View dialogView = inflater.inflate(R.layout.fon_size_layout, null);
+//                builder.setView(dialogView);
+//                AlertDialog dialogadd = builder.create();
+//
+//
+//                TextView textViewFont , resultFontSize ;
+//
+//                Button btnChange  ;
+//                SharedPreferences sharedPreferences ;
+//                SeekBar seekBar ;
+//
+//
+////              textViewFont   = dialogView.findViewById(R.id.textViewFont);
+//                resultFontSize = dialogView.findViewById(R.id.resultFontSize);
+////              btnChange   = dialogView.findViewById(R.id.btnChange);
+//                sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//                seekBar = dialogView.findViewById(R.id.seekbar);
+//
+////              textViewFont.setTextSize(textSize); // size 20sp
+//                resultFontSize.setTextSize(seekValue);
+//
+//
+//                resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//
+//                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 //                    @Override
-//                    public void onClick(View view) {
-////                        String  txtFontSize = String.valueOf(textViewFont.getTextSize());
+//                    public void onProgressChanged(SeekBar seekBar, int progress, boolean b) {
+//                        seekValue = progress;
+//
+//                        resultFontSize.setText("Memo Font Size");
+//                        resultFontSize.setTextSize(seekValue);
+//                        //   name.setTextSize(seekValue);
+//                        userName.setTextSize(seekValue);
+//                        phoneNumber.setTextSize(seekValue);
+//                        setUserName.setTextSize(seekValue);
+//                        setPhoto.setTextSize(seekValue);
+//                        dev.setTextSize(seekValue);
+//                        recentCall.setTextSize(seekValue);
+//                        notificationAnd.setTextSize(seekValue);
+//                        Appearanc.setTextSize(seekValue);
+//                        languag.setTextSize(seekValue);
+//                        fontSiz.setTextSize(seekValue);
+//                        askMemoQuesti.setTextSize(seekValue);
+//                        preferene.setTextSize(seekValue);
+//                        tellafri.setTextSize(seekValue);
+//                        hel.setTextSize(seekValue);
+//                    }
+//
+//                    @Override
+//                    public void onStartTrackingTouch(SeekBar seekBar) {
+//                        String temp = "Processing...";
+//                        resultFontSize.setText(temp);
+//
+//                    }
+//
+//                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
+//                    @Override
+//                    public void onStopTrackingTouch(SeekBar seekBar) {
+//                        //textViewSize.setText(progressNew + "/" + seekBar.getMax());
+//
+//                        seekBar.getAccessibilityTraversalAfter();
+//                        //   seekBar.get
+//
+//                        resultFontSize.setText("Memo Font Size");
+//                        resultFontSize.setTextSize(seekValue);
+//                        //    name.setTextSize(seekValue);
+//                        userName.setTextSize(seekValue);
+//                        phoneNumber.setTextSize(seekValue);
+//                        setUserName.setTextSize(seekValue);
+//                        setPhoto.setTextSize(seekValue);
+//                        dev.setTextSize(seekValue);
+//                        recentCall.setTextSize(seekValue);
+//                        notificationAnd.setTextSize(seekValue);
+//                        Appearanc.setTextSize(seekValue);
+//                        languag.setTextSize(seekValue);
+//                        fontSiz.setTextSize(seekValue);
+//                        askMemoQuesti.setTextSize(seekValue);
+//                        preferene.setTextSize(seekValue);
+//                        tellafri.setTextSize(seekValue);
+//                        hel.setTextSize(seekValue);
+//
+//
 //                        SharedPreferences.Editor editor  = sharedPreferences.edit();
-////                        editor.putString("txtFontSize", txtFontSize);
+//                        editor.putString("txtFontSize", String.valueOf(seekValue));
 //                        editor.commit();
-//                        Toast.makeText(getActivity(), "Information Saved", Toast.LENGTH_SHORT).show();
+//
 //                        resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//
 //                    }
 //                });
-
-
-                //    resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-
-
-
-
-
-                dialogadd.show();
-
-
-
-
-            }
-        });
+//
+////                btnChange.setOnClickListener(new View.OnClickListener() {
+////                    @Override
+////                    public void onClick(View view) {
+//////                        String  txtFontSize = String.valueOf(textViewFont.getTextSize());
+////                        SharedPreferences.Editor editor  = sharedPreferences.edit();
+//////                        editor.putString("txtFontSize", txtFontSize);
+////                        editor.commit();
+////                        Toast.makeText(getActivity(), "Information Saved", Toast.LENGTH_SHORT).show();
+////                        resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+////                    }
+////                });
+//
+//
+//                //    resultFontSize.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+//
+//
+//
+//
+//
+//                dialogadd.show();
+//
+//
+//
+//
+//            }
+//        });
         blockList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -635,22 +637,22 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        tellafriend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-               // Toast.makeText(getActivity(), "This Tell a Friend", Toast.LENGTH_SHORT).show();
-
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-              //  String Body ="حمل هذا التطبيق";
-                String Sub ="https://play.google.com/store/apps/details?id=com.facebook.katana"+"\n"
-                        +"حمل التطبيق الان.";
-           //     intent.putExtra(Intent.EXTRA_TEXT,Body);
-                intent.putExtra(Intent.EXTRA_TEXT,Sub);
-                startActivity(Intent.createChooser(intent,"Share Using"));
-
-            }
-        });
+//        tellafriend.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//               // Toast.makeText(getActivity(), "This Tell a Friend", Toast.LENGTH_SHORT).show();
+//
+//                Intent intent = new Intent(Intent.ACTION_SEND);
+//                intent.setType("text/plain");
+//              //  String Body ="حمل هذا التطبيق";
+//                String Sub ="https://play.google.com/store/apps/details?id=com.facebook.katana"+"\n"
+//                        +"حمل التطبيق الان.";
+//           //     intent.putExtra(Intent.EXTRA_TEXT,Body);
+//                intent.putExtra(Intent.EXTRA_TEXT,Sub);
+//                startActivity(Intent.createChooser(intent,"Share Using"));
+//
+//            }
+//        });
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

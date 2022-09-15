@@ -17,7 +17,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +53,7 @@ public class SplashScreen extends AppCompatActivity {
     BaseApp myBase;
     SplachActViewModel splachActViewModel;
     ProgressDialog progressDialog;
+    ProgressBar progressBar;
 
 
 
@@ -73,6 +76,7 @@ public class SplashScreen extends AppCompatActivity {
        text = findViewById(R.id.text);
 
         powerd = findViewById(R.id.powerd);
+        progressBar = findViewById(R.id.progress_circular);
 
         splachActViewModel = new ViewModelProvider(this).get(SplachActViewModel.class);
 
@@ -162,14 +166,17 @@ public class SplashScreen extends AppCompatActivity {
                         public void onChanged(Boolean aBoolean) {
                             if (aBoolean!=null) {
                                 if (aBoolean) {
-                                    System.out.println("boleannnn");
-                                    progressDialog = new ProgressDialog(SplashScreen.this);
-                                    progressDialog.setMessage(getResources().getString(R.string.prograss_message));
-                                    progressDialog.show();
+                                    progressBar.setVisibility(View.VISIBLE);
+//                                    System.out.println("boleannnn");
+//                                    progressDialog = new ProgressDialog(SplashScreen.this);
+//                                    progressDialog.setMessage(getResources().getString(R.string.prograss_message));
+//                                    progressDialog.show();
                                 } else {
-                                    if(progressDialog!=null){
-                                        progressDialog.dismiss();
-                                    }
+                                    progressBar.setVisibility(View.GONE);
+
+//                                    if(progressDialog!=null){
+//                                        progressDialog.dismiss();
+//                                    }
                                 }
                             }
                         }

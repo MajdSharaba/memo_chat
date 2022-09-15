@@ -20,6 +20,8 @@ public class ConversationModelView extends ViewModel {
         BaseApp baseApp = BaseApp.getInstance();
         private final ChatMessageRepo repository = baseApp.getChatMessageRepo();
         private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
+        private String lastSeen;
+
 
     private   String _state;
     public MutableLiveData<String> state ;
@@ -90,8 +92,8 @@ public class ConversationModelView extends ViewModel {
     }
     public void clearSelectedMessage(){
         repository.clearSelectedMessage();
-//        _selectedMessage.clear();
-//        selectedMessage.setValue(_selectedMessage);
+//        repository.clearMessageChecked();
+
     }
     public MutableLiveData<ArrayList<ChatMessage>> getSelectedMessage() {
         return repository.selectedMessage;
@@ -175,6 +177,14 @@ public class ConversationModelView extends ViewModel {
 
 
 
+    }
+
+    public String getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(String lastSeen) {
+        this.lastSeen = lastSeen;
     }
 
 

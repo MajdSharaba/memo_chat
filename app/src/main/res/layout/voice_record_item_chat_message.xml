@@ -95,20 +95,30 @@
                         android:background="@null"
                         android:src="@drawable/ic_download_audio"
                         android:visibility="visible" />
-                    <com.app.adprogressbarlib.AdCircleProgress
-                        android:id="@+id/pgb_progress"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:backgroundTintMode="add"
-                        app:adpgb_finished_color="@color/green"
-                        app:adpgb_unfinished_color="@android:color/white"
-                        custom:adpgb_finished_stroke_width="2dp"
-                        custom:adpgb_show_text="false"
-                        app:adpgb_progress="90"
-                        android:visibility="gone"
+<!--                    <com.app.adprogressbarlib.AdCircleProgress-->
+<!--                        android:id="@+id/pgb_progress"-->
+<!--                        android:layout_width="30dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:backgroundTintMode="add"-->
+<!--                        app:adpgb_finished_color="@color/green"-->
+<!--                        app:adpgb_unfinished_color="@android:color/white"-->
+<!--                        custom:adpgb_finished_stroke_width="2dp"-->
+<!--                        custom:adpgb_show_text="false"-->
+<!--                        app:adpgb_progress="90"-->
+<!--                        android:visibility="gone"-->
 
-                        custom:adpgb_unfinished_stroke_width="2dp" />
+<!--                        custom:adpgb_unfinished_stroke_width="2dp" />-->
+                    <ProgressBar
+                        android:layout_width="50dp"
+                        android:layout_height="40dp"
+                        android:id="@+id/pgb_progress"
+                        android:padding="1dp"
+                        android:layout_gravity="center"
+                        android:visibility="gone"
+                        >
+
+                    </ProgressBar>
                     <SeekBar
                         android:id="@+id/player_seek_bar"
                         android:layout_width="250dp"

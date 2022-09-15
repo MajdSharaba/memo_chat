@@ -89,7 +89,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     int limit = 2 ;
     boolean end = false ;
     TextView search ;
-    SharedPreferences sharedPreferences;
+//    SharedPreferences sharedPreferences;
     SearchModelView searchModelView;
     LinearLayout linerNOSearchResult;
 
@@ -99,7 +99,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
         timer     = new Timer();
 //        loadingPB = view.findViewById(R.id.idPBLoading);
 //        nestedSV  = view.findViewById(R.id.idNestedSV);
