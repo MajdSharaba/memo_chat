@@ -29,7 +29,7 @@
 
     <style name="Theme.ChatMemo.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
-    <style name="Theme.ChatMemo.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="Theme.ChatMemo.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
     <style name="ThemeOverlay.ChatMemo.FullscreenContainer" parent="">
         <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
         <item name="fullscreenTextColor">@color/light_blue_A400</item>

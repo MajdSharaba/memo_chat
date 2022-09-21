@@ -273,7 +273,9 @@ public class ResponeCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     System.out.println("reciveclosecallfromnotification");
+                    closeCall();
                     finish();
+
                     ///////////
 
 
@@ -524,7 +526,7 @@ public class ResponeCallActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        showWhenLockedAndTurnScreenOn();
+        showWhenLockedAndTurnScreenOn();
         CallProperty.setStatusBarOrScreenStatus(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_call_main);
         start();
@@ -715,7 +717,9 @@ public class ResponeCallActivity extends AppCompatActivity {
         imgBtnStopCallLp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                closeCall();
                 finish();
+
             }
         });
         /////
@@ -802,7 +806,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveMessageCall);
 
         callDisconnect();
-        closeCall();
+//        closeCall();
         callTimer.cancel();
 
         super.onDestroy();
@@ -1000,8 +1004,11 @@ public class ResponeCallActivity extends AppCompatActivity {
 
 private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
     ArrayList<PeerConnection.IceServer> iceServers = new ArrayList<>();
-    String URL = "stun:stun.l.google.com:19302";
-    iceServers.add(new PeerConnection.IceServer(URL));
+//    String URL = "stun:stun.l.google.com:19302";
+//    iceServers.add(new PeerConnection.IceServer(URL));
+//    iceServers.add(new PeerConnection.IceServer("turn:fr-turn1.xirsys.com:80?transport=udp", "XudckbgEBo-cL8svrlbBS05UmRDbnxLfwP1U8nKrzcppvoj06xoPf4ImOAhonpd8AAAAAGMoDB9mYWRpZGVib3c=", "5178a972-37e4-11ed-95d3-0242ac120004"));
+        iceServers.add(new PeerConnection.IceServer("turn:137.184.155.225:3478", "memo", "memoBack_Fadi!2022y"));
+
 
     PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
     MediaConstraints pcConstraints = new MediaConstraints();

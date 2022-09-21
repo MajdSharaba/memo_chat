@@ -27,26 +27,40 @@ public class SearchModelView extends ViewModel {
 
     public MutableLiveData<ArrayList<SearchRespone>> liveSearchResponeList;
     public ArrayList<SearchRespone> searchResponeArrayList;
+    public MutableLiveData<Boolean> loading;
+
 
     public SearchModelView() {
         liveSearchResponeList = new MutableLiveData<>();
         searchResponeArrayList = new ArrayList<>();
+        loading = new MutableLiveData<>(false);
+
     }
 
 
     @SuppressLint("CheckResult")
     public MutableLiveData<ArrayList<SearchRespone>> search(String searchParameter, String page, String myId) {
-     searchResponeArrayList.clear();
-
-
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().search(searchParameter,page,myId)
+        if(searchParameter.isEmpty()){
+            loading.postValue(true);
+        }
+        Single<String> observable = RetrofitClient.getInstance().getapi().search(searchParameter,page,myId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s->{
+            loading.setValue(false);
+
             JSONObject respObj = null;
+
+            System.out.println("search"+searchParameter);
             try {
+                if(searchResponeArrayList!=null){
+                    searchResponeArrayList.clear();
+
+                }
+
             respObj = new JSONObject(s);
             JSONArray jsonArray = (JSONArray) respObj.get("data");
+            System.out.println(jsonArray.length()+"jsonArray.length()");
 
             for (int i = 0; i <= jsonArray.length() - 1; i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -75,6 +89,8 @@ public class SearchModelView extends ViewModel {
 
         } ,s -> {
             liveSearchResponeList.setValue(null);
+            loading.setValue(false);
+
         });
 
 

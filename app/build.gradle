@@ -20,8 +20,8 @@ android {
         applicationId "com.yawar.memo"
         minSdkVersion 21
         targetSdkVersion 32
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "2.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -52,7 +52,8 @@ android {
 
 dependencies {
 
-    implementation ('io.socket:socket.io-client:2.0.1') {
+
+    implementation ('io.socket:socket.io-client:2.1.0') {
     exclude group: 'org.json', module: 'json'}
 //    implementation 'org.webrtc:google-webrtc:1.0.+'
 //    implementation 'com.github.webrtc-sdk:android:104.5112.01'
@@ -136,6 +137,8 @@ dependencies {
     implementation 'com.github.mutasemhajhasan:SlideToAnswerView:1.0.0'
 
     implementation 'pub.devrel:easypermissions:1.1.3'
+//    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.4'
+
 //    implementation 'io.pristine:libjingle_peerconnection:7113'
 //    implementation 'io.pristine:libjingle:11139@aar'
 //    api 'io.pristine:libjingle:9127@aar'

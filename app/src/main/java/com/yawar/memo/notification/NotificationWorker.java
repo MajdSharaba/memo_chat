@@ -168,7 +168,9 @@ public class NotificationWorker extends Worker {
 
                     .setSmallIcon(R.drawable.ic_memo_logo)
                     .setAutoCancel(false)
-                    .setSound((RingtoneManager. getDefaultUri (RingtoneManager. TYPE_NOTIFICATION)))
+//                    .setSound(null)
+//                    .setOngoing(true)
+
                     .setGroup(GROUP_KEY_WORK_EMAIL)
 
 
@@ -194,6 +196,16 @@ public class NotificationWorker extends Worker {
                         channel_id, "Memo",
 
                         NotificationManager.IMPORTANCE_HIGH);
+                AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                        .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
+                        .build();
+//                    notificationChannel.setSound(alarmSound, null);
+                notificationChannel.setSound(Uri.parse("android.resource://" + applicationContext.getPackageName() + "/" + R.raw.notification_sound), audioAttributes);
+                notificationChannel.setSound(RingtoneManager. getDefaultUri (RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
+
 
                 /// for check current notification
                 for (StatusBarNotification statusBarNotification : notificationManager.getActiveNotifications()) {

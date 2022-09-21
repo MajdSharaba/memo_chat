@@ -27,11 +27,15 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.CallHistoryFragment;
 import com.yawar.memo.language.helper.LocaleHelper;
 import com.yawar.memo.permissions.Permissions;
+import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.ChatRoomFragment;
@@ -66,6 +70,7 @@ public class DashBord extends AppCompatActivity implements Observer {
     ChatRoomRepo chatRoomRepo;
     ClassSharedPreferences classSharedPreferences;
     String myId;
+    AuthRepo authRepo;
     BottomNavigationView bottomNavigationView;
 
     public static final String NEW_MESSAGE ="new Message" ;
@@ -342,13 +347,36 @@ public class DashBord extends AppCompatActivity implements Observer {
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveBlockUser, new IntentFilter(ON_BLOCK_USER));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveUnBlockUser, new IntentFilter(ON_UN_BLOCK_USER));
 
+////// send Fcm Token
+        myBase = BaseApp.getInstance();
+        authRepo = myBase.getAuthRepo();
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w("kk", "Fetching FCM registration token failed", task.getException());
+                            return;
+                        }
+                        Log.w("kk", "Fetching FCM registration token sucess", task.getException());
+
+                        String token = task.getResult();
+                        authRepo.sendFcmToken(myId,token);
+                        Log.d("jjj", token);
+                    }
+                });
+
+////////////////////////////////////
 
 
+        ///////////////////
+        System.out.println("android.os.Build.MANUFACTURER"+android.os.Build.MANUFACTURER);
+
+/////////////////////
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         permissions = new Permissions();
         checkPermission();
         myId = classSharedPreferences.getUser().getUserId();
-        myBase = BaseApp.getInstance();
         chatRoomRepo= myBase.getChatRoomRepo();
 //        chatRoomRepo.callAPI(myId);
 
@@ -613,4 +641,5 @@ public class DashBord extends AppCompatActivity implements Observer {
 
 
     }
+
 }

@@ -72,18 +72,18 @@ public class IntroActModelView extends ViewModel {
 
 
     }
-    @SuppressLint("CheckResult")
-    public void sendFcmToken(String user_id, String token){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().sendFcmToken(user_id,token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        observable.subscribe(s -> {
-
-
-        },s-> {
-            System.out.println("Errorrrrrrrr" + s);
-          });
-    }
+//    @SuppressLint("CheckResult")
+//    public void sendFcmToken(String user_id, String token){
+//        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url_final).getapi().sendFcmToken(user_id,token)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread());
+//        observable.subscribe(s -> {
+//
+//
+//        },s-> {
+//            System.out.println("Errorrrrrrrr" + s);
+//          });
+//    }
 
     public MutableLiveData<Boolean> getLoading(){
         return repository.loading;

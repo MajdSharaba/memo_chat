@@ -161,26 +161,26 @@ public class SplashScreen extends AppCompatActivity {
                     });
 
 
-                    splachActViewModel.getLoading().observe(SplashScreen.this, new androidx.lifecycle.Observer<Boolean>() {
-                        @Override
-                        public void onChanged(Boolean aBoolean) {
-                            if (aBoolean!=null) {
-                                if (aBoolean) {
-                                    progressBar.setVisibility(View.VISIBLE);
-//                                    System.out.println("boleannnn");
-//                                    progressDialog = new ProgressDialog(SplashScreen.this);
-//                                    progressDialog.setMessage(getResources().getString(R.string.prograss_message));
-//                                    progressDialog.show();
-                                } else {
-                                    progressBar.setVisibility(View.GONE);
-
-//                                    if(progressDialog!=null){
-//                                        progressDialog.dismiss();
-//                                    }
-                                }
-                            }
-                        }
-                    });
+//                    splachActViewModel.getLoading().observe(SplashScreen.this, new androidx.lifecycle.Observer<Boolean>() {
+//                        @Override
+//                        public void onChanged(Boolean aBoolean) {
+//                            if (aBoolean!=null) {
+//                                if (aBoolean) {
+//                                    progressBar.setVisibility(View.VISIBLE);
+////                                    System.out.println("boleannnn");
+////                                    progressDialog = new ProgressDialog(SplashScreen.this);
+////                                    progressDialog.setMessage(getResources().getString(R.string.prograss_message));
+////                                    progressDialog.show();
+//                                } else {
+//                                    progressBar.setVisibility(View.GONE);
+//
+////                                    if(progressDialog!=null){
+////                                        progressDialog.dismiss();
+////                                    }
+//                                }
+//                            }
+//                        }
+//                    });
 
                     splachActViewModel.getErrorMessage().observe(SplashScreen.this, new androidx.lifecycle.Observer<Boolean>() {
                         @Override

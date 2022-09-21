@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:background="@color/background_setting_color"
     android:orientation="vertical"
     tools:context=".views.UserInformationActivity">
     <androidx.cardview.widget.CardView
@@ -23,8 +24,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:paddingTop="20dp"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/th">
@@ -35,7 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="18sp"
-        android:layout_margin="2dp"
+        android:layout_margin="5dp"
         android:textStyle="bold"
         android:fontFamily="@font/font"
         />
@@ -51,15 +52,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center_horizontal"
+
                 android:layout_gravity="center_horizontal"
                 android:padding="10dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/liner_audio_call"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_margin="10dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -86,9 +87,9 @@
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/liner_video_call"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -113,9 +114,9 @@
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/liner_Message"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:gravity="center"
+                    android:layout_margin="10dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -166,9 +167,9 @@
 <!--                </LinearLayout>-->
                 <LinearLayout
                     android:id="@+id/liner_more"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:gravity="center"
-                    android:layout_weight="1"
+                    android:layout_margin="10dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -224,7 +225,7 @@
             android:textStyle="bold"
             android:fontFamily="@font/font"
             android:layout_marginTop="5dp"
-            android:text="@string/special_number"
+            android:text="@string/phone_number"
             >
 
         </TextView>

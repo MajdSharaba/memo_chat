@@ -905,7 +905,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutImageViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
 
-                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -929,7 +929,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutImageViewHolder) holder).contentwithB.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutImageViewHolder) holder).contentwithB.setLayoutParams(layoutParams);
+//                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 
                     RelativeLayout.LayoutParams lp =
@@ -957,16 +959,16 @@ public void setData(ArrayList<ChatMessage> newData) {
 //                    layoutParams = (LinearLayout.LayoutParams) ((ViewHolder)holder).txtMessage.getLayoutParams();
 //                    layoutParams.gravity = Gravity.RIGHT;
 //                    ((ViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
-                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.white));
+                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.white));
 
 
-                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.white));
 
 
-                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -996,13 +998,23 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutVoiceViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 //                    ((LayoutVoiceViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutVoiceViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.textColor));
+//
+//                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.textColor));
+
 
                     ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutVoiceViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
+
+                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1033,7 +1045,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     ((LayoutVideoViewHolder) holder).content.setLayoutParams(lp);
-                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -1058,7 +1070,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutVideoViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutVideoViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+//                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 //
 
@@ -1088,7 +1102,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     ((LayoutPdfViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -1112,7 +1126,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutPdfViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutPdfViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+//                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1140,7 +1156,14 @@ public void setData(ArrayList<ChatMessage> newData) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     ((LayoutContactViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutContactViewHolder) holder).addContact.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.white));
+
+
+
+
 
 
                     if (state.equals("3")) {
@@ -1164,13 +1187,17 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutContactViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutContactViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
-                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).view1.setBackgroundColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).view2.setBackgroundColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).sendMessage.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).addContact.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutContactViewHolder) holder).addContact.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1197,7 +1224,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutLocationViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
 
-                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -1221,7 +1248,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutLocationViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutLocationViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+//                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1253,10 +1282,10 @@ public void setData(ArrayList<ChatMessage> newData) {
                     layoutParams.gravity = Gravity.RIGHT;
                     ((LayoutTextViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
 
-                    ((LayoutTextViewHolder) holder).txtMessage.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutTextViewHolder) holder).txtMessage.setTextColor(context.getResources().getColor(R.color.white));
 
 
-                    ((LayoutTextViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutTextViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {

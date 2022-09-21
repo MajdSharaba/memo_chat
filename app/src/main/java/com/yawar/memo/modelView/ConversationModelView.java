@@ -20,7 +20,7 @@ public class ConversationModelView extends ViewModel {
         BaseApp baseApp = BaseApp.getInstance();
         private final ChatMessageRepo repository = baseApp.getChatMessageRepo();
         private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
-        private String lastSeen;
+        private String lastSeen = "null";
 
 
     private   String _state;
@@ -35,7 +35,7 @@ public class ConversationModelView extends ViewModel {
 
     public ConversationModelView() {
 
-        this.state=new MutableLiveData<>();
+        this.state=new MutableLiveData<>("false");
         this.isTyping = new MutableLiveData<>();
         this.isFirst = new MutableLiveData<>(true);
 
@@ -185,6 +185,20 @@ public class ConversationModelView extends ViewModel {
 
     public void setLastSeen(String lastSeen) {
         this.lastSeen = lastSeen;
+    }
+
+    public MutableLiveData<Boolean> getLoading(){
+        return repository.loading;
+    }
+
+    public MutableLiveData<Boolean> getErrorMessage(){
+        return repository.showErrorMessage;
+    }
+    public void setLoading(Boolean check){
+        repository.loading.setValue(check);
+    }
+    public void setErrorMessage(Boolean check){
+        repository.showErrorMessage.setValue(check);
     }
 
 

@@ -185,7 +185,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         public void handleMessage(android.os.Message msg) {
             switch (msg.arg1) {
                 case 1:
-                    Log.w(TAG, "Connected");
+                    Log.w(TAG, "Connectedddddd");
 
                     break;
                 case 2:
@@ -331,7 +331,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     System.out.println("EVENT_TYPE_MESSAGEEEEEEE");
 
                     String chat = intent.getExtras().getString(EXTRA_NEW_MESSAGE_PARAMTERS);
-                    if (isSocketConnected()) {
+
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "reconnecting socket...");
+                        sendMessage(chat);
+
+                    } else {
                         sendMessage(chat);
                     }
                     break;
@@ -944,22 +951,23 @@ public void onTaskRemoved(Intent rootIntent) {
         switch (event) {
             case Socket.EVENT_CONNECT:
                 android.os.Message msg = mServiceHandler.obtainMessage();
-                msg.arg1 = 1;
-                mServiceHandler.sendMessage(msg);
-                isConnected = true;
-                intent = new Intent(ChatRoomFragment.ON_SOCKET_CONNECTION);
-                intent.putExtra("status", true);
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                msg.arg1 = 1;
+//                mServiceHandler.sendMessage(msg);
+//                System.out.println("Socket.EVENT_CONNECT");
+//                isConnected = true;
+//                intent = new Intent(ChatRoomFragment.ON_SOCKET_CONNECTION);
+//                intent.putExtra("status", true);
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case Socket.EVENT_DISCONNECT:
-                Log.w(TAG, "socket disconnected");
-                isConnected = false;
-                msg = mServiceHandler.obtainMessage();
-                msg.arg1 = 2;
-                mServiceHandler.sendMessage(msg);
-                intent = new Intent(ChatRoomFragment.ON_SOCKET_CONNECTION);
-                intent.putExtra("status", false);
-                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+//                Log.w(TAG, "socket disconnected");
+//                isConnected = false;
+//                msg = mServiceHandler.obtainMessage();
+//                msg.arg1 = 2;
+//                mServiceHandler.sendMessage(msg);
+//                intent = new Intent(ChatRoomFragment.ON_SOCKET_CONNECTION);
+//                intent.putExtra("status", false);
+//                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case Socket.EVENT_CONNECT_ERROR:
                 isConnected = false;

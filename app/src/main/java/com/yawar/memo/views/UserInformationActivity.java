@@ -24,6 +24,7 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.modelView.UserInformationViewModel;
 import com.yawar.memo.service.SocketIOService;
@@ -263,6 +264,34 @@ public class UserInformationActivity extends AppCompatActivity {
                     }
                 });
 
+        userInformationViewModel.getUserInfo(another_user_id).observe(this, new androidx.lifecycle.Observer <UserModel>() {
+            @Override
+            public void onChanged(UserModel userModel) {
+                if (userModel != null) {
+
+                    txtUserName.setText(userModel.getUserName()+" "+userModel.getLastName());
+                    if(userModel.getPhone()!=null) {
+                        String firstString = userModel.getPhone().substring(0, 4);
+                        String secondString = userModel.getPhone().substring(4, 7);
+                        String thirtyString = userModel.getPhone().substring(7, 10);
+                        String lastString = userModel.getPhone().substring(10);
+
+                        txtSpecialNumber.setText(firstString + "-" + secondString + "-" + thirtyString + "-" + lastString);
+
+
+                        if(userModel.getImage()!=null) {
+                            Glide.with(circleImageView.getContext()).load(AllConstants.imageUrl + userModel.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(circleImageView);
+                        }
+
+                    }
+
+
+
+                }
+            }
+        });
+
+
 
 
 //////////////////////////
@@ -380,19 +409,19 @@ public class UserInformationActivity extends AppCompatActivity {
 //        media.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
-
-        if(!imageUrl.isEmpty()){
-            Glide.with(circleImageView.getContext()).load(AllConstants.imageUrl+imageUrl).into(circleImageView);}
-       txtUserName.setText(userName);
+//
+//        if(!imageUrl.isEmpty()){
+//            Glide.with(circleImageView.getContext()).load(AllConstants.imageUrl+imageUrl).into(circleImageView);}
+//       txtUserName.setText(userName);
         System.out.println(sn+"special_number");
-        if(!sn.isEmpty()) {
-            String firstString = sn.substring(0, 1);
-            String secondString = sn.substring(1, 4);
-            String thirtyString = sn.substring(4, 7);
-            String lastString = sn.substring(7);
-
-            txtSpecialNumber.setText(firstString + "-" + secondString + "-" + thirtyString + "-" + lastString);
-        }
+//        if(!sn.isEmpty()) {
+//            String firstString = sn.substring(0, 1);
+//            String secondString = sn.substring(1, 4);
+//            String thirtyString = sn.substring(4, 7);
+//            String lastString = sn.substring(7);
+//
+////            txtSpecialNumber.setText(firstString + "-" + secondString + "-" + thirtyString + "-" + lastString);
+//        }
         userInformationViewModel.mediaRequest(my_id,another_user_id);
 //        getMedia();
 

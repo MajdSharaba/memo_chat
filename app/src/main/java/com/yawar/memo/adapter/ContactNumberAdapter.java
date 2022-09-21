@@ -2,6 +2,7 @@ package com.yawar.memo.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -97,6 +98,21 @@ public class ContactNumberAdapter extends RecyclerView.Adapter<ContactNumberAdap
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+
+                }
+            });
+
+            holder.button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+              //  String Body ="حمل هذا التطبيق";
+                String Sub =model.getApp_path()+"\n"
+                        +activity.getString(R.string.download_app);
+           //     intent.putExtra(Intent.EXTRA_TEXT,Body);
+                intent.putExtra(Intent.EXTRA_TEXT,Sub);
+                activity.startActivity(Intent.createChooser(intent,"Share Using"));
 
                 }
             });

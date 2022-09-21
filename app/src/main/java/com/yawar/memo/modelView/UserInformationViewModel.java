@@ -68,6 +68,9 @@ public class UserInformationViewModel extends ViewModel {
     public  MutableLiveData<ArrayList<MediaModel>> getMedia(){
         return  repository.mediaModelsMutableLiveData;
     }
+    public  MutableLiveData<UserModel> getUserInfo(String anthor_user_id){
+        return  repository.getUserInformation(anthor_user_id);
+    }
 
     public void set_state(String _state) {
         System.out.println("stateTooles"+_state);

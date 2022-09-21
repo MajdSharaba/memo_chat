@@ -234,8 +234,7 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     Log.i("CallNotificatio", "run: close ");
-                    finish();
-                    ///////////
+                    requestCallViewModel.setEndCall(true);                    ///////////
 
 
                 }
@@ -466,6 +465,7 @@ public class RequestCallActivity extends AppCompatActivity {
                                 System.out.println("requestCallViewModel.setRining(answare)");
 
                                 peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(OFFER, sdp));
+                                Log.d(TAG, "SimpleSdpObserver: "+sdp);
                                 requestCallViewModel.setPeerId("opwn");
 
 
@@ -524,7 +524,7 @@ public class RequestCallActivity extends AppCompatActivity {
             type.put("video", requestCallViewModel.getIsVideoForMe().getValue());
 
             type.put("audio", true);
-            userObject.put("name", userModel.getUserName());
+            userObject.put("name", userModel.getUserName()+" "+ userModel.getLastName());
             userObject.put("image_profile", userModel.getImage());
             data.put("rcv_id", anthor_user_id);
             data.put("typeCall", "call");
@@ -571,7 +571,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
 
         int j=0;
-        countEndCallDownTimer = new CountDownTimer(4000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
+        countEndCallDownTimer = new CountDownTimer(1000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
 
             public void onTick(long millisUntilFinished) {
 
@@ -693,14 +693,19 @@ public class RequestCallActivity extends AppCompatActivity {
         JSONObject type = new JSONObject();
         JSONObject userObject = new JSONObject();
 
+
         ////
 
         try {
 
             userObject.put("name", userModel.getUserName());
             userObject.put("image_profile", userModel.getImage());
+            type.put("video", requestCallViewModel.getIsVideoForMe().getValue());
+
+            type.put("audio", true);
             data.put("rcv_id", anthor_user_id);
             data.put("typeCall", "missingCall");
+            data.put("type", type);
             data.put("user", userObject);
             data.put("snd_id", my_id);
         } catch (JSONException e) {
@@ -1230,10 +1235,10 @@ public class RequestCallActivity extends AppCompatActivity {
         audioManager.setMode(AudioManager.MODE_NORMAL);
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
         notificationManager.cancel(AllConstants.onGoingCallChannelId);
-        if (!requestCallViewModel.getPeerId().getValue().equals("no connect")&&!requestCallViewModel.getPeerId().getValue().equals("null")) {
-            System.out.println("send close call");
-            closeCall();
-        }
+//        if (!requestCallViewModel.getPeerId().getValue().equals("no connect")&&!requestCallViewModel.getPeerId().getValue().equals("null")) {
+//            System.out.println("send close call");
+//            closeCall();
+//        }
         callDisconnect();
         callTimer.cancel();
 
@@ -1419,11 +1424,11 @@ public class RequestCallActivity extends AppCompatActivity {
         rootEglBase = EglBase.create();
         binding.surfaceView.init(rootEglBase.getEglBaseContext(), null);
         binding.surfaceView.setEnableHardwareScaler(true);
-        binding.surfaceView.setMirror(true);
+//        binding.surfaceView.setMirror(true);
 
         binding.surfaceView2.init(rootEglBase.getEglBaseContext(), null);
         binding.surfaceView2.setEnableHardwareScaler(true);
-        binding.surfaceView2.setMirror(true);
+//        binding.surfaceView2.setMirror(true);
 
         //add one more
     }
@@ -1493,8 +1498,14 @@ public class RequestCallActivity extends AppCompatActivity {
 
     private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         ArrayList<PeerConnection.IceServer> iceServers = new ArrayList<>();
-        String URL = "stun:stun.l.google.com:19302";
-        iceServers.add(new PeerConnection.IceServer(URL));
+//        String URL = "stun:stun.l.google.com:19302";
+//        String URL = "stun:stun.l.google.com:19302";
+
+//        iceServers.add(new PeerConnection.IceServer("turn:fr-turn1.xirsys.com:80?transport=udp", "XudckbgEBo-cL8svrlbBS05UmRDbnxLfwP1U8nKrzcppvoj06xoPf4ImOAhonpd8AAAAAGMoDB9mYWRpZGVib3c=", "5178a972-37e4-11ed-95d3-0242ac120004"));
+        iceServers.add(new PeerConnection.IceServer("turn:137.184.155.225:3478", "memo", "memoBack_Fadi!2022y"));
+
+//        iceServers.add(new PeerConnection.IceServer(URL));
+
 
         PeerConnection.RTCConfiguration rtcConfig = new PeerConnection.RTCConfiguration(iceServers);
         MediaConstraints pcConstraints = new MediaConstraints();
@@ -1531,7 +1542,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
             @Override
             public void onIceCandidate(IceCandidate iceCandidate) {
-                Log.d(TAG, "onIceCandidate: ");
+                Log.d(TAG, "onIceCandidate: "+iceCandidate);
                 JSONObject message = new JSONObject();
 
                 try {

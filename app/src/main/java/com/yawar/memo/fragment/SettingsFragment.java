@@ -166,12 +166,14 @@ public class SettingsFragment extends Fragment {
         phoneNumber = view.findViewById(R.id.phoneNumber);
 //        phoneNumber.setTextSize(textSize);
 //        phoneNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
-        String firstString = userModel.getSecretNumber().substring(0,1);
-        String secondString = userModel.getSecretNumber().substring(1,4);
-        String thirtyString =  userModel.getSecretNumber().substring(4,7);
-        String lastString =userModel.getSecretNumber().substring(7);
+        if(userModel.getPhone()!=null) {
+            String firstString = userModel.getPhone().substring(0, 4);
+            String secondString = userModel.getPhone().substring(4, 7);
+            String thirtyString = userModel.getPhone().substring(7, 10);
+            String lastString = userModel.getPhone().substring(10);
 
-        phoneNumber.setText(firstString+"-"+secondString+"-"+thirtyString+"-"+lastString);
+            phoneNumber.setText(firstString + "-" + secondString + "-" + thirtyString + "-" + lastString);
+        }
 
 
         setPhoto = view.findViewById(R.id.selectImage);
@@ -744,7 +746,7 @@ public class SettingsFragment extends Fragment {
                final byte[] inputData = getBytes(iStream);
 
 
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.base_node_url+"upadteImageProfile",
+            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.base_url_final+"upadteImageProfile",
                     new Response.Listener<NetworkResponse>() {
                         @Override
                         public void onResponse(NetworkResponse response) {

@@ -201,22 +201,22 @@ public class FirebaseMessageReceiver
 
                         break;
                     case "imageWeb":
-                        message = getResources().getString(R.string.photo);
+                        message = getResources().getString(R.string.n_photo);
                         break;
                     case "voice":
-                        message = getResources().getString(R.string.voice);
+                        message = getResources().getString(R.string.n_voice);
                         break;
                     case "video":
-                        message = getResources().getString(R.string.video);
+                        message = getResources().getString(R.string.n_video);
                         break;
                     case "file":
-                        message = getResources().getString(R.string.file);
+                        message = getResources().getString(R.string.n_file);
                         break;
                     case "contact":
-                        message = getResources().getString(R.string.contact_number);
+                        message = getResources().getString(R.string.n_contact);
                         break;
                     case "location":
-                        message = getResources().getString(R.string.location);
+                        message = getResources().getString(R.string.n_location);
                         break;
 
                     default:

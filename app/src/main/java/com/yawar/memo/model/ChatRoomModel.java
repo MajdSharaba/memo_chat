@@ -17,6 +17,7 @@ public class ChatRoomModel implements Comparable, Cloneable {
     public String user_token;
     public String message_type;
     public String mstate;
+    public String phone;
 
 
 

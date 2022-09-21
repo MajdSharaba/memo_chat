@@ -95,7 +95,7 @@ import java.util.ArrayList;
                     SearchRespone model = getItem(position);
                     System.out.println("model"+model);
                     holder.tvName.setText(model.getName());
-                    holder.tvNumber.setText(model.getSecretNumber());
+                    holder.tvNumber.setText(model.getPhone());
                     System.out.println(model.getImage());
 
                     // Glide.with(holder.imageView.getContext()).load(model.getImage()).into(holder.imageView);

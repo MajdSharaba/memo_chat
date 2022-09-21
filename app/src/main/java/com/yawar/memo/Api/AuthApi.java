@@ -8,6 +8,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,12 +38,18 @@ public class AuthApi implements Observer {
     BaseApp myBase = BaseApp.getInstance();
     ProgressDialog progressDialog;
     AuthRepo authApi= myBase.getAuthRepo();
+    public MutableLiveData<Boolean> loading;
+    public MutableLiveData<Boolean> showErrorMessage;
+
 
 
 
 
 
     public AuthApi(Activity context) {
+        loading = new MutableLiveData<>(false);
+        showErrorMessage = new MutableLiveData<>(false);
+
         this.context = context;
     }
 
@@ -75,17 +82,23 @@ public class AuthApi implements Observer {
                         } else {
                             // if the code is not correct then we are
                             // displaying an error message to the user.
-                            progressDialog.dismiss();
-                            Toast.makeText(context, Objects.requireNonNull(task.getException()).getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                            showErrorMessage.setValue(true);
+                            System.out.println(" showErrorMessage.setValue(true)"+ showErrorMessage.getValue());
+
+
+                            BaseApp.getInstance().getAuthRepo().loading.setValue(false);
+
+//                            Toast.makeText(context, Objects.requireNonNull(task.getException()).getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
     }
     public void sendVerificationCode(String number,Activity activity) {
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        loading.setValue(true);
+//        progressDialog = new ProgressDialog(context);
+//        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
+//        progressDialog.setCancelable(false);
+//        progressDialog.show();
         // this method is used for getting
         // OTP on user phone number.
         PhoneAuthOptions options =
@@ -101,10 +114,12 @@ public class AuthApi implements Observer {
     }
     public void resendVerificationCode(String phoneNumber,PhoneAuthProvider.ForceResendingToken forceResendingToken,
                                         Activity activity) {
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
-        progressDialog.show();
-        System.out.println(forceResendingToken);
+//        progressDialog = new ProgressDialog(context);
+//        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
+//        progressDialog.show();
+//        System.out.println(forceResendingToken);
+        loading.setValue(true);
+
         SharedPreferences prefs = context.getSharedPreferences("auth", MODE_PRIVATE);
 
         String name = prefs.getString("verificationid",null);
@@ -134,7 +149,10 @@ public class AuthApi implements Observer {
 
 
             super.onCodeSent(verificationid, forceResendingToken);
-            progressDialog.dismiss();
+
+            loading.setValue(false);
+//            progressDialog.dismiss();
+
 
             // when we receive the OTP it
             // contains a unique id which
@@ -185,9 +203,13 @@ public class AuthApi implements Observer {
         @Override
         public void onVerificationFailed(FirebaseException e) {
             // displaying error message with firebase exception.
-            progressDialog.dismiss();
+//            progressDialog.dismiss();
+            System.out.println("loading false");
+            loading.setValue(false);
+            showErrorMessage.setValue(true);
+            System.out.println(e.getMessage());
 
-            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
+//            Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
         }
     };
 

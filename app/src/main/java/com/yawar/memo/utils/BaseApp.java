@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Lifecycle;
@@ -61,15 +62,26 @@ public class BaseApp extends Application implements LifecycleObserver {
 
     @Override
     public void onCreate() {
-        System.out.println("onCreateeeeeeee");
         super.onCreate();
         setMode();
-        handler= new Handler();
+
 
 
 
         sInstance = this;
+
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+        System.out.println("getInstance()");
+        if(getClassSharedPreferences().getUser()!=null) {
+//            System.out.println("getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());");
+            Log.d(TAG, "getChatRoomRepo().callAPI(classSharedPreferences.getUser()");
+            getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
+
+        }
+
+
+
+
     }
 
 
@@ -98,6 +110,7 @@ public class BaseApp extends Application implements LifecycleObserver {
 
     public static synchronized BaseApp getInstance() {
         if(sInstance==null){
+            Log.d(TAG, "get Instance");
             sInstance = new BaseApp();
         }
 
@@ -231,12 +244,10 @@ public class BaseApp extends Application implements LifecycleObserver {
 
 
         if(classSharedPreferences.getUser()!=null){
-            if (myRunnable!=null){
+//            if(chatR) {
+//                getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
 
-                System.out.println("onMoveToForeground()");
 
-                handler.removeCallbacks(myRunnable);
-            }
 
         Intent service = new Intent(this, SocketIOService.class);
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
@@ -253,16 +264,19 @@ public class BaseApp extends Application implements LifecycleObserver {
     public void onMoveToBackground() {
         if(classSharedPreferences.getUser()!=null) {
 
+
             Intent service = new Intent(this, SocketIOService.class);
-            myRunnable = new Runnable() {
-                @Override
-                public void run() {
-                    System.out.println("on Move to bacground");
-                    service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
-                    startService(service);
-                }
-            };
-            handler.postDelayed(myRunnable, 30000);
+            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
+            startService(service);
+//            myRunnable = new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("on Move to bacground");
+//                    service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
+//                    startService(service);
+//                }
+//            };
+//            handler.postDelayed(myRunnable, 30000);
         }
 
 

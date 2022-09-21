@@ -47,6 +47,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
     Timer T;
     public PhoneAuthProvider.ForceResendingToken forceResendingToken ;
     TextView text ;
+    AuthApi authApi;
     TextView orText ;
     ProgressDialog progressDialog;
     @Override
@@ -58,24 +59,26 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
         text = findViewById(R.id.text);
         orText = findViewById(R.id.orText);
         verficationViewModel = new ViewModelProvider(this).get(VerficationViewModel.class);
+        authApi = new AuthApi(VerificationActivity.this);
 
-        verficationViewModel.getSpecialNumber().observe(this ,new androidx.lifecycle.Observer<JSONObject>() {
+
+        verficationViewModel.getSpecialNumber().observe(this, new androidx.lifecycle.Observer<JSONObject>() {
             @Override
             public void onChanged(JSONObject jsonObject) {
-                if(jsonObject!=null) {
+                if (jsonObject != null) {
                     verficationViewModel.getSpecialNumber().removeObserver(this);
-                    String sn="";
-                    String user_id="" ;
-                    String first_name="" ;
-                    String last_name="" ;
-                    String email="" ;
-                    String profile_image="";
-                    String secret_number="";
-                    String number="";
-                    String status="";
+                    String sn = "";
+                    String user_id = "";
+                    String first_name = "";
+                    String last_name = "";
+                    String email = "";
+                    String profile_image = "";
+                    String secret_number = "";
+                    String number = "";
+                    String status = "";
 
                     try {
-                        JSONObject userObject  = jsonObject.getJSONObject("user");
+                        JSONObject userObject = jsonObject.getJSONObject("user");
                         sn = userObject.getString("sn");
                         user_id = userObject.getString("id");
                         first_name = userObject.getString("first_name");
@@ -84,40 +87,41 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
                         profile_image = userObject.getString("profile_image");
                         secret_number = userObject.getString("sn");
                         number = userObject.getString("phone");
-                        status= userObject.getString("status");
+                        status = userObject.getString("status");
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    if(sn.isEmpty()){
+                    if (sn.isEmpty()) {
                         Intent intent = new Intent(VerificationActivity.this, RegisterActivity.class);
                         startActivity(intent);
                         finish();
-                    }
-                    else{
-                        UserModel userModel = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
+                    } else {
+                        UserModel userModel = new UserModel(user_id, first_name, last_name, email, number, secret_number, profile_image, status);
                         classSharedPreferences.setUser(userModel);
                         Intent intent = new Intent(VerificationActivity.this, IntroActivity.class);
                         startActivity(intent);
                         finish();
-                        UserModel userModel1 = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
-                        classSharedPreferences.setUser(userModel1);
                     }
+//                        UserModel userModel1 = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
+//                        classSharedPreferences.setUser(userModel1);
+//                    }
                 }
             }
         });
         verficationViewModel.getLoading().observe(this, new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                if (aBoolean!=null) {
+                if (aBoolean != null) {
+                    System.out.println("loadinggg");
                     if (aBoolean) {
-                        System.out.println("boleannnn");
                         progressDialog = new ProgressDialog(VerificationActivity.this);
                         progressDialog.setMessage(getResources().getString(R.string.prograss_message));
+                        progressDialog.setCancelable(false);
                         progressDialog.show();
                     } else {
-                      if(progressDialog!=null){
-                          progressDialog.dismiss();
-                      }
+                        if (progressDialog != null) {
+                            progressDialog.dismiss();
+                        }
                     }
                 }
             }
@@ -126,7 +130,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
         verficationViewModel.getErrorMessage().observe(this, new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                if (aBoolean!=null) {
+                if (aBoolean != null) {
                     if (aBoolean) {
                         Toast.makeText(VerificationActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
                         verficationViewModel.setErrorMessage(null);
@@ -139,7 +143,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
         resendbtn = findViewById(R.id.btn_resendCode);
         resendbtn.setEnabled(false);
         myBase = BaseApp.getInstance();
-        forceResendingToken =myBase.getForceResendingToken().getForceResendingToken();
+        forceResendingToken = myBase.getForceResendingToken().getForceResendingToken();
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         virvectbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,7 +153,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
                     Toast.makeText(VerificationActivity.this, R.string.valied_message, Toast.LENGTH_SHORT).show();
                 } else {
 
-                    AuthApi authApi = new  AuthApi(VerificationActivity.this);
+                    verficationViewModel.setLoading(true);
                     authApi.verifyCode(edtOTP.getText().toString());
                 }
 
@@ -160,11 +164,45 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
             public void onClick(View view) {
                 resendbtn.setEnabled(false);
                 timer();
-                AuthApi authApi = new AuthApi(VerificationActivity.this);
-                authApi.resendVerificationCode(classSharedPreferences.getNumber(),forceResendingToken, VerificationActivity.this);
+
+                authApi.resendVerificationCode(classSharedPreferences.getNumber(), forceResendingToken, VerificationActivity.this);
+            }
+        });
+
+
+        authApi.loading.observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean) {
+                    progressDialog = new ProgressDialog(VerificationActivity.this);
+                    progressDialog.setMessage(getResources().getString(R.string.prograss_message));
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                } else {
+                    if (progressDialog != null) {
+                        progressDialog.dismiss();
+                    }
+                }
+            }
+        });
+
+        authApi.showErrorMessage.observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                System.out.println("errrrorrr"+aBoolean);
+
+                if (aBoolean) {
+                    System.out.println("errrrorrr");
+                    Toast.makeText(VerificationActivity.this, R.string.valied_message, Toast.LENGTH_LONG).show();
+                    authApi.showErrorMessage.setValue(false);
+
+                }
+
+
             }
         });
     }
+
 
     void timer(){
         T=new Timer();
@@ -188,6 +226,15 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
                 });
             }
         }, 1000, 1000);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        if(progressDialog!=null){
+            progressDialog.dismiss();
+        }
+        super.onDestroy();
 
     }
 

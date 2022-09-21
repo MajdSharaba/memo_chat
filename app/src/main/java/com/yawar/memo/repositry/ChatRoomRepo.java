@@ -47,9 +47,10 @@ public class ChatRoomRepo {
             chatRoomsList = new ArrayList<>();
             chatRoomsList.clear();
             loading.setValue(true);
+            System.out.println("AllConstants.base_url_final"+AllConstants.base_url_final);
 
 
-            Single<ChatRoomRespone> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getChatRoom(user_id)
+            Single<ChatRoomRespone> observable = RetrofitClient.getInstance().getapi().getChatRoom(user_id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
             observable.subscribe(s -> {
@@ -163,7 +164,7 @@ public class ChatRoomRepo {
     }
     @SuppressLint("CheckResult")
     public  void deleteChatRoom(String my_id, String your_id){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().deleteChatRoom(my_id,your_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().deleteChatRoom(my_id,your_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
@@ -359,7 +360,7 @@ public class ChatRoomRepo {
     }
     @SuppressLint("CheckResult")
     public void addToArchived(String my_id, String your_id){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().addToArchived(my_id,your_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().addToArchived(my_id,your_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
@@ -375,7 +376,7 @@ public class ChatRoomRepo {
     }
     @SuppressLint("CheckResult")
     public void removeFromArchived(String my_id, String your_id){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().removeFromArchived(my_id,your_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().removeFromArchived(my_id,your_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {

@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.retrofit.RetrofitClient;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -45,8 +46,8 @@ public class AuthRepo {
             System.out.println(jsonObjectMutableLiveData.getValue()+"jsonObjectMutableLiveData");
             try {
 
-                loading.setValue(true);
-                Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getSpecialNumbers(phoneNumber)
+//                loading.setValue(true);
+                Single<String> observable = RetrofitClient.getInstance().getapi().getSpecialNumbers(phoneNumber)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread());
                 observable.subscribe(s -> {
@@ -71,6 +72,20 @@ public class AuthRepo {
             return jsonObjectMutableLiveData;
 
         }
+
+    @SuppressLint("CheckResult")
+    public void sendFcmToken(String user_id, String token){
+        Single<String> observable = RetrofitClient.getInstance().getapi().sendFcmToken(user_id,token)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+
+            BaseApp.getInstance().getClassSharedPreferences().setFcmToken(token);
+
+        },s-> {
+            System.out.println("ErrorrrrrrrrToken" + s);
+        });
+    }
 
 
 

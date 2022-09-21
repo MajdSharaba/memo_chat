@@ -70,6 +70,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     SearchView searchView;
     Toolbar toolbar;
    ArrayList<SearchRespone> list = new ArrayList<>();
+   ProgressBar progressBar;
 
     //    List<SearchRespone> searchResponeArrayList = new ArrayList<>();
     SearchAdapter searchAdapter;
@@ -111,6 +112,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         recyclerView.setHasFixedSize(true);
         linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        progressBar = view.findViewById(R.id.progress_circular);
 
 
 
@@ -120,6 +122,8 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         searchView = view.findViewById(R.id.search_by_secret_number);
         linerNOSearchResult = view.findViewById(R.id.liner_no_search_result);
         searchModelView = new ViewModelProvider(this).get(SearchModelView.class);
+//        searchModelView.loading.postValue(true);
+
         checkpermission();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -236,6 +240,27 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         });
 
         recyclerView.setAdapter(searchAdapter);
+
+
+        searchModelView.loading.observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null) {
+                    if (aBoolean) {
+                        recyclerView.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        linerNOSearchResult.setVisibility(View.GONE);
+
+                    } else {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        linerNOSearchResult.setVisibility(View.VISIBLE);
+
+
+                    }
+                }
+            }
+        });
         return  view;
 
     }

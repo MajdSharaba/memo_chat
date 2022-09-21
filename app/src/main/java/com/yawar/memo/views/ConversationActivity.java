@@ -34,6 +34,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
@@ -56,6 +57,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.webkit.WebView;
@@ -65,6 +67,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -154,6 +157,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private ImageView audioCallBtn;
     private LinearLayout linerNoMessage;
     private LinearLayout linerNameState;
+    private ProgressBar progressBar;
+
+
 
 
 
@@ -617,13 +623,13 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         chatMessage.setDate(MessageDate);
                         chatMessage.setIsUpdate("0");
                         chatMessage.setMe(false);
-                        try {
-                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                            r.play();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+//                        try {
+//                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+//                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+//                            r.play();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
                         if (type.equals("text") || type.equals("location") || type.equals("contact") || type.equals("video"))
                             displayMessage(chatMessage);
 //                        else new DownloadFileFromSocket(chatMessage).execute();
@@ -722,6 +728,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
 
         serverApi.sendNotification(message, type,fcmToken,chat_id, conversationModelView.blockedFor().getValue());
+        System.out.println("contact "+chatMessage.toString());
         Intent service = new Intent(this, SocketIOService.class);
         service.putExtra(SocketIOService.EXTRA_NEW_MESSAGE_PARAMTERS, chatMessage.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_MESSAGE);
@@ -923,6 +930,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         chatMessageRepo = myBase.getChatMessageRepo();
         chatMessageRepo.getChatHistory(user_id, anthor_user_id);
         backImageBtn = findViewById(R.id.image_button_back);
+        progressBar =  findViewById(R.id.progress_circular);
         LinearLayout linearLayout = findViewById(R.id.liner_conversation);
         messagesContainer = findViewById(R.id.messagesContainer);
         messagesContainer.setHasFixedSize(true);
@@ -1089,18 +1097,29 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     if (s.equals("true")) {
 //                        isCoonect = true;
                         System.out.println("dialay"+s);
+                        tv_state.setVisibility(View.VISIBLE);
                         tv_state.setText(R.string.connect_now);
                     } else if (s.equals("false")) {
 //                        isCoonect = false;
 
                         if (!conversationModelView.getLastSeen().equals("null")) {
+                            tv_state.setVisibility(View.VISIBLE);
                             tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(conversationModelView.getLastSeen())));
+                        }
+                        else {
+                            tv_state.setVisibility(View.GONE);
+
                         }
 
 
                     }
 
                 }
+                else {
+                    tv_state.setVisibility(View.GONE);
+
+                }
+
             }
         });
         conversationModelView.isTyping.observe(this, new Observer<String>() {
@@ -1113,6 +1132,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     } else if (conversationModelView.state.getValue().equals("true")) {
                         tv_state.setText(R.string.connect_now);
                     } else {
+                        if(conversationModelView.getLastSeen()!="null")
                         tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(conversationModelView.getLastSeen())));
 
 
@@ -1171,6 +1191,39 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             }
         });
+
+        conversationModelView.getLoading().observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null) {
+                    if (aBoolean) {
+                        System.out.println("boleannnn");
+                        progressBar.setVisibility(View.VISIBLE);
+                        messagesContainer.setVisibility(View.GONE);
+                        linerNoMessage.setVisibility(View.GONE);
+
+                    } else {
+                        progressBar.setVisibility(View.GONE);
+                        messagesContainer.setVisibility(View.VISIBLE);
+                        linerNoMessage.setVisibility(View.VISIBLE);
+
+
+                    }
+                }
+            }
+        });
+
+        conversationModelView.getErrorMessage().observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null) {
+                    if (aBoolean) {
+                        Toast.makeText(ConversationActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
+                        conversationModelView.setErrorMessage(null);
+                    }
+                }
+            }
+        });
         adapter = new ChatAdapter(ConversationActivity.this);
         messagesContainer.setAdapter(adapter);
         messagesContainer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -1201,6 +1254,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 makeMapsAction();
                 container.setVisibility(View.GONE);
                 relativeMaps.setVisibility(View.VISIBLE);
+                sendLocation.setVisibility(View.VISIBLE);
 
 //
             }
@@ -1255,6 +1309,14 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
     private void initAction() {
         tv_name.setText(userName);
+        //////////
+        messagesContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                System.out.println("pressssed");
+            }
+        });
+        /////////
 
 
         linerNameState.setOnClickListener(new View.OnClickListener() {
@@ -1364,6 +1426,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 startActivity(intent);
             }
         });
+
+
         audioCallBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -1514,6 +1578,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         //// for voice record
         recordButton.setListenForRecord(true);
+
 
         recordButton.setOnClickListener(view -> {
 
@@ -1809,7 +1874,18 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
         return true;
     }
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        Rect viewRect = new Rect();
+        view.getGlobalVisibleRect(viewRect);
+//        if (view.getVisibility() == View.VISIBLE){
+        if (view.getVisibility() == View.VISIBLE && !viewRect.contains((int) ev.getRawX(), (int) ev.getRawY())) {
 
+            hideLayout();
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
 
 
     ///// End initialAction
@@ -2036,14 +2112,16 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (conversationModelView.getChatMessaheHistory().getValue().size() > 0) {
 
 
-//                    messagesContainer.scrollToPosition(conversationModelView.getChatMessaheHistory().getValue().size() - 1);
-                    messagesContainer.getLayoutManager().scrollToPosition( conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+                    messagesContainer.scrollToPosition(conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+//                    messagesContainer.getLayoutManager().smoothScrollToPosition( conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+//                    messagesContainer.getLayoutManager().smoothScrollToPosition( messagesContainer,new RecyclerView.State(),conversationModelView.getChatMessaheHistory().getValue().size() - 1);
+
 
 
                 }
 
             }
-        },100);
+        },1000);
 //        messagesContainer.setSelection(messagesContainer.getCount() - 1);
     }
 
@@ -2426,6 +2504,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     protected void onDestroy() {
         super.onDestroy();
         System.out.println("on destroy");
+
         chatRoomRepo.setInChat(anthor_user_id, false);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(check);

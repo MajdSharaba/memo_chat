@@ -180,7 +180,7 @@
     <string name="home">الرشيسية</string>
     <string name="settings">الضبط</string>
     <string name="MoveToSettings">اذهب الى الضبط</string>
-    <string name="location">موقعك</string>
+    <string name="location">موقع جغرافي</string>
     <string name="sendCurrentLocation">ارسل موقعك الحالي</string>
     <string name="state">الحالة</string>
     <string name="hellohowareyou">مرحبا, كيف الحال</string>
@@ -216,7 +216,7 @@
     <string name="rining">يرن...</string>
     <string name="reject">رفض</string>
     <string name="answer">رد</string>
-    <string name="missing_call">مكالمة فائتة</string>
+    <string name="missing_call">مكالمة فائتة ☎️</string>
     <string name="replied">تم الرد</string>
     <string name="call_ended">تم انهاء المكالمة</string>
     <string name="alert_switch_to_video_message">هل تريد الانتقال الى مكالمة فيديو؟</string>
@@ -248,10 +248,20 @@
     <string name="gps_message">نظام GPS غير مفعل على جهازك, هل تريد تفعيل هذه الميزة؟</string>
     <string name="enable_gps">أذهب الى صفخة الاعدادت وفعل الموقع</string>
     <string name="gps">>نظام GPS غير مفعل على جهازك, يرجى تفعيل الميزة واعادة المحاولة </string>
+    <string name="alert">تنبيه </string>
+    <string name="xhaomi_message"> للحصول على الاشعارات في الخلفية, يرجى  منح صلاحية  الاشعارات من خلال الاعدادات>الأشعارات </string>
 
 
 
 
+
+    <string name="n_photo"> صورة 🖼</string>
+    <string name="n_voice"> تسجيل صوتي 🔊</string>
+    <string name="n_video"> فيديو 🎬 </string>
+    <string name="n_contact">  جهة اتصال 👤 </string>
+    <string name="n_location"> موقع جغرافي 📌</string>
+    <string name="n_file"> ملف 📖</string>
+    <string name="download_app">حمل التطبيق الأن</string>
 
 
 

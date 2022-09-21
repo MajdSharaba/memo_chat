@@ -42,11 +42,19 @@ android:orientation="vertical">
 
 
 </LinearLayout>
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:visibility="gone" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/liner_no_call_history"
         android:layout_marginTop="50dp"
+        android:visibility="gone"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:orientation="vertical"

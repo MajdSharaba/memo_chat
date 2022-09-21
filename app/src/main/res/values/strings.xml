@@ -176,7 +176,7 @@
     <string name="rining">...Rining</string>
     <string name="reject">reject</string>
     <string name="answer">answer</string>
-    <string name="missing_call">Missing Call</string>
+    <string name="missing_call">☎ Missing Call</string>
     <string name="replied">Replied</string>
     <string name="call_ended">Call Ended</string>
     <string name="alert_switch_to_video_message">do you want to switch to video call?</string>
@@ -196,8 +196,6 @@
 
 
     <string name="voice_call">Voice call</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="you_have_no_chats_yet">You have no chats yet!</string>
     <string name="start_new_chat">Start New Chat</string>
     <string name="you_have_no_archived_chat">You have no archived chats</string>
@@ -209,8 +207,18 @@
     <string name="gps_message">GPS is disabled in your device. Would you like to enable it?</string>
     <string name="enable_gps">Goto Settings Page To Enable GPS</string>
     <string name="gps">>GPS is disabled in your device, Please enable it and try again </string>
+    <string name="alert"> Alert </string>
+    <string name="xhaomi_message"> To get notification in background , please grant all notification permission  settings>notificationس</string>
+    <string name="n_photo">🖼 Photo</string>
+    <string name="n_voice">🔊 Audio</string>
+    <string name="n_video">🎬 Video</string>
+    <string name="n_contact">👤 Contact</string>
+    <string name="n_location">📌 Location</string>
+    <string name="n_file">\📖 Pdf</string>
+    <string name="download_app">Download App Now</string>
 
 
+    xhaomi_message
 
 
 

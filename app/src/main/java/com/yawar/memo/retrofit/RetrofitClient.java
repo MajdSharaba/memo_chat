@@ -3,6 +3,9 @@ package com.yawar.memo.retrofit;
 import com.yawar.memo.Api.api;
 import com.yawar.memo.constant.AllConstants;
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -14,19 +17,24 @@ public class RetrofitClient { //world wide cases
 //    private static final String base_url = "https://memoback.herokuapp.com/";//base url
     private static RetrofitClient instance;
     private final Retrofit retrofit; //retrofit object
-
+    final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+            .connectTimeout(50, TimeUnit.SECONDS)
+            .writeTimeout(50, TimeUnit.SECONDS)
+            .readTimeout(50, TimeUnit.SECONDS)
+            .build();
     private RetrofitClient(String baseUrl) { //constructor
         retrofit = new Retrofit.Builder().baseUrl(baseUrl).
+                client(okHttpClient).
                 addConverterFactory(ScalarsConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create()).build();
 
     }
 
-    public static synchronized RetrofitClient getInstance(String baseUrl) {
-//        if (instance == null) {
-            instance = new RetrofitClient(baseUrl);
-//        }
+    public static synchronized RetrofitClient getInstance() {
+        if (instance == null) {
+            instance = new RetrofitClient(AllConstants.base_url_final);
+        }
         return instance;
 
     }

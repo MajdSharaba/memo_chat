@@ -74,7 +74,10 @@ public class IntroActivity extends AppCompatActivity  {
         System.out.println( android.os.Build.MANUFACTURER+"String deviceMan = android.os.Build.MANUFACTURER;\n");
         progressBar = findViewById(R.id.progress_circular);
 //        if(android.os.Build.MANUFACTURER.equals("xhaomi")){
-//        openAppPermission();}
+//        if(android.os.Build.MANUFACTURER.equals("OPPO")){
+//
+//            showXhaomiDialog();
+//        }
 //        askCallPermission();
 
 //        goToNotificationSettings(this);
@@ -96,21 +99,21 @@ public class IntroActivity extends AppCompatActivity  {
        myBase = BaseApp.getInstance();
 
         introActModelView = new ViewModelProvider(this).get(IntroActModelView.class);
-            FirebaseMessaging.getInstance().getToken()
-                    .addOnCompleteListener(new OnCompleteListener<String>() {
-                        @Override
-                        public void onComplete(@NonNull Task<String> task) {
-                            if (!task.isSuccessful()) {
-                                Log.w("kk", "Fetching FCM registration token failed", task.getException());
-                                return;
-                            }
-
-                            String token = task.getResult();
-                            introActModelView.sendFcmToken(myId,token);
-                            classSharedPreferences.setFcmToken(token);
-                            Log.d("jjj", token);
-                        }
-                    });
+//            FirebaseMessaging.getInstance().getToken()
+//                    .addOnCompleteListener(new OnCompleteListener<String>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<String> task) {
+//                            if (!task.isSuccessful()) {
+//                                Log.w("kk", "Fetching FCM registration token failed", task.getException());
+//                                return;
+//                            }
+//
+//                            String token = task.getResult();
+//                            introActModelView.sendFcmToken(myId,token);
+//                            classSharedPreferences.setFcmToken(token);
+//                            Log.d("jjj", token);
+//                        }
+//                    });
 //        }
 
         introActModelView.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
@@ -150,7 +153,7 @@ public class IntroActivity extends AppCompatActivity  {
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean!=null) {
                     if (aBoolean) {
-                        Toast.makeText(IntroActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
+//                        Toast.makeText(IntroActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
                         introActModelView.setErrorMessage(null);
                     }
                 }
@@ -229,21 +232,50 @@ public class IntroActivity extends AppCompatActivity  {
 //            }
 //        }
 //    }
-//  void openAppPermission(){
-//      Intent intent = new Intent();
-//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//          intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
-//          intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
-//      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-//          intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
-//          intent.putExtra("app_package", this.getPackageName());
-//          intent.putExtra("app_uid", this.getApplicationInfo().uid);
-//      } else {
-//          intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-////          intent.addCategory(Intent.CATEGORY_DEFAULT);
-//          intent.setData(Uri.parse("package:" + this.getPackageName()));
-//      }
-//      this.startActivity(intent);
-//
-//    }
+
+    public void showXhaomiDialog(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle(getResources().getString(R.string.alert));
+        alertBuilder.setMessage(getResources().getString(R.string.xhaomi_message));
+
+        alertBuilder.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
+
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            public void onClick(DialogInterface dialog, int which) {
+                openAppPermission();
+
+                                                  }
+        });
+        alertBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+
+
+            }
+        });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+
+
+    }
+  void openAppPermission(){
+      Intent intent = new Intent();
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+          intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
+      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+          intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+          intent.putExtra("app_package", this.getPackageName());
+          intent.putExtra("app_uid", this.getApplicationInfo().uid);
+      } else {
+          intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//          intent.addCategory(Intent.CATEGORY_DEFAULT);
+          intent.setData(Uri.parse("package:" + this.getPackageName()));
+      }
+      this.startActivity(intent);
+
+    }
 }

@@ -11,6 +11,16 @@ public class SendContactNumberResponse  implements Serializable {
     String chat_id;
     String fcmToken;
 
+    public String getApp_path() {
+        return app_path;
+    }
+
+    public void setApp_path(String app_path) {
+        this.app_path = app_path;
+    }
+
+    String app_path;
+
     public String getBlockedFor() {
         return blockedFor;
     }
@@ -25,7 +35,7 @@ public class SendContactNumberResponse  implements Serializable {
 
 
 
-    public SendContactNumberResponse(String id ,String name, String number, String image, String state ,String chat_id , String fcmToken, String blockedFor) {
+    public SendContactNumberResponse(String id ,String name, String number, String image, String state ,String chat_id , String fcmToken, String blockedFor,String app_path) {
         this.id = id;
         this.name = name;
         this.number = number;
@@ -34,6 +44,7 @@ public class SendContactNumberResponse  implements Serializable {
         this.chat_id = chat_id;
         this.fcmToken = fcmToken;
         this.blockedFor = blockedFor;
+        this.app_path = app_path;
     }
 
     public String getName() {

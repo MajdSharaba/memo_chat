@@ -37,23 +37,30 @@ public class CallHistoryModelView extends ViewModel {
     public final ArrayList<CallModel> callModelsList ;
     SimpleDateFormat format;
     Date date;
+    public MutableLiveData<Boolean> loading;
 
     @SuppressLint("SimpleDateFormat")
     public CallHistoryModelView() {
         callModelListMutableLiveData = new MutableLiveData<>();
         callModelsList = new ArrayList<>();
         format = new SimpleDateFormat("mm:ss");
+        loading = new MutableLiveData<>(false);
+
     }
 
     @SuppressLint("CheckResult")
-    public void loadData(String my_id) {
+    public MutableLiveData<ArrayList<CallModel>> loadData(String my_id) {
         System.out.println("loadDataCall"+my_id);
+        loading.postValue(true);
 
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().getMyCalls(my_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().getMyCalls(my_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s->{
+            loading.setValue(false);
+
             System.out.println("loadDataCall"+s);
+
             JSONArray jsonArray = null;
             try {
                  jsonArray = new JSONArray(s);
@@ -86,16 +93,20 @@ public class CallHistoryModelView extends ViewModel {
 
             } catch (JSONException e) {
                 e.printStackTrace();
+                loading.setValue(false);
+
                 callModelListMutableLiveData.setValue(null);
             }
 
 
         } ,s -> {
+            loading.postValue(false);
+
             System.out.println("loadDataCallerrorr"+s);
             callModelListMutableLiveData.setValue(null);
         });
 
-
+      return callModelListMutableLiveData;
     }
 
     Date getDateFromString(String dateString){

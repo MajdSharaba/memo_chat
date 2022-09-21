@@ -64,7 +64,7 @@ public class ServerApi {
 //        classSharedPreferences = new ClassSharedPreferences(context);
         System.out.println( classSharedPreferences.getVerficationNumber()+"classSharedPreferences.getVerficationNumber()");
         // url to post our data
-        String url = AllConstants.base_url+"APIS/signup.php";
+        String url = AllConstants.base_url_final+"APIS/signup.php";
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
         progressDialog.show();
@@ -121,7 +121,7 @@ public class ServerApi {
     public void CompleteRegister(String firstName, String lastName, String email, String imageString,String secretNumber,String userId) {
 //        classSharedPreferences = new ClassSharedPreferences(context);
         // url to post our data
-        String url = AllConstants.base_url+"APIS/completesignup.php";
+        String url = AllConstants.base_url_final+"APIS/completesignup.php";
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
         progressDialog.show();
@@ -205,7 +205,7 @@ public class ServerApi {
     public void updateProfile(String firstName, String lastName, String status, String imageString,String userId) {
 //        classSharedPreferences = new ClassSharedPreferences(context);
         // url to post our data
-        String url = AllConstants.base_url+"APIS/updateprofile.php";
+        String url = AllConstants.base_url_final+"APIS/updateprofile.php";
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
         progressDialog.show();
@@ -285,7 +285,7 @@ public class ServerApi {
     ///////////////////////////////////////
     public void createGroup(String name,String imageString,ArrayList<String> arrayList) {
 
-        String url =AllConstants.base_url+ "APIS/addgroup.php";
+        String url =AllConstants.base_url_final+ "APIS/addgroup.php";
     ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage("Uploading, please wait...");
         progressDialog.show();
@@ -382,7 +382,7 @@ public class ServerApi {
         myBase = BaseApp.getInstance();
         String myId = classSharedPreferences.getUser().getUserId();
 
-        String url =AllConstants.base_url+ "APIS/mycontact.php";
+        String url =AllConstants.base_url_final+ "APIS/mycontact.php";
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
         progressDialog.show();
@@ -414,8 +414,9 @@ public class ServerApi {
                         String chat_id = jsonObject.getString("chat_id");
                          String fcm_token = jsonObject.getString("user_token");
                         String state = jsonObject.getString("state");
-//                        String blockedFor = jsonObject.getString("blocked_for");
-                        sendContactNumberResponses.add(new SendContactNumberResponse(id, name, number, image, state,chat_id,fcm_token,""));
+                        String app_path = jsonObject.getString("app_path");
+                        String blockedFor = jsonObject.getString("blocked_for");
+                        sendContactNumberResponses.add(new SendContactNumberResponse(id, name, number, image, state,chat_id,fcm_token,blockedFor,app_path));
                     }
                     myBase.getContactNumberObserve().setContactNumberResponseList(sendContactNumberResponses);
 
@@ -518,7 +519,7 @@ public class ServerApi {
 
         System.out.println(userModel.getUserId());
 
-        StringRequest request = new StringRequest(Request.Method.GET, AllConstants.base_url + "APIS/mychat.php?user_id=" + myId, new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, AllConstants.base_url_final + "APIS/mychat.php?user_id=" + myId, new Response.Listener<String>() {
 
 
             @Override
@@ -827,7 +828,7 @@ public class ServerApi {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url+"APIS/delete_my_account.php", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"APIS/delete_my_account.php", new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 progressDialo.dismiss();
@@ -972,7 +973,7 @@ public class ServerApi {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
