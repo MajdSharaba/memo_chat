@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.Lifecycle;
@@ -29,6 +30,7 @@ import com.yawar.memo.repositry.ChatMessageRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.repositry.RequestCallRepo;
 import com.yawar.memo.repositry.UserInformationRepo;
+import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 
 public class BaseApp extends Application implements LifecycleObserver {
@@ -48,9 +50,13 @@ public class BaseApp extends Application implements LifecycleObserver {
     UserInformationRepo userInformationRepo;
      String[] darkModeValues ;
      ClassSharedPreferences classSharedPreferences;
+     Handler handler = new Handler();
+    private Runnable myRunnable ;
+
 
 
     String peerId = null;
+
 
 
 
@@ -59,10 +65,25 @@ public class BaseApp extends Application implements LifecycleObserver {
         super.onCreate();
         setMode();
 
+
+
+
         sInstance = this;
+
         ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-        classSharedPreferences = new ClassSharedPreferences(this);
+        System.out.println("getInstance()");
+        if(getClassSharedPreferences().getUser()!=null) {
+//            System.out.println("getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());");
+            Log.d(TAG, "getChatRoomRepo().callAPI(classSharedPreferences.getUser()");
+            getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
+
+        }
+
+
+
+
     }
+
 
      public  String isActivityVisible(){
          return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().name();
@@ -82,13 +103,14 @@ public class BaseApp extends Application implements LifecycleObserver {
 
     @Override
     public void onTrimMemory(int level) {
-        System.out.println("onTrimMemory");
+        System.out.println("onTrimMemory BaseApp");
 
         super.onTrimMemory(level);
     }
 
     public static synchronized BaseApp getInstance() {
         if(sInstance==null){
+            Log.d(TAG, "get Instance");
             sInstance = new BaseApp();
         }
 
@@ -137,7 +159,8 @@ public class BaseApp extends Application implements LifecycleObserver {
     public ChatRoomRepo getChatRoomRepo() {
         if(chatRoomRepo== null){
             chatRoomRepo = new ChatRoomRepo(this);
-            chatRoomRepo.callAPI(classSharedPreferences.getUser().getUserId());
+//            if(getClassSharedPreferences().getUser()!=null)
+//            chatRoomRepo.callAPI(classSharedPreferences.getUser().getUserId());
 
         }
         return chatRoomRepo;
@@ -171,6 +194,13 @@ public class BaseApp extends Application implements LifecycleObserver {
             chatMessageRepo = new ChatMessageRepo(this);
         }
         return chatMessageRepo;
+    }
+
+    public ClassSharedPreferences getClassSharedPreferences() {
+        if(classSharedPreferences== null){
+            classSharedPreferences = new ClassSharedPreferences(this);
+        }
+        return classSharedPreferences;
     }
     public void setPeerId(String peer_id) {
         if(peerId== null){
@@ -212,13 +242,17 @@ public class BaseApp extends Application implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onMoveToForeground() {
 
-//        System.out.println("on move to Forgroundgroundddddddddd");
-//        Intent service = new Intent(this, SocketIOService.class);
-//        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
-//        this.startService(service);
-//            Intent service = new Intent(this, SocketIOService.class);
-//            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
-//            this.startService(service);
+
+        if(classSharedPreferences.getUser()!=null){
+//            if(chatR) {
+//                getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
+
+
+
+        Intent service = new Intent(this, SocketIOService.class);
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
+        this.startService(service);}
+
 
 //        notifyAll();
 
@@ -228,16 +262,22 @@ public class BaseApp extends Application implements LifecycleObserver {
     @SuppressLint("CheckResult")
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onMoveToBackground() {
-//        System.out.println("on move background");
-//        Intent service = new Intent(this, SocketIOService.class);
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
-//                startService(service);
-//            }
-//        }, 100000);
+        if(classSharedPreferences.getUser()!=null) {
+
+
+            Intent service = new Intent(this, SocketIOService.class);
+            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
+            startService(service);
+//            myRunnable = new Runnable() {
+//                @Override
+//                public void run() {
+//                    System.out.println("on Move to bacground");
+//                    service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
+//                    startService(service);
+//                }
+//            };
+//            handler.postDelayed(myRunnable, 30000);
+        }
 
 
 

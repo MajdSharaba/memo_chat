@@ -29,6 +29,7 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.LoginActivity;
 
 import java.io.ByteArrayOutputStream;
@@ -167,7 +168,7 @@ public class ProfileFragment extends Fragment {
 
 
         serverApi = new ServerApi(getActivity());
-        ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(getContext());
+        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         userModel = classSharedPreferences.getUser();
         userId = userModel.getUserId();
         fName = userModel.getUserName();

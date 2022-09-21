@@ -30,6 +30,7 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.views.ConversationActivity;
@@ -73,7 +74,7 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
             //.. should log the error or throw and exception
         }
         this.listsearch.addAll(getCurrentList());
-        classSharedPreferences = new ClassSharedPreferences(context);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
     }
 
@@ -363,6 +364,17 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
 
                     }
                 });
+                if(chatRoomModel.blocked_for!=null) {
+                    if (chatRoomModel.blocked_for != "null") {
+                        imgBtnCall.setEnabled(false);
+                    } else {
+                        imgBtnCall.setEnabled(true);
+
+                    }
+                }
+                else {
+                    imgBtnCall.setEnabled(true);
+                }
 
 
 

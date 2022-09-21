@@ -49,14 +49,12 @@ public class IntroActModelView extends ViewModel {
     public final MutableLiveData<ArrayList<UserModel>> userBlockListMutableLiveData= new MutableLiveData<>();
 
 
-//    public IntroActModelView(@NonNull Application application) {
-//        super(application);
-//        repository = new ChatRoomRepo(application);
-//        baseApp = BaseApp.getInstance();
-//        chatRoomsList = new ArrayList<>();
-//        chatRoomListMutableLiveData = new MutableLiveData<>();
-//
-//    }
+    public IntroActModelView() {
+        repository.callAPI(baseApp.getClassSharedPreferences().getUser().getUserId());
+
+
+    }
+
 
 
 
@@ -74,17 +72,31 @@ public class IntroActModelView extends ViewModel {
 
 
     }
-    @SuppressLint("CheckResult")
-    public void sendFcmToken(String user_id, String token){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().sendFcmToken(user_id,token)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        observable.subscribe(s -> {
+//    @SuppressLint("CheckResult")
+//    public void sendFcmToken(String user_id, String token){
+//        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url_final).getapi().sendFcmToken(user_id,token)
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread());
+//        observable.subscribe(s -> {
+//
+//
+//        },s-> {
+//            System.out.println("Errorrrrrrrr" + s);
+//          });
+//    }
 
+    public MutableLiveData<Boolean> getLoading(){
+        return repository.loading;
+    }
 
-        },s-> {
-            System.out.println("Errorrrrrrrr" + s);
-          });
+    public MutableLiveData<Boolean> getErrorMessage(){
+        return repository.showErrorMessage;
+    }
+    public void setLoading(Boolean check){
+        repository.loading.setValue(check);
+    }
+    public void setErrorMessage(Boolean check){
+        repository.showErrorMessage.setValue(check);
     }
 
     @Override

@@ -7,9 +7,17 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundColor"
     tools:context=".views.IntroActivity">
-    <WebView
-        android:id="@+id/webView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="100dp"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_height="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

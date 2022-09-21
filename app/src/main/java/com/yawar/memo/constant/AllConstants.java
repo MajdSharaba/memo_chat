@@ -42,24 +42,28 @@ public interface AllConstants {
 
 
     String ip="109";
-    public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
-//        String base_url = "https://memoback1.herokuapp.com/";
-    public  String base_node_url =  "http://192.168.0."+ip+":3000/";
-//        String base_node_url =  "https://memoback1.herokuapp.com/";
-    String delet_from_archived_url = base_node_url+"deletearchive";
-    String delete_conversation = base_node_url+"deleteconversation";
+//    public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
+        public String base_url_final = "http://137.184.155.225/";
+
+//    public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
+
+    //        String base_url = "https://memoback1.herokuapp.com/";
+//    public  String base_node_url =  "http://192.168.0."+ip+":3000/";
+//        String base_node_url =  "https://memoback1.herokuapp.comm/";
+    String delet_from_archived_url = base_url_final+"deletearchive";
+    String delete_conversation = base_url_final+"deleteconversation";
 
     String upload_firebase_URL = " https://storage.googleapis.com/memoback-ea9c4.appspot.com";
-    String upload_Voice_URL = base_node_url+"uploadAudio";
-    String upload_file_URL = base_node_url+"uploadFile";
-    String upload_video_URL = base_node_url+"uploadVedio";
-    String upload_image_URL = base_node_url+"uploadImgChat";
+    String upload_Voice_URL = base_url_final+"uploadAudio";
+    String upload_file_URL = base_url_final+"uploadFile";
+    String upload_video_URL = base_url_final+"uploadVedio";
+    String upload_image_URL = base_url_final+"uploadImgChat";
 //    String get_media = base_node_url+"getmedia";
     String download_url = "https://storage.googleapis.com/memoback-ea9c4.appspot.com/";
-    String socket_url = base_node_url;
-    String delete_message =base_node_url+"deletemessage2";
-    String add_to_archived_url = base_node_url+"archivechat";
-    String add_token = base_node_url+"addtoken";
+    String socket_url = base_url_final;
+    String delete_message =base_url_final+"deletemessage2";
+    String add_to_archived_url = base_url_final+"archivechat";
+    String add_token = base_url_final+"addtoken";
 
     String api_key_fcm_token_header_value = "Key=AAAA4428f68:APA91bGmEQZqZESoHenOQGETIbiOWS9N3r7e_BkHs1KFXi6ThD81FPkIHWp4dCsksTALD9IxaeHySy8ORraWmpjwvGh7Zls7Sc75NZQ0qTEwqIkWQZlMFdDC6OEGRNI22VfnkTu8LjP6";
     String imageUrl="https://storage.googleapis.com/memoback-ea9c4.appspot.com/";

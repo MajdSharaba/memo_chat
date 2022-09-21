@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:background="@color/backgroundColor"
+tools:context=".fragment.CallHistoryFragment"
+android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:paddingTop="40dp"
+    android:layout_height="wrap_content"
+    android:background="@color/memo_background_color"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:fontFamily="@font/roboto_regular"
+        android:text="@string/item_call"
+        android:textColor="@color/white"
+        android:textSize="25sp">
+
+    </TextView>
+
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search_view"
+        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_height="40dp"
+        android:layout_margin="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@drawable/ed_text_background"
+        android:baselineAligned="false"
+        android:nestedScrollingEnabled="false"
+        app:queryHint="@string/search" />
+
+
+</LinearLayout>
+    <ProgressBar
+        android:id="@+id/progress_circular"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="100dp"
+        android:visibility="gone" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/liner_no_call_history"
+        android:layout_marginTop="50dp"
+        android:visibility="gone"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:orientation="vertical"
+        >
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_no_call">
+
+        </ImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:textStyle="italic"
+            android:padding="5dp"
+            android:textSize="17sp"
+            android:layout_gravity="center"
+            android:text="@string/you_have_no_call_yet" />
+
+
+
+    </LinearLayout>
+
+
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="5dp"
+        android:id="@+id/recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:listitem="@layout/item_calls"
+        android:nestedScrollingEnabled="false"
+        />
+
+</LinearLayout>
+</LinearLayout>

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
+    android:background="@color/background_setting_color"
     android:orientation="vertical"
     tools:context=".views.UserInformationActivity">
     <androidx.cardview.widget.CardView
@@ -23,8 +24,8 @@
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/imageView"
-        android:layout_width="106dp"
-        android:layout_height="106dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:paddingTop="20dp"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/th">
@@ -33,25 +34,33 @@
     <TextView
         android:id="@+id/txt_user_name"
         android:layout_width="wrap_content"
-        android:layout_height="33dp"
-        android:textSize="25sp"
-        android:layout_margin="10dp"
-        android:text="majd sharabah"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:layout_margin="5dp"
+        android:textStyle="bold"
+        android:fontFamily="@font/font"
         />
+            <TextView
+                android:id="@+id/last_seen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:layout_margin="2dp"
+                />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:gravity="center_horizontal"
+
                 android:layout_gravity="center_horizontal"
                 android:padding="10dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/liner_audio_call"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:gravity="center"
+                    android:layout_width="wrap_content"
+                    android:layout_margin="10dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -78,9 +87,9 @@
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/liner_video_call"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -105,9 +114,9 @@
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/liner_Message"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_width="wrap_content"
                     android:gravity="center"
+                    android:layout_margin="10dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -130,37 +139,37 @@
                     </TextView>
 
                 </LinearLayout>
-                <LinearLayout
-                    android:id="@+id/liner_mute"
-                    android:layout_width="0dp"
-                    android:gravity="center"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <ImageButton
-                        android:layout_width="43dp"
-                        android:layout_height="43dp"
-                        android:background="@drawable/btn_background_circle_green"
-                        android:src="@drawable/ic_bell"
-                        android:foreground="?android:attr/actionBarItemBackground"
-                        app:tint="@color/white">
-                    </ImageButton>
-                    <TextView
-                        android:id="@+id/mute"
-                        android:layout_width="wrap_content"
-                        android:layout_height="19dp"
-                        android:textSize="14sp"
-                        android:text="@string/mute">
+<!--                <LinearLayout-->
+<!--                    android:id="@+id/liner_mute"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:gravity="center"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:orientation="vertical">-->
+<!--                    <ImageButton-->
+<!--                        android:layout_width="43dp"-->
+<!--                        android:layout_height="43dp"-->
+<!--                        android:background="@drawable/btn_background_circle_green"-->
+<!--                        android:src="@drawable/ic_bell"-->
+<!--                        android:foreground="?android:attr/actionBarItemBackground"-->
+<!--                        app:tint="@color/white">-->
+<!--                    </ImageButton>-->
+<!--                    <TextView-->
+<!--                        android:id="@+id/mute"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="19dp"-->
+<!--                        android:textSize="14sp"-->
+<!--                        android:text="@string/mute">-->
 
 
-                    </TextView>
+<!--                    </TextView>-->
 
-                </LinearLayout>
+<!--                </LinearLayout>-->
                 <LinearLayout
                     android:id="@+id/liner_more"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:gravity="center"
-                    android:layout_weight="1"
+                    android:layout_margin="10dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <ImageButton
@@ -190,152 +199,7 @@
     </androidx.cardview.widget.CardView>
 
 
-<!--    <androidx.cardview.widget.CardView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_margin="10dp"-->
-<!--        app:cardBackgroundColor="@color/background_chat_page"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        android:layout_height="wrap_content">-->
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="20dp"-->
-<!--        android:gravity="center_horizontal"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        android:padding="10dp"-->
-<!--        android:orientation="horizontal">-->
-<!--        -->
-<!--       <LinearLayout-->
-<!--           android:id="@+id/liner_call"-->
-<!--           android:layout_width="0dp"-->
-<!--           android:layout_weight="1"-->
-<!--           android:gravity="center"-->
-<!--           android:layout_height="wrap_content"-->
-<!--           android:orientation="vertical">-->
-<!--           <ImageButton-->
-<!--               android:layout_width="43dp"-->
-<!--               android:layout_height="43dp"-->
-<!--               android:background="@drawable/btx_custom"-->
-<!--               android:src="@drawable/ic_call"-->
-<!--               app:tint="@color/white">-->
-<!--           </ImageButton>-->
-<!--           <TextView-->
-<!--               android:id="@+id/call"-->
-<!--               android:layout_width="wrap_content"-->
-<!--               android:layout_height="19dp"-->
-<!--               android:textSize="14sp"-->
-<!--               android:text="@string/call">-->
 
-
-<!--           </TextView>-->
-<!--               -->
-<!--       </LinearLayout>-->
-<!--        <LinearLayout-->
-<!--            android:id="@+id/liner_video"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-<!--            <ImageButton-->
-<!--                android:layout_width="43dp"-->
-<!--                android:layout_height="43dp"-->
-<!--                android:background="@drawable/btx_custom"-->
-<!--                android:src="@drawable/ic_video_blue"-->
-<!--                app:tint="@color/white">-->
-<!--            </ImageButton>-->
-<!--            <TextView-->
-<!--                android:id="@+id/video"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="19dp"-->
-<!--                android:textSize="14sp"-->
-<!--                android:text="@string/video">-->
-
-
-<!--            </TextView>-->
-
-<!--        </LinearLayout>-->
-<!--        <LinearLayout-->
-<!--            android:id="@+id/liner_Message"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-<!--            <ImageButton-->
-<!--                android:id="@+id/ib_message"-->
-<!--                android:layout_width="43dp"-->
-<!--                android:background="@drawable/btx_custom"-->
-<!--                android:layout_height="43dp"-->
-<!--                android:src="@drawable/ic_message"-->
-<!--                app:tint="@color/white">-->
-<!--            </ImageButton>-->
-<!--            <TextView-->
-<!--                android:id="@+id/message"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="19dp"-->
-<!--                android:textSize="14sp"-->
-<!--                android:text="@string/message">-->
-
-
-<!--            </TextView>-->
-
-<!--        </LinearLayout>-->
-<!--        <LinearLayout-->
-<!--            android:id="@+id/liner_mute"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-<!--            <ImageButton-->
-<!--                android:layout_width="43dp"-->
-<!--                android:layout_height="43dp"-->
-<!--                android:background="@drawable/btx_custom"-->
-<!--                android:src="@drawable/ic_bell"-->
-<!--                app:tint="@color/white">-->
-<!--            </ImageButton>-->
-<!--            <TextView-->
-<!--                android:id="@+id/mute"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="19dp"-->
-<!--                android:textSize="14sp"-->
-<!--                android:text="@string/mute">-->
-
-
-<!--            </TextView>-->
-
-<!--        </LinearLayout>-->
-<!--        <LinearLayout-->
-<!--            android:id="@+id/liner_more"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:gravity="center"-->
-<!--            android:layout_weight="1"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:orientation="vertical">-->
-<!--            <ImageButton-->
-<!--                android:layout_width="43dp"-->
-<!--                android:background="@drawable/btx_custom"-->
-<!--                android:layout_height="43dp"-->
-<!--                android:src="@drawable/ic_more"-->
-<!--                app:tint="@color/white"-->
-<!--                >-->
-<!--            </ImageButton>-->
-<!--            <TextView-->
-<!--                android:id="@+id/more"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="19dp"-->
-<!--                android:textSize="14sp"-->
-<!--                android:text="@string/more">-->
-
-
-<!--            </TextView>-->
-
-<!--        </LinearLayout>-->
-<!--    </LinearLayout>-->
-
-
-<!--    </androidx.cardview.widget.CardView>-->
 
 
 
@@ -356,22 +220,26 @@
         <TextView
             android:id="@+id/special_number"
             android:layout_width="wrap_content"
-            android:layout_height="20dp"
+            android:layout_height="wrap_content"
             android:textSize="15sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/font"
             android:layout_marginTop="5dp"
-            android:text="@string/special_number"
+            android:text="@string/phone_number"
             >
 
         </TextView>
-        <TextView
-            android:id="@+id/txt_special_number"
-            android:layout_width="wrap_content"
-            android:layout_height="26dp"
-            android:textSize="19sp"
-            android:textColor="@color/memo_background_color"
-            android:textDirection="ltr"
-            android:text="+963935013485"
-            android:layout_marginTop="5dp"/>
+
+            <TextView
+                android:id="@+id/txt_special_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:fontFamily="@font/font"
+                android:textColor="@color/memo_background_color_new"
+                android:textDirection="ltr"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
@@ -391,8 +259,11 @@
          <TextView
              android:id="@+id/media"
              android:layout_width="wrap_content"
-             android:layout_height="20dp"
-             android:textColor="@color/memo_background_color"
+             android:layout_height="wrap_content"
+             android:textSize="15sp"
+             android:textStyle="bold"
+             android:fontFamily="@font/font"
+             android:textColor="@color/memo_background_color_new"
              android:text="@string/media"/>
 
          <androidx.recyclerview.widget.RecyclerView

@@ -21,6 +21,7 @@ import androidx.preference.Preference;
 
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
+import com.yawar.memo.utils.BaseApp;
 
 import java.util.Locale;
 
@@ -40,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity implements SharedPrefere
 
 
 
-        classSharedPreferences = new ClassSharedPreferences(SettingsActivity.this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
 
 

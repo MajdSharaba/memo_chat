@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,29 +7,28 @@
     android:background="@color/backgroundColor"
     tools:context=".views.RegisterActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="100dp"
             android:layout_height="100dp"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/ic_splash"
+            android:layout_marginBottom="30dp"
+            android:layout_above="@+id/liner"
+            android:layout_centerHorizontal="true"
+            app:srcCompat="@drawable/ic_memo"
             android:visibility="visible"
-            android:layout_margin="50dp"
-            tools:ignore="VectorDrawableCompat" />
+            />
 
      <LinearLayout
          android:layout_width="match_parent"
          android:layout_height="wrap_content"
+         android:layout_centerVertical="true"
+         android:id="@+id/liner"
          android:orientation="vertical">
          <LinearLayout
              android:layout_width="match_parent"
              android:layout_height="wrap_content"
-             android:layout_marginTop="20dp"
              android:orientation="horizontal">
 
              <de.hdodenhof.circleimageview.CircleImageView
@@ -98,7 +97,6 @@
              android:layout_marginEnd="20dp"
              android:layout_marginTop="5dp"
              android:layout_marginStart="20dp"
-             android:layout_marginBottom="0dp"
              android:background="@drawable/et_custom"
              android:fontFamily="@font/roboto_regular"
              android:padding="5dp"
@@ -110,72 +108,27 @@
 
         <Button
             android:id="@+id/btn_Register"
+            android:layout_below="@+id/liner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="30dp"
             android:layout_marginRight="20dp"
-            android:layout_marginBottom="20dp"
             android:background="@drawable/btn_custom_blue_back"
             android:fontFamily="@font/roboto_regular"
             android:text="@string/register"
             android:textColor="@android:color/white" />
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="20dp"
-            app:srcCompat="@drawable/line_green" />
-
-    </LinearLayout>
 
 
-</ScrollView>
-
-    <!--        <Spinner-->
-
-    <!--            android:background="@drawable/et_custom"-->
-    <!--            android:popupBackground = "@color/backgroundColor"-->
-    <!--            android:textColor="@color/textColor"-->
-    <!--            android:textColorHint="#808080"-->
-    <!--            android:layout_marginLeft="20dp"-->
-    <!--            android:layout_marginRight="20dp"-->
-    <!--            android:layout_marginTop="50dp"-->
-    <!--            android:id="@+id/spinner1"-->
-    <!--            android:fontFamily="@font/roboto_regular"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="50dp"-->
-    <!--            android:padding="5dp" />-->
-
-    <!--        <EditText-->
-    <!--            android:id="@+id/et_em"-->
-    <!--            android:layout_width="match_parent"-->
-    <!--            android:layout_height="50dp"-->
-    <!--            android:hint="@string/email"-->
-    <!--            android:layout_marginLeft="20dp"-->
-    <!--            android:layout_marginRight="20dp"-->
-    <!--            android:textColor="@color/colorBlack"-->
-    <!--            android:textColorHint="@color/gray"-->
-    <!--            android:layout_marginTop="50dp"-->
-    <!--            android:padding="15dp"-->
-    <!--            android:fontFamily="@font/roboto_regular"-->
-    <!--            android:background="@drawable/et_custom"-->
-    <!--            android:textSize="15sp" />-->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        app:srcCompat="@drawable/line_green" />
 
 
+</RelativeLayout>
 
-    <!--        <Button-->
-    <!--            android:id="@+id/btn_skip"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:layout_below="@id/btn_Register"-->
-    <!--            android:layout_marginLeft="20dp"-->
-    <!--            android:layout_marginRight="20dp"-->
-    <!--            android:layout_marginTop="50dp"-->
-    <!--            android:layout_gravity="center"-->
-    <!--            android:background="@null"-->
-    <!--            android:fontFamily="@font/roboto_regular"-->
-    <!--            android:textColor="@color/green_500"-->
-    <!--            android:textSize="20dp"-->
-    <!--            android:text="SkIP"/>-->
+
 

@@ -20,6 +20,8 @@ public class ConversationModelView extends ViewModel {
         BaseApp baseApp = BaseApp.getInstance();
         private final ChatMessageRepo repository = baseApp.getChatMessageRepo();
         private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
+        private String lastSeen = "null";
+
 
     private   String _state;
     public MutableLiveData<String> state ;
@@ -33,7 +35,7 @@ public class ConversationModelView extends ViewModel {
 
     public ConversationModelView() {
 
-        this.state=new MutableLiveData<>();
+        this.state=new MutableLiveData<>("false");
         this.isTyping = new MutableLiveData<>();
         this.isFirst = new MutableLiveData<>(true);
 
@@ -90,8 +92,8 @@ public class ConversationModelView extends ViewModel {
     }
     public void clearSelectedMessage(){
         repository.clearSelectedMessage();
-//        _selectedMessage.clear();
-//        selectedMessage.setValue(_selectedMessage);
+//        repository.clearMessageChecked();
+
     }
     public MutableLiveData<ArrayList<ChatMessage>> getSelectedMessage() {
         return repository.selectedMessage;
@@ -175,6 +177,28 @@ public class ConversationModelView extends ViewModel {
 
 
 
+    }
+
+    public String getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(String lastSeen) {
+        this.lastSeen = lastSeen;
+    }
+
+    public MutableLiveData<Boolean> getLoading(){
+        return repository.loading;
+    }
+
+    public MutableLiveData<Boolean> getErrorMessage(){
+        return repository.showErrorMessage;
+    }
+    public void setLoading(Boolean check){
+        repository.loading.setValue(check);
+    }
+    public void setErrorMessage(Boolean check){
+        repository.showErrorMessage.setValue(check);
     }
 
 

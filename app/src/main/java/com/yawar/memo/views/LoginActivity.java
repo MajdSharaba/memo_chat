@@ -3,6 +3,7 @@ package com.yawar.memo.views;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -36,6 +37,7 @@ import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.ChatRoomFragment;
+import com.yawar.memo.utils.BaseApp;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -48,6 +50,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     String name, email;
     private CountryCodePicker ccp;
     private TextView text ;
+    ProgressDialog progressDialog;
+
 
 
     private String verificationId;
@@ -59,28 +63,27 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     private GoogleSignInOptions gso;
     String idToken;
     ClassSharedPreferences classSharedPreferences;
-    float textSize = 14.0F ;
-    SharedPreferences sharedPreferences ;
+    AuthApi authApi;
+//    float textSize = 14.0F ;
+//    SharedPreferences sharedPreferences ;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
 
         super.onCreate(savedInstanceState);
         CallProperty.setStatusBarOrScreenStatus(this);
 
         setContentView(R.layout.activity_login);
 
-        sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
 
         text = findViewById(R.id.text);
-        text.setTextSize(textSize);
-        text.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+         authApi = new AuthApi(LoginActivity.this);
 
-        classSharedPreferences= new ClassSharedPreferences(this);
+
+        classSharedPreferences= BaseApp.getInstance().getClassSharedPreferences();
         firebaseAuth = com.google.firebase.auth.FirebaseAuth.getInstance();
         authStateListener = new FirebaseAuth.AuthStateListener(){
             @Override
@@ -137,15 +140,47 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                     String code = ccp.getSelectedCountryCode();
 
                     String phone = "+"+code+ edtPhone.getText().toString();
-                    System.out.println(phone+"phoneeeeeeeeeeee");
                     classSharedPreferences.setNumber(phone);
 
-                    AuthApi authApi = new AuthApi(LoginActivity.this);
+
                     authApi.sendVerificationCode(phone, LoginActivity.this);
                 }
 //
             }
         });
+
+        authApi.loading.observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    progressDialog = new ProgressDialog(LoginActivity.this);
+                    progressDialog.setMessage(getResources().getString(R.string.prograss_message));
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                }
+                else {
+                    if(progressDialog!=null){
+                        progressDialog.dismiss();
+                    }
+                }
+            }
+        });
+
+        authApi.showErrorMessage.observe(this, new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    Toast.makeText(LoginActivity.this, R.string.valied_message, Toast.LENGTH_LONG).show();
+                    authApi.showErrorMessage.setValue(false);
+
+                }
+
+
+            }
+        });
+
+
+
 
     }
 
@@ -164,7 +199,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             GoogleSignInAccount account = result.getSignInAccount();
             idToken = account.getIdToken();
             name = account.getDisplayName();
-            System.out.println(name+"mmmmmmmmmmmmmmmmmmmmmm");
             email = account.getEmail();
             classSharedPreferences.setName(name);
             // you can store user data to SharedPreference
@@ -224,6 +258,14 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     }
 
     @Override
+    protected void onDestroy() {
+        if(progressDialog!=null){
+            progressDialog.dismiss();
+        }
+        super.onDestroy();
+    }
+
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         
     }
@@ -232,4 +274,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     public void update(Observable observable, Object o) {
 
     }
+
+
 }

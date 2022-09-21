@@ -13,6 +13,7 @@ import com.yawar.memo.call.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,13 +30,13 @@ public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
         Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY);
 
         LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);
-        Intent closeRequestCallActivity = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
-
-        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeRequestCallActivity);
-        closeCall(context,id);
+//        Intent closeRequestCallActivity = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
+//
+//        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeRequestCallActivity);
+//        closeCall(context,id);
     }
     private void closeCall(Context context,String id) {
-        ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(context.getApplicationContext());
+        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
         Intent service = new Intent(context, SocketIOService.class);
         JSONObject data = new JSONObject();
@@ -43,7 +44,6 @@ public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
 //            data.put("close_call", true);
             data.put("id",id );//
             data.put("snd_id", classSharedPreferences.getUser().getUserId());
-//            data.put("snd_id", classSharedPreferences.getUser().getUserId());
         } catch (JSONException e) {
             e.printStackTrace();
         }

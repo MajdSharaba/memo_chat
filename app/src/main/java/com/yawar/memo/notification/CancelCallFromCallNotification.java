@@ -23,6 +23,7 @@ import java.util.Map;
 
 public class CancelCallFromCallNotification extends BroadcastReceiver {
     JSONObject message = null;
+    String callId;
     JSONObject data = new JSONObject();
     JSONObject type = new JSONObject();
     JSONObject userObject = new JSONObject();
@@ -35,23 +36,6 @@ public class CancelCallFromCallNotification extends BroadcastReceiver {
         String id = bundle.getString("id","0");
         reject(callString);
 
-//        JSONObject message = null;
-//            /////////
-//
-//
-//            try {
-//                message = new JSONObject(callString);
-//                message.put("peerId", "null");
-//            } catch (JSONException e) {
-//                e.printStackTrace();
-//            }
-
-
-/////////////// for send peer Id
-//            Intent service = new Intent(context, SocketIOService.class);
-//            service.putExtra(SocketIOService.EXTRA_SEND_PEER_ID_PARAMTERS, message.toString());
-//            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_SEND_PEER_ID);
-//            context.startService(service);
 
 //////////////for cancel full Screen intent
         Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
@@ -74,6 +58,7 @@ public class CancelCallFromCallNotification extends BroadcastReceiver {
         try {
             message = new JSONObject(callParamters);
 //            data = message.getJSONObject("data");
+            callId = message.getString("call_id");
             type = message.getJSONObject("type");
             userObject = message.getJSONObject("user");
 
@@ -87,7 +72,7 @@ public class CancelCallFromCallNotification extends BroadcastReceiver {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"reject", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"reject", new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 
@@ -115,6 +100,9 @@ public class CancelCallFromCallNotification extends BroadcastReceiver {
                     params.put("user", userObject.toString());
                     params.put("type", type.toString());
                     params.put("message", "");
+                    params.put("call_id", callId);
+
+
                     params.put("peerId", "null");
                     params.put("snd_id",message.getString("snd_id") );
                 } catch (JSONException e) {

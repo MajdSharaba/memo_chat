@@ -10,7 +10,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +44,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     SwipeableRecyclerView recyclerView;
     List<ChatRoomModel> data;
+    LinearLayout linear_no_archived;
     List<ChatRoomModel> archived = new ArrayList<>();
 
     ArchivedAdapter itemAdapter;
@@ -63,24 +66,17 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
-     
         setContentView(R.layout.activity_archived);
-
-//        sharedPreferences =  getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
-
-
         toolbar = findViewById(R.id.toolbar);
-//        toolbar.setTitle("Memo");
-//        setSupportActionBar(toolbar);
+
         recyclerView =  findViewById(R.id.recycler_view);
+        linear_no_archived = findViewById(R.id.liner_no_chat_history);
 
         archive =  findViewById(R.id.archived);
 //        archive.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-        classSharedPreferences= new ClassSharedPreferences(this);
+        classSharedPreferences= BaseApp.getInstance().getClassSharedPreferences();
         myId = classSharedPreferences.getUser().getUserId();
         archivedActViewModel = new ViewModelProvider(this).get(ArchivedActViewModel.class);
         myBase = (BaseApp) getApplication();
@@ -92,6 +88,7 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(linearLayoutManager);
+
 
         archivedActViewModel.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
             @Override
@@ -108,12 +105,19 @@ public class ArchivedActivity extends AppCompatActivity implements ArchivedAdapt
                             }
                         }
                     }
-//                    itemAdapter.updateList((ArrayList<ChatRoomModel>) archived);
-                    itemAdapter.setData((ArrayList<ChatRoomModel>) list);
+                    if(archived.isEmpty()){
+                        linear_no_archived.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                        archivedActViewModel.setArchived(false);
 
-                    if(archived.size()<1){
-                  archivedActViewModel.setArchived(false);
-                }
+                    }
+                    else {
+                        linear_no_archived.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
+
+                        itemAdapter.setData((ArrayList<ChatRoomModel>) list);
+                    }
+
                 }
                 //adapter.notifyDataSetChanged();
 

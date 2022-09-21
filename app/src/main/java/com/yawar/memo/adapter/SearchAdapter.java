@@ -95,13 +95,16 @@ import java.util.ArrayList;
                     SearchRespone model = getItem(position);
                     System.out.println("model"+model);
                     holder.tvName.setText(model.getName());
-                    holder.tvNumber.setText(model.getSecretNumber());
+                    holder.tvNumber.setText(model.getPhone());
                     System.out.println(model.getImage());
 
                     // Glide.with(holder.imageView.getContext()).load(model.getImage()).into(holder.imageView);
                     if (!model.getImage().isEmpty()) {
                         Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl + model.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.imageView);
 
+                    }
+                    else {
+                        holder.imageView.setImageDrawable(activity.getResources().getDrawable(R.drawable.th));
                     }
                     if (!contactExists(model.getPhone())) {
                         holder.button.setVisibility(View.VISIBLE);

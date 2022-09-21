@@ -29,6 +29,7 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,6 +48,7 @@ import com.yawar.memo.R;
 import com.yawar.memo.adapter.SearchAdapter;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.SearchRespone;
+import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.permissions.Permissions;
 
@@ -68,6 +70,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     SearchView searchView;
     Toolbar toolbar;
    ArrayList<SearchRespone> list = new ArrayList<>();
+   ProgressBar progressBar;
 
     //    List<SearchRespone> searchResponeArrayList = new ArrayList<>();
     SearchAdapter searchAdapter;
@@ -87,8 +90,9 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     int limit = 2 ;
     boolean end = false ;
     TextView search ;
-    SharedPreferences sharedPreferences;
+//    SharedPreferences sharedPreferences;
     SearchModelView searchModelView;
+    LinearLayout linerNOSearchResult;
 
 
 
@@ -96,18 +100,19 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+//        sharedPreferences = getActivity().getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
         timer     = new Timer();
 //        loadingPB = view.findViewById(R.id.idPBLoading);
 //        nestedSV  = view.findViewById(R.id.idNestedSV);
 
         permissions = new Permissions();
-        classSharedPreferences = new ClassSharedPreferences(getContext());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         my_id = classSharedPreferences.getUser().getUserId();
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        progressBar = view.findViewById(R.id.progress_circular);
 
 
 
@@ -115,7 +120,10 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         toolbar = view.findViewById(R.id.toolbar);
         search = view.findViewById(R.id.search);
         searchView = view.findViewById(R.id.search_by_secret_number);
+        linerNOSearchResult = view.findViewById(R.id.liner_no_search_result);
         searchModelView = new ViewModelProvider(this).get(SearchModelView.class);
+//        searchModelView.loading.postValue(true);
+
         checkpermission();
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -213,19 +221,46 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
             public void onChanged(ArrayList<SearchRespone> searchResponeArrayList) {
 //                list.clear();
                 list = new ArrayList<>();
-                if(searchResponeArrayList!=null){
-                    for(SearchRespone searchRespone : searchResponeArrayList) {
-                        list.add(searchRespone.clone());
-                    }
-                 System.out.println("list"+list);
-                 searchAdapter.setData((ArrayList<SearchRespone>) list);
+                if(searchResponeArrayList!=null) {
+                    if (searchResponeArrayList.isEmpty()) {
+                        linerNOSearchResult.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    } else {
+                        linerNOSearchResult.setVisibility(View.GONE);
+                        recyclerView.setVisibility(View.VISIBLE);
+                        for (SearchRespone searchRespone : searchResponeArrayList) {
+                            list.add(searchRespone.clone());
+                        }
+                        System.out.println("list" + list);
+                        searchAdapter.setData((ArrayList<SearchRespone>) list);
 //                 searchAdapter.notifyDataSetChanged();
+                    }
                 }
-
             }
         });
 
         recyclerView.setAdapter(searchAdapter);
+
+
+        searchModelView.loading.observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if (aBoolean!=null) {
+                    if (aBoolean) {
+                        recyclerView.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+                        linerNOSearchResult.setVisibility(View.GONE);
+
+                    } else {
+                        recyclerView.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.GONE);
+                        linerNOSearchResult.setVisibility(View.VISIBLE);
+
+
+                    }
+                }
+            }
+        });
         return  view;
 
     }

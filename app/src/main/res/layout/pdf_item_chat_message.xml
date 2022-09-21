@@ -100,23 +100,35 @@
 
 
                     </ImageButton>
-                    <com.app.adprogressbarlib.AdCircleProgress
+<!--                    <com.app.adprogressbarlib.AdCircleProgress-->
+<!--                        android:id="@+id/pgb_progress"-->
+<!--                        android:layout_width="30dp"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        android:backgroundTintMode="add"-->
+<!--                        app:adpgb_finished_color="@color/green"-->
+<!--                        app:adpgb_unfinished_color="@android:color/white"-->
+<!--                        custom:adpgb_finished_stroke_width="2dp"-->
+<!--                        custom:adpgb_show_text="false"-->
+<!--                        app:adpgb_progress="90"-->
+<!--                        android:visibility="gone"-->
+<!--                        android:padding="1dp"-->
+<!--                        android:layout_gravity="center_vertical"-->
+<!--                        custom:adpgb_unfinished_stroke_width="2dp" />-->
+<!--                </LinearLayout>-->
+                    <ProgressBar
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:id="@+id/pgb_progress"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:backgroundTintMode="add"
-                        app:adpgb_finished_color="@color/green"
-                        app:adpgb_unfinished_color="@android:color/white"
-                        custom:adpgb_finished_stroke_width="2dp"
-                        custom:adpgb_show_text="false"
-                        app:adpgb_progress="90"
-                        android:visibility="gone"
                         android:padding="1dp"
                         android:layout_gravity="center_vertical"
-                        custom:adpgb_unfinished_stroke_width="2dp" />
-                </LinearLayout>
+                        android:visibility="gone"
+                        >
 
-            </LinearLayout>
+                    </ProgressBar>
+                                    </LinearLayout>
+
+
+                </LinearLayout>
 
 
             <!-- for time and seen or not seen-->
@@ -138,7 +150,7 @@
                     android:textStyle="bold"
                     android:maxWidth="240dp"
                     android:text="11:45 Am"
-                    android:textColor="@color/textColor"
+                    android:textColor="@color/white"
                     android:textSize="11sp" />
 
                 <ImageView

@@ -16,6 +16,8 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import javax.inject.Singleton;
+
 public class ClassSharedPreferences {
     Context context;
 
@@ -164,6 +166,7 @@ return arrayItems;
 
     }
     public void setFcmToken(String token) {
+        System.out.println("set fcm token"+token);
         SharedPreferences prefs = context.getSharedPreferences("profile", MODE_PRIVATE);
         prefs.edit().putString("token", token).commit();
         System.out.println("Memo+" + token);}

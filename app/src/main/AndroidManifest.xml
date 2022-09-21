@@ -5,10 +5,9 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- <uses-permission android:name="" /> -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -20,8 +19,8 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage"
         tools:remove="android:maxSdkVersion" />
-    <uses-permission android:name="android.permission.read_phone_state" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+<!--    <uses-permission android:name="android.permission.read_phone_state" />-->
+<!--    <uses-permission android:name="android.permission.READ_CALL_LOG" />-->
     <uses-permission
         android:name="android.permission.ACCESS_FINE_LOCATION"
         tools:ignore="CoarseFineLocation" />
@@ -29,16 +28,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission
-        android:name="android.permission.BIND_TELECOM_CONNECTION_SERVICE"
-        tools:ignore="ProtectedPermissions" />
 
     <application
         android:name=".utils.BaseApp"
-        android:allowBackup="false"
         android:icon="@mipmap/ic_logo"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -49,6 +41,8 @@
         android:theme="@style/Theme.ChatMemo"
         android:usesCleartextTraffic="true"
         tools:replace="android:theme">
+        <!--        android:allowBackup="false"-->
+
 
         <activity
             android:name=".call.CallNotificationActivity"
@@ -68,7 +62,7 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:showOnLockScreen="false"
+            android:showOnLockScreen="true"
             android:theme="@style/AppTheme" />
 <!--        android:excludeFromRecents="true"-->
 <!--        android:taskAffinity=""-->
@@ -120,14 +114,14 @@
         <receiver android:name=".notification.CancelCallFromCallNotification" />
         <receiver android:name=".notification.CancelCallFromCallOngoingNotification" />
 
-        <service
-            android:name=".videocalltest.ConnService"
-            android:exported="true"
-            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">
-            <intent-filter>
-                <action android:name="android.telecom.ConnectionService" />
-            </intent-filter>
-        </service>
+<!--        <service-->
+<!--            android:name=".videocalltest.ConnService"-->
+<!--            android:exported="true"-->
+<!--            android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="android.telecom.ConnectionService" />-->
+<!--            </intent-filter>-->
+<!--        </service>-->
 
         <activity
             android:name=".views.VideoActivity"
@@ -135,12 +129,11 @@
         <activity
             android:name=".views.ConversationActivity"
             android:screenOrientation="portrait"
-            android:parentActivityName=".views.IntroActivity"
+            android:parentActivityName=".views.DashBord"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.DashBord"
             android:screenOrientation="portrait"
-            android:showOnLockScreen="true"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.ArchivedActivity"
@@ -185,11 +178,7 @@
             android:name=".views.RegisterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".StoriesActivity"
-            android:configChanges="orientation|screenSize|keyboard"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+
     </application>
 
 </manifest>

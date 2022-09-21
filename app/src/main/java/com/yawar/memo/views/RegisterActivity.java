@@ -3,15 +3,20 @@ package com.yawar.memo.views;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +40,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.yawar.memo.call.CallProperty;
+import com.yawar.memo.constant.AllConstants;
+import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -67,6 +75,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
     EditText edFname,edLname;
     byte[] inputData = new byte[]{};
+    ChatRoomRepo chatRoomRepo;
 
     ClassSharedPreferences classSharedPreferences;
 
@@ -85,15 +94,19 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     BaseApp myBase;
     String displayNamee = "";
     AuthRepo authRepo;
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         super.onCreate(savedInstanceState);
+        CallProperty.setStatusBarOrScreenStatus(this);
+
         setContentView(R.layout.activity_register);
+
+        if(android.os.Build.MANUFACTURER.equals("Xiaomi")){
+//
+            showXhaomiDialog();
+        }
 
         initView();
         initAction();
@@ -104,6 +117,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         spennerItemChooser=getResources().getString(R.string.choose_special_number);
         myBase = BaseApp.getInstance();
         authRepo = myBase.getAuthRepo();
+        chatRoomRepo = myBase.getChatRoomRepo();
 
 
 //        edEmail = findViewById(R.id.et_em);
@@ -112,7 +126,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         image = findViewById(R.id.imageProfile);
         btnRegister = findViewById(R.id.btn_Register);
 //        btnSkip = findViewById(R.id.btn_skip);
-        classSharedPreferences = new ClassSharedPreferences(RegisterActivity.this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         serverApi = new  ServerApi(RegisterActivity.this);
         dropdown = findViewById(R.id.spinner1);
     }
@@ -222,6 +236,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                 lName = edLname.getText().toString();
 //                email = edEmail.getText().toString();
                 if(CheckAllFields()){
+                    System.out.println("uploadImage(displayNamee, imageUri)");
                     uploadImage(displayNamee, imageUri);
 //                serverApi.CompleteRegister(fName,lName,email,imageString,spennerItemChooser,userId);
                 }
@@ -485,8 +500,9 @@ private void uploadImage(final String imageName, Uri pdfFile) {
         //"file:///storage/emulated/0/memo/1640514470604.3gp"
           inputData = getBytes(iStream);}
 
-//      String url = AllConstants.base_url+"uploadImgProfile";
-        String url = "http://192.168.0.109:3000/uploadImgProfile";
+      String url = AllConstants.base_url_final+"uploadImgProfile";
+        System.out.println(url+"base_url_final");
+//        String url = "http://192.168.0.109:3000/uploadImgProfile";
 
 //              "http://192.168.1.7:3000/uploadImgProfile";
 //        AllConstants.base_url+"uploadImgProfile"
@@ -595,6 +611,52 @@ private void uploadImage(final String imageName, Uri pdfFile) {
             byteBuffer.write(buffer, 0, len);
         }
         return byteBuffer.toByteArray();
+    }
+
+    public void showXhaomiDialog(){
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setCancelable(false);
+        alertBuilder.setTitle(getResources().getString(R.string.alert));
+        alertBuilder.setMessage(getResources().getString(R.string.xhaomi_message));
+
+        alertBuilder.setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
+
+            @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+            public void onClick(DialogInterface dialog, int which) {
+                openAppPermission();
+
+            }
+        });
+        alertBuilder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+
+
+            }
+        });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+
+
+    }
+    void openAppPermission(){
+        Intent intent = new Intent();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            intent.setAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+            intent.putExtra(Settings.EXTRA_APP_PACKAGE, this.getPackageName());
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+            intent.putExtra("app_package", this.getPackageName());
+            intent.putExtra("app_uid", this.getApplicationInfo().uid);
+        } else {
+            intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//          intent.addCategory(Intent.CATEGORY_DEFAULT);
+            intent.setData(Uri.parse("package:" + this.getPackageName()));
+        }
+        this.startActivity(intent);
+
     }
 
 }

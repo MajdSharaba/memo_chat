@@ -14,6 +14,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
@@ -70,6 +71,7 @@ public class NotificationCallWorker extends Worker {
     public Worker.Result doWork() {
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
+        final String callId = getInputData().getString("call_id");
 
         final String imageUrl = getInputData().getString("image");
         final String name = getInputData().getString("name" );
@@ -116,13 +118,16 @@ public class NotificationCallWorker extends Worker {
             intent.putExtra("title", title);
             intent.putExtra("name", name);
             intent.putExtra("imageUrl", imageUrl);
+            intent.putExtra("call_id", callId);
 
 
 
 
 
 
-            String channelCall = "call_channel";
+
+
+            String channelCall = "call_Notifications";
 
 //                PendingIntent pendingIntent = PendingIntent.getActivity(FirebaseMessageReceiver.this, 0,
 //                        intent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -133,9 +138,11 @@ public class NotificationCallWorker extends Worker {
                     = new Intent(applicationContext, ResponeCallActivity.class);
             intentAnsware.putExtra("callRequest", message);
             intentAnsware.putExtra("id", anthor_user_id);
-            intentAnsware.putExtra("title", title);
-            intentAnsware.putExtra("name", name);
-            intent.putExtra("imageUrl", imageUrl);
+//            intentAnsware.putExtra("title", title);
+//            intentAnsware.putExtra("name", name);
+//            intent.putExtra("imageUrl", imageUrl);
+//            intent.putExtra("call_id", callId);
+
 
 
 
@@ -165,6 +172,7 @@ public class NotificationCallWorker extends Worker {
                     = new Intent(applicationContext, ResponeCallActivity.class);
 
             intentCancelAndStart.putExtra("callRequest", message);
+            intentAnsware.putExtra("title", title);
             intentCancelAndStart.putExtra("id", anthor_user_id);
 
             intentCancelAndStart.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -183,7 +191,7 @@ public class NotificationCallWorker extends Worker {
 
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setCategory(NotificationCompat.CATEGORY_CALL)
-                    .setSound(null)
+//                    .setSound(null)
                     .setOngoing(true)
 
 
@@ -222,7 +230,7 @@ public class NotificationCallWorker extends Worker {
                     >= Build.VERSION_CODES.O) {
                 NotificationChannel notificationChannel
                         = new NotificationChannel(
-                        channelCall, "call Channel",
+                        channelCall, "call  Notifications",
 
                         NotificationManager.IMPORTANCE_HIGH);
                 notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -238,7 +246,10 @@ public class NotificationCallWorker extends Worker {
                         .setLegacyStreamType(AudioManager.STREAM_RING)
                         .build();
 //                    notificationChannel.setSound(alarmSound, null);
-                notificationChannel.setSound(Uri.parse("android.resource://" + applicationContext.getPackageName() + "/" + R.raw.incomingcall), audioAttributes);
+                notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE),null);
+//                notificationChannel.setSound(Uri.parse("android.resource://" + applicationContext.getPackageName() + "/" + R.raw.ring), audioAttributes);
+//                notificationChannel.setSound(RingtoneManager. getDefaultUri (RingtoneManager.TYPE_RINGTONE), audioAttributes);
+
 
 
                 notificationManager.createNotificationChannel(
@@ -258,6 +269,8 @@ public class NotificationCallWorker extends Worker {
                             builder.setLargeIcon(ImageProperties.getCircleBitmap(resource));
                             Notification note = builder.build();
                             note.flags |= Notification.FLAG_INSISTENT;
+                            note.sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
                             notificationManager.notify(-1, note);
                             isRining(anthor_user_id,applicationContext);
 
@@ -274,6 +287,8 @@ public class NotificationCallWorker extends Worker {
                              R.drawable.th)));
                             Notification note = builder.build();
                             note.flags |= Notification.FLAG_INSISTENT;
+                            note.sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
 //                            notificationManager.notify(Integer.parseInt(channel), note);
                             notificationManager.notify(-1, note);
 
@@ -300,14 +315,14 @@ public class NotificationCallWorker extends Worker {
     }
     public void isRining(String yout_id,Context context) {
         BaseApp myBase = BaseApp.getInstance();
-        ClassSharedPreferences classSharedPreferences = new ClassSharedPreferences(context);
+        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
         // creating a new variable for our request queue
         RequestQueue queue = Volley.newRequestQueue(context);
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
 

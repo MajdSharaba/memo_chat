@@ -239,7 +239,7 @@ public class GroupSelectorActivity extends AppCompatActivity implements GroupSel
     }
 
     private void sendContactNumber(ArrayList<ContactModel> arrayList) {
-        String url = AllConstants.base_url+ "APIS/mycontact.php";
+        String url = AllConstants.base_url_final+ "APIS/mycontact.php";
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading, please wait...");
         progressDialog.show();

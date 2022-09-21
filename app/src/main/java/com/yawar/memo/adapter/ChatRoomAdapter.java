@@ -27,6 +27,7 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.fragment.ChatRoomFragment;
 import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
+import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.MyDiffUtilCallBack;
 import com.yawar.memo.utils.TimeProperties;
 import com.yawar.memo.views.ConversationActivity;
@@ -75,7 +76,7 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
             //.. should log the error or throw and exception
         }
         listsearch.addAll(getCurrentList());
-        classSharedPreferences = new ClassSharedPreferences(context.getActivity());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
     }
 
     @NonNull
@@ -257,7 +258,6 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                classSharedPreferences = new ClassSharedPreferences(context.getActivity());
                 String my_id = classSharedPreferences.getUser().getUserId();
 
                 AlertDialog.Builder mBuilder = new AlertDialog.Builder(view.getContext());
@@ -338,8 +338,14 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
 
                     }
                 });
-                if(chatRoomModel.blocked_for.equals(my_id)||chatRoomModel.blocked_for.equals(chatRoomModel.getOther_id())||chatRoomModel.blocked_for.equals("0")){
-                    imgBtnCall.setEnabled(false);
+//                if(chatRoomModel.blocked_for.toString().equals(classSharedPreferences.getUser().getUserId())||chatRoomModel.blocked_for.toString().equals(chatRoomModel.getOther_id())||chatRoomModel.blocked_for.toString().equals("0")){
+                if(chatRoomModel.blocked_for!=null) {
+                    if (chatRoomModel.blocked_for != "null") {
+                        imgBtnCall.setEnabled(false);
+                    } else {
+                        imgBtnCall.setEnabled(true);
+
+                    }
                 }
                 else {
                     imgBtnCall.setEnabled(true);

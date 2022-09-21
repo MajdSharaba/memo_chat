@@ -80,10 +80,11 @@ import io.reactivex.schedulers.Schedulers;
 
         @SuppressLint("CheckResult")
         public void getUserBlock(String user_id) {
+            userBlockList= new ArrayList<>();
             userBlockList.clear();
 
 
-            Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getBlockKist(user_id)
+            Single<String> observable = RetrofitClient.getInstance().getapi().getBlockKist(user_id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
             observable.subscribe(s -> {
@@ -154,7 +155,7 @@ import io.reactivex.schedulers.Schedulers;
         public void sendBlockRequest(String my_id, String anthor_user_id) {
 
 
-            Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().blockUser(my_id,anthor_user_id)
+            Single<String> observable = RetrofitClient.getInstance().getapi().blockUser(my_id,anthor_user_id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
             observable.subscribe(s -> {
@@ -189,7 +190,7 @@ import io.reactivex.schedulers.Schedulers;
         }
         @SuppressLint("CheckResult")
         public void sendUnbBlockUser(String my_id, String anthor_user_id) {
-            Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().unBlockUser(my_id,anthor_user_id)
+            Single<String> observable = RetrofitClient.getInstance().getapi().unBlockUser(my_id,anthor_user_id)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread());
 

@@ -22,6 +22,8 @@ public class ChatRoomRepo {
     private ArrayList<ChatRoomModel> chatRoomsList;
     public final MutableLiveData<Boolean> isArchivedMutableLiveData;
     public final MutableLiveData<ChatRoomModel> chatRoomModelMutableLiveData;
+    public MutableLiveData<Boolean> loading;
+    public MutableLiveData<Boolean> showErrorMessage;
 
     boolean isArchived = false;
 
@@ -32,6 +34,8 @@ public class ChatRoomRepo {
         chatRoomListMutableLiveData = new MutableLiveData<>();
         isArchivedMutableLiveData = new MutableLiveData<>();
         chatRoomModelMutableLiveData = new MutableLiveData<>();
+        loading = new MutableLiveData<>(false);
+        showErrorMessage = new MutableLiveData<>(false);
 
 
 
@@ -39,25 +43,32 @@ public class ChatRoomRepo {
 
     @SuppressLint("CheckResult")
     public MutableLiveData<ArrayList<ChatRoomModel>> callAPI(String user_id) {
-        chatRoomsList=new ArrayList<>();
-        chatRoomsList.clear();
+        try {
+            chatRoomsList = new ArrayList<>();
+            chatRoomsList.clear();
+            loading.setValue(true);
+            System.out.println("AllConstants.base_url_final"+AllConstants.base_url_final);
 
 
-        Single<ChatRoomRespone> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getChatRoom(user_id)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
-        observable.subscribe(s->{
-            System.out.println(s+"dssss");
-            chatRoomsList = s.getData();
-//            System.out.println("eerespone"+chatRoomsList.get(0));
+            Single<ChatRoomRespone> observable = RetrofitClient.getInstance().getapi().getChatRoom(user_id)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread());
+            observable.subscribe(s -> {
+                chatRoomsList = s.getData();
 
-            chatRoomListMutableLiveData.setValue(chatRoomsList);
+                chatRoomListMutableLiveData.setValue(chatRoomsList);
+                loading.setValue(false);
+                showErrorMessage.setValue(false);
 
-//            System.out.println("respone chat room "+s.getData().get(0).getState());
-        } ,s -> {
-            System.out.println("errorr"+s);
-            chatRoomListMutableLiveData.setValue(null);
+            }, s -> {
+                chatRoomListMutableLiveData.setValue(null);
+                loading.setValue(false);
+                showErrorMessage.setValue(true);
             });
+        }
+        catch (Exception e){
+            System.out.println("error");
+        }
 
 
 //        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_url).getapi().getChatRoom(user_id)
@@ -153,7 +164,7 @@ public class ChatRoomRepo {
     }
     @SuppressLint("CheckResult")
     public  void deleteChatRoom(String my_id, String your_id){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().deleteChatRoom(my_id,your_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().deleteChatRoom(my_id,your_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
@@ -349,7 +360,7 @@ public class ChatRoomRepo {
     }
     @SuppressLint("CheckResult")
     public void addToArchived(String my_id, String your_id){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().addToArchived(my_id,your_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().addToArchived(my_id,your_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
@@ -365,7 +376,7 @@ public class ChatRoomRepo {
     }
     @SuppressLint("CheckResult")
     public void removeFromArchived(String my_id, String your_id){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().removeFromArchived(my_id,your_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().removeFromArchived(my_id,your_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {

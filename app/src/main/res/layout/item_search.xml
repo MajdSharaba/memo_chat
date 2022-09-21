@@ -1,51 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="75dp"
-    app:cardElevation="5dp"
+    app:cardElevation="0dp"
     app:cardCornerRadius="5dp"
     app:cardBackgroundColor="@color/backgroundColor"
     android:foreground="?attr/selectableItemBackground"
     app:cardMaxElevation="5dp"
+    android:padding="5dp"
     app:cardPreventCornerOverlap="true"
     app:cardUseCompatPadding="false"
-    android:orientation="horizontal">
+    android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="3"
         android:orientation="horizontal"
+        android:gravity="center"
         android:id="@+id/layout_id">
 
 
 
-        <RelativeLayout
-
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/iv_image"
-                android:layout_width="45dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_height="45dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:src="@drawable/th"
                 android:layout_margin="5dp"
                 />
 
 
-        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_weight="5"
+            android:layout_marginStart="5dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             >
@@ -54,6 +51,8 @@
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:maxLength="30"
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/textColor"
                 android:text="@string/name"
@@ -64,9 +63,10 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:maxLines="1"
-                android:text="@string/hellohowareyou"
+                android:maxLength="30"
+                android:textDirection="ltr"
                 android:textColor="#808080"
-                android:textSize="14sp" />
+                android:textSize="16sp" />
 
         </LinearLayout>
         <Button
@@ -82,18 +82,18 @@
             android:background="@null"
             android:drawableTop="@drawable/ic_add_phone_green"
             android:visibility="invisible"
-            android:textColor="@color/green"
+            android:textColor="@color/memo_background_color_new"
             android:fontFamily="@font/roboto_regular"
             android:textSize="10sp" />
 
 
     </LinearLayout>
-    <include layout="@layout/item_divider"
-        android:layout_marginStart="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="0.2dp">
+<!--    <include layout="@layout/item_divider"-->
+<!--        android:layout_marginStart="50dp"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0.2dp">-->
 
-    </include>
+<!--    </include>-->
 </LinearLayout>
 
 

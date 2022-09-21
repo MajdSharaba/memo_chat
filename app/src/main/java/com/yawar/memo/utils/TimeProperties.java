@@ -78,6 +78,8 @@ public class TimeProperties {
         } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
 //            return "Yesterday " + DateFormat.format(timeFormatString, smsTime);
             return context.getResources().getString(R.string.yesterdayAt)+" "+DateFormat.format(timeFormatString, smsTime).toString();
+//            return context.getResources().getString(R.string.yesterdayAt);
+
         } else if (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR)) {
             return DateFormat.format(dateTimeFormatString, smsTime).toString();
         } else {

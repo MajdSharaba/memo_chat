@@ -90,7 +90,7 @@ public class FirebaseMessageReceiver
         chatRoomRepo=myBase.getChatRoomRepo();
 //        myBase.getObserver().addObserver(this);
         String message = "";
-        classSharedPreferences = new ClassSharedPreferences(this);
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         Map<String, String> data = remoteMessage.getData();
         String myCustomKey = data.get("body");
         // First case when notifications are received via
@@ -116,6 +116,8 @@ public class FirebaseMessageReceiver
                 switch (remoteMessage.getData().get("type")) {
                     case "call":
                         isCall = true;
+                        String callId="";
+
                         JSONObject messagebody = null;
                         JSONObject userObject;
                         JSONObject typeObject;
@@ -124,12 +126,14 @@ public class FirebaseMessageReceiver
                         String image ="";
                         boolean isVideoCall = true;
 
+
                         try {
                             messagebody = new JSONObject(remoteMessage.getData().get("body"));
                             userObject = new JSONObject(messagebody.getString("user"));
                             typeObject = new JSONObject(messagebody.getString("type"));
                             isVideoCall = typeObject.getBoolean("video");
                             anthorUserCallId = messagebody.getString("snd_id");
+                            callId = messagebody.getString("call_id");
                             username = userObject.getString("name");
                             image = userObject.getString("image_profile");
 
@@ -140,7 +144,7 @@ public class FirebaseMessageReceiver
                         int channel_id=Integer.parseInt(anthorUserCallId)+10000;
 
 
-                        Data inputData = new Data.Builder().putString("name",username).putString("image",image).putString("body",remoteMessage.getData().get("body")).putString("anthorUserCallId", anthorUserCallId).putString("channel", String.valueOf(channel_id)).putBoolean("isVideoCall",isVideoCall).build();
+                        Data inputData = new Data.Builder().putString("name",username).putString("image",image).putString("body",remoteMessage.getData().get("body")).putString("anthorUserCallId", anthorUserCallId).putString("channel", String.valueOf(channel_id)).putBoolean("isVideoCall",isVideoCall).putString("call_id",callId).build();
 
 
                         OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationCallWorker.class)
@@ -197,22 +201,22 @@ public class FirebaseMessageReceiver
 
                         break;
                     case "imageWeb":
-                        message = getResources().getString(R.string.photo);
+                        message = getResources().getString(R.string.n_photo);
                         break;
                     case "voice":
-                        message = getResources().getString(R.string.voice);
+                        message = getResources().getString(R.string.n_voice);
                         break;
                     case "video":
-                        message = getResources().getString(R.string.video);
+                        message = getResources().getString(R.string.n_video);
                         break;
                     case "file":
-                        message = getResources().getString(R.string.file);
+                        message = getResources().getString(R.string.n_file);
                         break;
                     case "contact":
-                        message = getResources().getString(R.string.contact_number);
+                        message = getResources().getString(R.string.n_contact);
                         break;
                     case "location":
-                        message = getResources().getString(R.string.location);
+                        message = getResources().getString(R.string.n_location);
                         break;
 
                     default:

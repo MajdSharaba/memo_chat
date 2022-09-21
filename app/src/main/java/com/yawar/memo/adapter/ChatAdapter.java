@@ -1,5 +1,6 @@
 package com.yawar.memo.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -23,6 +24,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -179,6 +181,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
     }
     float prex;
     boolean isdraged;
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
@@ -258,6 +261,8 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
                 }
                 if (!imageFile.exists()) {
+                    ((LayoutImageViewHolder) holder).imageView.setEnabled(false);
+
 
                     Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(R.drawable.backgrounblack).centerCrop()
                             .into(((LayoutImageViewHolder) holder).imageView);
@@ -275,39 +280,44 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
                                 ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.GONE);
                                 ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
-                                final Timer t = new Timer();
-                                t.scheduleAtFixedRate(new TimerTask() {
-                                    public void run() {
-                                        context.runOnUiThread(new Runnable() {
-                                            public void run() {
 
-
-                                                ((LayoutImageViewHolder) holder).adCircleProgress.setAdProgress(((LayoutImageViewHolder) holder).l);
-
-                                                ((LayoutImageViewHolder) holder).l++;
-                                            }
-                                        });
-                                    }
-                                }, 0, 100);
+//                                final Timer t = new Timer();
+//                                t.scheduleAtFixedRate(new TimerTask() {
+//                                    public void run() {
+//                                        context.runOnUiThread(new Runnable() {
+//                                            public void run() {
+//
+//
+//                                                ((LayoutImageViewHolder) holder).adCircleProgress.setAdProgress(((LayoutImageViewHolder) holder).l);
+//
+//                                                ((LayoutImageViewHolder) holder).l++;
+//                                            }
+//                                        });
+//                                    }
+//                                }, 0, 100);
                                 if (mCallback != null) {
-                                    mCallback.downloadImage(position,chatMessage, myMsg);
+                                    mCallback.downloadImage(position, chatMessage, myMsg);
                                 }
                             }
                         });
                     }
                 } else {
-                    ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
-
-                    Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", imageFile);
+                    ((LayoutImageViewHolder) holder).imageView.setEnabled(true);
 
                     ((LayoutImageViewHolder) holder).downloadImage.setVisibility(View.GONE);
-
+                    Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", imageFile);
 
                     Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(path).centerCrop()
                             .into(((LayoutImageViewHolder) holder).imageView);
-                    ((LayoutImageViewHolder) holder).imageView.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
+
+                    if (chatMessage.isUpload()) {
+                        ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+
+                    } else {
+                        ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+                        ((LayoutImageViewHolder) holder).imageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
 //                        androidx.appcompat.app.AlertDialog.Builder mBuilder = new androidx.appcompat.app.AlertDialog.Builder(view.getContext());
 //                        View mView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_image_cht, null);
 //                        ImageView photoView =  mView.findViewById(R.id.photo_view);
@@ -316,27 +326,29 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 //                        mBuilder.setView(mView);
 ////                        androidx.appcompat.app.AlertDialog mDialog = mBuilder.create();
 //                        mBuilder.show();
-                            Dialog dialog = new Dialog(context);
-                            dialog.setContentView(R.layout.dialog_image_cht);
-                            dialog.setTitle("Title...");
+                                Dialog dialog = new Dialog(context);
+                                dialog.setContentView(R.layout.dialog_image_cht);
+                                dialog.setTitle("Title...");
 
-                            // set the custom dialog components - text, image and button
-                            dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
-
-
-                            PhotoView image = dialog.findViewById(R.id.photo_view);
-                            Glide.with(image.getContext()).load(path).centerCrop().into(image);
-                            dialog.show();
-
-                        }
-                    });
+                                // set the custom dialog components - text, image and button
+                                dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
 
 
+                                PhotoView image = dialog.findViewById(R.id.photo_view);
+                                Glide.with(image.getContext()).load(path).centerCrop().into(image);
+                                dialog.show();
+
+                            }
+                        });
+
+
+                    }
                 }
 
                 break;
 
             case "voice":
+                System.out.println("case voiceeeeee");
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
 
                 ((LayoutVoiceViewHolder) holder).contentRecord.setVisibility(View.VISIBLE);
@@ -359,53 +371,45 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
                 }
                 if (!voiceFile.exists()) {
-//                    mCallback.downloadVoice(position, chatMessages.get(position), myMsg);
-
+                    System.out.println("!voiceFile.exists()");
                     ((LayoutVoiceViewHolder) holder).imagePlayerPause.setVisibility(View.GONE);
-                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setVisibility(View.VISIBLE);
                     ((LayoutVoiceViewHolder) holder).playerSeekBar.setProgress(0);
-                    ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+                    ((LayoutVoiceViewHolder) holder).playerSeekBar.setEnabled(false);
 
-//                    holder.imagePlayerPause.setImageResource(R.drawable.ic_play_arrow_white_24dp);
+
                     ((LayoutVoiceViewHolder) holder).textCurrentTime.setText("0.00");
                     ((LayoutVoiceViewHolder) holder).textTotalDouration.setText("0.00");
+                    if (chatMessage.isDownload()) {
+
+                        ((LayoutVoiceViewHolder) holder).downloadRecordIB.setVisibility(View.GONE);
+                        ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+
+                    } else {
+                        System.out.println("voiceFile.exists()");
 
 
-                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (mCallback != null) {
-                                ((LayoutVoiceViewHolder) holder).downloadRecordIB.setVisibility(View.GONE);
-                                ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
-                                final Timer t = new Timer();
-                                t.scheduleAtFixedRate(new TimerTask() {
-                                    public void run() {
-                                        context.runOnUiThread(new Runnable() {
-                                            public void run() {
+                        ((LayoutVoiceViewHolder) holder).downloadRecordIB.setVisibility(View.VISIBLE);
+                        ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+                        ((LayoutVoiceViewHolder) holder).downloadRecordIB.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (mCallback != null) {
+                                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setVisibility(View.GONE);
+                                    ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
 
-
-                                                ((LayoutVoiceViewHolder) holder).adCircleProgress.setAdProgress(((LayoutVoiceViewHolder) holder).l);
-
-                                                ((LayoutVoiceViewHolder) holder).l++;
-
-                                            }
-                                        });
-                                    }
-                                }, 0, 100);
-                                mCallback.downloadVoice(position, chatMessage, myMsg);
+                                    if (mCallback != null)
+                                        mCallback.downloadVoice(position, chatMessage, myMsg);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
 
 
                     System.out.println(chatMessage.getFileName() + "name");
                 } else {
-                    ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
-
-//                        holder.downloadRecordIB.setVisibility(View.GONE);
-//                        holder.imagePlayerPause.setVisibility(View.VISIBLE);
 
                     if (!((LayoutVoiceViewHolder) holder).mediaPlayer.isPlaying()) {
+                        ((LayoutVoiceViewHolder) holder).playerSeekBar.setEnabled(true);
                         ((LayoutVoiceViewHolder) holder).playerSeekBar.setProgress(0);
                         ((LayoutVoiceViewHolder) holder).textCurrentTime.setText("0.00");
                         ((LayoutVoiceViewHolder) holder).textTotalDouration.setText("0.00");
@@ -427,6 +431,21 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                     }
 
 
+                    if (chatMessage.isUpload()) {
+                        ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+                        ((LayoutVoiceViewHolder) holder).imagePlayerPause.setVisibility(View.GONE);
+
+
+                    } else {
+
+                        ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+                        ((LayoutVoiceViewHolder) holder).imagePlayerPause.setVisibility(View.VISIBLE);
+
+
+//                        holder.downloadRecordIB.setVisibility(View.GONE);
+//                        holder.imagePlayerPause.setVisibility(View.VISIBLE);
+
+                    }
                 }
                 ////////////////media player tools
                 ((LayoutVoiceViewHolder) holder).playerSeekBar.setOnTouchListener(new View.OnTouchListener() {
@@ -511,87 +530,65 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                     videoFile = new File(d, chatMessage.getMessage());
 
                 }
-//                if(chatMessage.isDownload()){
-//                    ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
-//                    Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(R.drawable.backgrounblack).centerCrop()
-//                            .into(((LayoutVideoViewHolder) holder).imageVideo);
-//                    ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
-//                    ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
-////                            ((LayoutVideoViewHolder) holder).adCircleProgress.animate();
-//                    final Timer t = new Timer();
-//                    t.scheduleAtFixedRate(new TimerTask() {
-//                        public void run() {
-//                            context.runOnUiThread(new Runnable() {
-//                                public void run() {
-//                                    System.out.println("download is trueeeeeeeeeeeeee");
-//
-//                                    ((LayoutVideoViewHolder) holder).adCircleProgress.setAdProgress( ((LayoutVideoViewHolder) holder).l);
-//
-//                                    ((LayoutVideoViewHolder) holder).l++;
-//                                }
-//                            });
-//                        }
-//                    }, 0, 100);
-//
-//
-//                }
+
+
                 if (!videoFile.exists()) {
-                    ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+//                    ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
                     Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(R.drawable.backgrounblack).centerCrop()
                             .into(((LayoutVideoViewHolder) holder).imageVideo);
+                    if (chatMessage.isDownload()) {
+                        ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
+                        ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+                        ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
 
-                    ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
-                    ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.VISIBLE);
+                    } else {
 
-                    ((LayoutVideoViewHolder) holder).videoImageDownload.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
-                            ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
-//                            ((LayoutVideoViewHolder) holder).adCircleProgress.animate();
-                            final Timer t = new Timer();
-                            t.scheduleAtFixedRate(new TimerTask() {
-                                public void run() {
-                                    context.runOnUiThread(new Runnable() {
-                                        public void run() {
+                        ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.VISIBLE);
+                        ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+                        ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
+                        ((LayoutVideoViewHolder) holder).videoImageDownload.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
+                                ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
 
-
-                                            ((LayoutVideoViewHolder) holder).adCircleProgress.setAdProgress(((LayoutVideoViewHolder) holder).l);
-
-                                            ((LayoutVideoViewHolder) holder).l++;
-                                        }
-                                    });
+                                if (mCallback != null) {
+                                    mCallback.downloadVideo(position, chatMessage, myMsg);
                                 }
-                            }, 0, 100);
-                            chatMessage.setDownload(true);
-                            if (mCallback != null) {
-                                mCallback.downloadVideo(position, chatMessage, myMsg);
                             }
-                        }
-                    });
-                } else {
-                    ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
-                    ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.VISIBLE);
+                        });
+                    }
+                } else {
                     ((LayoutVideoViewHolder) holder).videoImageDownload.setVisibility(View.GONE);
                     Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", videoFile);
 
                     Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(path).centerCrop()
                             .into(((LayoutVideoViewHolder) holder).imageVideo);
 
-                    ((LayoutVideoViewHolder) holder).videoImageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (mCallback != null) {
-                                mCallback.playVideo(path);
+                    if (chatMessage.isUpload()) {
+                        ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+                        ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
+
+                    } else {
+
+                        ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+                        ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.VISIBLE);
+
+
+                        ((LayoutVideoViewHolder) holder).videoImageButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (mCallback != null) {
+                                    mCallback.playVideo(path);
+                                }
+
+
                             }
-
-
-                        }
-                    });
+                        });
+                    }
                 }
-
 
                 break;
             ////  video end
@@ -627,40 +624,39 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                         }
                     }
                 });
+
+//                ////////////////
                 if (!pdfFile.exists()) {
                     ((LayoutPdfViewHolder) holder).pdfImage.setVisibility(View.GONE);
-                    ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
-
-                    ((LayoutPdfViewHolder) holder).fileImageButton.setVisibility(View.VISIBLE);
-                    ((LayoutPdfViewHolder) holder).fileImageButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            if (mCallback != null) {
-
-                                ((LayoutPdfViewHolder) holder).fileImageButton.setVisibility(View.GONE);
-                                ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
-                                final Timer t = new Timer();
-                                t.scheduleAtFixedRate(new TimerTask() {
-                                    public void run() {
-                                        context.runOnUiThread(new Runnable() {
-                                            public void run() {
+                    if (chatMessage.isDownload()) {
+                        ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+                        ((LayoutPdfViewHolder) holder).fileImageButton.setVisibility(View.GONE);
+                    } else {
 
 
-                                                ((LayoutPdfViewHolder) holder).adCircleProgress.setAdProgress(((LayoutPdfViewHolder) holder).l);
+                        ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
-                                                ((LayoutPdfViewHolder) holder).l++;
-                                            }
-                                        });
+                        ((LayoutPdfViewHolder) holder).fileImageButton.setVisibility(View.VISIBLE);
+                        ((LayoutPdfViewHolder) holder).fileImageButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (mCallback != null) {
+
+                                    ((LayoutPdfViewHolder) holder).fileImageButton.setVisibility(View.GONE);
+                                    ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+
+                                    if (mCallback != null) {
+
+                                        mCallback.downloadFile(position, chatMessage, myMsg);
                                     }
-                                }, 0, 100);
-                                mCallback.downloadFile(position, chatMessage, myMsg);
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 } else {
+                    ((LayoutPdfViewHolder) holder).fileImageButton.setVisibility(View.GONE);
                     ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
 
-                    ((LayoutPdfViewHolder) holder).fileImageButton.setVisibility(View.GONE);
                     Uri path = FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".fileprovider", pdfFile);
                     Bitmap bmp = ImageProperties.getImageFromPdf(path, context);
                     System.out.println(bmp);
@@ -674,7 +670,17 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
 
                     }
+
+                    if (chatMessage.isUpload()) {
+                        ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
+
+                    }
+                    else {
+                        ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.GONE);
+
+
                 }
+        }
 
                 break;
             case "contact":
@@ -899,7 +905,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutImageViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
 
-                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -923,7 +929,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutImageViewHolder) holder).contentwithB.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutImageViewHolder) holder).contentwithB.setLayoutParams(layoutParams);
+//                    ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutImageViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 
                     RelativeLayout.LayoutParams lp =
@@ -951,16 +959,16 @@ public void setData(ArrayList<ChatMessage> newData) {
 //                    layoutParams = (LinearLayout.LayoutParams) ((ViewHolder)holder).txtMessage.getLayoutParams();
 //                    layoutParams.gravity = Gravity.RIGHT;
 //                    ((ViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
-                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.white));
+                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.white));
 
 
-                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
-                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.white));
 
 
-                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -990,13 +998,23 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutVoiceViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
 //                    ((LayoutVoiceViewHolder)holder).txtMessage.setTextColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutVoiceViewHolder)holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.textColor));
+//
+//                    ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutVoiceViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).imagePlayerPause.setColorFilter(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).downloadRecordIB.setColorFilter(context.getResources().getColor(R.color.textColor));
+
 
                     ((LayoutVoiceViewHolder) holder).textTotalDouration.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).textCurrentTime.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVoiceViewHolder) holder).timeSeparator.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutVoiceViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
+
+                    ((LayoutVoiceViewHolder)holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1027,7 +1045,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT, 0);
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     ((LayoutVideoViewHolder) holder).content.setLayoutParams(lp);
-                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -1052,7 +1070,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutVideoViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutVideoViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+//                    ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutVideoViewHolder) holder).textDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 //
 
@@ -1082,7 +1102,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     ((LayoutPdfViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -1106,7 +1126,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutPdfViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutPdfViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+//                    ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutPdfViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1134,7 +1156,14 @@ public void setData(ArrayList<ChatMessage> newData) {
                     lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
                     ((LayoutContactViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
-                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutContactViewHolder) holder).addContact.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.white));
+                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.white));
+
+
+
+
 
 
                     if (state.equals("3")) {
@@ -1158,13 +1187,17 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutContactViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutContactViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
-                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
-                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).view1.setBackgroundColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).view2.setBackgroundColor(context.getResources().getColor(R.color.textColor));
 //                    ((LayoutContactViewHolder)holder).sendMessage.setTextColor(context.getResources().getColor(R.color.textColor));
+//                    ((LayoutContactViewHolder) holder).addContact.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutContactViewHolder) holder).addContact.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtName.setTextColor(context.getResources().getColor(R.color.textColor));
+                    ((LayoutContactViewHolder) holder).txtNumber.setTextColor(context.getResources().getColor(R.color.textColor));
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1191,7 +1224,7 @@ public void setData(ArrayList<ChatMessage> newData) {
                     ((LayoutLocationViewHolder) holder).content.setLayoutParams(lp);
                     layoutParams.gravity = Gravity.RIGHT;
 
-                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -1215,7 +1248,9 @@ public void setData(ArrayList<ChatMessage> newData) {
                             (LinearLayout.LayoutParams) ((LayoutLocationViewHolder) holder).contentWithBG.getLayoutParams();
                     layoutParams.gravity = Gravity.LEFT;
                     ((LayoutLocationViewHolder) holder).contentWithBG.setLayoutParams(layoutParams);
+//                    ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
                     ((LayoutLocationViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.textColor));
+
 
 
                     RelativeLayout.LayoutParams lp =
@@ -1247,10 +1282,10 @@ public void setData(ArrayList<ChatMessage> newData) {
                     layoutParams.gravity = Gravity.RIGHT;
                     ((LayoutTextViewHolder)holder).txtMessage.setLayoutParams(layoutParams);
 
-                    ((LayoutTextViewHolder) holder).txtMessage.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutTextViewHolder) holder).txtMessage.setTextColor(context.getResources().getColor(R.color.white));
 
 
-                    ((LayoutTextViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.background_bottom_navigation));
+                    ((LayoutTextViewHolder) holder).txtDate.setTextColor(context.getResources().getColor(R.color.white));
 
 
                     if (state.equals("3")) {
@@ -1368,7 +1403,7 @@ public void setData(ArrayList<ChatMessage> newData) {
         private final LinearLayout contentwithB;
         private final ImageView imageSeen;
         public TextView txtDate;
-        AdCircleProgress adCircleProgress;
+        ProgressBar adCircleProgress;
 
 
         float textSize = 14.0F;
@@ -1413,7 +1448,7 @@ public void setData(ArrayList<ChatMessage> newData) {
         Handler handler = new Handler();
         Runnable updater;
         ImageButton downloadRecordIB;
-        AdCircleProgress adCircleProgress;
+        ProgressBar adCircleProgress;
 
 
         float textSize = 14.0F;
@@ -1462,7 +1497,7 @@ public void setData(ArrayList<ChatMessage> newData) {
         ImageButton videoImageDownload;
         ImageView imageVideo;
         int l = 0;
-        AdCircleProgress adCircleProgress;
+        ProgressBar adCircleProgress;
 
 
         public LayoutVideoViewHolder(@NonNull View itemView) {
@@ -1503,7 +1538,7 @@ public void setData(ArrayList<ChatMessage> newData) {
         SharedPreferences sharedPreferences;
         private Activity context;
 
-        AdCircleProgress adCircleProgress;
+        ProgressBar adCircleProgress;
 
 
         public LayoutPdfViewHolder(@NonNull View itemView) {

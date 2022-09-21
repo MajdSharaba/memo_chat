@@ -106,7 +106,7 @@ public class UserDetailsActivity extends AppCompatActivity {
 
 
     private void getUserInfo(String user_id) {
-        String url = AllConstants.base_url+"APIS/getuserinfo.php";
+        String url = AllConstants.base_url_final+"APIS/getuserinfo.php";
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading, please wait...");
         progressDialog.show();

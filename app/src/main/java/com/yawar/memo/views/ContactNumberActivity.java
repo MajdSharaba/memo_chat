@@ -25,6 +25,8 @@ import android.provider.ContactsContract;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,6 +51,7 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
     String myId;
     BaseApp myBase;
     ServerApi serverApi;
+    LinearLayout linaerNoContact;
 
 
 
@@ -76,6 +79,7 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
 
 
         sharedPreferences = getSharedPreferences("txtFontSize", Context.MODE_PRIVATE);
+        linaerNoContact = findViewById(R.id.liner_no_contacts_number);
 //        BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView);
 //        bottomNavigationView.setSelectedItemId(R.id.calls);
         recyclerView = findViewById(R.id.recycler_view);
@@ -86,7 +90,7 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
 //        toolbar = findViewById(R.id.toolbar);
 //        toolbar.setTitle("Memo");
 //        setSupportActionBar(toolbar);
-        classSharedPreferences= new ClassSharedPreferences(this);
+        classSharedPreferences= BaseApp.getInstance().getClassSharedPreferences();
         myId = classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
 //        checkContactpermission();
@@ -434,13 +438,23 @@ public class ContactNumberActivity extends AppCompatActivity implements ContactN
     public void update(Observable observable, Object o) {
         sendContactNumberResponses.clear();
         sendContactNumberResponses=myBase.getContactNumberObserve().getContactNumberResponseList();
-        System.out.println("updateeeeeeeeee"+sendContactNumberResponses.size());
-        mainAdapter = new ContactNumberAdapter(ContactNumberActivity.this,sendContactNumberResponses);
-        recyclerView.setAdapter(mainAdapter);
+        if(sendContactNumberResponses!=null){
+            if(sendContactNumberResponses.isEmpty()){
+                linaerNoContact.setVisibility(View.VISIBLE);
+                recyclerView.setVisibility(View.GONE);
+            }
+            else{
+                linaerNoContact.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.VISIBLE);
+                mainAdapter = new ContactNumberAdapter(ContactNumberActivity.this,sendContactNumberResponses);
+                recyclerView.setAdapter(mainAdapter);
 
 
 
-        mainAdapter.notifyDataSetChanged();
+                mainAdapter.notifyDataSetChanged();
+            }
+        }
+
 
     }
 //    private void search(String query) {

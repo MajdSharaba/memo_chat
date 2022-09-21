@@ -107,7 +107,7 @@
                             android:textSize="20dp"
                             android:textColor="@color/textColor"
                             android:textStyle="bold"
-                            android:textAppearance="@color/green"
+                            android:textAppearance="@color/memo_background_color_new"
                             android:layout_height="wrap_content"
                             />
 

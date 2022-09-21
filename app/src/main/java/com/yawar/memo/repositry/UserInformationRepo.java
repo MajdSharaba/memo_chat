@@ -33,6 +33,10 @@ public class UserInformationRepo {
     public MutableLiveData<String> blockedFor;
      public MutableLiveData<ArrayList<MediaModel>> mediaModelsMutableLiveData;
     private ArrayList<MediaModel> mediaModels;
+    public MutableLiveData<UserModel> userInformation;
+
+
+
 
     ChatRoomRepo chatRoomRepo = BaseApp.getInstance().getChatRoomRepo();
 
@@ -48,6 +52,7 @@ public class UserInformationRepo {
 
         mediaModelsMutableLiveData = new MutableLiveData<>();
         mediaModels = new ArrayList<>();
+        userInformation = new MutableLiveData<>();
 
     }
 
@@ -60,7 +65,7 @@ public class UserInformationRepo {
         mediaModels.clear();
 
 
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().getMedia(user_id,anthor_user_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().getMedia(user_id,anthor_user_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
@@ -89,5 +94,40 @@ public class UserInformationRepo {
                     mediaModelsMutableLiveData.setValue(null);
                 });
     }
+
+    @SuppressLint("CheckResult")
+    public MutableLiveData<UserModel> getUserInformation(String anthor_user_id) {
+
+
+        Single<String> observable = RetrofitClient.getInstance().getapi().getUserInformation(anthor_user_id)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+        observable.subscribe(s -> {
+            System.out.println("s"+s);
+//            return userInformation;
+                    try {
+
+                        JSONArray jsonArray = new JSONArray(s);
+                        JSONObject jsonObject = jsonArray.getJSONObject(0);
+                        UserModel userModel = new UserModel(jsonObject.getString("id"),jsonObject.getString("first_name"),jsonObject.getString("last_name"),jsonObject.getString("email"),jsonObject.getString("phone"),jsonObject.getString("sn"),jsonObject.getString("profile_image"),jsonObject.getString("status"));
+
+
+                     userInformation.setValue(userModel);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+
+                },
+                s -> {
+                    userInformation.setValue(null);
+//                    mediaModelsMutableLiveData.setValue(null);
+                });
+        return userInformation;
+    }
+
 
 }

@@ -141,7 +141,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
 
 
 //        view.setBackground(getActivity().getResources().getDrawable(R.drawable.dialog_bg));
-        classSharedPreferences = new ClassSharedPreferences(getContext());
+        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         my_id= classSharedPreferences.getUser().getUserId();
         myBase = BaseApp.getInstance();
         forwardDialogViewModel =  new ViewModelProvider(this).get(ForwardDialogViewModel.class);
@@ -171,7 +171,7 @@ public class ForwardDialogFragment extends DialogFragment implements Observer,Gr
                 if(chatRoomModels!=null){
                     sendContactNumberResponses.clear();
                     for(ChatRoomModel chatRoomModel:chatRoomModels) {
-                     sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.getOther_id(),chatRoomModel.getUsername(),chatRoomModel.getSn(),chatRoomModel.getImage(),"true",chatRoomModel.getId(),chatRoomModel.getUser_token(),chatRoomModel.getBlocked_for()));
+                     sendContactNumberResponses.add(new SendContactNumberResponse(chatRoomModel.getOther_id(),chatRoomModel.getUsername(),chatRoomModel.getSn(),chatRoomModel.getImage(),"true",chatRoomModel.getId(),chatRoomModel.getUser_token(),chatRoomModel.getBlocked_for(),"ll"));
 
                     }
                     mainAdapter.updateList(sendContactNumberResponses);

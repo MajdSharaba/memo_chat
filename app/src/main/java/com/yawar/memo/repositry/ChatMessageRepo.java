@@ -43,6 +43,8 @@ public class ChatMessageRepo {
     public MutableLiveData<String> blockedFor;
     public MutableLiveData<Boolean> blocked;
     public MutableLiveData<Boolean> unBlocked;
+    public MutableLiveData<Boolean> loading;
+    public MutableLiveData<Boolean> showErrorMessage;
 
 
 
@@ -62,6 +64,8 @@ public class ChatMessageRepo {
         chatMessageistMutableLiveData = new MutableLiveData<>();
         selectedMessage = new MutableLiveData<>();
         _selectedMessage = new ArrayList<>();
+        loading = new MutableLiveData<>(false);
+        showErrorMessage = new MutableLiveData<>(false);
 
 
 
@@ -74,10 +78,20 @@ public class ChatMessageRepo {
     public void addSelectedMessage(ChatMessage message){
         _selectedMessage.add(message);
         selectedMessage.setValue(_selectedMessage);
+        System.out.println("addSelectedMessage"+_selectedMessage.size());
+
     }
     public void removeSelectedMessage(ChatMessage message){
-        _selectedMessage.remove(message);
+
+        for (int i=0 ; i<_selectedMessage.size();i++) {
+            if(message.getId().equals(_selectedMessage.get(i).getId())){
+                _selectedMessage.remove(_selectedMessage.get(i));
+                break;
+            }
+
+        }
         selectedMessage.setValue(_selectedMessage);
+        System.out.println("removeSelectedMessage"+_selectedMessage.size());
     }
     public void clearSelectedMessage(){
         for(ChatMessage chatMessage: selectedMessage.getValue()){
@@ -90,14 +104,20 @@ public class ChatMessageRepo {
 
     @SuppressLint("CheckResult")
     public void getChatHistory(String my_id, String anthor_user_id) {
-        chatMessageList.clear();
+        try {
 
+            loading.setValue(true);
 
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().getChatMessgeHistory(my_id, anthor_user_id)
+            if(chatMessageList!=null) {
+            chatMessageList.clear();
+        }
+
+        Single<String> observable = RetrofitClient.getInstance().getapi().getChatMessgeHistory(my_id, anthor_user_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
                     try {
+                        loading.setValue(false);
                         JSONArray jsonArray = new JSONArray(s);
 
 
@@ -125,8 +145,8 @@ public class ChatMessageRepo {
                             }
                             chatMessage.setType(jsonObject.getString("message_type"));
                             chatMessage.setDate(jsonObject.getString("created_at"));
-//                            chatMessage.setIsUpdate(jsonObject.getString("edited"));
-                            chatMessage.setIsUpdate("0");
+                            chatMessage.setIsUpdate(jsonObject.getString("edited"));
+//                            chatMessage.setIsUpdate("0");
 
                             if(jsonObject.optJSONObject("reply_message") != null && !jsonObject.optJSONObject("reply_message").equals("") && !jsonObject.optJSONObject("reply_message").equals("null")) {
 //                                chatMessage.setReply(jsonObject.getJSONObject("reply_message").getString("message"));
@@ -142,21 +162,30 @@ public class ChatMessageRepo {
                         chatMessageistMutableLiveData.setValue(chatMessageList);
 
                     } catch (JSONException e) {
+                        loading.setValue(false);
+
                         e.printStackTrace();
                     }//
 
 
                 },
                 s -> {
-                    chatMessageList = null;
-                    chatMessageistMutableLiveData.setValue(null);
+            System.out.println("time outttttttttt");
+                    chatMessageList = new ArrayList<>();
+                    loading.setValue(false);
+                    showErrorMessage.setValue(true);
+                    chatMessageistMutableLiveData.setValue(chatMessageList);
 
 
                 });
+        }
+        catch (Exception error){
+            System.out.println("error");
+        }
     }
 
     public void addMessage(ChatMessage chatMessage) {
-//        System.out.println("addddddddddddddddddddddddddddddddddd");
+        System.out.println("addddddddddddddddddddddddddddddddddd"+chatMessage.getId());
         chatMessageList.add(chatMessage);
         chatMessageistMutableLiveData.setValue(chatMessageList);
     }
@@ -206,7 +235,7 @@ public class ChatMessageRepo {
         for (int i = chatMessageList.size() - 1; i >= 0; i--) {
             ////////state 3
             if(state.equals("3")){
-                if (chatMessageList.get(i).getState().equals("3")) {
+                if (chatMessageList.get(i).getState().equals("3") || chatMessageList.get(i).getState().equals("0")) {
 
                     break;
                 }
@@ -238,7 +267,19 @@ public class ChatMessageRepo {
 //        chatMessageList.remove(chatMessage);
         for (ChatMessage chatMessage : chatMessageList) {
             if (chatMessage.getId().equals(message_id)) {
+                System.out.println(chatMessage.isDownload()+"chatMessage");
                 chatMessage.setDownload(isDownload);
+                break;
+            }
+        }
+        chatMessageistMutableLiveData.setValue(chatMessageList);
+    }
+
+    public void setMessageUpload(String message_id,boolean isDownload) {
+//        chatMessageList.remove(chatMessage);
+        for (ChatMessage chatMessage : chatMessageList) {
+            if (chatMessage.getId().equals(message_id)) {
+                chatMessage.setUpload(isDownload);
                 break;
             }
         }
@@ -247,7 +288,7 @@ public class ChatMessageRepo {
 
     @SuppressLint("CheckResult")
     public void deleteMessageForMe(String message_id, String user_id, ArrayList<ChatMessage> chatMessages){
-        Single<String> observable = RetrofitClient.getInstance(AllConstants.base_node_url).getapi().deleteMessage(message_id,user_id)
+        Single<String> observable = RetrofitClient.getInstance().getapi().deleteMessage(message_id,user_id)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
