@@ -894,7 +894,7 @@ public class ServerApi {
             JSONObject data = new JSONObject();
             JSONObject android = new JSONObject();
             android.put("priority", "high");
-            data.put("title", classSharedPreferences.getUser().getUserName());
+            data.put("title", classSharedPreferences.getUser().getUserName()+" "+ classSharedPreferences.getUser().getLastName());
             data.put("body", message);
             data.put("image", classSharedPreferences.getUser().getImage());
             data.put("chat_id", chat_id);

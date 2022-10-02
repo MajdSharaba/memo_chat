@@ -19,6 +19,8 @@ public class RequestCallViewModel extends ViewModel {
     public MutableLiveData<String> rining;
 
     public MutableLiveData<Boolean> isAudio;
+    public MutableLiveData<Boolean> connected;
+
     private int time = 0;
 
 
@@ -37,6 +39,7 @@ public class RequestCallViewModel extends ViewModel {
         this.peerIdRecived = new MutableLiveData<>("no connect");
         this.isAudio = new MutableLiveData<>(true);
         this.isSpeaker = new MutableLiveData<>(true);
+        this.connected = new MutableLiveData<>(false);
 
 
     }
@@ -94,6 +97,14 @@ public class RequestCallViewModel extends ViewModel {
     }
     public String getCallId( ) {
         return this.callId;
+    }
+
+
+    public void setConnected(Boolean connected) {
+        this.connected.postValue(connected);
+    }
+    public MutableLiveData<Boolean> getConnected( ) {
+        return this.connected;
     }
 
     public void setCallId() {

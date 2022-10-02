@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.provider.Settings;
 import android.util.Log;
@@ -75,6 +76,8 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
     EditText edFname,edLname;
     byte[] inputData = new byte[]{};
+    byte[] imageBytes = new byte[]{};
+
     ChatRoomRepo chatRoomRepo;
 
     ClassSharedPreferences classSharedPreferences;
@@ -236,7 +239,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                 lName = edLname.getText().toString();
 //                email = edEmail.getText().toString();
                 if(CheckAllFields()){
-                    System.out.println("uploadImage(displayNamee, imageUri)");
+                    System.out.println("uploadImage(displayNamee, imageUri)"+lName+"llll"+fName+"");
                     uploadImage(displayNamee, imageUri);
 //                serverApi.CompleteRegister(fName,lName,email,imageString,spennerItemChooser,userId);
                 }
@@ -485,7 +488,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 //    queue.add(request);
 //}
 private void uploadImage(final String imageName, Uri pdfFile) {
-
+        System.out.println("firstName"+fName+"lasrName"+lName);
 
 
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -493,111 +496,116 @@ private void uploadImage(final String imageName, Uri pdfFile) {
         progressDialog.show();
 
     InputStream iStream = null;
-    try {
-        if(!pdfFile.toString().equals("n")){
-        iStream = getContentResolver().openInputStream(pdfFile);
-        System.out.println(pdfFile);
-        //"file:///storage/emulated/0/memo/1640514470604.3gp"
-          inputData = getBytes(iStream);}
+    if(!pdfFile.toString().equals("n")) {
+//        iStream = getContentResolver().openInputStream(pdfFile);
+//        System.out.println(pdfFile);
+//        //"file:///storage/emulated/0/memo/1640514470604.3gp"
+//          inputData = getBytes(iStream);
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+        if (bitmap != null) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+             imageBytes = baos.toByteArray();
+        }
 
-      String url = AllConstants.base_url_final+"uploadImgProfile";
-        System.out.println(url+"base_url_final");
+    }
+
+    String url = AllConstants.base_url_final+"uploadImgProfile";
+    System.out.println(url+"base_url_final");
 //        String url = "http://192.168.0.109:3000/uploadImgProfile";
 
 //              "http://192.168.1.7:3000/uploadImgProfile";
 //        AllConstants.base_url+"uploadImgProfile"
-        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
-                new Response.Listener<NetworkResponse>() {
-                    @Override
-                    public void onResponse(NetworkResponse response) {
-                        System.out.println("responeeeeeeeeeeee" + new String(response.data));
-                        progressDialog.dismiss();
+    VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, url,
+            new Response.Listener<NetworkResponse>() {
+                @Override
+                public void onResponse(NetworkResponse response) {
+                    System.out.println("responeeeeeeeeeeee" + new String(response.data));
+                    progressDialog.dismiss();
 
-                        rQueue.getCache().clear();
-                        try {
-                            JSONArray jsonArray = new JSONArray(new String(response.data));
+                    rQueue.getCache().clear();
+                    try {
+                        JSONArray jsonArray = new JSONArray(new String(response.data));
 
-                            JSONObject respObj = jsonArray.getJSONObject(0);
-                            System.out.println(respObj);
-                            String user_id = respObj.getString("id");
-                            String first_name = respObj.getString("first_name");
-                            String last_name = respObj.getString("last_name");
-                            String email = respObj.getString("email");
-                            String profile_image = respObj.getString("profile_image");
-                            String secret_number = respObj.getString("sn");
-                            String number = respObj.getString("phone");
-                            String status= respObj.getString("status");
+                        JSONObject respObj = jsonArray.getJSONObject(0);
+                        System.out.println(respObj);
+                        String user_id = respObj.getString("id");
+                        String first_name = respObj.getString("first_name");
+                        String last_name = respObj.getString("last_name");
+                        String email = respObj.getString("email");
+                        String profile_image = respObj.getString("profile_image");
+                        String secret_number = respObj.getString("sn");
+                        String number = respObj.getString("phone");
+                        String status= respObj.getString("status");
 
-                            UserModel userModel = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
-                            classSharedPreferences.setUser(userModel);
-                            Intent intent = new Intent(RegisterActivity.this, IntroActivity.class);
-                            startActivity(intent);
-                            finish();
-
-
+                        UserModel userModel = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
+                        classSharedPreferences.setUser(userModel);
+                        Intent intent = new Intent(RegisterActivity.this, IntroActivity.class);
+                        startActivity(intent);
+                        finish();
 
 
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        progressDialog.dismiss();
+                }
+            },
+            new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    progressDialog.dismiss();
 
 //                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }) {
+                }
+            }) {
 
-            /*
-             * If you want to add more parameters with the image
-             * you can do it here
-             * here we have only one parameter with the image
-             * which is tags
-             * */
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("email", email);
-                params.put("first_name", fName);
-                params.put("last_name", lName);
+        /*
+         * If you want to add more parameters with the image
+         * you can do it here
+         * here we have only one parameter with the image
+         * which is tags
+         * */
+        @Override
+        protected Map<String, String> getParams() throws AuthFailureError {
+            Map<String, String> params = new HashMap<>();
+            params.put("email", email);
+            params.put("first_name", fName);
+            params.put("last_name", lName);
 
-                params.put("sn", spennerItemChooser);
-                params.put("id", userId);
-                return params;
-            }
+            params.put("sn", spennerItemChooser);
+            params.put("id", userId);
+            return params;
+        }
 
-            /*
-             *pass files using below method
-             * */
-            @Override
-            protected Map<String, DataPart> getByteData() {
-                Map<String, DataPart> params = new HashMap<>();
+        /*
+         *pass files using below method
+         * */
+        @Override
+        protected Map<String, DataPart> getByteData() {
+            Map<String, DataPart> params = new HashMap<>();
 
-                params.put("img_profile", new DataPart(imageName, inputData,"plan/text"));
+            params.put("img_profile", new DataPart(imageName, imageBytes,"plan/text"));
 
-                return params;
-            }
-        };
+            return params;
+        }
+    };
 
 
-        volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        rQueue = Volley.newRequestQueue(RegisterActivity.this);
+    volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
+            0,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    rQueue = Volley.newRequestQueue(RegisterActivity.this);
 //            rQueue.add(volleyMultipartRequest);
-        myBase.addToRequestQueue(volleyMultipartRequest);
-
-
-    } catch (FileNotFoundException e) {
-        e.printStackTrace();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
+    myBase.addToRequestQueue(volleyMultipartRequest);
 
 
 }

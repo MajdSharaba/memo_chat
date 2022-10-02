@@ -26,13 +26,13 @@
             <org.webrtc.SurfaceViewRenderer
                 android:id="@+id/surface_view2"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:text="From PeerConection"
                 android:visibility="gone"
-
                 android:layout_gravity="top|end"
                 android:textColor="#fff"
                 android:layout_margin="16dp"

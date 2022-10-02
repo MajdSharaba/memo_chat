@@ -121,6 +121,7 @@ public class CallNotificationActivity extends AppCompatActivity {
             @Override
             public void onSlideCompleted() {
                 //TODO : PERFORM WHEN ANSWER
+                System.out.println("completed");
                 rejectBtn.stopAnimation();
                 acceptBtn.setVisibility(View.GONE);
                 rejectBtn.setVisibility(View.GONE);
@@ -131,6 +132,7 @@ public class CallNotificationActivity extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
+
         });
         rejectBtn.setSlideListner(new SwipeToAnswerView.SlideListner() {
             @Override

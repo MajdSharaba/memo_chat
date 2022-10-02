@@ -39,8 +39,8 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
     BlockUserAdapter blockUserAdapter;
     ChatRoomRepo chatRoomRepo;
     ServerApi serverApi;
-    ChatRoomModel chatRoomModel;
-    ArrayList<ChatRoomModel> userBlockeds = new ArrayList<ChatRoomModel>();
+    UserModel UserBlocked;
+    ArrayList<UserModel> userBlockeds = new ArrayList<UserModel>();
 
     private void sendUnBlockFor(Boolean blocked) {
 
@@ -48,7 +48,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
 
         try {
             userUnBlocked.put("my_id", userModel.getUserId());
-            userUnBlocked.put("user_id",chatRoomModel.other_id );
+            userUnBlocked.put("user_id",UserBlocked.getUserId() );
             userUnBlocked.put("blocked_for",blockedActViewModel.blockedFor().getValue());
 
         } catch (JSONException e) {
@@ -79,16 +79,15 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
         chatRoomRepo = myBase.getChatRoomRepo();
         userModel = classSharedPreferences.getUser();
         serverApi = new ServerApi(this);
-        blockedActViewModel.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
+        blockedActViewModel.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
             @Override
-            public void onChanged(ArrayList<ChatRoomModel> userModels) {
+            public void onChanged(ArrayList<UserModel> userModels) {
                 if(userModels!=null){
                     userBlockeds.clear();
-                    for(ChatRoomModel user:userModels) {
+                    for(UserModel user:userModels) {
                         System.out.println("this"+userModel.getUserId()+"+");
-                            if(Objects.equals(user.getBlocked_for(),userModel.getUserId())||Objects.equals(user.getBlocked_for(),"0")){
 
-                                userBlockeds.add(user);}
+                                userBlockeds.add(user);
 
                     }
                     blockUserAdapter.updateList(userBlockeds);
@@ -257,7 +256,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
 //    }
 
     @Override
-    public void onHandleSelection(int position, ChatRoomModel blockUser) {
+    public void onHandleSelection(int position, UserModel blockUser) {
         AlertDialog.Builder dialog=new AlertDialog.Builder(this);
 //        dialog.setMessage(getString(R.string.alert_delete_message));
         dialog.setTitle(R.string.alert_unblock_user);
@@ -266,9 +265,9 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
                     public void onClick(DialogInterface dialog,
                                         int which) {
 
-                        chatRoomModel = blockUser;
+                        UserBlocked = blockUser;
 //                        serverApi.unbBlockUser(userModel.getUserId(),blockUser);
-                        blockedActViewModel.sendUnBlockRequest(userModel.getUserId(),blockUser.other_id);
+                        blockedActViewModel.sendUnBlockRequest(userModel.getUserId(),blockUser.getUserId());
                     }
                 });
         dialog.setNegativeButton(R.string.cancel,new DialogInterface.OnClickListener() {

@@ -56,6 +56,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
         CallProperty.setStatusBarOrScreenStatus(this);
         setContentView(R.layout.activity_verification);
         virvectbtn = findViewById(R.id.btn_verification);
+        authRepo = BaseApp.getInstance().getAuthRepo();
         text = findViewById(R.id.text);
         orText = findViewById(R.id.orText);
         verficationViewModel = new ViewModelProvider(this).get(VerficationViewModel.class);
@@ -154,7 +155,13 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
                 } else {
 
                     verficationViewModel.setLoading(true);
-                    authApi.verifyCode(edtOTP.getText().toString());
+                    if(classSharedPreferences.getVerficationNumber()==null){
+                        authApi.verifyCode(edtOTP.getText().toString());
+
+                    }
+                    else {
+                        authRepo.getspecialNumbers(classSharedPreferences.getVerficationNumber());
+                    }
                 }
 
             }
@@ -193,7 +200,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
 
                 if (aBoolean) {
                     System.out.println("errrrorrr");
-                    Toast.makeText(VerificationActivity.this, R.string.valied_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(VerificationActivity.this,authApi.errorMessage , Toast.LENGTH_LONG).show();
                     authApi.showErrorMessage.setValue(false);
 
                 }

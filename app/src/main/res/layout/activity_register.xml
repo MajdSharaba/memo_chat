@@ -68,6 +68,7 @@
                      android:fontFamily="@font/roboto_regular"
                      android:hint="@string/first_name"
                      android:padding="15dp"
+                     android:inputType="text"
                      android:textColor="@color/textColor"
                      android:textColorHint="@color/gray"
                      android:textSize="15sp" />
@@ -81,6 +82,7 @@
                      android:background="@drawable/et_custom"
                      android:fontFamily="@font/roboto_regular"
                      android:hint="@string/last_name"
+                     android:inputType="text"
                      android:padding="15dp"
                      android:textColor="@color/textColor"
                      android:textColorHint="@color/gray"

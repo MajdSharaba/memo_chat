@@ -1,5 +1,10 @@
 package com.yawar.memo.views;
 
+import static android.os.Environment.getExternalStoragePublicDirectory;
+
+import static androidx.core.content.FileProvider.getUriForFile;
+
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -19,7 +24,7 @@ import android.Manifest;
 import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Notification;
+import android.app.Dialog;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
@@ -39,8 +44,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -49,7 +52,6 @@ import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
-import android.service.notification.StatusBarNotification;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -60,6 +62,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewAnimationUtils;
+import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -71,7 +74,13 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
+import com.abedelazizshe.lightcompressorlibrary.CompressionListener;
+import com.abedelazizshe.lightcompressorlibrary.VideoCompressor;
+import com.abedelazizshe.lightcompressorlibrary.VideoQuality;
+import com.abedelazizshe.lightcompressorlibrary.config.Configuration;
+import com.abedelazizshe.lightcompressorlibrary.config.StorageConfiguration;
 import com.android.volley.RequestQueue;
 
 import com.bumptech.glide.Glide;
@@ -88,6 +97,7 @@ import com.downloader.PRDownloader;
 import com.downloader.request.DownloadRequest;
 import com.fxn.pix.Options;
 import com.fxn.pix.Pix;
+import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -99,6 +109,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
 //import com.yawar.memo.call.CompleteActivity;
@@ -131,9 +142,11 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -158,6 +171,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private LinearLayout linerNoMessage;
     private LinearLayout linerNameState;
     private ProgressBar progressBar;
+    MediaController mediaControl;
+
+
 
 
 
@@ -802,9 +818,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 }
         Intent service = new Intent(this, SocketIOService.class);
 
-
         service.putExtra(SocketIOService.EXTRA_UN_BLOCK_PARAMTERS, userUnBlocked.toString());
+
                 service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_UN_BLOCK);
+
                 startService(service);
 
 
@@ -1533,6 +1550,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         .setSpanCount(4)                                               //Span count for gallery min 1 & max 5
                         .setMode(Options.Mode.All)                                     //Option to select only pictures or videos or both
                         .setVideoDurationLimitinSeconds(30)
+                        
 
                         //Duration for video recording
                         .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT);     //Orientaion
@@ -2121,7 +2139,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 }
 
             }
-        },1000);
+        },500);
 //        messagesContainer.setSelection(messagesContainer.getCount() - 1);
     }
 
@@ -2263,80 +2281,26 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     ArrayList<String> returnValue = data.getStringArrayListExtra(Pix.IMAGE_RESULTS);
                     Uri selectedMediaUri = Uri.parse(returnValue.get(0));
                     if (!FileUtil.isVideoFile(selectedMediaUri.toString())) {
-                        String displayNamee = null;
-
-                        Uri pathImage = Uri.fromFile(new File(selectedMediaUri.toString()));
-                        File myFileImage = new File(pathImage.toString());
-
-
-                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, pathImage), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
-
-
-                        if (pathImage.toString().startsWith("content://")) {
-                            Cursor cursor = null;
-                            try {
-                                cursor = this.getContentResolver().query(selectedMediaUri, null, null, null, null);
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                    Log.d("nameeeee>>>>  ", displayNamee);
-//                                    System.out.println(displayNamee);
-
-//                                    uploadImage(displayNamee, selectedMediaUri);
-                                   ChatMessage chatMessage =  FileUtil.uploadImage(displayNamee,selectedMediaUri,ConversationActivity.this,user_id,anthor_user_id);
-                                   displayMessage(chatMessage);
-
-                                }
-                            } finally {
-                                cursor.close();
-                            }
-                        } else if (pathImage.toString().startsWith("file://")) {
-                            displayNamee = myFileImage.getName();
-//                            uploadImage(displayNamee, pathImage);
-                            ChatMessage chatMessage = FileUtil.uploadImage(displayNamee,pathImage,ConversationActivity.this,user_id,anthor_user_id);
-                            displayMessage(chatMessage);
-
-
-
-                            Log.d("nameeeee>>>>  ", displayNamee);
-                        }
+                        showImageBeforeSend(selectedMediaUri, "pix");
 
                     } else {
 
                         ////////////////////////////
-                        Uri pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
-                        File myFilee = new File(pathhh.toString());
+                        showVideoBeforeSend(selectedMediaUri,"pix");
+//                      Uri  pathhh = Uri.fromFile(new File(selectedMediaUri.toString()));
+//                        Uri contentUri = getUriForFile(this,"com.yawar.memo.fileprovider", new File(selectedMediaUri.toString()));
+//
+//                        System.out.println("pathhhh + "+ contentUri);
+
+//                        compressVideo(contentUri);
 
 
-                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, pathhh), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+//                        File file = new File(
+//                                Environment.getExternalStorageDirectory()
+//                                        .getAbsolutePath());
+//                        new CompressVideo().execute(
+//                                "false", selectedMediaUri.toString(), file.getPath());
 
-                        String displayNamee = null;
-
-                        if (pathhh.toString().startsWith("content://")) {
-                            Cursor cursor = null;
-                            try {
-                                cursor = this.getContentResolver().query(selectedMediaUri, null, null, null, null);
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                    Log.d("nameeeee>>>>  ", displayNamee);
-                                    System.out.println(displayNamee);
-
-//                                    uploadVideo(displayNamee, selectedMediaUri);
-                                    ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,selectedMediaUri,ConversationActivity.this,user_id,anthor_user_id);
-                                    displayMessage(chatMessage);
-                                }
-                            } finally {
-                                cursor.close();
-                            }
-                        } else if (pathhh.toString().startsWith("file://")) {
-                            displayNamee = myFilee.getName();
-//                            uploadVideo(displayNamee, pathhh);
-                            ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,pathhh,ConversationActivity.this,user_id,anthor_user_id);
-                            displayMessage(chatMessage);
-
-
-
-                            Log.d("nameeeee>>>>  ", displayNamee);
-                        }
 
                     }
                     break;
@@ -2356,81 +2320,24 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                     String mimeType = cursor1.getString(mimeTypeColumnIndex);
                     cursor1.close();
                     if (mimeType.startsWith("image")) {
-                        System.out.println("this is Imageeeeeeeeeee" + selectedMediaUriGallery.toString());
-                        String displayNamee = null;
+                        showImageBeforeSend(selectedMediaUriGallery,"picker");
 
-//                        Uri pathImage = Uri.fromFile(new File(selectedMediaUriGallery.toString()));
-                        File myFileImage = new File(selectedMediaUriGallery.toString());
-
-
-                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
-
-
-                        if (selectedMediaUriGallery.toString().startsWith("content://")) {
-                            Cursor cursor = null;
-                            try {
-                                cursor = this.getContentResolver().query(selectedMediaUriGallery, null, null, null, null);
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                    Log.d("nameeeee>>>>  ", displayNamee);
-//                                    System.out.println(displayNamee);
-
-//                                    uploadImage(displayNamee, selectedMediaUriGallery);
-                                   ChatMessage chatMessage =  FileUtil.uploadImage(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
-                                    displayMessage(chatMessage);
-
-                                }
-                            } finally {
-                                cursor.close();
-                            }
-                        } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
-                            displayNamee = myFileImage.getName();
-                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-//                            uploadImage(displayNamee, selectedMediaUriGallery);
-                             ChatMessage chatMessage = FileUtil.uploadImage(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
-                            displayMessage(chatMessage);
-
-
-                            Log.d("nameeeee>>>>  ", displayNamee);
-                        }
 
 
                     } else if (mimeType.startsWith("video")) {
+                        showVideoBeforeSend(selectedMediaUriGallery,"picker");
+
 
                         //////////////////////////
-                        File myFilee = new File(selectedMediaUriGallery.toString());
+//                        compressVideo(selectedMediaUriGallery);
 
 
-                        FileUtil.copyFileOrDirectory(FileUtil.getPath(this, selectedMediaUriGallery), this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+                        //                        File file = new File(
+//                                ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+//                        // Create compress video method
+//                        new CompressVideo().execute(
+//                                "false", selectedMediaUriGallery.toString());
 
-                        String displayNamee = null;
-
-                        if (selectedMediaUriGallery.toString().startsWith("content://")) {
-                            Cursor cursor = null;
-                            try {
-                                cursor = this.getContentResolver().query(selectedMediaUriGallery, null, null, null, null);
-                                if (cursor != null && cursor.moveToFirst()) {
-                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                                    Log.d("nameeeee>>>>  ", displayNamee);
-                                    System.out.println(displayNamee);
-
-//                                    uploadVideo(displayNamee, selectedMediaUriGallery);
-                                    ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
-                                    displayMessage(chatMessage);
-                                }
-                            } finally {
-                                cursor.close();
-                            }
-                        } else if (selectedMediaUriGallery.toString().startsWith("file://")) {
-                            displayNamee = myFilee.getName();
-                            System.out.println(displayNamee + "lkkkkkkkkkkkkkkkk");
-//                            uploadVideo(displayNamee, selectedMediaUriGallery);
-                            ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,selectedMediaUriGallery,ConversationActivity.this,user_id,anthor_user_id);
-                            displayMessage(chatMessage);
-
-
-                            Log.d("nameeeee>>>>  ", displayNamee);
-                        }
 
                     }
                     break;
@@ -2573,7 +2480,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             Log.v(TAG, "view() Method pdfFile " + pdfFile.getAbsolutePath());
 
-            Uri path = FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", pdfFile);
+            Uri path = getUriForFile(this, BuildConfig.APPLICATION_ID + ".fileprovider", pdfFile);
 
             System.out.println(pdfFile.exists() + "pathhhhhhhhhhhhh");
 
@@ -3522,7 +3429,390 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         });
     }
 
+
+
+    public  void showImageBeforeSend(Uri uri, String type) {
+        Dialog dialog = new Dialog(ConversationActivity.this);
+        dialog.setContentView(R.layout.dialog_image_before_send);
+        dialog.setTitle("Title...");
+
+        // set the custom dialog components - text, image and button
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+
+
+        PhotoView image = dialog.findViewById(R.id.photo_view);
+        image.setImageURI(uri);
+
+        FloatingActionButton fab = dialog.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("Range")
+            @Override
+            public void onClick(View view) {
+                System.out.println(uri+"uriiiiiiiiiiiii");
+
+                        String displayNamee = null;
+                        Uri pathImage;
+                         if(type.equals("pix"))
+                         pathImage = Uri.fromFile(new File(uri.toString()));
+
+                         else{
+                             pathImage = uri;
+                         }
+
+                        File myFileImage = new File(pathImage.toString());
+
+
+                        FileUtil.copyFileOrDirectory(FileUtil.getPath(ConversationActivity.this, pathImage), ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+
+
+                        if (pathImage.toString().startsWith("content://")) {
+                            Cursor cursor = null;
+                            try {
+                                cursor =ConversationActivity.this.getContentResolver().query(uri, null, null, null, null);
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                                    Log.d("nameeeee>>>>  ", displayNamee);
+//                                    System.out.println(displayNamee);
+
+//                                    uploadImage(displayNamee, selectedMediaUri);
+                                   ChatMessage chatMessage =  FileUtil.uploadImage(displayNamee,uri,ConversationActivity.this,user_id,anthor_user_id);
+                                   displayMessage(chatMessage);
+
+                                }
+                            } finally {
+                                cursor.close();
+                            }
+                        } else if (pathImage.toString().startsWith("file://")) {
+                            displayNamee = myFileImage.getName();
+//                            uploadImage(displayNamee, pathImage);
+                            ChatMessage chatMessage = FileUtil.uploadImage(displayNamee,pathImage,ConversationActivity.this,user_id,anthor_user_id);
+
+                            displayMessage(chatMessage);
+
+
+
+                            Log.d("nameeeee>>>>  ", displayNamee);
+                        }
+              dialog.dismiss();
+            }
+
+
+        });
+        dialog.show();
+    }
+
+
+
+    public  void showVideoBeforeSend(Uri uri, String type) {
+        System.out.println("uriiiiiiiii"+uri);
+        Dialog dialog = new Dialog(ConversationActivity.this);
+        dialog.setContentView(R.layout.dialog_video_before_send);
+        dialog.setTitle("Title...");
+
+        // set the custom dialog components - text, image and button
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+
+        VideoView videoView = dialog.findViewById(R.id.simpleVideoView);
+        mediaControl = new MediaController(dialog.getContext());
+
+
+
+
+        videoView.requestFocus();
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                mediaPlayer.setOnVideoSizeChangedListener(new MediaPlayer.OnVideoSizeChangedListener() {
+                    @Override
+                    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+                        /*
+                         * add media controller
+                         */
+                        System.out.println("onPrepared");
+//                        mediaControl.setAnchorView(frameLayout);
+                        videoView.setMediaController(mediaControl);
+                        /*
+                         * and set its position on screen
+                         */
+                        mediaControl.setAnchorView(videoView);
+                        mediaControl.setMediaPlayer(videoView);
+                    }
+                });
+            }
+        });
+        videoView.setMediaController(mediaControl);
+        mediaControl.setAnchorView(videoView);
+        mediaControl.setMediaPlayer(videoView);
+
+        videoView.setMediaController(mediaControl);
+        videoView.setVideoURI(uri);
+//                // start a video
+        videoView.start();
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+//                finish();
+//                Toast.makeText(getApplicationContext(), "Thank You...!!!", Toast.LENGTH_LONG).show(); // display a toast when an video is completed
+            }
+        });
+        videoView.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+            @Override
+            public boolean onError(MediaPlayer mp, int what, int extra) {
+//                finish();
+
+//                Toast.makeText(getApplicationContext(), "Oops An Error Occur While Playing Video...!!!", Toast.LENGTH_LONG).show(); // display a toast when an error is occured while playing an video
+                return false;
+            }
+        });
+        FloatingActionButton fab = dialog.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("Range")
+            @Override
+            public void onClick(View view) {
+                Uri pathhh;
+                Uri compressPath;
+
+
+                if(type.equals("pix")) {
+                    pathhh = Uri.fromFile(new File(uri.toString()));
+//                    compressPath = getUriForFile(ConversationActivity.this, "com.yawar.memo.fileprovider", new File(uri.toString()));
+                }
+                else{
+                    pathhh = uri;
+//                    compressPath = uri;
+                }
+//                compressVideo(pathhh);
+
+                        File myFilee = new File(pathhh.toString());
+                System.out.println("beeeeeeeeee"+(myFilee.length()/ 1024f));
+
+
+
+                FileUtil.copyFileOrDirectory(FileUtil.getPath(ConversationActivity.this, pathhh), ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+
+                        String displayNamee = null;
+
+                        if (pathhh.toString().startsWith("content://")) {
+                            Cursor cursor = null;
+                            try {
+                                cursor = ConversationActivity.this.getContentResolver().query(uri, null, null, null, null);
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                                    Log.d("nameeeee>>>>  ", displayNamee);
+                                    System.out.println(displayNamee);
+
+//                                    uploadVideo(displayNamee, selectedMediaUri);
+                                    ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,uri,ConversationActivity.this,user_id,anthor_user_id);
+                                    displayMessage(chatMessage);
+//                                                    compressVideo(compressPath,displayNamee);
+
+                                }
+                            } finally {
+                                cursor.close();
+                            }
+                        } else if (pathhh.toString().startsWith("file://")) {
+                            displayNamee = myFilee.getName();
+//                            uploadVideo(displayNamee, pathhh);
+                            ChatMessage chatMessage = FileUtil.uploadVideo(displayNamee,pathhh,ConversationActivity.this,user_id,anthor_user_id);
+                            displayMessage(chatMessage);
+//                            compressVideo(compressPath,displayNamee);
+
+
+
+
+                            Log.d("nameeeee>>>>  ", displayNamee);
+                        }
+
+
+                        dialog.dismiss();
+
+            }
+        });
+
+
+        dialog.show();
+    }
+
+
+//    private class CompressVideo
+//            extends AsyncTask<String, String, String> {
+//
+//        // Initialize dialog
+//        Dialog dialog;
+//
+//        @Override protected void onPreExecute()
+//        {
+//            super.onPreExecute();
+//            // Display dialog
+//
+//        }
+//
+//        @Override
+//        protected String doInBackground(String... strings)
+//        {
+//            // Initialize video path
+//            String videoPath = null;
+//
+//            try {
+//                // Initialize uri
+//                Uri uri = Uri.parse(strings[1]);
+//                System.out.println("uriiiiiiiiiiiiiiii"+uri);
+//                // Compress video
+//                File f = new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+//
+//                videoPath
+//                        = SiliCompressor.with(ConversationActivity.this)
+//                        .compressVideo(uri, f.getPath());
+//            }
+//            catch (URISyntaxException e) {
+//                e.printStackTrace();
+//            }
+//            // Return Video path
+//            return videoPath;
+//        }
+//
+//        @Override protected void onPostExecute(String s)
+//        {
+//            super.onPostExecute(s);
+//            // Dismiss dialog
+//            dialog.dismiss();
+//
+//            // Visible all views
+//
+//
+//            // Initialize file
+//            File file = new File(s);
+//            // Initialize uri
+//            Uri uri = Uri.fromFile(file);
+//            // set video uri
+//
+//            // start both video
+//
+//            // Compress video size
+//            float size = file.length() / 1024f;
+//            // Set size on text view
+//
+//        }
+//    }
+
+//    public void compressVideo(Uri uri,String filename){
+//        System.out.println("uriiiiiiiii"+uri);
+//                String message_id = System.currentTimeMillis() + "_" + user_id;
+//
+//        VideoCompressor.start(
+//                this, // => This is required
+//                Collections.singletonList(uri), // => Source can be provided as content uris
+//                false, // => isStreamable
+//                new StorageConfiguration(
+//                        filename, // => an optional value for a custom video name.
+//                        Environment.DIRECTORY_DCIM + File.separator + "memo/send/video",  // => the directory to save the compressed video(s). Will be ignored if isExternal = false.
+//                        false // => false means save at app-specific file directory. Default is true.
+//                ),
+//                new Configuration(
+//                        VideoQuality.MEDIUM,
+//                        false, /*isMinBitrateCheckEnabled*/
+//                        null, /*videoBitrate: int, or null*/
+//                        false, /*disableAudio: Boolean, or null*/
+//                        false, /*keepOriginalResolution: Boolean, or null*/
+//                        360.0, /*videoWidth: Double, or null*/
+//                        640.0 /*videoHeight: Double, or null*/
+//                ),
+//                new CompressionListener() {
+//                    @SuppressLint("Range")
+//                    @Override
+//                    public void onSuccess(int i, long l, @Nullable String s) {
+////                       Uri pathhh = Uri.parse(s);
+//                        File myFilee = new File(Uri.parse(s).toString());
+//                        System.out.println(s+"ssssssssssssssss"+i+ (myFilee.length()/ 1024f));
+//
+//
+//                        Uri pathhh= Uri.fromFile(myFilee);
+////                        System.out.println(myFilee.getAbsolutePath()+"mmmmmmmmmmm");
+//
+//
+////                        FileUtil.copyFileOrDirectory(FileUtil.getPath(ConversationActivity.this, pathhh), ConversationActivity.this.getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video").getAbsolutePath());
+//
+//                        String displayNamee = null;
+//
+//                        if (pathhh.toString().startsWith("content://")) {
+//                            Cursor cursor = null;
+//                            try {
+//                                cursor = ConversationActivity.this.getContentResolver().query(pathhh, null, null, null, null);
+//                                if (cursor != null && cursor.moveToFirst()) {
+//                                    displayNamee = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+//                                    Log.d("nameeeee>>>>  ", displayNamee);
+//                                    System.out.println(displayNamee);
+//
+////                                    uploadVideo(displayNamee, selectedMediaUri);
+////                                     FileUtil.uploadVideo(filename,pathhh,ConversationActivity.this,user_id,anthor_user_id,message_id);
+////                                    displayMessage(chatMessage);
+//                                }
+//                            } finally {
+//                                cursor.close();
+//                            }
+//                        } else if (pathhh.toString().startsWith("file://")) {
+//                            displayNamee = myFilee.getName();
+////                            uploadVideo(displayNamee, pathhh);
+////                            FileUtil.uploadVideo(filename,pathhh,ConversationActivity.this,user_id,anthor_user_id,message_id);
+////                            displayMessage(chatMessage);
+//
+//
+//
+//                            Log.d("nameeeee>>>>  ", displayNamee);
+//                        }
+//                        else{
+//
+//                        }
+//
+//                    }
+//
+//                    @Override
+//                    public void onStart(int i) {
+//
+//        ChatMessage chatMessage = new ChatMessage();
+//        chatMessage.setId(message_id);//dummy
+//        chatMessage.setMessage(uri.toString());
+//        chatMessage.setFileName(filename);
+//        chatMessage.setUpload(true);
+//
+//
+//        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+//        chatMessage.setMe(true);
+//        chatMessage.setType("video");
+//        chatMessage.setState("0");
+//        chatMessage.setChecked(false);
+//        displayMessage(chatMessage);
+//
+//
+//                    }
+//
+//
+//
+//                    @Override
+//                    public void onFailure(int index, String failureMessage) {
+//                        System.out.println("failureMessage"+failureMessage);
+//                        // On Failure
+//                    }
+//
+//                    @Override
+//                    public void onProgress(int index, float progressPercent) {
+//                        // Update UI with progress value
+//                        runOnUiThread(new Runnable() {
+//                            public void run() {
+//                            }
+//                        });
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(int index) {
+//                        // On Cancelled
+//                    }
+//                }
+//        );
+//    }
 }
+
+
 
 
 

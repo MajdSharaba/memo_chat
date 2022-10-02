@@ -170,7 +170,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
-                    Toast.makeText(LoginActivity.this, R.string.valied_message, Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this,authApi.errorMessage, Toast.LENGTH_LONG).show();
                     authApi.showErrorMessage.setValue(false);
 
                 }

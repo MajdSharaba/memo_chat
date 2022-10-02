@@ -243,6 +243,7 @@ public class NotificationCallWorker extends Worker {
                         .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
 
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+
                         .setLegacyStreamType(AudioManager.STREAM_RING)
                         .build();
 //                    notificationChannel.setSound(alarmSound, null);

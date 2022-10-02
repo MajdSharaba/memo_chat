@@ -40,6 +40,7 @@ public class AuthApi implements Observer {
     AuthRepo authApi= myBase.getAuthRepo();
     public MutableLiveData<Boolean> loading;
     public MutableLiveData<Boolean> showErrorMessage;
+    public String errorMessage = "ERROR";
 
 
 
@@ -77,13 +78,16 @@ public class AuthApi implements Observer {
                             // if the code is correct and the task is successful
                             // we are sending our user to new activity.
 //                            serverApi.register();
+
                             authApi.getspecialNumbers(classSharedPreferences.getVerficationNumber());
 
                         } else {
                             // if the code is not correct then we are
                             // displaying an error message to the user.
+                            errorMessage = task.getException().getMessage() ;
+
                             showErrorMessage.setValue(true);
-                            System.out.println(" showErrorMessage.setValue(true)"+ showErrorMessage.getValue());
+//                            System.out.println(" showErrorMessage.setValue(true)"+ showErrorMessage.getValue());
 
 
                             BaseApp.getInstance().getAuthRepo().loading.setValue(false);
@@ -206,6 +210,8 @@ public class AuthApi implements Observer {
 //            progressDialog.dismiss();
             System.out.println("loading false");
             loading.setValue(false);
+            errorMessage = e.getMessage();
+
             showErrorMessage.setValue(true);
             System.out.println(e.getMessage());
 
@@ -220,8 +226,8 @@ public class AuthApi implements Observer {
         // credentials from our verification id and code.
 //        Globle globle = new Globle();
 //        System.out.println(globle.getVerificationId()+"mnnnnnnnnnnnnnnnnn");
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
+//        progressDialog = new ProgressDialog(context);
+//        progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
 //        progressDialog.show();
         SharedPreferences prefs = context.getSharedPreferences("auth", MODE_PRIVATE);
 

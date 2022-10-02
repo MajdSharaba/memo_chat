@@ -37,7 +37,7 @@ import java.util.Locale;
 public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.ViewHolder> {
     ///Initialize variable
     Activity activity;
-    List<ChatRoomModel> arrayList= Collections.emptyList();
+    List<UserModel> arrayList= Collections.emptyList();
 
     public BlockUserAdapter.CallbackInterface mCallback;
 
@@ -53,13 +53,13 @@ public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.View
          * @param position             - the position
          * SendContactNumberResponse - the text to pass back
          */
-        void onHandleSelection(int position, ChatRoomModel userModel);
+        void onHandleSelection(int position, UserModel userModel);
 
     }
 
 
     ///Create constructor
-    public BlockUserAdapter(Activity activity, List<ChatRoomModel> arrayList) {
+    public BlockUserAdapter(Activity activity, List<UserModel> arrayList) {
         this.activity = activity;
         this.arrayList = arrayList;
         try {
@@ -85,9 +85,9 @@ public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ChatRoomModel model = arrayList.get(position);
-        holder.tvName.setText(model.username);
-        holder.tvNumber.setText(model.sn);
+        UserModel model = arrayList.get(position);
+        holder.tvName.setText(model.getUserName());
+        holder.tvNumber.setText(model.getPhone());
         System.out.println(model.getImage());
         if(!model.getImage().isEmpty()){
 //            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+model.getImage()).error(activity.getDrawable(R.drawable.th)).into(holder.imageView);
@@ -140,7 +140,7 @@ public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.View
 //        arrayList.addAll(listsearch);
 //        notifyDataSetChanged();
 //    }
-public void updateList(ArrayList<ChatRoomModel> updateList){
+public void updateList(ArrayList<UserModel> updateList){
     arrayList = updateList;
 
     notifyDataSetChanged();

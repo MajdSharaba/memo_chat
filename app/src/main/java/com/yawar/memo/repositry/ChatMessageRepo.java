@@ -142,6 +142,8 @@ public class ChatMessageRepo {
 
                             } else {
                                 chatMessage.setImage(jsonObject.getString("message"));
+                                System.out.println("imageMessage"+jsonObject.getString("message"));
+
                             }
                             chatMessage.setType(jsonObject.getString("message_type"));
                             chatMessage.setDate(jsonObject.getString("created_at"));
@@ -249,6 +251,7 @@ public class ChatMessageRepo {
                     break;
                 }
                 else {
+                    System.out.println("set Stateeeeeeeeee");
                 chatMessageList.get(i).setState(state);}
 
             }

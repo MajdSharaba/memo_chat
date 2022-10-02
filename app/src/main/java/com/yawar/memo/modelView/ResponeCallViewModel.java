@@ -15,15 +15,20 @@ public class ResponeCallViewModel extends ViewModel {
     private int time = 0;
     private String callId;
 
+    public MutableLiveData<Boolean> connected;
+
+
 
 
 
 
     public ResponeCallViewModel() {
-        this.isVideoForMe = new MutableLiveData<>(false);
-        this.isVideoForYou=new MutableLiveData<>(false);
+        this.isVideoForMe = new MutableLiveData<>();
+        this.isVideoForYou=new MutableLiveData<>();
         this.isAudio = new MutableLiveData<>(true);
         this.isSpeaker = new MutableLiveData<>(true);
+        this.connected = new MutableLiveData<>(false);
+
 
 
 
@@ -65,6 +70,12 @@ public class ResponeCallViewModel extends ViewModel {
 
     public int getTime() {
         return time;
+    }
+    public void setConnected(Boolean connected) {
+        this.connected.postValue(connected);
+    }
+    public MutableLiveData<Boolean> getConnected( ) {
+        return this.connected;
     }
 
     public  String getTimeString(){

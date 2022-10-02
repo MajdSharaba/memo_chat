@@ -216,13 +216,7 @@
     <string name="n_location">📌 Location</string>
     <string name="n_file">\📖 Pdf</string>
     <string name="download_app">Download App Now</string>
-
-
-    xhaomi_message
-
-
-
-
+    <string name="key_exchange">Key exchange</string>
 
 
 </resources>

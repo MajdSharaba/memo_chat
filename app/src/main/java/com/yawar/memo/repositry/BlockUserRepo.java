@@ -92,8 +92,8 @@ import io.reactivex.schedulers.Schedulers;
 
 
                     System.out.println(s + "responeeeeeeee");
-                    JSONObject respObj = new JSONObject(s);
-                    JSONArray jsonArray = (JSONArray) respObj.get("data");
+//                    JSONObject respObj = new JSONObject(s);
+                    JSONArray jsonArray = (JSONArray) new JSONArray(s);
 
                     for (int i = 0; i <= jsonArray.length() - 1; i++) {
                         JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -106,9 +106,9 @@ import io.reactivex.schedulers.Schedulers;
                         String phone = jsonObject.getString("phone");
                         String userId = jsonObject.getString("id");
                         String email = jsonObject.getString("email");
-                        String blockedFor = jsonObject.getString("blocked_for");
+//                        String blockedFor = jsonObject.getString("blocked_for");
 
-                        userBlockList.add(new UserModel(userId, fName, lName, email, phone, special_number, image, blockedFor));
+                        userBlockList.add(new UserModel(userId, fName, lName, email, phone, special_number, image, "null"));
                     }
 
                     userBlockListMutableLiveData.setValue(userBlockList);
@@ -122,6 +122,7 @@ import io.reactivex.schedulers.Schedulers;
 
                     },
                     s -> {
+                System.out.println("Errrrrrrrror"+s);
                         userBlockList = null;
                         userBlockListMutableLiveData.setValue(null);
                     });
@@ -130,10 +131,11 @@ import io.reactivex.schedulers.Schedulers;
 
             return userBlockListMutableLiveData;
         }
-        public  void deleteBlockUser(String user_id,String status){
+        public  void deleteBlockUser(String user_id){
             for(UserModel user:userBlockList){
                 if(user.getUserId().equals(user_id)){
-                    user.setStatus(status);
+//                    user.setStatus(status);
+                    userBlockList.remove(user);
                     break;
                 }}
             userBlockListMutableLiveData.postValue(userBlockList);
@@ -212,6 +214,8 @@ import io.reactivex.schedulers.Schedulers;
                             blockedForRepo.setValue(blokedForRespone);
                             unBlockedRepo.setValue(unBlockedRespone);
                             chatRoomRepo.setBlockedState(anthor_user_id, blokedForRespone);
+                            deleteBlockUser(anthor_user_id);
+
 //
 
 

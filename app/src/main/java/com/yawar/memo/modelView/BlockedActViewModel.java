@@ -22,14 +22,10 @@ public class BlockedActViewModel extends ViewModel {
     public final ArrayList<UserModel> blockUserList = new ArrayList<>();
 
 
-//    public IntroActModelView(@NonNull Application application) {
-//        super(application);
-//        repository = new ChatRoomRepo(application);
-//        baseApp = BaseApp.getInstance();
-//        chatRoomsList = new ArrayList<>();
-//        chatRoomListMutableLiveData = new MutableLiveData<>();
-//
-//    }
+    public BlockedActViewModel() {
+        blockUserRepo.getUserBlock(baseApp.getClassSharedPreferences().getUser().getUserId());
+
+    }
 
 
     public void setBlockedFor(String blockedFor) {
@@ -60,8 +56,8 @@ public class BlockedActViewModel extends ViewModel {
         blockUserRepo.sendUnbBlockUser(my_id,another_user_id);
     }
 
-    public  MutableLiveData<ArrayList<ChatRoomModel>> loadData() {
-        return repository.chatRoomListMutableLiveData;
+    public  MutableLiveData<ArrayList<UserModel>> loadData() {
+        return blockUserRepo.userBlockListMutableLiveData;
 //        System.out.println(chatRoomListMutableLiveData.getValue().size()+"chatRoomListMutableLiveData.getValue().size()");
 
     }

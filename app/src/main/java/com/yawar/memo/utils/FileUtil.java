@@ -1,11 +1,11 @@
 package com.yawar.memo.utils;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -14,7 +14,6 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -22,14 +21,9 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.api.Api;
-import com.google.gson.Gson;
-import com.yawar.memo.Api.api;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.repositry.ChatMessageRepo;
-import com.yawar.memo.retrofit.RetrofitClient;
 import com.yawar.memo.views.ConversationActivity;
 
 import org.json.JSONException;
@@ -48,20 +42,13 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Logger;
-
-import io.reactivex.annotations.NonNull;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
 
 public class FileUtil {
 
     private static final String LOG_TAG = "FileUtils";
 
     private static Uri contentUri = null;
+
 
 
     /**
@@ -484,6 +471,11 @@ public class FileUtil {
     public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id) {
         ChatMessageRepo chatMessageRepo = BaseApp.getInstance().getChatMessageRepo();
         BaseApp myBase = BaseApp.getInstance();
+        Bitmap bitmap = null;
+        byte[] imageBytes = new byte[]{};
+
+
+
         String message_id = System.currentTimeMillis() + "_" + user_id;
 
 
@@ -504,107 +496,113 @@ public class FileUtil {
 
 
         InputStream iStream = null;
+
+//            iStream = activity.getContentResolver().openInputStream(pdfFile);
+//            System.out.println(pdfFile);
+//            //"file:///storage/emulated/0/memo/1640514470604.3gp"
+//            final byte[] inputData = FileUtil.getBytes(iStream);
         try {
-
-            iStream = activity.getContentResolver().openInputStream(pdfFile);
-            System.out.println(pdfFile);
-            //"file:///storage/emulated/0/memo/1640514470604.3gp"
-            final byte[] inputData = FileUtil.getBytes(iStream);
-
-            VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.upload_image_URL,
-                    new Response.Listener<NetworkResponse>() {
-                        @Override
-                        public void onResponse(NetworkResponse response) {
-                            System.out.println("responeeeeeeeeeeee" + new String(response.data));
-
-//                            rQueue.getCache().clear();
-                            try {
-                                JSONObject jsonObject = new JSONObject(new String(response.data));
-
-                                JSONObject sendObject = new JSONObject();
-
-
-                                sendObject.put("sender_id", jsonObject.getString("sender_id"));
-                                sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
-                                sendObject.put("message", jsonObject.getString("message"));
-                                sendObject.put("message_type", jsonObject.getString("message_type"));
-                                sendObject.put("state", jsonObject.getString("state"));
-                                sendObject.put("message_id", message_id);
-                                sendObject.put("chat_id", jsonObject.getInt("chat_id"));
-                                sendObject.put("id", jsonObject.getInt("id"));
-                                sendObject.put("deleted_for", jsonObject.getString("deleted_for"));
-
-                                if (jsonObject.getBoolean("newchat") == true) {
-                                    sendObject.put("newchat", jsonObject.getBoolean("newchat"));
-                                }
-
-                                sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-
-                                chatMessageRepo.setMessageUpload(message_id,false);
-                                activity.newMeesage(sendObject);
-
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    },
-                    new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-//                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    }) {
-
-                /*
-                 * If you want to add more parameters with the image
-                 * you can do it here
-                 * here we have only one parameter with the image
-                 * which is tags
-                 * */
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("sender_id", user_id);
-                    params.put("reciver_id", anthor_user_id);
-                    params.put("message_type", "imageWeb");
-                    params.put("state", "0");
-                    params.put("orginalName", imageName);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
-                    return params;
-                }
-
-                /*
-                 *pass files using below method
-                 * */
-                @Override
-                protected Map<String, DataPart> getByteData() {
-                    Map<String, DataPart> params = new HashMap<>();
-
-                    params.put("img_chat", new DataPart(imageName, inputData, "plan/text"));
-
-                    return params;
-                }
-            };
-
-
-            volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                    0,
-                    DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                    DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//            rQueue = Volley.newRequestQueue(activity);
-//            rQueue.add(volleyMultipartRequest);
-            myBase.addToRequestQueue(volleyMultipartRequest);
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), pdfFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//
+        if (bitmap != null) {
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos);
+            imageBytes = baos.toByteArray();
+        }
 
-     return chatMessage;
+
+        byte[] finalImageBytes = imageBytes;
+        VolleyMultipartRequest volleyMultipartRequest = new VolleyMultipartRequest(Request.Method.POST, AllConstants.upload_image_URL,
+                new Response.Listener<NetworkResponse>() {
+                    @Override
+                    public void onResponse(NetworkResponse response) {
+                        System.out.println("responeeeeeeeeeeee" + new String(response.data));
+
+//                            rQueue.getCache().clear();
+                        try {
+                            JSONObject jsonObject = new JSONObject(new String(response.data));
+
+                            JSONObject sendObject = new JSONObject();
+
+
+                            sendObject.put("sender_id", jsonObject.getString("sender_id"));
+                            sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
+                            sendObject.put("message", jsonObject.getString("message"));
+                            sendObject.put("message_type", jsonObject.getString("message_type"));
+                            sendObject.put("state", jsonObject.getString("state"));
+                            sendObject.put("message_id", message_id);
+                            sendObject.put("chat_id", jsonObject.getInt("chat_id"));
+                            sendObject.put("id", jsonObject.getInt("id"));
+                            sendObject.put("deleted_for", jsonObject.getString("deleted_for"));
+
+                            if (jsonObject.getBoolean("newchat") == true) {
+                                sendObject.put("newchat", jsonObject.getBoolean("newchat"));
+                            }
+
+                            sendObject.put("orginalName", jsonObject.getString("orginalName"));
+                            sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+
+                            chatMessageRepo.setMessageUpload(message_id,false);
+                            activity.newMeesage(sendObject);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+//                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+
+            /*
+             * If you want to add more parameters with the image
+             * you can do it here
+             * here we have only one parameter with the image
+             * which is tags
+             * */
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("sender_id", user_id);
+                params.put("reciver_id", anthor_user_id);
+                params.put("message_type", "imageWeb");
+                params.put("state", "0");
+                params.put("orginalName", imageName);
+                params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                return params;
+            }
+
+            /*
+             *pass files using below method
+             * */
+            @Override
+            protected Map<String, DataPart> getByteData() {
+                Map<String, DataPart> params = new HashMap<>();
+
+                params.put("img_chat", new DataPart(imageName, finalImageBytes, "plan/text"));
+
+                return params;
+            }
+        };
+
+
+        volleyMultipartRequest.setRetryPolicy(new DefaultRetryPolicy(
+                0,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+//            rQueue = Volley.newRequestQueue(activity);
+//            rQueue.add(volleyMultipartRequest);
+        myBase.addToRequestQueue(volleyMultipartRequest);
+
+
+        return chatMessage;
     }
 
     ///////////////////

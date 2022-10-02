@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -35,6 +37,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -114,6 +118,8 @@ public class RequestCallActivity extends AppCompatActivity {
     String typeCall;
     int time = 0;
     Timer callTimer = new Timer();
+    ObjectAnimator objectanimator1, objectanimator2;
+    Animation animation;
 
 
 
@@ -964,6 +970,82 @@ public class RequestCallActivity extends AppCompatActivity {
             }
         });
 
+        requestCallViewModel.getConnected().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean s) {
+
+                if (s) {
+
+
+
+          System.out.println("requestCallViewModel.getConnected()");
+
+
+                    if (!requestCallViewModel.getEndCall().getValue()) {
+
+                        requestCallViewModel.setIsVideoForMe(requestCallViewModel.getIsVideoForMe().getValue());
+                        requestCallViewModel.setIsSpeaker(isVideoForMe);
+                        startCallTimeCounter();
+                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+                        final float scale = getResources().getDisplayMetrics().density;
+                        System.out.println(scale+"scale");
+                        int pixelsWidth = (int) (120 * scale + 0.5f);
+                        int pixelsHeight= (int) (170 * scale + 0.5f);
+//
+//
+////                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,300));
+//                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+//                                pixelsWidth,
+//                                pixelsHeight
+//                        );
+//                        params.setMargins((int) (7 * scale + 0.5f), (int) (15 * scale + 0.5f), (int) (7 * scale + 0.5f), 0);
+//                        binding.localVideoView.setLayoutParams(params);
+                        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(binding.localVideoView, "scaleX", 0.4f);
+                        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.25f);
+                        scaleDownX.setDuration(1500);
+                        scaleDownY.setDuration(1500);
+
+                        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", scale*-300f);
+                        moveUpY.setDuration(1500);
+                        ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", scale*110f);
+                        moveUpx.setDuration(1500);
+
+
+                        AnimatorSet scaleDown = new AnimatorSet();
+                        AnimatorSet moveUp = new AnimatorSet();
+                        AnimatorSet moveEnd = new AnimatorSet();
+
+
+                        scaleDown.play(scaleDownX).with(scaleDownY);
+                        moveUp.play(moveUpY);
+                        moveEnd.play(moveUpx);
+
+                        scaleDown.start();
+//                        moveUp.start();
+//                        moveEnd.start();
+
+//                        binding.localVideoView.bringToFront();
+
+                         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_out);
+                        binding.localVideoView.startAnimation(animation);
+                        ///for stop 15 sec counter
+//                        countDownTimer.cancel();
+//                        ////for close rining
+//                        mMediaPlayer.release();
+                        ///for shw call notification
+                        showInCallNotification();
+
+                    }
+
+
+
+                } else {
+
+                }
+
+            }
+        });
+
         requestCallViewModel.getPeerId().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
@@ -975,35 +1057,36 @@ public class RequestCallActivity extends AppCompatActivity {
                 } else if (s.equals("no connect")) {
 
                 } else {
+                    binding.callStatue.setText(R.string.key_exchange);
 
-                    if (!requestCallViewModel.getEndCall().getValue()) {
-
-                        requestCallViewModel.setIsVideoForMe(requestCallViewModel.getIsVideoForMe().getValue());
-                        requestCallViewModel.setIsSpeaker(isVideoForMe);
-                        startCallTimeCounter();
-                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
-                        final float scale = getResources().getDisplayMetrics().density;
-                        int pixelsWidth = (int) (120 * scale + 0.5f);
-                        int pixelsHeight= (int) (170 * scale + 0.5f);
-
-
-//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,300));
-                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                                pixelsWidth,
-                                pixelsHeight
-                        );
-                        params.setMargins((int) (7 * scale + 0.5f), (int) (15 * scale + 0.5f), (int) (7 * scale + 0.5f), 0);
-                        binding.localVideoView.setLayoutParams(params);
-                        binding.localVideoView.bringToFront();
-
-                        ///for stop 15 sec counter
-//                        countDownTimer.cancel();
-//                        ////for close rining
-//                        mMediaPlayer.release();
-                        ///for shw call notification
-                        showInCallNotification();
-
-                    }
+//                    if (!requestCallViewModel.getEndCall().getValue()) {
+//
+//                        requestCallViewModel.setIsVideoForMe(requestCallViewModel.getIsVideoForMe().getValue());
+//                        requestCallViewModel.setIsSpeaker(isVideoForMe);
+//                        startCallTimeCounter();
+//                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+//                        final float scale = getResources().getDisplayMetrics().density;
+//                        int pixelsWidth = (int) (120 * scale + 0.5f);
+//                        int pixelsHeight= (int) (170 * scale + 0.5f);
+//
+//
+////                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,300));
+//                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+//                                pixelsWidth,
+//                                pixelsHeight
+//                        );
+//                        params.setMargins((int) (7 * scale + 0.5f), (int) (15 * scale + 0.5f), (int) (7 * scale + 0.5f), 0);
+//                        binding.localVideoView.setLayoutParams(params);
+//                        binding.localVideoView.bringToFront();
+//
+//                        ///for stop 15 sec counter
+////                        countDownTimer.cancel();
+////                        ////for close rining
+////                        mMediaPlayer.release();
+//                        ///for shw call notification
+//                        showInCallNotification();
+//
+//                    }
                 }
             }
         });
@@ -1079,6 +1162,7 @@ public class RequestCallActivity extends AppCompatActivity {
                                     .x(motionEvent.getRawX() + dX)
                                     .y(motionEvent.getRawY() + dY)
                                     .setDuration(0)
+
 
                                     .start();
                             break;
@@ -1249,6 +1333,7 @@ public class RequestCallActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         finish();
+        closeCall();
 
         super.onBackPressed();
     }
@@ -1517,7 +1602,11 @@ public class RequestCallActivity extends AppCompatActivity {
 
             @Override
             public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
+                System.out.println(iceConnectionState.toString()+"iceConnectionStateiceConnectionState");
+                 if(iceConnectionState.toString().equals("CONNECTED")){
+                     requestCallViewModel.setConnected(true);
 
+                 }
             }
 
             @Override

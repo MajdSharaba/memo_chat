@@ -26,7 +26,7 @@ public interface api {
 
     @FormUrlEncoded
 
-    @POST("APIS/allblock.php")
+    @POST("myblocklist")
 //endpoint
 
     Single<String> getBlockKist(@Field("my_id") String user_id);
