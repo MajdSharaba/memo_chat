@@ -139,32 +139,33 @@
                     </TextView>
 
                 </LinearLayout>
-<!--                <LinearLayout-->
-<!--                    android:id="@+id/liner_mute"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:gravity="center"-->
-<!--                    android:layout_weight="1"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:orientation="vertical">-->
-<!--                    <ImageButton-->
-<!--                        android:layout_width="43dp"-->
-<!--                        android:layout_height="43dp"-->
-<!--                        android:background="@drawable/btn_background_circle_green"-->
-<!--                        android:src="@drawable/ic_bell"-->
-<!--                        android:foreground="?android:attr/actionBarItemBackground"-->
-<!--                        app:tint="@color/white">-->
-<!--                    </ImageButton>-->
-<!--                    <TextView-->
-<!--                        android:id="@+id/mute"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="19dp"-->
-<!--                        android:textSize="14sp"-->
-<!--                        android:text="@string/mute">-->
+                <LinearLayout
+                    android:id="@+id/liner_mute"
+                    android:layout_width="wrap_content"
+                    android:gravity="center"
+                    android:layout_margin="10dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageButton
+                        android:id="@+id/img_mute"
+                        android:layout_width="43dp"
+                        android:layout_height="43dp"
+                        android:background="@drawable/btn_background_circle_green"
+                        android:src="@drawable/ic_bell"
+                        android:foreground="?android:attr/actionBarItemBackground"
+                        app:tint="@color/white">
+                    </ImageButton>
+                    <TextView
+                        android:id="@+id/mute"
+                        android:layout_width="wrap_content"
+                        android:layout_height="19dp"
+                        android:textSize="14sp"
+                        android:text="@string/mute">
 
 
-<!--                    </TextView>-->
+                    </TextView>
 
-<!--                </LinearLayout>-->
+                </LinearLayout>
                 <LinearLayout
                     android:id="@+id/liner_more"
                     android:layout_width="wrap_content"

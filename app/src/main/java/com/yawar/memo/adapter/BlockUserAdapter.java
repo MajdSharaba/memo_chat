@@ -32,10 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-//public class BlockUserAdapter {
-//}
+
 public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.ViewHolder> {
-    ///Initialize variable
     Activity activity;
     List<UserModel> arrayList= Collections.emptyList();
 
@@ -47,12 +45,7 @@ public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.View
 
     public interface CallbackInterface {
 
-        /**
-         * Callback invoked when clicked
-         *
-         * @param position             - the position
-         * SendContactNumberResponse - the text to pass back
-         */
+
         void onHandleSelection(int position, UserModel userModel);
 
     }
@@ -90,7 +83,6 @@ public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.View
         holder.tvNumber.setText(model.getPhone());
         System.out.println(model.getImage());
         if(!model.getImage().isEmpty()){
-//            Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+model.getImage()).error(activity.getDrawable(R.drawable.th)).into(holder.imageView);
             Glide.with(holder.imageView.getContext()).load(AllConstants.imageUrl+model.getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(holder.imageView);
            }
         else {
@@ -98,7 +90,6 @@ public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.View
 
         }
 
-        // Glide.with(holder.imageView.getContext()).load(model.getImage()).into(holder.imageView);
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -122,24 +113,7 @@ public class BlockUserAdapter extends RecyclerView.Adapter<BlockUserAdapter.View
     public int getItemCount() {
         return arrayList.size();
     }
-//    public void filter(String charText) {
-//        System.out.println(charText+listsearch2.size());
-//        charText = charText.toLowerCase(Locale.getDefault());
-//        listsearch.clear();
-//        if (charText.length() == 0) {
-//
-//            listsearch.addAll(listsearch2);
-//        } else {
-//            for (SendContactNumberResponse wp : listsearch2) {
-//                if (wp.getName().toLowerCase(Locale.getDefault()).contains(charText)) {
-//                    listsearch.add(wp);
-//                }
-//            }
-//        }
-//        arrayList.clear();
-//        arrayList.addAll(listsearch);
-//        notifyDataSetChanged();
-//    }
+
 public void updateList(ArrayList<UserModel> updateList){
     arrayList = updateList;
 

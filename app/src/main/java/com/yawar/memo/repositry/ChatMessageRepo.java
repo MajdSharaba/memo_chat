@@ -146,8 +146,8 @@ public class ChatMessageRepo {
 
                             }
                             chatMessage.setType(jsonObject.getString("message_type"));
-                            chatMessage.setDate(jsonObject.getString("created_at"));
-                            chatMessage.setIsUpdate(jsonObject.getString("edited"));
+                            chatMessage.setDateTime(jsonObject.getString("created_at"));
+                            chatMessage.setUpdate(jsonObject.getString("edited"));
 //                            chatMessage.setIsUpdate("0");
 
                             if(jsonObject.optJSONObject("reply_message") != null && !jsonObject.optJSONObject("reply_message").equals("") && !jsonObject.optJSONObject("reply_message").equals("null")) {
@@ -214,7 +214,7 @@ public class ChatMessageRepo {
             System.out.println(chatMessage.getId() + "majdfadi" + message_id);
             if (chatMessage.getId().equals(message_id)) {
                 chatMessage.setMessage(message);
-                chatMessage.setIsUpdate("1");
+                chatMessage.setUpdate("1");
                 break;
             }
         }

@@ -2,10 +2,12 @@ package com.yawar.memo.sessionManager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yawar.memo.model.UserModel;
+import com.yawar.memo.views.UserInformationActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,13 +18,35 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
+import androidx.lifecycle.LiveData;
+import androidx.preference.PreferenceManager;
+
 import javax.inject.Singleton;
 
 public class ClassSharedPreferences {
     Context context;
+    private SharedPreferenceStringLiveData sharedPreferenceLiveData;
+
 
     public ClassSharedPreferences(Context context) {
         this.context = context;
+    }
+
+    public SharedPreferenceStringLiveData getSharedPrefs(){
+        return sharedPreferenceLiveData;
+    }
+
+    public void setSharedPreferences(String key, String value) {
+
+//        SharedPreferences userDetails = context.getSharedPreferences("cid",
+//                Context.MODE_PRIVATE);
+        SharedPreferences userDetails = PreferenceManager.getDefaultSharedPreferences(context);
+
+        SharedPreferences.Editor editor = userDetails.edit();
+        editor.putString(key, value);
+        editor.apply();
+        System.out.println("value"+value);
+        sharedPreferenceLiveData = new SharedPreferenceStringLiveData(userDetails,key,value);
     }
 
 
@@ -178,6 +202,42 @@ return arrayItems;
 
 
     }
+
+
+
+    public void setMuteUsers(ArrayList<String> muteUsers) {
+        SharedPreferences prefs = context.getSharedPreferences("muteUsers", MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = prefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(muteUsers);
+        prefsEditor.putString("muteUsers",json).commit();
+        sharedPreferenceLiveData = new SharedPreferenceStringLiveData(prefs,json,json);
+
+
+    }
+
+
+    public ArrayList<String> getMuteUsers() {
+        ArrayList response = new ArrayList<String>();
+        SharedPreferences prefs = context.getSharedPreferences("muteUsers", MODE_PRIVATE);
+
+        Gson gson = new Gson();
+
+
+        String json = prefs.getString("muteUsers", "");
+        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+        if (json != null) {
+            response =  gson.fromJson(json,type );
+
+        }
+        if(response== null){
+            response = new ArrayList<String>();
+        }
+
+        return response;
+
+    }
+
 
 
 

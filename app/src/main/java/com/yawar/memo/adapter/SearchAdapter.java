@@ -283,7 +283,8 @@ import java.util.ArrayList;
 
             @Override
             public boolean areContentsTheSame(@NonNull SearchRespone oldItem, @NonNull SearchRespone newItem) {
-                return 0 == oldItem.compareTo(newItem);
+//                return 0 == oldItem.compareTo(newItem);
+                return  oldItem.equals(newItem);
             }
         }
     }

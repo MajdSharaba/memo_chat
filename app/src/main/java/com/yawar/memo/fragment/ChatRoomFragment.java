@@ -172,7 +172,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
 
                         for (ChatRoomModel chatRoomModel : chatRoomModels) {
                             if (chatRoomModel.getState() == null) {
-                                System.out.println(chatRoomModel.username+"username"+myId);
+//                                System.out.println(chatRoomModel.username+"username"+myId);
                                 list.add(chatRoomModel.clone());
                                 postList.add(chatRoomModel);
                             } else if (!chatRoomModel.getState().equals("0") && !chatRoomModel.getState().equals(myId)) {
@@ -196,12 +196,12 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             @Override
             public void onSwipedLeft(int position) {
 
-                chatRoomViewModel.deleteChatRoom(myId,postList.get(position).other_id);
+                chatRoomViewModel.deleteChatRoom(myId,postList.get(position).getOther_id());
             }
 
             @Override
             public void onSwipedRight(int position) {
-                chatRoomViewModel.addToArchived(myId,postList.get(position).other_id);
+                chatRoomViewModel.addToArchived(myId,postList.get(position).getOther_id());
 
             }
         });
@@ -339,16 +339,16 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         Bundle bundle = new Bundle();
 
 
-        bundle.putString("reciver_id",chatRoomModel.other_id);
+        bundle.putString("reciver_id",chatRoomModel.getOther_id());
 
         bundle.putString("sender_id", myId);
-        bundle.putString("fcm_token",chatRoomModel.user_token);
+        bundle.putString("fcm_token",chatRoomModel.getUser_token());
 
-        bundle.putString("name",chatRoomModel.username);
+        bundle.putString("name",chatRoomModel.getUsername());
         bundle.putString("image",chatRoomModel.getImage());
         bundle.putString("chat_id",chatRoomModel.getId());
         bundle.putString("special", chatRoomModel.getSn());
-        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+        bundle.putString("blockedFor",chatRoomModel.getBlocked_for());
 
 
         ///////////////////////

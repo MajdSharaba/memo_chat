@@ -1,9 +1,15 @@
 package com.yawar.memo.views;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.datastore.preferences.core.MutablePreferences;
+import androidx.datastore.preferences.core.Preferences;
+import androidx.datastore.preferences.core.PreferencesKeys;
+import androidx.datastore.preferences.rxjava2.RxPreferenceDataStoreBuilder;
+import androidx.datastore.rxjava2.RxDataStore;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,9 +28,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.modelView.UserInformationViewModel;
 import com.yawar.memo.service.SocketIOService;
@@ -37,18 +46,25 @@ import com.yawar.memo.model.MediaModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.sessionManager.SharedPreferenceStringLiveData;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.TimeProperties;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.disposables.Disposable;
 
 public class UserInformationActivity extends AppCompatActivity {
 
+    Preferences.Key<Integer> EXAMPLE_COUNTER ;
     private RecyclerView recyclerView;
     private ArrayList<MediaModel> recyclerDataArrayList = new ArrayList<>();
     ServerApi serverApi;
@@ -58,6 +74,9 @@ public class UserInformationActivity extends AppCompatActivity {
     TextView txtSpecialNumber;
     TextView txtState;
     TimeProperties timeProperties;
+    RxDataStore<Preferences> dataStore;
+    SharedPreferenceStringLiveData sharedPreferenceLiveData;
+    ArrayList<String> muteList = new ArrayList<String>();
 
     BlockUserRepo blockUserRepo;
     UserInformationViewModel userInformationViewModel;
@@ -83,12 +102,12 @@ public class UserInformationActivity extends AppCompatActivity {
     ChatRoomRepo chatRoomRepo;
     String blockedFor;
     boolean isBlockForMe = false;
-    ImageView imageVideoCall, imageAudioCall, imageMore, imageChat;
+    ImageView imageVideoCall, imageAudioCall, imageMore, imageChat, imageMute;
     public static final String CHEK = "ConversationActivity.CHECK_CONNECT";
 
 
-//    float textSize = 14.0F ;
-//    SharedPreferences sharedPreferences ;
+
+
 
 
     private final BroadcastReceiver check = new BroadcastReceiver() {
@@ -189,6 +208,8 @@ public class UserInformationActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(check, new IntentFilter(CHEK));
         recyclerView = findViewById(R.id.idCourseRV);
          adapter = new MediaAdapter(recyclerDataArrayList, this);
+        EXAMPLE_COUNTER = PreferencesKeys.intKey("key");
+       dataStore = BaseApp.getInstance().getDataStore();
 
 
         // setting grid layout manager to implement grid view.
@@ -204,13 +225,22 @@ public class UserInformationActivity extends AppCompatActivity {
 
 
 
+
     private void initViews() {
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        myBase = BaseApp.getInstance();
+
+
+        classSharedPreferences =myBase.getClassSharedPreferences();
+        sharedPreferenceLiveData = classSharedPreferences.getSharedPrefs();
+
         userInformationViewModel = new ViewModelProvider(this).get(UserInformationViewModel.class);
         timeProperties = new TimeProperties();
 
 
-        myBase = BaseApp.getInstance();
+
+
+
+
         chatRoomRepo = myBase.getChatRoomRepo();
         blockUserRepo= myBase.getBlockUserRepo();
         Bundle bundle = getIntent().getExtras();
@@ -222,7 +252,27 @@ public class UserInformationActivity extends AppCompatActivity {
         imageUrl = bundle.getString("image", "Default");
         blockedFor = bundle.getString("blockedFor","");
         my_id = classSharedPreferences.getUser().getUserId();
+        imageMute = findViewById(R.id.img_mute);
+
+        serverApi = new ServerApi(this);
+        linerMore = findViewById(R.id.liner_more);
+        linerVideoCall=findViewById(R.id.liner_video_call);
+        linerAudioCall=findViewById(R.id.liner_audio_call);
+        imageVideoCall=findViewById(R.id.img_video_call);
+        imageAudioCall=findViewById(R.id.img_audio_call);
+        imageMore=findViewById(R.id.img_more);
+        imageChat=findViewById(R.id.img_message);
+
         checkConnect();
+//        ArrayList<String> arrayList = classSharedPreferences.getMuteUsers();
+//        for (String s:
+//             arrayList) {
+//            if(another_user_id.equals(s)){
+//                imageMute.setImageDrawable(getResources().getDrawable(R.drawable.ic_un_mute));
+//                break;
+//            }
+//
+//        }
         userInformationViewModel.setBlockedFor(blockedFor);
         txtState = findViewById(R.id.last_seen);
         userInformationViewModel.state.observe(this, new Observer<String>() {
@@ -290,6 +340,61 @@ public class UserInformationActivity extends AppCompatActivity {
                 }
             }
         });
+///////////////////check is mute
+//        SharedPreferences prefs = getSharedPreferences("muteUsers", MODE_PRIVATE);
+//        SharedPreferenceStringLiveData sharedPreferenceStringLiveData = new SharedPreferenceStringLiveData(prefs, "muteUsers", "");
+//        sharedPreferenceStringLiveData.getStringLiveData("muteUsers", "").observe(this, cid -> {
+////            ArrayList<String> response = new ArrayList<>();
+//            Gson gson = new Gson();
+//
+//
+//            String json = prefs.getString("muteUsers", "");
+//            Type type = new TypeToken<ArrayList<String>>() {}.getType();
+//            if (json != null) {
+//                muteList  =  gson.fromJson(json,type );
+//
+//            }
+////            if(response== null){
+////                response = new ArrayList<String>();
+////            }
+//                    for (String s:
+//                            muteList) {
+//                        if (another_user_id.equals(s)) {
+//                            userInformationViewModel.mute.setValue(true);
+//                            break;
+//                        }
+//                    }
+//
+//        });
+        //////////////////
+        muteList = classSharedPreferences.getMuteUsers();
+        if(muteList!=null) {
+            for (String s :
+                    muteList) {
+                if (another_user_id.equals(s)) {
+                    userInformationViewModel.mute.setValue(true);
+                    break;
+                }
+
+            }
+        }
+
+
+        userInformationViewModel.mute.observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    imageMute.setImageDrawable(getResources().getDrawable(R.drawable.ic_un_mute));
+
+                }
+                else {
+                    imageMute.setImageDrawable(getResources().getDrawable(R.drawable.ic_bell));
+
+                }
+            }
+        });
+
+
 
 
 
@@ -359,15 +464,6 @@ public class UserInformationActivity extends AppCompatActivity {
 
 
 
-        serverApi = new ServerApi(this);
-        linerMore = findViewById(R.id.liner_more);
-        linerVideoCall=findViewById(R.id.liner_video_call);
-        linerAudioCall=findViewById(R.id.liner_audio_call);
-        imageVideoCall=findViewById(R.id.img_video_call);
-        imageAudioCall=findViewById(R.id.img_audio_call);
-        imageMore=findViewById(R.id.img_more);
-        imageChat=findViewById(R.id.img_message);
-
 
 
 
@@ -381,32 +477,23 @@ public class UserInformationActivity extends AppCompatActivity {
 
         circleImageView = findViewById(R.id.imageView);
         txtUserName = findViewById(R.id.txt_user_name);
-//        txtUserName.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         txtSpecialNumber = findViewById(R.id.txt_special_number);
-//        txtSpecialNumber.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         call = findViewById(R.id.call);
-//        call.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         video = findViewById(R.id.video);
-//        video.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         message = findViewById(R.id.message);
-//        message.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
-//        mute = findViewById(R.id.mute);
-//        mute.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
+        mute = findViewById(R.id.mute);
 
 
         more = findViewById(R.id.more);
-//        more.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         special_number = findViewById(R.id.special_number);
-//        special_number.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
         media = findViewById(R.id.media);
-//        media.setTextSize(Float.parseFloat(sharedPreferences.getString("txtFontSize", "16")));
 
 
 //
@@ -496,6 +583,26 @@ public class UserInformationActivity extends AppCompatActivity {
 
         }
     });
+        imageMute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                System.out.println("muteeeeeeeeeeeee");
+//                JSONObject jsonObject = new JSONObject();
+               if(userInformationViewModel.mute.getValue()) {
+                   muteList.remove(another_user_id);
+                   userInformationViewModel.mute.setValue(false);
+               }
+               else{
+                   muteList.add(another_user_id);
+                   userInformationViewModel.mute.setValue(true);
+
+
+               }
+                classSharedPreferences.setMuteUsers(muteList);
+
+
+            }
+        });
 }
 
 

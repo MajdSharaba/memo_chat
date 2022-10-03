@@ -46,6 +46,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -62,6 +63,8 @@ public class FirebaseMessageReceiver
     ServerApi serverApi;
     String chat_id;
     private WorkManager mWorkManager;
+    ArrayList<String> muteList = new ArrayList<String>();
+
 
     ClassSharedPreferences classSharedPreferences;
 
@@ -82,155 +85,150 @@ public class FirebaseMessageReceiver
         mWorkManager = WorkManager.getInstance();
 
 
-
         wackLock();
-        Log.i(TAG, "onMessageReceived: "+ remoteMessage.getOriginalPriority()+"getPriority"+remoteMessage.getPriority()+remoteMessage.getData());
+        Log.i(TAG, "onMessageReceived: " + remoteMessage.getOriginalPriority() + "getPriority" + remoteMessage.getPriority() + remoteMessage.getData());
         myBase = (BaseApp) getApplication();
 
-        chatRoomRepo=myBase.getChatRoomRepo();
+        chatRoomRepo = myBase.getChatRoomRepo();
 //        myBase.getObserver().addObserver(this);
         String message = "";
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         Map<String, String> data = remoteMessage.getData();
         String myCustomKey = data.get("body");
-        // First case when notifications are received via
-        // data event
-        // Here, 'title' and 'message' are the assumed names
-        // of JSON
-        // attributes. Since here we do not have any data
-        // payload, This section is commented out. It is
-        // here only for reference purposes.
 
-
-        // Second case when notification payload is
-        // received.
-        if(remoteMessage.getData().size()>0){
+        if (remoteMessage.getData().size() > 0) {
             boolean isCall = false;
-            System.out.println(remoteMessage.getPriority()+"getPriority"+remoteMessage.getPriority());
+            System.out.println(remoteMessage.getPriority() + "getPriority" + remoteMessage.getPriority());
 
 
-            // Since the notification is received directly from
-            // FCM, the title and the body can be fetched
-            // directly as below.
+            switch (remoteMessage.getData().get("type")) {
+                case "call":
+                    isCall = true;
+                    String callId = "";
 
-                switch (remoteMessage.getData().get("type")) {
-                    case "call":
-                        isCall = true;
-                        String callId="";
-
-                        JSONObject messagebody = null;
-                        JSONObject userObject;
-                        JSONObject typeObject;
-                        String username="";
-                        String anthorUserCallId="";
-                        String image ="";
-                        boolean isVideoCall = true;
+                    JSONObject messagebody = null;
+                    JSONObject userObject;
+                    JSONObject typeObject;
+                    String username = "";
+                    String anthorUserCallId = "";
+                    String image = "";
+                    boolean isVideoCall = true;
 
 
-                        try {
-                            messagebody = new JSONObject(remoteMessage.getData().get("body"));
-                            userObject = new JSONObject(messagebody.getString("user"));
-                            typeObject = new JSONObject(messagebody.getString("type"));
-                            isVideoCall = typeObject.getBoolean("video");
-                            anthorUserCallId = messagebody.getString("snd_id");
-                            callId = messagebody.getString("call_id");
-                            username = userObject.getString("name");
-                            image = userObject.getString("image_profile");
+                    try {
+                        messagebody = new JSONObject(remoteMessage.getData().get("body"));
+                        userObject = new JSONObject(messagebody.getString("user"));
+                        typeObject = new JSONObject(messagebody.getString("type"));
+                        isVideoCall = typeObject.getBoolean("video");
+                        anthorUserCallId = messagebody.getString("snd_id");
+                        callId = messagebody.getString("call_id");
+                        username = userObject.getString("name");
+                        image = userObject.getString("image_profile");
 
 //
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        int channel_id=Integer.parseInt(anthorUserCallId)+10000;
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    int channel_id = Integer.parseInt(anthorUserCallId) + 10000;
 
 
-                        Data inputData = new Data.Builder().putString("name",username).putString("image",image).putString("body",remoteMessage.getData().get("body")).putString("anthorUserCallId", anthorUserCallId).putString("channel", String.valueOf(channel_id)).putBoolean("isVideoCall",isVideoCall).putString("call_id",callId).build();
+                    Data inputData = new Data.Builder().putString("name", username).putString("image", image).putString("body", remoteMessage.getData().get("body")).putString("anthorUserCallId", anthorUserCallId).putString("channel", String.valueOf(channel_id)).putBoolean("isVideoCall", isVideoCall).putString("call_id", callId).build();
 
 
-                        OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationCallWorker.class)
-                                .setInputData(inputData)
-                                .addTag(workCallTag)
-                                .build();
-                        WorkManager.getInstance().enqueue(notificationWork);
+                    OneTimeWorkRequest notificationWork = new OneTimeWorkRequest.Builder(NotificationCallWorker.class)
+                            .setInputData(inputData)
+                            .addTag(workCallTag)
+                            .build();
+                    WorkManager.getInstance().enqueue(notificationWork);
 
 
-                        break;
-                    case "missingCall":
+                    break;
+                case "missingCall":
 
 
-                        isCall = true;
-                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-                        JSONObject messageMissingCall = null;
-                        JSONObject userMessCallObject;
+                    isCall = true;
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+                    JSONObject messageMissingCall = null;
+                    JSONObject userMessCallObject;
 //                        JSONObject typeObject;
-                        String userMissCallName="";
-                        String channelId="";
-                        String userMissCallimage ="";
+                    String userMissCallName = "";
+                    String channelId = "";
+                    String userMissCallimage = "";
 
-                        try {
-                            messageMissingCall = new JSONObject(Objects.requireNonNull(remoteMessage.getData().get("body")));
-                            userMessCallObject = new JSONObject(messageMissingCall.getString("user"));
-                            channelId = messageMissingCall.getString("snd_id");
-                            userMissCallName = userMessCallObject.getString("name");
-                            userMissCallimage = userMessCallObject.getString("image_profile");
+                    try {
+                        messageMissingCall = new JSONObject(Objects.requireNonNull(remoteMessage.getData().get("body")));
+                        userMessCallObject = new JSONObject(messageMissingCall.getString("user"));
+                        channelId = messageMissingCall.getString("snd_id");
+                        userMissCallName = userMessCallObject.getString("name");
+                        userMissCallimage = userMessCallObject.getString("image_profile");
 
 
 //                            notificationManager.cancel(Integer.parseInt(channelId)+10000);
-                            notificationManager.cancel(-1);
+                        notificationManager.cancel(-1);
 
-                            Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
-                             channel_id=Integer.parseInt(channelId);
+                        Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
+                        channel_id = Integer.parseInt(channelId);
 
-                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
+                        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
 //                            new showNotification(this).execute(userMissCallName, userMissCallimage, getResources().getString(R.string.missing_call), String.valueOf(channelId));
 
-                            Data inputDataNotification = new Data.Builder().putString("name",userMissCallName).putString("image",userMissCallimage).putString("body",getResources().getString(R.string.missing_call)).putString("channel", String.valueOf(channelId+AllConstants.CHANNEL_ID)).build();
+                        Data inputDataNotification = new Data.Builder().putString("name", userMissCallName).putString("image", userMissCallimage).putString("body", getResources().getString(R.string.missing_call)).putString("channel", String.valueOf(channelId + AllConstants.CHANNEL_ID)).build();
 
 
-                            OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)
-                                    .setInputData(inputDataNotification)
-                                    .addTag(workTag)
-                                    .build();
-                            WorkManager.getInstance().enqueue(notificationWork1);
+                        OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)
+                                .setInputData(inputDataNotification)
+                                .addTag(workTag)
+                                .build();
+                        WorkManager.getInstance().enqueue(notificationWork1);
 
 
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                    break;
+                case "imageWeb":
+                    message = getResources().getString(R.string.n_photo);
+                    break;
+                case "voice":
+                    message = getResources().getString(R.string.n_voice);
+                    break;
+                case "video":
+                    message = getResources().getString(R.string.n_video);
+                    break;
+                case "file":
+                    message = getResources().getString(R.string.n_file);
+                    break;
+                case "contact":
+                    message = getResources().getString(R.string.n_contact);
+                    break;
+                case "location":
+                    message = getResources().getString(R.string.n_location);
+                    break;
+
+                default:
+                    message = remoteMessage.getData().get("body");
+            }
+
+
+            if (!isCall) {
+                muteList = classSharedPreferences.getMuteUsers();
+                boolean isMute = false;
+                if (muteList != null) {
+                    for (String s :
+                            muteList) {
+                        if (s.equals(remoteMessage.getData().get("sender_id"))) {
+                            isMute = true;
+                            break;
                         }
 
-                        break;
-                    case "imageWeb":
-                        message = getResources().getString(R.string.n_photo);
-                        break;
-                    case "voice":
-                        message = getResources().getString(R.string.n_voice);
-                        break;
-                    case "video":
-                        message = getResources().getString(R.string.n_video);
-                        break;
-                    case "file":
-                        message = getResources().getString(R.string.n_file);
-                        break;
-                    case "contact":
-                        message = getResources().getString(R.string.n_contact);
-                        break;
-                    case "location":
-                        message = getResources().getString(R.string.n_location);
-                        break;
-
-                    default:
-                        message = remoteMessage.getData().get("body");
+                    }
                 }
-
-
-                 if(!isCall)
-
-                if (!chatRoomRepo.checkInChat(remoteMessage.getData().get("sender_id"))) {
+                if (!chatRoomRepo.checkInChat(remoteMessage.getData().get("sender_id")) && !isMute) {
 
 //                    new showNotification(this).execute(remoteMessage.getData().get("title"), remoteMessage.getData().get("image"), message, remoteMessage.getData().get("sender_id"));
-                    Data inputDataNotification = new Data.Builder().putString("name",remoteMessage.getData().get("title")).putString("image",remoteMessage.getData().get("image"))
-                            .putString("body",message).putString("channel", remoteMessage.getData().get("sender_id"))
+                    Data inputDataNotification = new Data.Builder().putString("name", remoteMessage.getData().get("title")).putString("image", remoteMessage.getData().get("image"))
+                            .putString("body", message).putString("channel", remoteMessage.getData().get("sender_id"))
                             .putString("blockedFor", remoteMessage.getData().get("blockedFor")).putString("special", remoteMessage.getData().get("special"))
                             .putString("fcm_token", remoteMessage.getData().get("fcm_token")).build();
 
@@ -242,139 +240,9 @@ public class FirebaseMessageReceiver
                     WorkManager.getInstance().enqueue(notificationWork1);
                 }
 
-        }}
-
-
-
-
-
-//    private class showNotification extends AsyncTask<String, Void, Bitmap> {
-//
-//        Context ctx;
-//        String message;
-//        String title;
-//        String sender_id;
-//
-//        public showNotification(Context context) {
-//            super();
-//            this.ctx = context;
-//        }
-//
-//        @Override
-//        protected Bitmap doInBackground(String... params) {
-//
-//            InputStream in;
-//           message = params[2] ;
-//           title = params[0];
-//           sender_id = params[3];
-//
-//            try {
-//                if(!params[1].equals("")){
-//                URL url = new URL(AllConstants.imageUrl+params[1]);
-//                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-//                connection.setDoInput(true);
-//                connection.connect();
-//                in = connection.getInputStream();
-//                Bitmap myBitmap = BitmapFactory.decodeStream(in);
-//                return myBitmap;}
-//                else {
-//                    return null;
-//                }
-//
-//            } catch (MalformedURLException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Bitmap result) {
-//            Bitmap bitmap;
-//
-//            super.onPostExecute(result);
-//            try {
-//               if(result==null){
-//                   bitmap = BitmapFactory.decodeResource(FirebaseMessageReceiver.this.getResources(),
-//                           R.drawable.th);
-//                   System.out.println("this null");
-//               }
-//               else {
-//                   bitmap= result;
-//               }
-//                Uri sound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.incomingcall);
-//                Intent intent
-//                        = new Intent(FirebaseMessageReceiver.this, SplashScreen.class);
-//                // Assign channel ID
-//                String channel_id = "notification_channel";
-//                // Here FLAG_ACTIVITY_CLEAR_TOP flag is set to clear
-//                // the activities present in the activity stack,
-//                // on the top of the Activity that is to be launched
-//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                // Pass the intent to PendingIntent to start the
-//                // next Activity
-//                PendingIntent pendingIntent
-//                        = PendingIntent.getActivity(FirebaseMessageReceiver.this
-//                        , 0, intent,
-//                        PendingIntent.FLAG_ONE_SHOT|PendingIntent.FLAG_IMMUTABLE);
-//
-//                // Create a Builder object using NotificationCompat
-//                // class. This will allow control over all the flags
-//                NotificationCompat.Builder builder
-//                        = new NotificationCompat
-//                        .Builder(getApplicationContext(),
-//                        channel_id)
-//                        .setNumber(id++)
-//                        .setPriority(NotificationCompat.PRIORITY_MAX).
-//                         setContentTitle(title)
-//                        .setContentText(message)
-//                        .setLargeIcon(ImageProperties.getCircleBitmap(bitmap))
-//
-//
-//
-//
-//                        .setSmallIcon(R.drawable.ic_memo_logo)
-//                        .setAutoCancel(false)
-//                        .setSound((RingtoneManager. getDefaultUri (RingtoneManager. TYPE_NOTIFICATION)))
-//                        .setGroup(GROUP_KEY_WORK_EMAIL)
-//
-//
-//
-//
-//                        //specify which group this notification belongs to
-//                        //set this notification as the summary for the group
-//                        .setVibrate(new long[]{1000, 1000, 1000,
-//                                1000, 1000})
-////                        .setOnlyAlertOnce(true)
-//                        .setContentIntent(pendingIntent)
-//                        .setGroupSummary(true);
-//
-//                NotificationManager notificationManager
-//                        = (NotificationManager) getSystemService(
-//                        Context.NOTIFICATION_SERVICE);
-//                // Check if the Android Version is greater than Oreo
-//                if (Build.VERSION.SDK_INT
-//                        >= Build.VERSION_CODES.O) {
-//                    NotificationChannel notificationChannel
-//                            = new NotificationChannel(
-//                            channel_id, "Memo",
-//
-//                            NotificationManager.IMPORTANCE_HIGH);
-//                    notificationManager.createNotificationChannel(
-//                            notificationChannel);
-//                    notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
-//
-//                }
-//
-//
-//                notificationManager.notify(Integer.parseInt(sender_id), builder.build());
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
-//    }
+            }
+        }
+    }
 
 
 

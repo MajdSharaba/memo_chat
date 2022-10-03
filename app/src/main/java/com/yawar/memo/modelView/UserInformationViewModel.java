@@ -19,7 +19,12 @@ public class UserInformationViewModel extends ViewModel {
     private final UserInformationRepo repository = baseApp.getUserInformationRepo();
     private  final BlockUserRepo blockUserRepo = baseApp.getBlockUserRepo();
     public MutableLiveData<String> state ;
+    public MutableLiveData<Boolean> mute ;
+
     private String lastSeen;
+
+
+
 
 
 
@@ -31,6 +36,7 @@ public class UserInformationViewModel extends ViewModel {
 
     public UserInformationViewModel() {
         isBlocked = new MutableLiveData<>(null);
+        mute = new MutableLiveData<>(false);
         state = new MutableLiveData<>(null);
 
     }

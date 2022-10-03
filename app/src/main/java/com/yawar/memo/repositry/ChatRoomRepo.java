@@ -205,7 +205,7 @@ public class ChatRoomRepo {
 
                 inList=true;
 
-                if(!chatRoom.isInChat()){
+                if(!chatRoom.getInChat()){
                     chatRoom.setNum_msg(String.valueOf(Integer.parseInt(chatRoom.getNum_msg())+1));
                 }
 
@@ -221,7 +221,7 @@ public class ChatRoomRepo {
                 if(chatRoom.getId().equals(senderId+reciverId)){
                     chatRoomsList.remove(chatRoom);
                     System.out.println("chatRoom.setLastMessage(message)outtttttttttttttt chatrommmmmmmmmmm");
-                    if(!chatRoom.isInChat()){
+                    if(!chatRoom.getInChat()){
                         chatRoom.setNum_msg(String.valueOf(Integer.parseInt(chatRoom.getNum_msg())+1));
                     }
                     chatRoom.setId(chatId);
@@ -317,7 +317,7 @@ public class ChatRoomRepo {
         }
         for (ChatRoomModel chatRoom : chatRoomsList) {
             if (chatRoom.getOther_id().equals(anthor_user_id)) {
-                return chatRoom.isInChat();
+                return chatRoom.getInChat();
 
 
             }
@@ -339,7 +339,7 @@ public class ChatRoomRepo {
         System.out.println("setBlockedStateBefore");
 
         for (ChatRoomModel chatRoom : chatRoomsList) {
-            if (chatRoom.other_id.equals(anthor_user_id)) {
+            if (chatRoom.getOther_id().equals(anthor_user_id)) {
                 chatRoom.setBlocked_for(blockedFor);
                 System.out.println("setBlockedState");
                 break;
@@ -380,7 +380,7 @@ public class ChatRoomRepo {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
         observable.subscribe(s -> {
-            setState(your_id,null);
+            setState(your_id,"null");
 
 
 

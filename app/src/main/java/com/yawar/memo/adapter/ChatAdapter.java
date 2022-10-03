@@ -188,7 +188,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 //        ChatMessage chatMessage = chatMessages.get(position);
         ChatMessage chatMessage = getItem(position);
 
-        boolean myMsg = chatMessage.getIsme();
+        boolean myMsg = chatMessage.isMe();
         TimeProperties timeProperties = new TimeProperties();
 
 
@@ -246,7 +246,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
         switch (chatMessage.getType()) {
             case "imageWeb":
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutImageViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+                ((LayoutImageViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDateTime()), "hh:mm"));
 
                 File imageFile;
                 if (myMsg) {
@@ -310,7 +310,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                     Glide.with(((LayoutImageViewHolder) holder).imageView.getContext()).load(path).centerCrop()
                             .into(((LayoutImageViewHolder) holder).imageView);
 
-                    if (chatMessage.isUpload()) {
+                    if (chatMessage.getUpload()) {
                         ((LayoutImageViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
 
                     } else {
@@ -352,7 +352,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
 
                 ((LayoutVoiceViewHolder) holder).contentRecord.setVisibility(View.VISIBLE);
-                ((LayoutVoiceViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+                ((LayoutVoiceViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDateTime()), "hh:mm"));
 
 
                 ((LayoutVoiceViewHolder) holder).mediaPlayer = new MediaPlayer();
@@ -431,7 +431,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                     }
 
 
-                    if (chatMessage.isUpload()) {
+                    if (chatMessage.getUpload()) {
                         ((LayoutVoiceViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
                         ((LayoutVoiceViewHolder) holder).imagePlayerPause.setVisibility(View.GONE);
 
@@ -517,7 +517,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
             //// voice end
             case "video":
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutVideoViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+                ((LayoutVideoViewHolder) holder).textDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDateTime()), "hh:mm"));
 
                 File videoFile;
                 if (myMsg) {
@@ -567,7 +567,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
                     Glide.with(((LayoutVideoViewHolder) holder).imageVideo.getContext()).load(path).centerCrop()
                             .into(((LayoutVideoViewHolder) holder).imageVideo);
 
-                    if (chatMessage.isUpload()) {
+                    if (chatMessage.getUpload()) {
                         ((LayoutVideoViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
                         ((LayoutVideoViewHolder) holder).videoImageButton.setVisibility(View.GONE);
 
@@ -596,7 +596,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
             //// file begin
             case "file":
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutPdfViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+                ((LayoutPdfViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDateTime()), "hh:mm"));
 
 
                 File pdfFile;
@@ -671,7 +671,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
 
                     }
 
-                    if (chatMessage.isUpload()) {
+                    if (chatMessage.getUpload()) {
                         ((LayoutPdfViewHolder) holder).adCircleProgress.setVisibility(View.VISIBLE);
 
                     }
@@ -686,7 +686,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
             case "contact":
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
 
-                ((LayoutContactViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+                ((LayoutContactViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDateTime()), "hh:mm"));
 
                 ((LayoutContactViewHolder) holder).txtNumber.setText(chatMessage.getMessage());
 
@@ -758,7 +758,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
             case "location":
 
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutLocationViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
+                ((LayoutLocationViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDateTime()), "hh:mm"));
 
                 ((LayoutLocationViewHolder) holder).cardOpenLocation.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -775,8 +775,8 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
             default:
 
                 setAlignment(holder, myMsg, chatMessage.getState(), chatMessage.getType());
-                ((LayoutTextViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDate()), "hh:mm"));
-                if (chatMessage.getIsUpdate().equals("1")) {
+                ((LayoutTextViewHolder) holder).txtDate.setText(TimeProperties.getDate(Long.parseLong(chatMessage.getDateTime()), "hh:mm"));
+                if (chatMessage.isUpdate().equals("1")) {
                     ((LayoutTextViewHolder) holder).txtUpdate.setVisibility(View.VISIBLE);
 
                 } else {
@@ -798,7 +798,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
         }
 
 //                ((ViewHolder)holder).txtInfo.setText(chatMessage.getDate());
-        if (chatMessage.isChecked) {
+        if (chatMessage.isChecked()) {
             holder.itemView.setBackgroundColor(context.getResources().getColor(R.color.background_onLong_click));
             holder.itemView.getBackground().setAlpha(60);
 
@@ -810,7 +810,7 @@ public class ChatAdapter  extends ListAdapter<ChatMessage,RecyclerView.ViewHolde
             public boolean onLongClick(View view) {
                 System.out.println(chatMessage.getMessage() + "mjjjjjjjjjjj");
 
-                if (!chatMessage.isChecked) {
+                if (!chatMessage.isChecked()) {
                     if (mCallback != null) {
 
                         mCallback.onLongClick(position, chatMessage, true);
@@ -1690,9 +1690,12 @@ public void setData(ArrayList<ChatMessage> newData) {
             return oldItem.getId().equals(newItem.getId());
         }
 
+        @SuppressLint("DiffUtilEquals")
         @Override
         public boolean areContentsTheSame(@NonNull ChatMessage oldItem, @NonNull ChatMessage newItem) {
-            return 0 == oldItem.compareTo(newItem);
+//            return 0 == oldItem.compareTo(newItem);
+            return oldItem.equals(newItem);
+
         }
 
     }

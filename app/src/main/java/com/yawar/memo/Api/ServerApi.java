@@ -758,14 +758,14 @@ public class ServerApi {
                 }
 
 
-                chatRoomRepo.setBlockedState(userModel.other_id,blokedFor);
+                chatRoomRepo.setBlockedState(userModel.getOther_id(),blokedFor);
 
                 Intent service = new Intent(context, SocketIOService.class);
                 JSONObject userUnBlocked = new JSONObject();
 
                 try {
                     userUnBlocked.put("my_id", my_id);
-                    userUnBlocked.put("user_id",userModel.other_id );
+                    userUnBlocked.put("user_id",userModel.getOther_id() );
                     userUnBlocked.put("blocked_for",blokedFor);
 
 
@@ -800,7 +800,7 @@ public class ServerApi {
                 // on below line we are passing our key
                 // and value pair to our parameters.
                 params.put("my_id", my_id);
-                params.put("user_id",userModel.other_id);
+                params.put("user_id",userModel.getOther_id());
 //                params.put("email", email);
 //                params.put("first_name", firstName);
 //                params.put("last_name", lastName);
@@ -900,7 +900,7 @@ public class ServerApi {
             data.put("chat_id", chat_id);
             data.put("sender_id", classSharedPreferences.getUser().getUserId());
             data.put("fcm_token", classSharedPreferences.getFcmToken());
-            data.put("special", classSharedPreferences.getSecretNumbers());
+            data.put("special", classSharedPreferences.getUser().getSecretNumber());
             data.put("blockedFor", blockedFor);
 
 

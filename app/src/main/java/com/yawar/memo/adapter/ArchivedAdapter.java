@@ -102,8 +102,8 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
         holder.textTime.setText(timeProperties.getFormattedDate(context,Long.parseLong(chatRoomModel.getCreated_at())));
         if(!chatRoomModel.isTyping()) {
             holder.lastMessage.setTextColor(context.getResources().getColor(R.color.gray));
-            System.out.println(chatRoomModel.message_type +"list.get(position).lastMessageType");
-            switch (chatRoomModel.message_type) {
+            System.out.println(chatRoomModel.getMessage_type() +"list.get(position).lastMessageType");
+            switch (chatRoomModel.getMessage_type()) {
                 case "imageWeb":
                     lastMessage = context.getResources().getString(R.string.photo);
                     holder.imageType.setVisibility(View.VISIBLE);
@@ -147,19 +147,19 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
                 default:
                     holder.imageType.setVisibility(View.GONE);
 
-                    lastMessage = chatRoomModel.last_message;
+                    lastMessage = chatRoomModel.getLast_message();
 
             }
             holder.lastMessage.setText(lastMessage);
-            if (chatRoomModel.num_msg.equals("0"))
+            if (chatRoomModel.getNum_msg().equals("0"))
                 holder.numUMessage.setVisibility(View.GONE);
             else {
                 holder.numUMessage.setVisibility(View.VISIBLE);
-                holder.numUMessage.setText(chatRoomModel.num_msg);
-                System.out.println(chatRoomModel.num_msg +chatRoomModel.num_msg);
+                holder.numUMessage.setText(chatRoomModel.getNum_msg());
+                System.out.println(chatRoomModel.getNum_msg() +chatRoomModel.getNum_msg());
             }
 
-            if(chatRoomModel.msg_sender.equals(classSharedPreferences.getUser().getUserId())) {
+            if(chatRoomModel.getMsg_sender().equals(classSharedPreferences.getUser().getUserId())) {
                 holder.imageLasrMessageType.setVisibility(View.VISIBLE);
 
                 switch (chatRoomModel.getMstate()) {
@@ -309,7 +309,7 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
                         bundle.putString("fcm_token", chatRoomModel.getUser_token());
                         bundle.putString("special", chatRoomModel.getSn());
                         bundle.putString("chat_id",chatRoomModel.getId());
-                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+                        bundle.putString("blockedFor",chatRoomModel.getBlocked_for());
 
                         intent.putExtras(bundle);
                         view.getContext().startActivity(intent);
@@ -333,7 +333,7 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
                         bundle.putString("name",chatRoomModel.getUsername());
                         bundle.putString("image",chatRoomModel.getImage());
                         bundle.putString("chat_id",chatRoomModel.getId());
-                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+                        bundle.putString("blockedFor",chatRoomModel.getBlocked_for());
 
 
 
@@ -354,7 +354,7 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
                         intent.putExtra("anthor_user_id", chatRoomModel.getOther_id());
                         intent.putExtra("user_name", chatRoomModel.getUsername());
                         intent.putExtra("isVideo", false);
-                        intent.putExtra("fcm_token", chatRoomModel.user_token);
+                        intent.putExtra("fcm_token", chatRoomModel.getUser_token());
                         intent.putExtra("image_profile", chatRoomModel.getImage());
 
 
@@ -364,8 +364,8 @@ public class ArchivedAdapter extends ListAdapter<ChatRoomModel,ArchivedAdapter.V
 
                     }
                 });
-                if(chatRoomModel.blocked_for!=null) {
-                    if (chatRoomModel.blocked_for != "null") {
+                if(chatRoomModel.getBlocked_for()!=null) {
+                    if (chatRoomModel.getBlocked_for() != "null") {
                         imgBtnCall.setEnabled(false);
                     } else {
                         imgBtnCall.setEnabled(true);

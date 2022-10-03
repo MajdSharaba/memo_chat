@@ -186,7 +186,8 @@ public static class MyDiffUtilCall extends DiffUtil.ItemCallback<CallModel> {
 
     @Override
     public boolean areContentsTheSame(@NonNull CallModel oldItem, @NonNull CallModel newItem) {
-        return 0 == oldItem.compareTo(newItem);
+//        return 0 == oldItem.compareTo(newItem);
+        return  oldItem.equals(newItem);
     }
 
 }

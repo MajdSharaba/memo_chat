@@ -10,6 +10,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.datastore.preferences.core.Preferences;
+import androidx.datastore.preferences.rxjava2.RxPreferenceDataStoreBuilder;
+import androidx.datastore.rxjava2.RxDataStore;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -23,7 +26,6 @@ import com.google.firebase.auth.PhoneAuthProvider;
 import com.yawar.memo.R;
 import com.yawar.memo.observe.ContactNumberObserve;
 import com.yawar.memo.observe.FireBaseTokenObserve;
-import com.yawar.memo.observe.StoriesObserve;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepo;
@@ -35,9 +37,7 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 
 public class BaseApp extends Application implements LifecycleObserver {
 
-//    ChatRoomObserve observeClass;
     FireBaseTokenObserve fireBaseTokenObserve;
-    StoriesObserve storiesObserve;
     ContactNumberObserve contactNumberObserve;
     public static final String TAG = "VolleyPatterns";
     private RequestQueue mRequestQueue;
@@ -52,6 +52,7 @@ public class BaseApp extends Application implements LifecycleObserver {
      ClassSharedPreferences classSharedPreferences;
      Handler handler = new Handler();
     private Runnable myRunnable ;
+    RxDataStore<Preferences> dataStore;
 
 
 
@@ -137,12 +138,12 @@ public class BaseApp extends Application implements LifecycleObserver {
         }
         return fireBaseTokenObserve;
     }
-    public StoriesObserve getStoriesObserve() {
-        if(storiesObserve== null){
-            storiesObserve = new StoriesObserve();
-        }
-        return storiesObserve;
-    }
+//    public StoriesObserve getStoriesObserve() {
+//        if(storiesObserve== null){
+//            storiesObserve = new StoriesObserve();
+//        }
+//        return storiesObserve;
+//    }
     public ContactNumberObserve getContactNumberObserve() {
         if(contactNumberObserve== null){
             contactNumberObserve = new ContactNumberObserve();
@@ -201,6 +202,13 @@ public class BaseApp extends Application implements LifecycleObserver {
             classSharedPreferences = new ClassSharedPreferences(this);
         }
         return classSharedPreferences;
+    }
+    public RxDataStore<Preferences> getDataStore() {
+        if(dataStore== null){
+            dataStore =
+                    new RxPreferenceDataStoreBuilder(this, /*name=*/ "settings").build();
+        }
+        return dataStore;
     }
     public void setPeerId(String peer_id) {
         if(peerId== null){

@@ -484,7 +484,7 @@ public class FileUtil {
         chatMessage.setImage(pdfFile.toString());
         chatMessage.setFileName(imageName);
 
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
         chatMessage.setMe(true);
         chatMessage.setType("imageWeb");
         chatMessage.setState("0");
@@ -620,7 +620,7 @@ public class FileUtil {
         chatMessage.setUpload(true);
 
 
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
         chatMessage.setMe(true);
         chatMessage.setType("video");
         chatMessage.setState("0");
@@ -742,7 +742,7 @@ public class FileUtil {
         chatMessage.setMessage(voicedPath.toString());
         chatMessage.setFileName(voiceName);
 
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
         chatMessage.setMe(true);
         chatMessage.setType("voice");
         chatMessage.setState("0");
@@ -860,7 +860,7 @@ public class FileUtil {
         chatMessage.setId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());
         chatMessage.setFileName(pdfname);
-        chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
 
 //        chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));

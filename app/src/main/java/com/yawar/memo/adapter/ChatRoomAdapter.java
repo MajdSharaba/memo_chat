@@ -95,14 +95,13 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         ChatRoomModel chatRoomModel = getItem(position);
         String lastMessage = "";
-        holder.name.setText(chatRoomModel.username);
+        holder.name.setText(chatRoomModel.getUsername());
 
 //            holder.textTime.setText(timeProperties.getFormattedDate(context.getActivity(),Long.parseLong(list.get(position).lastMessageTime)));
-        holder.textTime.setText(timeProperties.getFormattedDate(context.getActivity(),Long.parseLong(chatRoomModel.created_at)));
+        holder.textTime.setText(timeProperties.getFormattedDate(context.getActivity(),Long.parseLong(chatRoomModel.getCreated_at())));
         if(!chatRoomModel.isTyping()) {
             holder.lastMessage.setTextColor(context.getResources().getColor(R.color.gray));
-            System.out.println(chatRoomModel.message_type +"list.get(position).lastMessageType");
-            switch (chatRoomModel.message_type) {
+            switch (chatRoomModel.getMessage_type()) {
                 case "imageWeb":
                     lastMessage = context.getResources().getString(R.string.photo);
                     holder.imageType.setVisibility(View.VISIBLE);
@@ -146,19 +145,19 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                 default:
                     holder.imageType.setVisibility(View.GONE);
 
-                    lastMessage = chatRoomModel.last_message;
+                    lastMessage = chatRoomModel.getLast_message();
 
             }
             holder.lastMessage.setText(lastMessage);
-            if (chatRoomModel.num_msg.equals("0"))
+            if (chatRoomModel.getNum_msg().equals("0"))
                 holder.numUMessage.setVisibility(View.GONE);
             else {
                 holder.numUMessage.setVisibility(View.VISIBLE);
-                holder.numUMessage.setText(chatRoomModel.num_msg);
-                System.out.println(chatRoomModel.num_msg +chatRoomModel.num_msg);
+                holder.numUMessage.setText(chatRoomModel.getNum_msg());
+//                System.out.println(chatRoomModel.num_msg +chatRoomModel.num_msg);
             }
 
-            if(chatRoomModel.msg_sender.equals(classSharedPreferences.getUser().getUserId())) {
+            if(chatRoomModel.getMsg_sender().equals(classSharedPreferences.getUser().getUserId())) {
                 holder.imageLasrMessageType.setVisibility(View.VISIBLE);
 
                 switch (chatRoomModel.getMstate()) {
@@ -279,10 +278,10 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                         bundle.putString("user_id", chatRoomModel.getOther_id());
                         bundle.putString("name", chatRoomModel.getUsername());
                         bundle.putString("image", chatRoomModel.getImage());
-                        bundle.putString("fcm_token", chatRoomModel.user_token);
+                        bundle.putString("fcm_token", chatRoomModel.getUser_token());
                         bundle.putString("special", chatRoomModel.getSn());
                         bundle.putString("chat_id",chatRoomModel.getId());
-                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+                        bundle.putString("blockedFor",chatRoomModel.getBlocked_for());
 
 
                         intent.putExtras(bundle);
@@ -302,12 +301,12 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                         bundle.putString("reciver_id",chatRoomModel.getOther_id());
 
                         bundle.putString("sender_id", my_id);
-                        bundle.putString("fcm_token",chatRoomModel.user_token);
+                        bundle.putString("fcm_token",chatRoomModel.getUser_token());
 
                         bundle.putString("name",chatRoomModel.getUsername());
                         bundle.putString("image",chatRoomModel.getImage());
                         bundle.putString("chat_id",chatRoomModel.getId());
-                        bundle.putString("blockedFor",chatRoomModel.blocked_for);
+                        bundle.putString("blockedFor",chatRoomModel.getBlocked_for());
 
 
 
@@ -328,7 +327,7 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                         intent.putExtra("anthor_user_id", chatRoomModel.getOther_id());
                         intent.putExtra("user_name", chatRoomModel.getUsername());
                         intent.putExtra("isVideo", false);
-                        intent.putExtra("fcm_token", chatRoomModel.user_token);
+                        intent.putExtra("fcm_token", chatRoomModel.getUser_token());
                         intent.putExtra("image_profile", chatRoomModel.getImage());
 
 
@@ -339,8 +338,8 @@ public class ChatRoomAdapter extends ListAdapter<ChatRoomModel,ChatRoomAdapter.V
                     }
                 });
 //                if(chatRoomModel.blocked_for.toString().equals(classSharedPreferences.getUser().getUserId())||chatRoomModel.blocked_for.toString().equals(chatRoomModel.getOther_id())||chatRoomModel.blocked_for.toString().equals("0")){
-                if(chatRoomModel.blocked_for!=null) {
-                    if (chatRoomModel.blocked_for != "null") {
+                if(chatRoomModel.getBlocked_for()!=null) {
+                    if (chatRoomModel.getBlocked_for() != "null") {
                         imgBtnCall.setEnabled(false);
                     } else {
                         imgBtnCall.setEnabled(true);

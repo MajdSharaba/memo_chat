@@ -636,8 +636,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                         chatMessage.setType(type);
                         chatMessage.setState(state);
-                        chatMessage.setDate(MessageDate);
-                        chatMessage.setIsUpdate("0");
+                        chatMessage.setDateTime(MessageDate);
+                        chatMessage.setUpdate("0");
                         chatMessage.setMe(false);
 //                        try {
 //                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -740,7 +740,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
         if (chat_id.isEmpty()) {
             chat_id = user_id + anthor_user_id;
-            chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message, imageUrl, false, "0", user_id + anthor_user_id, "null", "0", true, fcmToken, specialNumber, type, "1", time, false, "null",user_id));
+            chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message,
+                    imageUrl, false, "0", user_id + anthor_user_id, "null", "0",
+                    true, fcmToken, specialNumber, type, "1", time, false, "null",user_id,""));
+
+
+
         }
 
         serverApi.sendNotification(message, type,fcmToken,chat_id, conversationModelView.blockedFor().getValue());
@@ -1308,7 +1313,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 ChatMessage chatMessage = new ChatMessage();
                 chatMessage.setId(message_id);//dummy
                 chatMessage.setMessage(stringLatLng);
-                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
                 chatMessage.setMe(true);
                 chatMessage.setType("location");
 
@@ -1497,7 +1502,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 ChatMessage chatMessage = new ChatMessage();
                 chatMessage.setId(message_id);//dummy
                 chatMessage.setMessage(messageText);
-                chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
                 chatMessage.setMe(true);
                 chatMessage.setUserId(user_id);
 
@@ -1505,7 +1510,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 chatMessage.setState("0");
                 chatMessage.setChecked(false);
                 chatMessage.setId(message_id);
-                chatMessage.setIsUpdate("0");
+                chatMessage.setUpdate("0");
 
 
                 messageET.setText("");
@@ -2375,7 +2380,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             chatMessage.setMessage(phoneIndex);
             chatMessage.setFileName(name);
 
-            chatMessage.setDate(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+            chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
             chatMessage.setMe(true);
             chatMessage.setType("contact");
             chatMessage.setState("0");
@@ -2458,7 +2463,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onHandleSelection(int position, ChatMessage chatMessage, boolean myMessage) {
-        System.out.println(chatMessage.message + "onHandleSelection");
+//        System.out.println(chatMessage.message + "onHandleSelection");
         File pdfFile;
         Log.v(TAG, "view() Method invoked ");
 
@@ -2512,7 +2517,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void downloadFile(int position, ChatMessage chatMessage, boolean myMessage) {
         File pdfFile;
-        System.out.println(chatMessage.message + "onDownload");
+//        System.out.println(chatMessage.message + "onDownload");
 
         Log.v(TAG, "download() Method invoked ");
 
@@ -2572,7 +2577,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void downloadVoice(int position, ChatMessage chatMessage, boolean myMessage) {
         File audioFile;
-        System.out.println(chatMessage.message + "onDownload");
+//        System.out.println(chatMessage.message + "onDownload");
 
         Log.v(TAG, "download() Method invoked ");
 
@@ -2591,7 +2596,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
                 audioFile = new File(d, chatMessage.getFileName());
                 if (!audioFile.exists()) {
-                    System.out.println(chatMessage.message + "kkkkkkkkkk");
+//                    System.out.println(chatMessage.message + "kkkkkkkkkk");
 
 
 //                    new DownloadFile().execute(AllConstants.download_url + chatMessage.getMessage(), chatMessage.getFileName(), "send/voiceRecord");
@@ -2635,7 +2640,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void downloadVideo(int position, ChatMessage chatMessage, boolean myMessage) {
         File videoFile;
-        System.out.println(chatMessage.message + "onDownload");
+//        System.out.println(chatMessage.message + "onDownload");
 
         Log.v(TAG, "download() Method invoked ");
 
@@ -2693,7 +2698,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     @Override
     public void downloadImage(int position, ChatMessage chatMessage, boolean myMessage) {
         File imageFile;
-        System.out.println(chatMessage.message + "onDownload");
+//        System.out.println(chatMessage.message + "onDownload");
 
         Log.v(TAG, "download() Method invoked ");
 

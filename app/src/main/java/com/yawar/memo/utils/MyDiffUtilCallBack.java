@@ -16,6 +16,6 @@ import com.yawar.memo.model.ChatRoomModel;
 
     @Override
     public boolean areContentsTheSame(@NonNull ChatRoomModel oldItem, @NonNull ChatRoomModel newItem) {
-        return 0==oldItem.compareTo(newItem);
+        return oldItem.equals(newItem);
     }
 }
