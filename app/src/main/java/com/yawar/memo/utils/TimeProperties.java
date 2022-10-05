@@ -88,6 +88,27 @@ public class TimeProperties {
 
         }
     }
+       public static String milliSecondsToTimer(Long milliSeconds) {
+        String timerString = "";
+        String secondString;
+        int hours = (int) (milliSeconds / (1000 * 60 * 60));
+        int minute = (int) (milliSeconds % (1000 * 60 * 60)) / (1000 * 60);
+        int seconds = (int) (milliSeconds % (1000 * 60 * 60) % (1000 * 60) / 1000);
+
+        if (hours > 0) {
+            timerString = hours + ":";
+
+        }
+        if (seconds < 10) {
+            secondString = "0" + seconds;
+        } else {
+            secondString = "" + seconds;
+
+        }
+        timerString = timerString + minute + ":" + secondString;
+        return timerString;
+
+    }
 
 }
 
