@@ -38,7 +38,7 @@ public class UserInformationRepo {
 
 
 
-    ChatRoomRepo chatRoomRepo = BaseApp.getInstance().getChatRoomRepo();
+//    ChatRoomRepo chatRoomRepo = BaseApp.getInstance().getChatRoomRepo();
 
 
     public MutableLiveData<Boolean> blocked;

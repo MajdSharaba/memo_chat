@@ -1,13 +1,12 @@
 package com.yawar.memo.modelView;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.MediaModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.BlockUserRepo;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.repositry.UserInformationRepo;
 import com.yawar.memo.utils.BaseApp;
 
@@ -44,18 +43,18 @@ public class UserInformationViewModel extends ViewModel {
     public void setBlockedFor(String blockedFor) {
         blockUserRepo.setBlockedForRepo(blockedFor);
     }
-    public MutableLiveData<String> blockedFor(){
-        return blockUserRepo.blockedForRepo;
+    public LiveData<String> blockedFor(){
+        return blockUserRepo.getBlockedForRepo();
     }
 
-    public MutableLiveData<Boolean> isBlocked(){
-        return blockUserRepo.blockedRepo;
+    public LiveData<Boolean> isBlocked(){
+        return blockUserRepo.getBlockedRepo();
     }
     public void setBlocked(Boolean blocked){
         blockUserRepo.setBlockedRepo(blocked);
     }
 
-    public MutableLiveData<Boolean> isUnBlocked(){
+    public LiveData<Boolean> isUnBlocked(){
         return blockUserRepo.getUnBlockedRepo();
     }
     public void setUnBlocked(Boolean unBlocked){

@@ -1,10 +1,7 @@
 package com.yawar.memo.views;
 
-import static android.os.Environment.getExternalStoragePublicDirectory;
-
 import static androidx.core.content.FileProvider.getUriForFile;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatTextView;
@@ -12,7 +9,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -76,11 +72,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
-import com.abedelazizshe.lightcompressorlibrary.CompressionListener;
-import com.abedelazizshe.lightcompressorlibrary.VideoCompressor;
-import com.abedelazizshe.lightcompressorlibrary.VideoQuality;
-import com.abedelazizshe.lightcompressorlibrary.config.Configuration;
-import com.abedelazizshe.lightcompressorlibrary.config.StorageConfiguration;
 import com.android.volley.RequestQueue;
 
 import com.bumptech.glide.Glide;
@@ -113,6 +104,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.hbisoft.pickit.PickiT;
 import com.hbisoft.pickit.PickiTCallbacks;
 //import com.yawar.memo.call.CompleteActivity;
+import com.yawar.memo.repositry.ChatMessageRepoo;
+import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.BuildConfig;
@@ -126,8 +119,6 @@ import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ConversationModelView;
 import com.yawar.memo.repositry.BlockUserRepo;
-import com.yawar.memo.repositry.ChatMessageRepo;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.DialogProperties;
@@ -142,11 +133,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -203,7 +192,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private ImageButton deletImageBtn;
     private ChatAdapter adapter;
     BaseApp myBase;
-    ChatRoomRepo chatRoomRepo;
+//    ChatRoomRepo chatRoomRepo;
+    ChatRoomRepoo chatRoomRepoo;
+
+
     String chat_id = "";
     String fcmToken;
     boolean isAllMessgeMe = true;
@@ -218,7 +210,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
     private RelativeLayout container;
     LatLng locationLatLng;
     //    Calendar cal;
-    ChatMessageRepo chatMessageRepo;
+    ChatMessageRepoo chatMessageRepoo;
+
     private static final String[] callPermissions = {android.Manifest.permission.CAMERA, android.Manifest.permission.RECORD_AUDIO};
 
 
@@ -567,7 +560,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         if (!state.equals("3") && chat_id.equals(user_id + anthor_user_id)) {
 //                            myBase.getObserver().setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
                             if (!recive_chat_id.isEmpty()) {
-                                chatRoomRepo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate,user_id);
+                                chatRoomRepoo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate,user_id);
 
                                 chat_id = recive_chat_id;
                             }
@@ -576,12 +569,12 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                         else{
                             if (!id.equals("0000")){
                                 System.out.println("not id equels true");
-                                chatRoomRepo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate, senderId);
+                                chatRoomRepoo.setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate, senderId);
                             }
                             else{
                                 System.out.println("elseeeeeeeeeeeeeeeeeeeee");
 
-                                chatRoomRepo.updateLastMessageState(state,chat_id);
+                                chatRoomRepoo.updateLastMessageState(state,chat_id);
                             }
                         }
 
@@ -740,7 +733,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         }
         if (chat_id.isEmpty()) {
             chat_id = user_id + anthor_user_id;
-            chatRoomRepo.getChatRoomModelList().add(new ChatRoomModel(userName, anthor_user_id, message,
+            chatRoomRepoo.addChatRoom(
+                    new ChatRoomModel(userName, anthor_user_id, message,
                     imageUrl, false, "0", user_id + anthor_user_id, "null", "0",
                     true, fcmToken, specialNumber, type, "1", time, false, "null",user_id,""));
 
@@ -922,7 +916,9 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         myBase = BaseApp.getInstance();
         textForBlock = findViewById(R.id.text_for_block);
         serverApi = new ServerApi(this);
-        chatRoomRepo = myBase.getChatRoomRepo();
+//        chatRoomRepo = myBase.getChatRoomRepo();
+        chatRoomRepoo = myBase.getChatRoomRepoo();
+
         blockUserRepo = myBase.getBlockUserRepo();
         Bundle bundle = getIntent().getExtras();
         user_id = bundle.getString("sender_id", "1");
@@ -933,8 +929,8 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         specialNumber = bundle.getString("special", "");
         chat_id = bundle.getString("chat_id", "");
         if (chat_id.isEmpty()) {
-            if(chatRoomRepo!=null) {
-                chat_id = chatRoomRepo.getChatId(anthor_user_id);
+            if(chatRoomRepoo!=null) {
+                chat_id = chatRoomRepoo.getChatId(anthor_user_id);
             }
         }
         fcmToken = bundle.getString("fcm_token", "");
@@ -943,14 +939,20 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
             Glide.with(personImage).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(personImage);
         }
         String blockedFor
-         = bundle.getString("blockedFor", null);
+         = bundle.getString("blockedFor", "null");
+
+        System.out.println("majjjjjjjjjjjjjjjjd");
+
+        System.out.println("blockedForfffff"+blockedFor);
         conversationModelView.setBlockedFor(blockedFor);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             closeCurrentNotification();
         }
 
-        chatMessageRepo = myBase.getChatMessageRepo();
-        chatMessageRepo.getChatHistory(user_id, anthor_user_id);
+        chatMessageRepoo = myBase.getChatMessageRepoo();
+
+        chatMessageRepoo.loadChatRoom(user_id, anthor_user_id);
+
         backImageBtn = findViewById(R.id.image_button_back);
         progressBar =  findViewById(R.id.progress_circular);
         LinearLayout linearLayout = findViewById(R.id.liner_conversation);
@@ -1015,7 +1017,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //
 //        }
 
-        chatRoomRepo.setInChat(anthor_user_id, true);
+        chatRoomRepoo.setInChat(anthor_user_id, true);
         container = findViewById(R.id.container);
         openMaps = findViewById(R.id.pick_location);
         sendLocation = findViewById(R.id.sendLocation);
@@ -1087,8 +1089,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 System.out.println("stateee"+s);
                 if(s!=null){
 //                    conversationModelView.
-                    sendBlockFor(s);
-                    conversationModelView.setBlocked(null);
+                    if(s) {
+                        sendBlockFor(s);
+                        conversationModelView.setBlocked(false);
+                    }
 
 
                 }
@@ -1101,8 +1105,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 System.out.println("stateee"+s);
                 if(s!=null){
 //                    conversationModelView.
-                    sendUnBlockFor(s);
-                    conversationModelView.setUnBlocked(null);
+                    if(s) {
+                        sendUnBlockFor(s);
+                        conversationModelView.setUnBlocked(false);
+                    }
 
 
                 }
@@ -1111,7 +1117,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
         /////////
         chatHistory = new ArrayList<ChatMessage>();
-        conversationModelView.state.observe(this, new Observer<String>() {
+        conversationModelView.getState().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 System.out.println("stateee"+s);
@@ -1144,17 +1150,17 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 
             }
         });
-        conversationModelView.isTyping.observe(this, new Observer<String>() {
+        conversationModelView.isTyping().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 System.out.println("stateee"+s);
                 if(!s.equals(null)){
                     if (s.equals("true")) {
                         tv_state.setText(R.string.writing_now);
-                    } else if (conversationModelView.state.getValue().equals("true")) {
+                    } else if (conversationModelView.getState().getValue().equals("true")) {
                         tv_state.setText(R.string.connect_now);
                     } else {
-                        if(conversationModelView.getLastSeen()!="null")
+                        if(!conversationModelView.getLastSeen().equals("null"))
                         tv_state.setText(getResources().getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(ConversationActivity.this, Long.parseLong(conversationModelView.getLastSeen())));
 
 
@@ -1185,9 +1191,10 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
 //                    adapter.add(chatHistory);
                         adapter.setData(list);
                     }
-                    if(!chatMessages.isEmpty() && conversationModelView.isFirst.getValue()){
-                        conversationModelView.isFirst.setValue(false);
-                    scroll();
+                    if(!chatMessages.isEmpty() && conversationModelView.isFirst().getValue()){
+                        conversationModelView.setIsFirst(false);
+
+                        scroll();
                     }
 
 
@@ -1241,7 +1248,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
                 if (aBoolean!=null) {
                     if (aBoolean) {
                         Toast.makeText(ConversationActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
-                        conversationModelView.setErrorMessage(null);
+                        conversationModelView.setErrorMessage(false);
                     }
                 }
             }
@@ -2417,7 +2424,7 @@ public class ConversationActivity extends AppCompatActivity implements ChatAdapt
         super.onDestroy();
         System.out.println("on destroy");
 
-        chatRoomRepo.setInChat(anthor_user_id, false);
+        chatRoomRepoo.setInChat(anthor_user_id, false);
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(check);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping);

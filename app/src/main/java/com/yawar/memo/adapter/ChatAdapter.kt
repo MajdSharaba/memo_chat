@@ -28,6 +28,7 @@ import com.yawar.memo.utils.ImageProperties
 import com.yawar.memo.utils.TimeProperties
 import de.hdodenhof.circleimageview.CircleImageView
 import java.io.File
+import java.util.*
 
 class ChatAdapter(private val context: Activity) :
     ListAdapter<ChatMessage, RecyclerView.ViewHolder?>(MyDiffUtilChatMessage()) {

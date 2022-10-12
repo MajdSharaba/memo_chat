@@ -1,6 +1,11 @@
 package com.yawar.memo.model
 
+import com.squareup.moshi.Json
+import java.util.*
+
 data class ChatRoomRespone(
-     var data: ArrayList<ChatRoomModel?>? = null,
+
+    @Json(name = "data")
+    var data: ArrayList<ChatRoomModel?>? = null,
 
     )

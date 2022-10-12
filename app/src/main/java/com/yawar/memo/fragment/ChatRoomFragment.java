@@ -1,28 +1,17 @@
 package com.yawar.memo.fragment;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.service.notification.StatusBarNotification;
 import android.view.LayoutInflater;
 
 import android.view.Menu;
@@ -41,12 +30,8 @@ import com.tsuryo.swipeablerv.SwipeLeftRightCallback;
 import com.tsuryo.swipeablerv.SwipeableRecyclerView;
 import com.yawar.memo.Api.ServerApi;
 //import com.yawar.memo.call.CompleteActivity;
-import com.yawar.memo.call.CallProperty;
-import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.ChatRoomViewModel;
-import com.yawar.memo.repositry.ChatRoomRepo;
-import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.views.ArchivedActivity;
 import com.yawar.memo.views.ContactNumberActivity;
@@ -60,9 +45,6 @@ import java.util.List;
 
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.views.GroupSelectorActivity;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 
 public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.CallbackInterfac {
@@ -91,7 +73,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
     ServerApi serverApi;
     UserModel userModel;
     ImageButton iBAddArchived;
-    ChatRoomRepo chatRoomRepo;
+//    ChatRoomRepo chatRoomRepo;
     LinearLayout linerArchived;
     LinearLayout lineerNoMessage;
     boolean isArchived;
@@ -138,8 +120,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
         recyclerView.setLayoutManager(linearLayoutManager);
         chatRoomViewModel = new ViewModelProvider(this).get(ChatRoomViewModel.class);
 
-        chatRoomRepo = myBase.getChatRoomRepo();
-        chatRoomRepo.isArchivedMutableLiveData.observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+//        chatRoomRepo = myBase.getChatRoomRepo();
+        chatRoomViewModel.getIsArchived().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
@@ -159,6 +141,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
             @Override
             public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
                 if(chatRoomModels!=null) {
+                    System.out.println(chatRoomModels.size()+"chatRoomModels.size()");
                     if (chatRoomModels.isEmpty()) {
                         lineerNoMessage.setVisibility(View.VISIBLE);
                         fab.setVisibility(View.GONE);
@@ -180,7 +163,8 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
                                 postList.add(chatRoomModel);
 
                             } else {
-                                chatRoomRepo.isArchivedMutableLiveData.setValue(true);
+                                chatRoomViewModel.setArchived(true);
+//                                chatRoomRepo.isArchivedMutableLiveData.setValue(true);
                             }
                         }
 
@@ -191,6 +175,7 @@ public class ChatRoomFragment extends Fragment implements ChatRoomAdapter.Callba
                 }
             }
         });
+
         recyclerView.setAdapter(itemAdapter);
         recyclerView.setListener(new SwipeLeftRightCallback.Listener() {
             @Override

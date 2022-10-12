@@ -1,5 +1,6 @@
 package com.yawar.memo.retrofit;
 
+import com.squareup.moshi.Moshi;
 import com.yawar.memo.Api.api;
 import com.yawar.memo.constant.AllConstants;
 
@@ -9,6 +10,7 @@ import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.moshi.MoshiConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class RetrofitClient { //world wide cases
@@ -22,10 +24,15 @@ public class RetrofitClient { //world wide cases
             .writeTimeout(50, TimeUnit.SECONDS)
             .readTimeout(50, TimeUnit.SECONDS)
             .build();
+//    private Moshi moshi = new Moshi.Builder()
+//            .add(new KotlinJsonAdapterFactory())
+//            .build();
     private RetrofitClient(String baseUrl) { //constructor
         retrofit = new Retrofit.Builder().baseUrl(baseUrl).
                 client(okHttpClient).
                 addConverterFactory(ScalarsConverterFactory.create())
+
+//                .addConverterFactory(MoshiConverterFactory.create(moshi))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create()).build();
 

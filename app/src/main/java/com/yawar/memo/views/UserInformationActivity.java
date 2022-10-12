@@ -1,15 +1,12 @@
 package com.yawar.memo.views;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.datastore.preferences.core.MutablePreferences;
 import androidx.datastore.preferences.core.Preferences;
 import androidx.datastore.preferences.core.PreferencesKeys;
-import androidx.datastore.preferences.rxjava2.RxPreferenceDataStoreBuilder;
 import androidx.datastore.rxjava2.RxDataStore;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -19,7 +16,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,12 +24,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.yawar.memo.call.RequestCallActivity;
 import com.yawar.memo.modelView.UserInformationViewModel;
 import com.yawar.memo.service.SocketIOService;
@@ -45,7 +38,6 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.MediaModel;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.BlockUserRepo;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.sessionManager.SharedPreferenceStringLiveData;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.TimeProperties;
@@ -53,14 +45,9 @@ import com.yawar.memo.utils.TimeProperties;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
-import io.reactivex.Flowable;
-import io.reactivex.Single;
-import io.reactivex.SingleObserver;
-import io.reactivex.disposables.Disposable;
 
 public class UserInformationActivity extends AppCompatActivity {
 
@@ -99,7 +86,7 @@ public class UserInformationActivity extends AppCompatActivity {
     MediaAdapter adapter;
     ImageView imgBtnMessage;
     PopupMenu p;
-    ChatRoomRepo chatRoomRepo;
+//    ChatRoomRepo chatRoomRepo;
     String blockedFor;
     boolean isBlockForMe = false;
     ImageView imageVideoCall, imageAudioCall, imageMore, imageChat, imageMute;
@@ -241,7 +228,7 @@ public class UserInformationActivity extends AppCompatActivity {
 
 
 
-        chatRoomRepo = myBase.getChatRoomRepo();
+//        chatRoomRepo = myBase.getChatRoomRepo();
         blockUserRepo= myBase.getBlockUserRepo();
         Bundle bundle = getIntent().getExtras();
        userName = bundle.getString("name", "Default");

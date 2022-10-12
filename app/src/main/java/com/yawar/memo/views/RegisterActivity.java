@@ -21,7 +21,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -29,7 +28,6 @@ import android.widget.CheckedTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -43,7 +41,6 @@ import com.android.volley.toolbox.Volley;
 import com.github.dhaval2404.imagepicker.ImagePicker;
 import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -58,7 +55,6 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -78,7 +74,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     byte[] inputData = new byte[]{};
     byte[] imageBytes = new byte[]{};
 
-    ChatRoomRepo chatRoomRepo;
+//    ChatRoomRepo chatRoomRepo;
 
     ClassSharedPreferences classSharedPreferences;
 
@@ -120,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         spennerItemChooser=getResources().getString(R.string.choose_special_number);
         myBase = BaseApp.getInstance();
         authRepo = myBase.getAuthRepo();
-        chatRoomRepo = myBase.getChatRoomRepo();
+//        chatRoomRepo = myBase.getChatRoomRepo();
 
 
 //        edEmail = findViewById(R.id.et_em);

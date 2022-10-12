@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
@@ -21,14 +20,12 @@ import com.yawar.memo.R;
 import com.yawar.memo.adapter.BlockUserAdapter;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.BlockedActViewModel;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class BlockedUsersActivity extends AppCompatActivity implements BlockUserAdapter.CallbackInterface {
     ClassSharedPreferences classSharedPreferences ;
@@ -37,7 +34,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
     RecyclerView recyclerView;
     BlockedActViewModel blockedActViewModel;
     BlockUserAdapter blockUserAdapter;
-    ChatRoomRepo chatRoomRepo;
+//    ChatRoomRepo chatRoomRepo;
     ServerApi serverApi;
     UserModel UserBlocked;
     ArrayList<UserModel> userBlockeds = new ArrayList<UserModel>();
@@ -76,7 +73,7 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
         myBase=BaseApp.getInstance();
         blockedActViewModel = new ViewModelProvider(this).get(BlockedActViewModel.class);
 
-        chatRoomRepo = myBase.getChatRoomRepo();
+//        chatRoomRepo = myBase.getChatRoomRepo();
         userModel = classSharedPreferences.getUser();
         serverApi = new ServerApi(this);
         blockedActViewModel.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<UserModel>>() {
@@ -101,8 +98,9 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
             @Override
             public void onChanged(Boolean s) {
                 if(s!=null){
-                    blockedActViewModel.setBlocked(null);
-
+                    if(s) {
+                        blockedActViewModel.setBlocked(false);
+                    }
 
                 }
             }
@@ -113,10 +111,10 @@ public class BlockedUsersActivity extends AppCompatActivity implements BlockUser
             public void onChanged(Boolean s) {
                 System.out.println("stateee"+s);
                 if(s!=null){
-//                    conversationModelView.
-                    sendUnBlockFor(s);
-                    blockedActViewModel.setUnBlocked(null);
-
+                    if(s) {
+                        sendUnBlockFor(s);
+                        blockedActViewModel.setUnBlocked(false);
+                    }
 
                 }
             }

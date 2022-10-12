@@ -18,9 +18,6 @@ import retrofit2.http.Query;
 public interface api {
 
     @GET("APIS/mychat.php")
-//endpoint
-
-//    Single<String> getChatRoom(@Query("user_id") String user_id);
     Single<ChatRoomRespone> getChatRoom(@Query("user_id") String user_id);
 
 

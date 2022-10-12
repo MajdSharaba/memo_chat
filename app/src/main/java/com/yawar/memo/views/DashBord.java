@@ -36,13 +36,13 @@ import com.yawar.memo.fragment.CallHistoryFragment;
 import com.yawar.memo.language.helper.LocaleHelper;
 import com.yawar.memo.permissions.Permissions;
 import com.yawar.memo.repositry.AuthRepo;
+import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.fragment.ChatRoomFragment;
 import com.yawar.memo.fragment.SearchFragment;
 import com.yawar.memo.fragment.SettingsFragment;
 import com.yawar.memo.model.ChatRoomModel;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 
@@ -67,7 +67,9 @@ public class DashBord extends AppCompatActivity implements Observer {
     private Fragment fragment = null;
     private Permissions permissions;
     BaseApp myBase;
-    ChatRoomRepo chatRoomRepo;
+//    ChatRoomRepo chatRoomRepo;
+    ChatRoomRepoo chatRoomRepoo;
+
     ClassSharedPreferences classSharedPreferences;
     String myId;
     AuthRepo authRepo;
@@ -124,7 +126,7 @@ public class DashBord extends AppCompatActivity implements Observer {
 
 
                 if(!user.getString("id").equals(myId)) {
-                    chatRoomRepo.addChatRoom(new ChatRoomModel(
+                    chatRoomRepoo.addChatRoom(new ChatRoomModel(
                             user.getString("first_name"),
                             user.getString("id"),
                             text,
@@ -223,10 +225,10 @@ public class DashBord extends AppCompatActivity implements Observer {
 
 
                 if (!id.equals("0000")){
-                    chatRoomRepo.setLastMessage(text, chatId, myId, anthor_id, type, state, dateTime, senderId);
+                    chatRoomRepoo.setLastMessage(text, chatId, myId, anthor_id, type, state, dateTime, senderId);
             }
                 else{
-                    chatRoomRepo.updateLastMessageState(state,chatId);
+                    chatRoomRepoo.updateLastMessageState(state,chatId);
                 }
 
         }
@@ -257,7 +259,7 @@ public class DashBord extends AppCompatActivity implements Observer {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            chatRoomRepo.setTyping(chat_id, isTyping.equals("true"));
+            chatRoomRepoo.setTyping(chat_id, isTyping.equals("true"));
         }
     };
     private final BroadcastReceiver reciveBlockUser = new BroadcastReceiver() {
@@ -284,7 +286,7 @@ public class DashBord extends AppCompatActivity implements Observer {
                         special_number = jsonObject.getString("userDoBlockSpecialNumber");
                         image = jsonObject.getString("userDoBlockImage");
 
-                         chatRoomRepo.setBlockedState(userDoBlock,blockedFor);
+                         chatRoomRepoo.setBlockedState(userDoBlock,blockedFor);
 
 
 
@@ -314,7 +316,7 @@ public class DashBord extends AppCompatActivity implements Observer {
                         userUnBlock = jsonObject.getString("user_id");
                         unBlockedFor = jsonObject.getString("blocked_for");
 
-                        chatRoomRepo.setBlockedState(userDoUnBlock,unBlockedFor);
+                        chatRoomRepoo.setBlockedState(userDoUnBlock,unBlockedFor);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -378,7 +380,9 @@ public class DashBord extends AppCompatActivity implements Observer {
         permissions = new Permissions();
         checkPermission();
         myId = classSharedPreferences.getUser().getUserId();
-        chatRoomRepo= myBase.getChatRoomRepo();
+//        chatRoomRepo= myBase.getChatRoomRepo();
+        chatRoomRepoo= myBase.getChatRoomRepoo();
+
 //        chatRoomRepo.callAPI(myId);
 
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveNewChat, new IntentFilter(NEW_MESSAGE));

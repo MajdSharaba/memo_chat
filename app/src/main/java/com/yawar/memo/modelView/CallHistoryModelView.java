@@ -5,12 +5,7 @@ import android.annotation.SuppressLint;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.CallModel;
-import com.yawar.memo.model.ChatRoomModel;
-import com.yawar.memo.model.ChatRoomRespone;
-import com.yawar.memo.model.SearchRespone;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.retrofit.RetrofitClient;
 import com.yawar.memo.utils.BaseApp;
 

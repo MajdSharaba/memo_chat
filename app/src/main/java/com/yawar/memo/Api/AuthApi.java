@@ -182,6 +182,7 @@ public class AuthApi implements Observer {
         // receive OTP from Firebase.
         @Override
         public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            System.out.println("coooodeeee"+phoneAuthCredential.getSmsCode());
             // below line is used for getting OTP code
             // which is sent in phone auth credentials.
             // final String code = phoneAuthCredential.getSmsCode();

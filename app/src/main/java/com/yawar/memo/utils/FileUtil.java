@@ -23,7 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
-import com.yawar.memo.repositry.ChatMessageRepo;
+import com.yawar.memo.repositry.ChatMessageRepoo;
 import com.yawar.memo.views.ConversationActivity;
 
 import org.json.JSONException;
@@ -469,7 +469,7 @@ public class FileUtil {
     }
     ////////////////////
     public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id) {
-        ChatMessageRepo chatMessageRepo = BaseApp.getInstance().getChatMessageRepo();
+        ChatMessageRepoo chatMessageRepo = BaseApp.getInstance().getChatMessageRepoo();
         BaseApp myBase = BaseApp.getInstance();
         Bitmap bitmap = null;
         byte[] imageBytes = new byte[]{};
@@ -608,7 +608,7 @@ public class FileUtil {
     ///////////////////
     public static ChatMessage uploadVideo(String pdfname, Uri pdffile, ConversationActivity activity, String user_id, String anthor_user_id) {
         BaseApp myBase = BaseApp.getInstance();
-        ChatMessageRepo chatMessageRepo = myBase.getChatMessageRepo();
+        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
 
 
         String message_id = System.currentTimeMillis() + "_" + user_id;
@@ -731,7 +731,7 @@ public class FileUtil {
     ////////////////
     public static ChatMessage uploadVoice(String voiceName, Uri voicedPath, ConversationActivity activity, String user_id, String anthor_user_id) {
         BaseApp myBase = BaseApp.getInstance();
-        ChatMessageRepo chatMessageRepo = myBase.getChatMessageRepo();
+        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
 
         String message_id = System.currentTimeMillis() + "_" + user_id;
         System.out.println("the message id is" + message_id);
@@ -855,7 +855,7 @@ public class FileUtil {
     public static ChatMessage uploadPDF(String pdfname, Uri pdffile, ConversationActivity activity, String user_id, String anthor_user_id) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
         BaseApp myBase = BaseApp.getInstance();
-        ChatMessageRepo chatMessageRepo = myBase.getChatMessageRepo();
+        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());

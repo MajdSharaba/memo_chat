@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +27,6 @@ import com.yawar.memo.utils.TimeProperties
 import com.yawar.memo.views.ConversationActivity
 import com.yawar.memo.views.UserInformationActivity
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ChatRoomAdapter(
     var context: ChatRoomFragment,
@@ -254,6 +254,7 @@ class ChatRoomAdapter(
                     bundle.putString("image", chatRoomModel.image)
                     bundle.putString("chat_id", chatRoomModel.id)
                     bundle.putString("blockedFor", chatRoomModel.blocked_for)
+//                    Log.d("blockedForrrrrrrrr",chatRoomModel.blocked_for!!)
                     val intent = Intent(context.activity, ConversationActivity::class.java)
                     intent.putExtras(bundle)
                     context.startActivity(intent)

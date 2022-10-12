@@ -21,7 +21,7 @@ import com.yawar.memo.model.SendContactNumberResponse;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
-import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
@@ -731,7 +731,7 @@ public class ServerApi {
     //unBlock user
     ///////////////////////////////
     public void unbBlockUser(String my_id,ChatRoomModel userModel) {
-        ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
+        ChatRoomRepoo chatRoomRepoo = myBase.getChatRoomRepoo();
 
         ProgressDialog progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
@@ -758,7 +758,7 @@ public class ServerApi {
                 }
 
 
-                chatRoomRepo.setBlockedState(userModel.getOther_id(),blokedFor);
+                chatRoomRepoo.setBlockedState(userModel.getOther_id(),blokedFor);
 
                 Intent service = new Intent(context, SocketIOService.class);
                 JSONObject userUnBlocked = new JSONObject();
@@ -815,7 +815,7 @@ public class ServerApi {
         myBase.addToRequestQueue(request);
     }
     public void deleteAccount() {
-        ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
+//        ChatRoomRepo chatRoomRepo = myBase.getChatRoomRepo();
 //        classSharedPreferences = new ClassSharedPreferences(context);
         BlockUserRepo blockUserRepo = myBase.getBlockUserRepo();
 
@@ -845,8 +845,8 @@ public class ServerApi {
                 classSharedPreferences.setUser(null);
                 classSharedPreferences.setVerficationNumber(null);
                 authRepo.jsonObjectMutableLiveData.setValue(null);
-                chatRoomRepo.chatRoomListMutableLiveData.setValue(null);
-                blockUserRepo.userBlockListMutableLiveData.setValue(null);
+//                chatRoomRepo.chatRoomListMutableLiveData.setValue(null);
+//                blockUserRepo.userBlockListMutableLiveData.setValue(null);
 
                 Intent intent = new Intent(context, SplashScreen.class);
                 context.startActivity(intent);

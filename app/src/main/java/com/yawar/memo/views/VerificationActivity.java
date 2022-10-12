@@ -3,6 +3,7 @@ package com.yawar.memo.views;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.credentials.HintRequest;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.yawar.memo.Api.AuthApi;
 import com.yawar.memo.call.CallProperty;
@@ -39,22 +42,24 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
     Button virvectbtn;
     TextView resendbtn;
     ClassSharedPreferences classSharedPreferences;
-    private EditText  edtOTP;
+    private EditText edtOTP;
     BaseApp myBase;
-    int count=60;
+    int count = 60;
     AuthRepo authRepo;
     VerficationViewModel verficationViewModel;
     Timer T;
-    public PhoneAuthProvider.ForceResendingToken forceResendingToken ;
-    TextView text ;
+    public PhoneAuthProvider.ForceResendingToken forceResendingToken;
+    TextView text;
     AuthApi authApi;
-    TextView orText ;
+    TextView orText;
     ProgressDialog progressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CallProperty.setStatusBarOrScreenStatus(this);
         setContentView(R.layout.activity_verification);
+
         virvectbtn = findViewById(R.id.btn_verification);
         authRepo = BaseApp.getInstance().getAuthRepo();
         text = findViewById(R.id.text);
@@ -109,6 +114,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
                 }
             }
         });
+
         verficationViewModel.getLoading().observe(this, new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
@@ -155,11 +161,10 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
                 } else {
 
                     verficationViewModel.setLoading(true);
-                    if(classSharedPreferences.getVerficationNumber()==null){
+                    if (classSharedPreferences.getVerficationNumber() == null) {
                         authApi.verifyCode(edtOTP.getText().toString());
 
-                    }
-                    else {
+                    } else {
                         authRepo.getspecialNumbers(classSharedPreferences.getVerficationNumber());
                     }
                 }
@@ -196,11 +201,11 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
         authApi.showErrorMessage.observe(this, new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
-                System.out.println("errrrorrr"+aBoolean);
+                System.out.println("errrrorrr" + aBoolean);
 
                 if (aBoolean) {
                     System.out.println("errrrorrr");
-                    Toast.makeText(VerificationActivity.this,authApi.errorMessage , Toast.LENGTH_LONG).show();
+                    Toast.makeText(VerificationActivity.this, authApi.errorMessage, Toast.LENGTH_LONG).show();
                     authApi.showErrorMessage.setValue(false);
 
                 }
@@ -211,22 +216,20 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
     }
 
 
-    void timer(){
-        T=new Timer();
+    void timer() {
+        T = new Timer();
         T.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable()
-                {
+                runOnUiThread(new Runnable() {
                     @Override
-                    public void run()
-                    {
-                        resendbtn.setText(count+"");
+                    public void run() {
+                        resendbtn.setText(count + "");
                         count--;
-                        if(count<0){
+                        if (count < 0) {
                             resendbtn.setEnabled(true);
                             resendbtn.setText(R.string.resend);
-                            count=60;
+                            count = 60;
                             T.cancel();
                         }
                     }
@@ -238,7 +241,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
 
     @Override
     protected void onDestroy() {
-        if(progressDialog!=null){
+        if (progressDialog != null) {
             progressDialog.dismiss();
         }
         super.onDestroy();
@@ -247,7 +250,8 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
 
     @Override
     public void update(Observable observable, Object o) {
-        forceResendingToken =myBase.getForceResendingToken().getForceResendingToken();
-        System.out.println(forceResendingToken+"forceResendingToken");
+        forceResendingToken = myBase.getForceResendingToken().getForceResendingToken();
+        System.out.println(forceResendingToken + "forceResendingToken");
     }
+
 }

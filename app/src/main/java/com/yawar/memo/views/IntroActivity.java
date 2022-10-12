@@ -1,69 +1,36 @@
 package com.yawar.memo.views;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
-import android.Manifest;
+
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.Settings;
-import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
-import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatRoomModel;
-import com.yawar.memo.model.UserModel;
 import com.yawar.memo.modelView.IntroActModelView;
-import com.yawar.memo.repositry.BlockUserRepo;
-import com.yawar.memo.repositry.ChatRoomRepo;
-import com.yawar.memo.permissions.Permissions;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
+
 import com.yawar.memo.utils.BaseApp;
 //import com.yawar.memo.videocalltest.ConnService;
 
 public class IntroActivity extends AppCompatActivity  {
     ClassSharedPreferences classSharedPreferences;
-    ProgressDialog progressDialog;
     BaseApp myBase;
     String myId;
     IntroActModelView introActModelView;
-    ChatRoomRepo chatRoomRepo;
-    BlockUserRepo blockUserRepo;
     ProgressBar progressBar;
-
-
-    boolean isResponeSucces = false;
-    private static final int STORAGE_PERMISSION_CODE = 2000;
-    private static final int Contact_PERMISSION_CODE = 1000;
-
-
-    private Permissions permissions;
-//    ServerApi serverApi;
 
 
     @Override
@@ -73,56 +40,17 @@ public class IntroActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_intro);
         System.out.println( android.os.Build.MANUFACTURER+"String deviceMan = android.os.Build.MANUFACTURER;\n");
         progressBar = findViewById(R.id.progress_circular);
-//        if(android.os.Build.MANUFACTURER.equals("xhaomi")){
-//        if(android.os.Build.MANUFACTURER.equals("OPPO")){
-//
-//            showXhaomiDialog();
-//        }
-//        askCallPermission();
-
-//        goToNotificationSettings(this);
-
-
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) != PackageManager.PERMISSION_GRANTED) {
-//            System.out.println("notification is not granted");
-//            goToNotificationSettings(this);
-//        }
-//        else {
-//            System.out.println("notification is  granted");
-//
-//        }
-//        goToNotificationSettings(this);
-//        askCallPermission();
-
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         myId = classSharedPreferences.getUser().getUserId();
        myBase = BaseApp.getInstance();
 
         introActModelView = new ViewModelProvider(this).get(IntroActModelView.class);
-//            FirebaseMessaging.getInstance().getToken()
-//                    .addOnCompleteListener(new OnCompleteListener<String>() {
-//                        @Override
-//                        public void onComplete(@NonNull Task<String> task) {
-//                            if (!task.isSuccessful()) {
-//                                Log.w("kk", "Fetching FCM registration token failed", task.getException());
-//                                return;
-//                            }
-//
-//                            String token = task.getResult();
-//                            introActModelView.sendFcmToken(myId,token);
-//                            classSharedPreferences.setFcmToken(token);
-//                            Log.d("jjj", token);
-//                        }
-//                    });
-//        }
-
         introActModelView.loadData().observe(this, new androidx.lifecycle.Observer<ArrayList<ChatRoomModel>>() {
             @Override
             public void onChanged(ArrayList<ChatRoomModel> chatRoomModels) {
                 if(chatRoomModels!=null){
                     introActModelView.loadData().removeObserver(this);
                     Intent intent = new Intent(IntroActivity.this, DashBord.class);
-
                     startActivity(intent);
                     finish();
 
@@ -136,7 +64,6 @@ public class IntroActivity extends AppCompatActivity  {
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean!=null) {
                     if (aBoolean) {
-                        System.out.println("boleannnn");
                         progressBar.setVisibility(View.VISIBLE);
 
                     } else {
@@ -154,7 +81,7 @@ public class IntroActivity extends AppCompatActivity  {
                 if (aBoolean!=null) {
                     if (aBoolean) {
 //                        Toast.makeText(IntroActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
-                        introActModelView.setErrorMessage(null);
+                        introActModelView.setErrorMessage(false);
                     }
                 }
             }

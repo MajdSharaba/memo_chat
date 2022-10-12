@@ -2,17 +2,13 @@ package com.yawar.memo.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
@@ -25,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,7 +35,6 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.github.dhaval2404.imagepicker.ImagePicker;
-import com.yawar.memo.call.CallProperty;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
@@ -49,7 +43,6 @@ import com.yawar.memo.language.BottomSheetFragment;
 import com.yawar.memo.model.UserModel;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
-import com.yawar.memo.repositry.ChatRoomRepo;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.VolleyMultipartRequest;
 import com.yawar.memo.views.BlockedUsersActivity;
@@ -117,7 +110,7 @@ public class SettingsFragment extends Fragment {
     String firstName = "";
     String lastName = "";
     AuthRepo authRepo;
-    ChatRoomRepo chatRoomRepo;
+//    ChatRoomRepo chatRoomRepo;
     BlockUserRepo blockUserRepo;
 
 
@@ -136,7 +129,7 @@ public class SettingsFragment extends Fragment {
         userModel = classSharedPreferences.getUser();
         serverApi = new ServerApi(getActivity());
         myBase = BaseApp.getInstance();
-        chatRoomRepo = myBase.getChatRoomRepo();
+//        chatRoomRepo = myBase.getChatRoomRepo();
         blockUserRepo = myBase.getBlockUserRepo();
         authRepo = myBase.getAuthRepo();
 
@@ -667,8 +660,8 @@ public class SettingsFragment extends Fragment {
                                 classSharedPreferences.setUser(null);
                                 classSharedPreferences.setVerficationNumber(null);
                                 authRepo.jsonObjectMutableLiveData.setValue(null);
-                                chatRoomRepo.chatRoomListMutableLiveData.setValue(null);
-                                blockUserRepo.userBlockListMutableLiveData.setValue(null);
+//                                chatRoomRepoo.chatRoomListMutableLiveData.setValue(null);
+//                                blockUserRepo.userBlockListMutableLiveData.setValue(null);
                                 Intent intent = new Intent(getContext(), SplashScreen.class);
                                 startActivity(intent);
                                 getActivity().finish();

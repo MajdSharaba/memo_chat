@@ -1,23 +1,12 @@
 package com.yawar.memo.service;
 
 import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.RingtoneManager;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.PowerManager;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.work.Data;
@@ -32,20 +21,13 @@ import com.yawar.memo.call.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.notification.NotificationCallWorker;
 import com.yawar.memo.notification.NotificationWorker;
-import com.yawar.memo.repositry.ChatRoomRepo;
+import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.utils.ImageProperties;
-import com.yawar.memo.views.SplashScreen;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -59,7 +41,7 @@ public class FirebaseMessageReceiver
     public static final String workTag = "notificationWork";
 
     BaseApp myBase;
-    ChatRoomRepo chatRoomRepo;
+    ChatRoomRepoo chatRoomRepoo;
     ServerApi serverApi;
     String chat_id;
     private WorkManager mWorkManager;
@@ -89,7 +71,7 @@ public class FirebaseMessageReceiver
         Log.i(TAG, "onMessageReceived: " + remoteMessage.getOriginalPriority() + "getPriority" + remoteMessage.getPriority() + remoteMessage.getData());
         myBase = (BaseApp) getApplication();
 
-        chatRoomRepo = myBase.getChatRoomRepo();
+        chatRoomRepoo = myBase.getChatRoomRepoo();
 //        myBase.getObserver().addObserver(this);
         String message = "";
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
@@ -224,7 +206,7 @@ public class FirebaseMessageReceiver
 
                     }
                 }
-                if (!chatRoomRepo.checkInChat(remoteMessage.getData().get("sender_id")) && !isMute) {
+                if (!chatRoomRepoo.checkInChat(remoteMessage.getData().get("sender_id")) && !isMute) {
 
 //                    new showNotification(this).execute(remoteMessage.getData().get("title"), remoteMessage.getData().get("image"), message, remoteMessage.getData().get("sender_id"));
                     Data inputDataNotification = new Data.Builder().putString("name", remoteMessage.getData().get("title")).putString("image", remoteMessage.getData().get("image"))
