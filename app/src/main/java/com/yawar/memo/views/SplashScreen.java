@@ -112,7 +112,7 @@ public class SplashScreen extends AppCompatActivity {
 
                             if(jsonObject!=null) {
                                 Log.d("getUserrr", "onChanged: "+jsonObject);
-                                authRepo.jsonObjectMutableLiveData.removeObserver(this);
+                                authRepo.getJsonObjectMutableLiveData().removeObserver(this);
                                 String sn="";
                                 String user_id="" ;
                                 String first_name="" ;
@@ -188,7 +188,7 @@ public class SplashScreen extends AppCompatActivity {
                             if (aBoolean!=null) {
                                 if (aBoolean) {
                                     Toast.makeText(SplashScreen.this, R.string.internet_message, Toast.LENGTH_LONG).show();
-                                    splachActViewModel.setErrorMessage(null);
+                                    splachActViewModel.setErrorMessage(false);
                                 }
                             }
                         }

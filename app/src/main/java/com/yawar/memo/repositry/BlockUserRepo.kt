@@ -30,15 +30,17 @@ import java.util.*
 
 
     private val _blockedRepo =  MutableLiveData<Boolean>()
-    val blockedRepo : LiveData<Boolean>
+    val isBlocked : LiveData<Boolean>
         get() = _blockedRepo
 
 
-    private val _unBlockedRepo =  MutableLiveData<Boolean>()
-    val unBlockedRepo  : LiveData<Boolean>
+
+      private val _unBlockedRepo =  MutableLiveData<Boolean>()
+    val isUnBlocked  : LiveData<Boolean>
         get() = _unBlockedRepo
 
-    private var viewModelJob = Job()
+
+      private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
 
      fun getUserBlock( user_id: String) {
@@ -116,7 +118,7 @@ import java.util.*
     fun sendBlockRequest( my_id: String,  anthor_user_id:String) {
         coroutineScope.launch {
 
-            var respone = GdgApi.apiService.blockUser(my_id, anthor_user_id)
+            val respone = GdgApi.apiService.blockUser(my_id, anthor_user_id)
             try {
                 val listResult = respone?.await()
 

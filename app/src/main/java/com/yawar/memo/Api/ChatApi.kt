@@ -72,6 +72,43 @@ interface ChatApi {
         @Field("my_id") my_id: String?,
         @Field("user_id") anthor_user_id: String?,
     ): Deferred<String?>?
+
+
+    @FormUrlEncoded
+    @POST("APIS/signup.php")
+    fun  getSpecialNumbers (@Field("phone") phoneNumber: String?): Deferred<String?>?
+
+
+    @FormUrlEncoded
+    @POST("addtoken")
+    fun sendFcmToken(
+        @Field("users_id") my_id: String?, @Field("token") fcmToken: String?
+    ): Deferred<String?>?
+
+    @FormUrlEncoded
+    @POST("getmedia")
+    fun getMedia(
+        @Field("sender_id") sender_id: String?,
+        @Field("reciver_id") user_id: String?
+    ): Deferred<String?>?
+
+    @FormUrlEncoded
+    @POST("profile")
+    fun getUserInformation(@Field("id") anthor_user_id: String?): Deferred<String?>?
+
+
+    @FormUrlEncoded
+    @POST("mycalls")
+    fun getMyCalls(@Field("my_id") my_id: String?): Deferred<String?>?
+
+    @FormUrlEncoded
+    @POST("APIS/search_for_user.php")
+    fun search(
+        @Field("sn") search_parameters: String?,
+        @Field("page") page: String?,
+        @Field("my_id") my_id: String?
+    ): Deferred<String?>?
+
 }
 
 

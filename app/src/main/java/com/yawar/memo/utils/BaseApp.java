@@ -28,7 +28,7 @@ import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepoo;
 import com.yawar.memo.repositry.ChatRoomRepoo;
-import com.yawar.memo.repositry.RequestCallRepo;
+//import com.yawar.memo.repositry.RequestCallRepo;
 import com.yawar.memo.repositry.UserInformationRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -41,7 +41,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     private RequestQueue mRequestQueue;
     private static BaseApp sInstance;
 //    ChatRoomRepo chatRoomRepo;
-    RequestCallRepo requestCallRepo;
+//    RequestCallRepo requestCallRepo;
     BlockUserRepo blockUserRepo;
     AuthRepo authRepo;
     ChatMessageRepoo chatMessageRepoo;
@@ -152,15 +152,15 @@ public class BaseApp extends Application implements LifecycleObserver {
         }
         return chatRoomRepoo;
     }
-    public RequestCallRepo getRequestCallRepo() {
-        if(requestCallRepo== null){
-            requestCallRepo = new RequestCallRepo(this);
-        }
-        return requestCallRepo;
-    }
+//    public RequestCallRepo getRequestCallRepo() {
+//        if(requestCallRepo== null){
+//            requestCallRepo = new RequestCallRepo(this);
+//        }
+//        return requestCallRepo;
+//    }
     public UserInformationRepo getUserInformationRepo() {
         if(userInformationRepo== null){
-            userInformationRepo = new UserInformationRepo(this);
+            userInformationRepo = new UserInformationRepo();
         }
         return userInformationRepo;
     }
@@ -172,7 +172,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     }
     public AuthRepo getAuthRepo() {
         if(authRepo== null){
-            authRepo = new AuthRepo(this);
+            authRepo = new AuthRepo();
         }
         return authRepo;
     }

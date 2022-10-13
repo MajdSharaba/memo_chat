@@ -1,6 +1,7 @@
 package com.yawar.memo.fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -96,6 +97,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
 
 
 
+    @SuppressLint("MissingInflatedId")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -216,7 +218,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         recyclerView.setLayoutManager(linearLayoutManager);
         searchAdapter = new SearchAdapter(SearchFragment.this,getActivity());
 
-        searchModelView.liveSearchResponeList.observe(getActivity(), new androidx.lifecycle.Observer<ArrayList<SearchRespone>>() {
+        searchModelView.getSearchResponeArrayList().observe(getActivity(), new androidx.lifecycle.Observer<ArrayList<SearchRespone>>() {
             @Override
             public void onChanged(ArrayList<SearchRespone> searchResponeArrayList) {
 //                list.clear();
@@ -242,7 +244,7 @@ public class SearchFragment extends Fragment implements SearchAdapter.CallbackIn
         recyclerView.setAdapter(searchAdapter);
 
 
-        searchModelView.loading.observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+        searchModelView.getLoadingMutableLiveData().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean!=null) {

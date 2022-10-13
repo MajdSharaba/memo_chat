@@ -140,7 +140,7 @@ public class VerificationActivity extends AppCompatActivity implements Observer 
                 if (aBoolean != null) {
                     if (aBoolean) {
                         Toast.makeText(VerificationActivity.this, R.string.internet_message, Toast.LENGTH_LONG).show();
-                        verficationViewModel.setErrorMessage(null);
+                        verficationViewModel.setErrorMessage(false);
                     }
                 }
             }

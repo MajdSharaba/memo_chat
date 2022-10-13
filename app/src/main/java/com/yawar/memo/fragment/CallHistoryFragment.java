@@ -88,7 +88,7 @@ CallHistoryModelView callHistoryModelView;
 
         recyclerView.setAdapter(itemAdapter);
 
-        callHistoryModelView.loading.observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
+        callHistoryModelView.getLoadingMutableLiveData().observe(getActivity(), new androidx.lifecycle.Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if (aBoolean!=null) {
@@ -128,6 +128,8 @@ CallHistoryModelView callHistoryModelView;
 
         return view;
     }
+
+
 
 
 }

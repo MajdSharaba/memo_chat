@@ -262,7 +262,7 @@ public class UserInformationActivity extends AppCompatActivity {
 //        }
         userInformationViewModel.setBlockedFor(blockedFor);
         txtState = findViewById(R.id.last_seen);
-        userInformationViewModel.state.observe(this, new Observer<String>() {
+        userInformationViewModel.getState().observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
                 System.out.println("stateee"+s);
@@ -359,7 +359,7 @@ public class UserInformationActivity extends AppCompatActivity {
             for (String s :
                     muteList) {
                 if (another_user_id.equals(s)) {
-                    userInformationViewModel.mute.setValue(true);
+                    userInformationViewModel.setMute(true);
                     break;
                 }
 
@@ -367,7 +367,7 @@ public class UserInformationActivity extends AppCompatActivity {
         }
 
 
-        userInformationViewModel.mute.observe(this, new Observer<Boolean>() {
+        userInformationViewModel.getLoadingMutableLiveData().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean aBoolean) {
                 if(aBoolean){
@@ -391,9 +391,10 @@ public class UserInformationActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean s) {
                 if(s!=null){
-                    sendBlockFor(s);
-                    userInformationViewModel.setBlocked(null);
-
+                    if(s) {
+                        sendBlockFor(s);
+                        userInformationViewModel.setBlocked(false);
+                    }
 
                 }
             }
@@ -575,13 +576,13 @@ public class UserInformationActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                System.out.println("muteeeeeeeeeeeee");
 //                JSONObject jsonObject = new JSONObject();
-               if(userInformationViewModel.mute.getValue()) {
+               if(userInformationViewModel.getLoadingMutableLiveData().getValue()) {
                    muteList.remove(another_user_id);
-                   userInformationViewModel.mute.setValue(false);
+                   userInformationViewModel.setMute(false);
                }
                else{
                    muteList.add(another_user_id);
-                   userInformationViewModel.mute.setValue(true);
+                   userInformationViewModel.setMute(true);
 
 
                }

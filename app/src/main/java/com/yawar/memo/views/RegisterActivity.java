@@ -172,7 +172,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             }
         };
         spennerItem.add(getResources().getString(R.string.choose_special_number));
-        authRepo.jsonObjectMutableLiveData.observe(this ,new androidx.lifecycle.Observer<JSONObject>() {
+        authRepo.getJsonObjectMutableLiveData().observe(this ,new androidx.lifecycle.Observer<JSONObject>() {
             @Override
             public void onChanged(JSONObject jsonObject) {
                 if(jsonObject!=null) {

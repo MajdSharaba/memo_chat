@@ -302,7 +302,7 @@ public class ResponeCallActivity extends AppCompatActivity {
                         message = new JSONObject(stopCallString);
                          isVideoForyou = message.getBoolean("camera");
                         boolean audioSetting = message.getBoolean("microphone");
-                        responeCallViewModel.isVideoForYou.setValue(isVideoForyou);
+                        responeCallViewModel.setIsVideoForYou(isVideoForyou);
 
 
                     } catch (JSONException e) {
@@ -330,7 +330,7 @@ public class ResponeCallActivity extends AppCompatActivity {
                         message = new JSONObject(stopCallString);
                         isVideoForyou = message.getBoolean("video");
 
-                        responeCallViewModel.isVideoForYou.setValue(isVideoForyou);
+                        responeCallViewModel.setIsVideoForYou(isVideoForyou);
 
 
                         if(isVideoForyou) {
@@ -367,10 +367,10 @@ public class ResponeCallActivity extends AppCompatActivity {
                     try {
                         message = new JSONObject(stopCallString);
                         isVideoForyou = message.getBoolean("video");
-                        responeCallViewModel.isVideoForYou.setValue(isVideoForyou);
+                        responeCallViewModel.setIsVideoForYou(isVideoForyou);
 
                         if (!isVideoForyou){
-                            responeCallViewModel.isVideoForMe.setValue(false);
+                            responeCallViewModel.setIsVideoForMe(false);
 
                         }
                         else {
@@ -579,11 +579,11 @@ public class ResponeCallActivity extends AppCompatActivity {
         maybeStart();
 
 
-        responeCallViewModel.isVideoForMe.observe(this, new Observer<Boolean>() {
+        responeCallViewModel.isVideoForMe().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
-                    if(responeCallViewModel.connected.getValue()) {
+                    if(responeCallViewModel.getConnected().getValue()) {
                         imgBtnOpenCameraCallLp.setBackground(null);
                         imgBtnSwitchMic.setVisibility(View.GONE);
                         imgBtnSwitchCamera.setVisibility(View.VISIBLE);
@@ -613,7 +613,7 @@ public class ResponeCallActivity extends AppCompatActivity {
                     }
 
 
-                    if (!responeCallViewModel.isVideoForYou.getValue()) {
+                    if (!responeCallViewModel.isVideoForYou().getValue()) {
                         imgBtnSwitchMic.setVisibility(View.VISIBLE);
                         imgBtnSwitchCamera.setVisibility(View.GONE);
 
@@ -637,11 +637,11 @@ public class ResponeCallActivity extends AppCompatActivity {
 
             }
         });
-        responeCallViewModel.isVideoForYou.observe(this, new Observer<Boolean>() {
+        responeCallViewModel.isVideoForYou().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
-                    if(responeCallViewModel.connected.getValue()) {
+                    if(responeCallViewModel.getConnected().getValue()) {
                         binding.remoteVideoView.setVisibility(View.VISIBLE);
                         binding.localVideoView.setVisibility(View.VISIBLE);
 
@@ -654,7 +654,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 //                    binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,500));
                     }
                 } else {
-                    if (!responeCallViewModel.isVideoForMe.getValue()) {
+                    if (!responeCallViewModel.isVideoForMe().getValue()) {
                         binding.remoteVideoView.setVisibility(View.GONE);
                         binding.localVideoView.setVisibility(View.GONE);
 
@@ -682,7 +682,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         });
 
 
-        responeCallViewModel.isAudio.observe(this, new Observer<Boolean>() {
+        responeCallViewModel.isAudio().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
 
@@ -702,7 +702,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 
 
         });
-        responeCallViewModel.isSpeaker.observe(this, new Observer<Boolean>() {
+        responeCallViewModel.isSpeaker().observe(this, new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
@@ -725,8 +725,8 @@ public class ResponeCallActivity extends AppCompatActivity {
                 if (s) {
                     startCallTimeCounter();
 
-                    responeCallViewModel.isVideoForMe.setValue(isVideoForyou);
-                    responeCallViewModel.isVideoForYou.setValue(isVideoForyou);
+                    responeCallViewModel.setIsVideoForMe(isVideoForyou);
+                    responeCallViewModel.setIsVideoForYou(isVideoForyou);
                         binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                         final float scale = getResources().getDisplayMetrics().density;
 //                        int pixelsWidth = (int) (120 * scale + 0.5f);
@@ -798,10 +798,10 @@ public class ResponeCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (!responeCallViewModel.isVideoForMe.getValue() && !responeCallViewModel.isVideoForYou.getValue()) {
+                if (!responeCallViewModel.isVideoForMe().getValue() && !responeCallViewModel.isVideoForYou().getValue()) {
                     showSwitchToVideoWhenIAskDialog(getResources().getString(R.string.alert_switch_to_video_message));
-                    responeCallViewModel.isVideoForMe.setValue(!responeCallViewModel.isVideoForMe.getValue());
-                    sendAskForVideoCall(responeCallViewModel.isVideoForMe.getValue());
+                    responeCallViewModel.setIsVideoForMe(!responeCallViewModel.isVideoForMe().getValue());
+                    sendAskForVideoCall(responeCallViewModel.isVideoForMe().getValue());
 
                 } else {
                     closeOpenVideo();
@@ -830,7 +830,7 @@ public class ResponeCallActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                responeCallViewModel.setIsSpeaker(!responeCallViewModel.getIsSpeaker().getValue());
+                responeCallViewModel.setIsSpeaker(!responeCallViewModel.isSpeaker().getValue());
 
             }
         });
@@ -890,12 +890,12 @@ public class ResponeCallActivity extends AppCompatActivity {
         super.onBackPressed();
     }
     public void closeOpenVideo() {
-        responeCallViewModel.isVideoForMe.setValue(!responeCallViewModel.isVideoForMe.getValue());
-                sendSettingsCall(responeCallViewModel.isVideoForMe.getValue(),true);
+        responeCallViewModel.setIsVideoForMe(!responeCallViewModel.isVideoForMe().getValue());
+                sendSettingsCall(responeCallViewModel.isVideoForMe().getValue(),true);
     }
     public void closeOpenAudio(){
 
-        responeCallViewModel.isAudio.setValue(!responeCallViewModel.isAudio.getValue());
+        responeCallViewModel.setAudio(!responeCallViewModel.isAudio().getValue());
 
 
     }
@@ -1305,7 +1305,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         dialogForMe.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                responeCallViewModel.isVideoForMe.setValue(!responeCallViewModel.isVideoForMe.getValue());
+                responeCallViewModel.setIsVideoForMe(!responeCallViewModel.isVideoForMe().getValue());
                 sendAskForVideoCall(false);
                 dialog.dismiss();
             }
@@ -1323,10 +1323,10 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
-                        responeCallViewModel.isVideoForMe.setValue(!responeCallViewModel.isVideoForMe.getValue());
+                        responeCallViewModel.setIsVideoForMe(!responeCallViewModel.isVideoForMe().getValue());
                         responeCallViewModel.setIsSpeaker(true);
 
-                        SendSwitchTOVideoCallRespone(responeCallViewModel.isVideoForMe.getValue());
+                        SendSwitchTOVideoCallRespone(responeCallViewModel.isVideoForMe().getValue());
                         dialog.dismiss();
 
                     }
@@ -1334,7 +1334,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         dialog.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                responeCallViewModel.isVideoForYou.setValue(!responeCallViewModel.isVideoForYou.getValue());
+                responeCallViewModel.setIsVideoForYou(!responeCallViewModel.isVideoForYou().getValue());
 
                 SendSwitchTOVideoCallRespone(isVideoForMe);
                 dialog.dismiss();
@@ -1539,10 +1539,10 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                 }
                 binding.callStatue.setText(R.string.key_exchange);
 
-                responeCallViewModel.isVideoForMe.setValue(isVideoForyou);
-                responeCallViewModel.isVideoForYou.setValue(isVideoForyou);
+                responeCallViewModel.setIsVideoForMe(isVideoForyou);
+                responeCallViewModel.setIsVideoForYou(isVideoForyou);
 
-                responeCallViewModel.isSpeaker.setValue(isVideoForyou);
+                responeCallViewModel.setIsSpeaker(isVideoForyou);
                 username = userObject.getString("name");
                 imageUrl = userObject.getString("image_profile");
                 if (imageUrl!=null) {

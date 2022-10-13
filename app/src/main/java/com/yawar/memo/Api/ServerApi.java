@@ -844,7 +844,7 @@ public class ServerApi {
                 if(data){
                 classSharedPreferences.setUser(null);
                 classSharedPreferences.setVerficationNumber(null);
-                authRepo.jsonObjectMutableLiveData.setValue(null);
+//                authRepo.jsonObjectMutableLiveData.setValue(null);
 //                chatRoomRepo.chatRoomListMutableLiveData.setValue(null);
 //                blockUserRepo.userBlockListMutableLiveData.setValue(null);
 

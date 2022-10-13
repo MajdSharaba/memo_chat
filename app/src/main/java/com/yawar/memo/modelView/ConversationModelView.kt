@@ -46,14 +46,14 @@ class ConversationModelView : ViewModel() {
     }
 
     val isBlocked: LiveData<Boolean>
-        get() = blockUserRepo.blockedRepo
+        get() = blockUserRepo.isBlocked
 
     fun setBlocked(blocked: Boolean) {
         blockUserRepo.setBlockedRepo(blocked)
     }
 
     val isUnBlocked: LiveData<Boolean>
-        get() = blockUserRepo.unBlockedRepo
+        get() = blockUserRepo.isUnBlocked
 
     fun setUnBlocked(unBlocked: Boolean) {
         blockUserRepo.setUnBlockedRepo(unBlocked)

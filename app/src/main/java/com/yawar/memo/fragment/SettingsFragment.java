@@ -659,7 +659,7 @@ public class SettingsFragment extends Fragment {
                                                 int which) {
                                 classSharedPreferences.setUser(null);
                                 classSharedPreferences.setVerficationNumber(null);
-                                authRepo.jsonObjectMutableLiveData.setValue(null);
+//                                authRepo.jsonObjectMutableLiveData.setValue(null);
 //                                chatRoomRepoo.chatRoomListMutableLiveData.setValue(null);
 //                                blockUserRepo.userBlockListMutableLiveData.setValue(null);
                                 Intent intent = new Intent(getContext(), SplashScreen.class);

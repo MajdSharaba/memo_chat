@@ -90,7 +90,7 @@ public class AuthApi implements Observer {
 //                            System.out.println(" showErrorMessage.setValue(true)"+ showErrorMessage.getValue());
 
 
-                            BaseApp.getInstance().getAuthRepo().loading.setValue(false);
+                            BaseApp.getInstance().getAuthRepo().setLoading(false);
 
 //                            Toast.makeText(context, Objects.requireNonNull(task.getException()).getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
