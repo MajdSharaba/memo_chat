@@ -9,7 +9,7 @@ class VerficationViewModel : ViewModel() {
     var baseApp = BaseApp.getInstance()
     var authRepo = baseApp.authRepo
 
-    fun getSpecialNumber(): LiveData<JSONObject> {
+    fun getSpecialNumber(): LiveData<JSONObject?> {
         return authRepo.jsonObjectMutableLiveData
     }
 

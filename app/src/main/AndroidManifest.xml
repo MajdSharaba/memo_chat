@@ -39,8 +39,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChatMemo"
         android:usesCleartextTraffic="true"
-        tools:replace="android:theme">
-        <!-- android:allowBackup="false" -->
+        tools:replace="android:theme"
+        android:allowBackup="false"
+        tools:ignore="DataExtractionRules">
+<!--        tools:replace="allowBackup"-->
+<!--        android:allowBackup="false"-->
+        <!--        android:dataExtractionRules="@xml/data_extraction_rules"-->
+
+        <!--        android:allowBackup="false"-->
+        <!--        tools:replace="android:theme"-->
+
+
         <activity
             android:name=".call.CallNotificationActivity"
             android:exported="false"

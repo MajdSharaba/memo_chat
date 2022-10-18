@@ -7,28 +7,17 @@
         android:layout_height="match_parent"
         tools:context=".call.RequestCallActivity">
 
-
-
-        <!--    <RelativeLayout-->
-        <!--        android:layout_width="match_parent"-->
-        <!--        android:layout_height="match_parent"-->
-        <!--        android:id="@+id/webRtcRelativeLayout"-->
-        <!--        android:visibility="gone">-->
-
         <FrameLayout
             android:id="@+id/remote_video_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-
             android:layout_margin="1dp"
             >
-
             <org.webrtc.SurfaceViewRenderer
                 android:id="@+id/surface_view2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:text="From PeerConection"
@@ -39,25 +28,17 @@
                 android:layout_height="wrap_content" />
         </FrameLayout>
 
-
-        <!--    </RelativeLayout>-->
         <FrameLayout
             android:id="@+id/local_video_view"
             android:layout_width="120dp"
             android:background="@drawable/local_video_call_background"
             android:layout_height="170dp"
             android:layout_margin="5dp"
-
             >
-
-
             <org.webrtc.SurfaceViewRenderer
                 android:id="@+id/surface_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
-
-
-
             <TextView
                 android:id="@+id/txt_camera"
                 android:layout_width="wrap_content"
@@ -67,10 +48,7 @@
                 android:textColor="#fff"
                 android:layout_height="wrap_content" />
         </FrameLayout>
-
-
         <LinearLayout
-
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible"

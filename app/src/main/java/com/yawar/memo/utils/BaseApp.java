@@ -37,7 +37,7 @@ public class BaseApp extends Application implements LifecycleObserver {
 
     FireBaseTokenObserve fireBaseTokenObserve;
     ContactNumberObserve contactNumberObserve;
-    public static final String TAG = "VolleyPatterns";
+    public static final String TAG = "BaseApp";
     private RequestQueue mRequestQueue;
     private static BaseApp sInstance;
 //    ChatRoomRepo chatRoomRepo;
@@ -78,6 +78,7 @@ public class BaseApp extends Application implements LifecycleObserver {
 //            Log.d(TAG, "getChatRoomRepo().callAPI(classSharedPreferences.getUser()");
 //            getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
             getChatRoomRepoo().loadChatRoom(classSharedPreferences.getUser().getUserId());
+            Log.d(TAG, "onCreate: ");
 
 
         }
@@ -95,17 +96,20 @@ public class BaseApp extends Application implements LifecycleObserver {
     public void onTerminate() {
         super.onTerminate();
         System.out.println("on Tirminal");
+        Log.d(TAG, "onTerminate: ");
 
     }
 
     @Override
     public void onLowMemory() {
+        Log.d(TAG, "onLowMemory: ");
         System.out.println("on low memoryyyyyyyyyyyyyy");
         super.onLowMemory();
     }
 
     @Override
     public void onTrimMemory(int level) {
+        Log.d(TAG, "onTrimMemory: ");
         System.out.println("onTrimMemory BaseApp");
 
         super.onTrimMemory(level);
@@ -236,6 +240,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     @SuppressLint("CheckResult")
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     public void onMoveToForeground() {
+        Log.d(TAG, "onMoveToForeground: ");
 
 
         if(classSharedPreferences.getUser()!=null){
@@ -257,6 +262,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     @SuppressLint("CheckResult")
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onMoveToBackground() {
+        Log.d(TAG, "onMoveToBackground: ");
         if(classSharedPreferences.getUser()!=null) {
 
 
@@ -281,6 +287,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     @SuppressLint("CheckResult")
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestroy() {
+        Log.d(TAG, "onDestroy: ");
         System.out.println("on ON_DESTROY my App");
 //            Intent service = new Intent(this, SocketIOService.class);
 //            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);

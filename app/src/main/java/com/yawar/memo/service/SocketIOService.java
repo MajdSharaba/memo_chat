@@ -379,11 +379,21 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
                     String checkParamter = intent.getExtras().getString(EXTRA_CHECK_CONNECT_PARAMTERS);
 
-                    if (isSocketConnected()) {
-                        System.out.println("isSocketConnected");
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "reconnecting socket...");
+                        checkConnect(checkParamter);
 
+                    } else {
                         checkConnect(checkParamter);
                     }
+
+//                    if (isSocketConnected()) {
+//                        System.out.println("isSocketConnected");
+//
+//                        checkConnect(checkParamter);
+//                    }
                     break;
                 case EVENT_TYPE_ON_SEEN:
                     System.out.println("EVENT_TYPE_ON_SEEN");
@@ -531,7 +541,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
                 case EVENT_TYPE_MISSING_CALL:
 
-                    String recived_missing_paramter = intent.getExtras().getString(EXTRA_RECIVED_CALL_PARAMTERS);
+                    String recived_missing_paramter = intent.getExtras().getString(EXTRA_MISSING_CALL_PARAMTERS);
                     if (isSocketConnected()) {
                         sendMissingCall(recived_missing_paramter);
                     }

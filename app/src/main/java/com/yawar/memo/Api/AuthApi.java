@@ -41,12 +41,6 @@ public class AuthApi implements Observer {
     public MutableLiveData<Boolean> loading;
     public MutableLiveData<Boolean> showErrorMessage;
     public String errorMessage = "ERROR";
-
-
-
-
-
-
     public AuthApi(Activity context) {
         loading = new MutableLiveData<>(false);
         showErrorMessage = new MutableLiveData<>(false);

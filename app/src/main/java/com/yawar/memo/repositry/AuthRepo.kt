@@ -13,8 +13,8 @@ import org.json.JSONObject
 
 class AuthRepo {
 
-    private val _jsonObjectMutableLiveData = MutableLiveData<JSONObject>()
-    val jsonObjectMutableLiveData: LiveData<JSONObject>
+    private val _jsonObjectMutableLiveData = MutableLiveData<JSONObject?>()
+    val jsonObjectMutableLiveData: LiveData<JSONObject?>
         get() = _jsonObjectMutableLiveData
 
     private val _loadingMutableLiveData =  MutableLiveData<Boolean>()
@@ -30,7 +30,7 @@ class AuthRepo {
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
 
 
-    fun getspecialNumbers(phoneNumber :String ): LiveData<JSONObject> {
+    fun getspecialNumbers(phoneNumber :String ): LiveData<JSONObject?> {
         _loadingMutableLiveData.value = true
         coroutineScope.launch {
             val getChatRoomsDeferred = GdgApi.apiService.getSpecialNumbers(phoneNumber)
@@ -74,6 +74,9 @@ class AuthRepo {
     }
     fun setShowErrMessage (state : Boolean){
         _showErrorMessage.value = state
+    }
+    fun setjsonObjectMutableLiveData(  data:JSONObject?){
+        _jsonObjectMutableLiveData.value = data
     }
 
 

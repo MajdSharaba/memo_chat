@@ -163,7 +163,7 @@ import java.util.*
                     e.printStackTrace()
                 }
                 _blockedForRepo.value = blokedForRespone
-                _unBlockedRepo.value = unBlockedRespone
+                _unBlockedRepo.value = true
                 chatRoomRepoo.setBlockedState(anthor_user_id, blokedForRespone)
                 deleteBlockUser(anthor_user_id)
 
@@ -207,5 +207,8 @@ import java.util.*
     fun setUnBlockedRepo(blockedRepo: Boolean) {
         _unBlockedRepo.value = blockedRepo
     }
+      fun setUserBlockListMutableLiveData(data : ArrayList<UserModel?>?) {
+          _userBlockListMutableLiveData.value = data
+      }
 
 }

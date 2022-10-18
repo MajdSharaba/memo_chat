@@ -19,7 +19,7 @@ import java.util.*
 
 class ContactNumberAdapter(
 ///Initialize variable
-    var activity: Activity, arrayList: List<SendContactNumberResponse>,
+    var activity: Activity, arrayList: ArrayList<SendContactNumberResponse?>?,
 ) :
     RecyclerView.Adapter<ContactNumberAdapter.ViewHolder>() {
     var arrayList: MutableList<SendContactNumberResponse> =ArrayList()

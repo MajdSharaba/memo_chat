@@ -719,8 +719,8 @@ public class RequestCallActivity extends AppCompatActivity {
         }
 //        serverApi.sendNotification(data.toString(), "call",fcm_token,my_id);
         System.out.println("call");
-        service.putExtra(SocketIOService.EXTRA_CALL_PARAMTERS, data.toString());
-        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_CALLING);
+        service.putExtra(SocketIOService.EXTRA_MISSING_CALL_PARAMTERS, data.toString());
+        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_MISSING_CALL);
         startService(service);
 
     }
@@ -806,10 +806,6 @@ public class RequestCallActivity extends AppCompatActivity {
                         imgBtnSwitchMic.setVisibility(View.GONE);
                         imgBtnOpenCameraCallLp.setBackground(null);
                         imgBtnSwitchCamera.setVisibility(View.VISIBLE);
-//                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
-//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(500,500));
-
-
                         if(videoCapturer!=null) {
                             videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
 
@@ -1001,7 +997,7 @@ public class RequestCallActivity extends AppCompatActivity {
 //                        params.setMargins((int) (7 * scale + 0.5f), (int) (15 * scale + 0.5f), (int) (7 * scale + 0.5f), 0);
 //                        binding.localVideoView.setLayoutParams(params);
                         ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(binding.localVideoView, "scaleX", 0.4f);
-                        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.25f);
+                        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.28f);
                         scaleDownX.setDuration(1500);
                         scaleDownY.setDuration(1500);
 
@@ -1604,6 +1600,7 @@ public class RequestCallActivity extends AppCompatActivity {
             public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
                 System.out.println(iceConnectionState.toString()+"iceConnectionStateiceConnectionState");
                  if(iceConnectionState.toString().equals("CONNECTED")){
+                     System.out.println("setConnected");
                      requestCallViewModel.setConnected(true);
 
                  }

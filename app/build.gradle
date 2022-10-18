@@ -90,6 +90,7 @@ dependencies {
     implementation 'com.github.Adilhusen:circle-progress-ad-android-:1.0'
     implementation 'com.google.firebase:firebase-messaging:23.0.8'
     implementation  'com.fxn769:pix:1.5.6'
+//    implementation  'io.ak1.pix:piximagepicker:1.6.3'
     implementation 'com.hbb20:ccp:2.4.7'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-location:20.0.0'
@@ -114,14 +115,14 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
     implementation 'com.github.AbedElazizShe:LightCompressor:1.2.0'
-    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.4'
-    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
-    implementation 'com.arthenica:mobile-ffmpeg-full-gpl:4.4.LTS'
-    implementation 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
-    implementation "androidx.datastore:datastore-core:1.0.0"
-    implementation "androidx.datastore:datastore-rxjava2:1.0.0"
-    implementation "com.squareup.okhttp3:okhttp:4.7.2"
-    implementation "com.squareup.okhttp3:logging-interceptor:4.7.2"
+//    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.4'
+//    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
+//    implementation 'com.arthenica:mobile-ffmpeg-full-gpl:4.4.LTS'
+//    implementation 'org.florescu.android.rangeseekbar:rangeseekbar-library:0.3.0'
+//    implementation "androidx.datastore:datastore-core:1.0.0"
+//    implementation "androidx.datastore:datastore-rxjava2:1.0.0"
+//    implementation "com.squareup.okhttp3:okhttp:4.7.2"
+//    implementation "com.squareup.okhttp3:logging-interceptor:4.7.2"
 
 
 

@@ -11,8 +11,7 @@
     <VideoView
         android:id="@+id/simpleVideoView"
         android:layout_width="match_parent"
-
-        android:layout_height="match_parent" />
+        android:layout_height="500dp" />
 
 
 
@@ -26,6 +25,6 @@
         android:backgroundTint="@color/memo_background_color_new"
         android:src="@drawable/ic_arrow_send"
         android:tint="@color/white"
-        />
+      />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

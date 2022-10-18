@@ -1,5 +1,6 @@
 package com.yawar.memo.modelView
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,8 +14,10 @@ class IntroActModelView : ViewModel() {
     var chatRoomRepoo = baseApp.chatRoomRepoo
     var chatRoomListMutableLiveData = MutableLiveData<ArrayList<ChatRoomModel>>()
     init {
-        chatRoomRepoo.loadChatRoom(baseApp.classSharedPreferences.user.userId!!)
-    }
+//        if(chatRoomRepoo.chatRoomListMutableLiveData == null){
+//            Log.d("chatRoomTag", ": is null")
+        chatRoomRepoo.loadChatRoom(baseApp.classSharedPreferences.user.userId!!)}
+//    }
     fun loadData(): LiveData<ArrayList<ChatRoomModel?>?> {
         return chatRoomRepoo.chatRoomListMutableLiveData
     }

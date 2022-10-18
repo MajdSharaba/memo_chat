@@ -45,13 +45,13 @@ class ChatRoomRepoo {
                 _showErrorMessage.value = false
 
                 _chatRoomListMutableLiveData.value = listResult.data
-                Log.d("getMarsRealEstateProperties: ","Success: ${chatRoomListMutableLiveData.value} Mars properties retrieved")
+                Log.d("chatRoomTag: ","Success: ${chatRoomListMutableLiveData.value} Mars properties retrieved")
             } catch (e: Exception) {
                 _loadingMutableLiveData.value = false
                 _showErrorMessage.value = true
 
 
-                Log.d("getMarsRealEstateProperties: ","Failure: ${e.message}")
+                Log.d("chatRoomTag: ","Failure: ${e.message}")
 
             }
         }
@@ -300,6 +300,10 @@ class ChatRoomRepoo {
     }
     fun setErrorMessage (state : Boolean){
         _showErrorMessage.value = state
+    }
+    fun setChatRoomListMutableLiveData(data:ArrayList<ChatRoomModel?>?){
+        _chatRoomListMutableLiveData.value = data
+
     }
 
 }

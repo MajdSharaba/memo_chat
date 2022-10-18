@@ -109,6 +109,16 @@ interface ChatApi {
         @Field("my_id") my_id: String?
     ): Deferred<String?>?
 
+
+    @FormUrlEncoded
+    @POST("APIS/mycontact.php")
+    fun sendContactNumber(
+        @Field("data") data: String?,
+        @Field("id") my_id: String?,
+    ): Deferred<String?>?
+
+    
+
 }
 
 

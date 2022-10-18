@@ -108,6 +108,36 @@
             android:fontFamily="@font/roboto_regular"
             android:text="@string/send_code"
             android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/btn_google"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/btn_custom_blue_back"
+            android:elevation="10dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="@string/login_by_google"
+            android:textColor="@android:color/white" />
+
+
+<!--           <com.google.android.gms.common.SignInButton-->
+<!--               android:layout_width="match_parent"-->
+<!--               android:layout_height="wrap_content"-->
+<!--               android:layout_marginLeft="20dp"-->
+<!--               android:layout_marginTop="50dp"-->
+<!--               android:layout_marginRight="20dp"-->
+<!--               android:background="@drawable/btn_custom_blue_back"-->
+<!--               android:elevation="10dp"-->
+<!--               android:fontFamily="@font/roboto_regular"-->
+<!--               android:text="@string/send_code"-->
+<!--               android:textColor="@android:color/white"-->
+<!--               >-->
+
+<!--           </com.google.android.gms.common.SignInButton>-->
     </LinearLayout>
 
 

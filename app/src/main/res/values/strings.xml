@@ -217,6 +217,8 @@
     <string name="n_file">\📖 Pdf</string>
     <string name="download_app">Download App Now</string>
     <string name="key_exchange">Key exchange</string>
+    <string name="login_by_google">Login by google</string>
+
 
 
 </resources>

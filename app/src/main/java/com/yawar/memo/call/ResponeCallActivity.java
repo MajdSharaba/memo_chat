@@ -111,14 +111,6 @@ public class ResponeCallActivity extends AppCompatActivity {
     public static final String ON_RECIVED_RESPONE_FOR_VIDEO = "on_recived_respone_for_video";
 
 
-
-
-
-
-
-
-
-
     Boolean isVideoForMe = false;
     Boolean isVideoForyou = false;
     VideoCapturer videoCapturer;
@@ -497,7 +489,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         this.startService(service);
     }
     private void startCallTimeCounter() {
-
+           System.out.println("startCallTimeCounter");
         //Set the schedule function and rate
         callTimer.scheduleAtFixedRate(new TimerTask() {
 
@@ -729,27 +721,14 @@ public class ResponeCallActivity extends AppCompatActivity {
                     responeCallViewModel.setIsVideoForYou(isVideoForyou);
                         binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                         final float scale = getResources().getDisplayMetrics().density;
-//                        int pixelsWidth = (int) (120 * scale + 0.5f);
-//                        int pixelsHeight= (int) (170 * scale + 0.5f);
-//
-//
-////                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,300));
-//                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-//                                pixelsWidth,
-//                                pixelsHeight
-//                        );
-//                        params.setMargins((int) (7 * scale + 0.5f), (int) (15 * scale + 0.5f), (int) (7 * scale + 0.5f), 0);
-//                        binding.localVideoView.setLayoutParams(params);
-//                        binding.localVideoView.bringToFront();
-
                     ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(binding.localVideoView, "scaleX", 0.4f);
-                    ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.25f);
+                    ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.28f);
                     scaleDownX.setDuration(1500);
                     scaleDownY.setDuration(1500);
 
-                    ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", (-300 * scale ));
+                    ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", ( scale *-300));
                     moveUpY.setDuration(1500);
-                    ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", (110 * scale ));
+                    ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", (  scale *110));
                     moveUpx.setDuration(1500);
 
 
@@ -1092,8 +1071,10 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         @Override
         public void onIceConnectionChange(PeerConnection.IceConnectionState iceConnectionState) {
             if(iceConnectionState.toString().equals("CONNECTED")){
-                responeCallViewModel.setConnected(true);
-
+                if(!responeCallViewModel.getConnected().getValue()) {
+                    System.out.println("setConnected");
+                    responeCallViewModel.setConnected(true);
+                }
             }
 
         }

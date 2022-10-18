@@ -11,7 +11,7 @@ class SplachActViewModel : ViewModel() {
     var authRepo = baseApp.authRepo
 
 
-    fun getSpecialNumber(specialNumber: String): LiveData<JSONObject>{
+    fun getSpecialNumber(specialNumber: String): LiveData<JSONObject?>{
         return authRepo.getspecialNumbers(specialNumber)
     }
     fun getLoading(): LiveData<Boolean> {
