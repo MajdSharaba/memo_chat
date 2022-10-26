@@ -214,11 +214,15 @@
     <string name="n_video">🎬 Video</string>
     <string name="n_contact">👤 Contact</string>
     <string name="n_location">📌 Location</string>
+
     <string name="n_file">\📖 Pdf</string>
     <string name="download_app">Download App Now</string>
     <string name="key_exchange">Key exchange</string>
-    <string name="login_by_google">Login by google</string>
-
+    <string name="login_by_google">continue with google</string>
+    <string name="facebook_app_id">851477176031611</string>
+    <string name="fb_login_protocol_scheme">fb851477176031611</string>
+    <string name="facebook_client_token">c30d8ac147f1b971419857a603eb8150</string>
+    <string name="choose_image_alert">upload your image to make everyone know how you are !! </string>
 
 
 </resources>

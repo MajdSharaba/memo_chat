@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -48,6 +49,7 @@ public class CallNotificationActivity extends AppCompatActivity {
     JSONObject message = null;
     JSONObject data = new JSONObject();
     JSONObject type = new JSONObject();
+    CountDownTimer countDownTimer;
     String userName = "User Name ";
     String title = " ";
     String imageUrl;
@@ -100,6 +102,7 @@ public class CallNotificationActivity extends AppCompatActivity {
         tvName = findViewById(R.id.user_name);
         imageView = findViewById(R.id.image_user_calling);
         tvType = findViewById(R.id.type_call);
+        startCounter();
 
         Bundle bundle = getIntent().getExtras();
         id = bundle.getString("id","0");
@@ -180,6 +183,8 @@ public class CallNotificationActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveCloseCallFromNotification);
+        countDownTimer.cancel();
+
 
         super.onDestroy();
     }
@@ -207,7 +212,9 @@ public class CallNotificationActivity extends AppCompatActivity {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"reject", new com.android.volley.Response.Listener<String>() {
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"reject", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"reject", new com.android.volley.Response.Listener<String>() {
+
             @Override
             public void onResponse(String response) {
 
@@ -249,5 +256,22 @@ public class CallNotificationActivity extends AppCompatActivity {
         // below line is to make
         // a json object request.
         myBase.addToRequestQueue(request);
+    }
+    private void startCounter() {
+//        binding.callStatue.setText(R.string.calling);
+
+        int i=0;
+        countDownTimer = new CountDownTimer(10000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
+
+            public void onTick(long millisUntilFinished) {
+                System.out.println(i+1);
+            }
+            public void onFinish() {
+                NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallNotificationActivity.this);
+                notificationManager.cancel(-1);
+               finish();
+            }
+        }.start();
+
     }
 }

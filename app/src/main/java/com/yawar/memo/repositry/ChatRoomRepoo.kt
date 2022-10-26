@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatRoomModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +39,13 @@ class ChatRoomRepoo {
      fun loadChatRoom(user_id : String) {
          _loadingMutableLiveData.value = true
         coroutineScope.launch {
-            val getChatRoomsDeferred = GdgApi.apiService.getChatRoom(user_id)
+//            val getChatRoomsDeferred = GdgApi.apiService.getChatRoom(user_id)
+//            val getChatRoomsDeferred =   GdgApi(AllConstants.base_url_final).apiService
+//                .getChatRoom(user_id)
+            val getChatRoomsDeferred =   GdgApi(AllConstants.base_url).apiService
+                .getChatRoom(user_id)
+
+
             try {
                 val listResult = getChatRoomsDeferred.await()
                 _loadingMutableLiveData.value = false
@@ -58,7 +65,13 @@ class ChatRoomRepoo {
     }
      fun addToArchived(my_id : String, your_id :String) {
         coroutineScope.launch {
-            var srchivedDeferred = GdgApi.apiService.addToArchived(my_id , your_id)
+//            var srchivedDeferred = GdgApi.apiService.addToArchived(my_id , your_id)
+//            var srchivedDeferred =  GdgApi(AllConstants.base_url_final).apiService
+//                .addToArchived(my_id , your_id)
+            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
+                .addToArchived(my_id , your_id)
+
+
             try {
                 val listResult = srchivedDeferred.await()
                 setState(your_id, my_id)
@@ -73,7 +86,12 @@ class ChatRoomRepoo {
     /// state null for remove from Archived
      fun removeFromArchived(my_id : String, your_id :String) {
         coroutineScope.launch {
-            var srchivedDeferred = GdgApi.apiService.removeFromArchived(my_id , your_id)
+//            var srchivedDeferred = GdgApi.apiService.removeFromArchived(my_id , your_id)
+//            var srchivedDeferred =  GdgApi(AllConstants.base_url_final).apiService
+//                .removeFromArchived(my_id , your_id)
+            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
+                .removeFromArchived(my_id , your_id)
+
             try {
                 var listResult = srchivedDeferred.await()
                 setState(your_id, "null")
@@ -89,8 +107,13 @@ class ChatRoomRepoo {
     fun deleteChatRoom(my_id : String, your_id :String) {
         var  chatRooms = _chatRoomListMutableLiveData.value
          coroutineScope.launch  {
-            var deleteDeferred = GdgApi.apiService.deleteChatRoom(my_id , your_id)
-            try {
+//            var deleteDeferred = GdgApi.apiService.deleteChatRoom(my_id , your_id)
+//             var deleteDeferred = GdgApi(AllConstants.base_url_final).apiService.deleteChatRoom(my_id , your_id)
+             var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService.deleteChatRoom(my_id , your_id)
+
+
+
+             try {
                 var listResult = deleteDeferred?.await()
                 for (chatRoom in chatRooms!!) {
                     if (chatRoom != null) {

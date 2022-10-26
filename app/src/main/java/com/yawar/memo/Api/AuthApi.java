@@ -68,7 +68,9 @@ public class AuthApi implements Observer {
                         if (task.isSuccessful()) {
                             FirebaseUser user = task.getResult().getUser();
                             System.out.println(user.getPhoneNumber()+"phone number");
-                            classSharedPreferences.setVerficationNumber(user.getPhoneNumber());
+//                            classSharedPreferences.setVerficationNumber(user.getPhoneNumber());
+                            classSharedPreferences.setVerficationNumber(user.getUid());
+
                             // if the code is correct and the task is successful
                             // we are sending our user to new activity.
 //                            serverApi.register();

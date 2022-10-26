@@ -2,11 +2,14 @@ package com.yawar.memo.fragment
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,38 +22,52 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import com.android.volley.*
-import com.android.volley.toolbox.Volley
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.android.volley.RequestQueue
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.github.chrisbanes.photoview.PhotoView
 import com.github.dhaval2404.imagepicker.ImagePicker
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
+import com.google.firebase.storage.StorageReference
 import com.yawar.memo.Api.ServerApi
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.language.BottomSheetFragment
 import com.yawar.memo.model.UserModel
+import com.yawar.memo.modelView.SettingsFragmentViewModel
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
+import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
-import com.yawar.memo.utils.VolleyMultipartRequest
 import com.yawar.memo.views.BlockedUsersActivity
 import com.yawar.memo.views.DevicesLinkActivity
 import com.yawar.memo.views.SettingsActivity
 import com.yawar.memo.views.SplashScreen
 import de.hdodenhof.circleimageview.CircleImageView
-import org.json.JSONArray
-import org.json.JSONException
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+
 
 class SettingsFragment : Fragment() {
     lateinit var imageView: CircleImageView
     lateinit var myBase: BaseApp
     private lateinit var rQueue: RequestQueue
     var currentLanguage: String? = "en"
-     var currentLang: String? = null
+    var currentLang: String? = null
     var seekValue = 2
+    var progressDialog: ProgressDialog? = null
+
+    var imageBytes = byteArrayOf()
+    lateinit var settingsFragmentViewModel:SettingsFragmentViewModel
+
+    var storage = FirebaseStorage.getInstance()
 
     //  TextView name ;
     lateinit var userName: TextView
@@ -100,29 +117,70 @@ class SettingsFragment : Fragment() {
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         userModel = classSharedPreferences.user
         serverApi = ServerApi(activity)
+        progressDialog = ProgressDialog(requireActivity())
+        progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
         myBase = BaseApp.getInstance()
         chatRoomRepoo = myBase.chatRoomRepoo
         blockUserRepo = myBase.blockUserRepo
         authRepo = myBase.authRepo
+        settingsFragmentViewModel = ViewModelProvider(this).get(
+            SettingsFragmentViewModel::class.java
+        )
+
+
+        settingsFragmentViewModel.userModelRespone.observe(requireActivity(),
+            Observer<UserModel?> { userModel ->
+                if (userModel != null) {
+                    println(userModel.image + "userModel.getImage()")
+                    classSharedPreferences.user = userModel
+
+                }
+            })
+
+        settingsFragmentViewModel.showErrorMessage.observe(requireActivity(),
+            Observer<Boolean> { aBoolean ->
+                if (aBoolean) {
+                    Toast.makeText(
+                        requireActivity(),
+                        R.string.internet_message,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    settingsFragmentViewModel.setErrorMessage(false)
+                }
+            })
+
+        settingsFragmentViewModel.loadingMutableLiveData.observe(requireActivity(),
+            Observer<Boolean> { aBoolean ->
+                if (aBoolean) {
+                    if (!progressDialog!!.isShowing()) {
+                        progressDialog!!.show()
+                    }
+                } else {
+                    progressDialog?.dismiss()
+                }
+            })
+        ///// register Button
+
 
 
 
         imageView = view.findViewById(R.id.imageView)
         if (!userModel!!.image!!.isEmpty()) {
+
             Glide.with(imageView.context).load(AllConstants.imageUrl + userModel!!.image)
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
                 .into(imageView)
+            Log.d(TAG, AllConstants.imageUrl + userModel!!.image)
         }
-
         userName = view.findViewById(R.id.username)
         userName.text = userModel!!.userName + " " + userModel!!.lastName
         phoneNumber = view.findViewById(R.id.phoneNumber)
         if (userModel!!.phone != null) {
-            val firstString = userModel!!.phone!!.substring(0, 4)
-            val secondString = userModel!!.phone!!.substring(4, 7)
-            val thirtyString = userModel!!.phone!!.substring(7, 10)
-            val lastString = userModel!!.phone!!.substring(10)
-            phoneNumber.text = "$firstString-$secondString-$thirtyString-$lastString"
+//            val firstString = userModel!!.phone!!.substring(0, 4)
+//            val secondString = userModel!!.phone!!.substring(4, 7)
+//            val thirtyString = userModel!!.phone!!.substring(7, 10)
+//            val lastString = userModel!!.phone!!.substring(10)
+//            phoneNumber.text = "$firstString-$secondString-$thirtyString-$lastString"
         }
         setPhoto = view.findViewById(R.id.selectImage)
         setUserName = view.findViewById(R.id.setUserName)
@@ -138,15 +196,19 @@ class SettingsFragment : Fragment() {
         preferene = view.findViewById(R.id.preferene)
         logOut = view.findViewById(R.id.log_out)
         hel = view.findViewById(R.id.hel)
-
-
-
         imageView.setOnClickListener {
-            Toast.makeText(
-                activity,
-                "This Image View",
-                Toast.LENGTH_SHORT
-            ).show()
+            val dialog = Dialog(requireActivity())
+            dialog.setContentView(R.layout.dialog_image_cht)
+            dialog.setTitle("Title...")
+            dialog.window!!
+                .setLayout(
+                    ViewGroup.LayoutParams.FILL_PARENT,
+                    ViewGroup.LayoutParams.FILL_PARENT
+                )
+            val image: PhotoView = dialog.findViewById(R.id.photo_view)
+            Glide.with(image.context).load(AllConstants.imageUrl + userModel!!.image).centerCrop()
+                .into(image)
+            dialog.show()
         }
 
         userName.setOnClickListener {
@@ -193,7 +255,10 @@ class SettingsFragment : Fragment() {
                 } else {
                     userModel!!.lastName
                 }
-                serverApi.updateProfile(firstName, lastName, "", "", userModel!!.userId)
+                settingsFragmentViewModel.updateProfile(userModel!!.userId.toString(),
+                    firstName.toString(), lastName.toString()
+                )
+//                serverApi.updateProfile(firstName, lastName, "", "", userModel!!.userId)
                 userName.text = "$firstName $lastName"
                 userModel!!.userName = firstName
                 userModel!!.lastName = lastName
@@ -250,6 +315,12 @@ class SettingsFragment : Fragment() {
                 authRepo.setjsonObjectMutableLiveData(null)
                 chatRoomRepoo.setChatRoomListMutableLiveData(null)
                 blockUserRepo.setUserBlockListMutableLiveData(null)
+                val service = Intent(context, SocketIOService::class.java)
+                service.putExtra(
+                    SocketIOService.EXTRA_EVENT_TYPE,
+                    SocketIOService.EVENT_TYPE_DISCONNECT
+                )
+                requireActivity().startService(service)
                 val intent = Intent(context, SplashScreen::class.java)
                 startActivity(intent)
                 requireActivity().finish()
@@ -284,107 +355,98 @@ class SettingsFragment : Fragment() {
             if (imageUri.toString().startsWith("content://")) {
                 var cursor: Cursor? = null
                 try {
-                    cursor = requireActivity().contentResolver.query(imageUri, null, null, null, null)
+                    cursor =
+                        requireActivity().contentResolver.query(imageUri, null, null, null, null)
                     if (cursor != null && cursor.moveToFirst()) {
                         @SuppressLint("Range") val displayNamee =
                             cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                        uploadImage(displayNamee, imageUri)
+                        deleteFireBaseImage(displayNamee, imageUri)
                     }
                 } finally {
                     cursor!!.close()
                 }
             } else if (imageUri.toString().startsWith("file://")) {
                 val displayNamee = myFileImage.name
-                uploadImage(displayNamee, imageUri)
+                deleteFireBaseImage(displayNamee, imageUri)
             }
             imageView.setImageURI(imageUri)
         }
     }
 
-    private fun uploadImage(imageName: String, pdfFile: Uri?) {
-        var iStream: InputStream? = null
-        try {
-            iStream = requireActivity().contentResolver.openInputStream(pdfFile!!)
-            println(pdfFile)
-            val inputData = getBytes(iStream)
-            val volleyMultipartRequest: VolleyMultipartRequest = object : VolleyMultipartRequest(
-                Method.POST, AllConstants.base_url_final + "upadteImageProfile",
-                Response.Listener { response ->
-                    rQueue.cache.clear()
-                    try {
-                        val jsonArray = JSONArray(String(response.data))
-                        val respObj = jsonArray.getJSONObject(0)
-                        println(respObj)
-                        val user_id = respObj.getString("id")
-                        val first_name = respObj.getString("first_name")
-                        val last_name = respObj.getString("last_name")
-                        val email = respObj.getString("email")
-                        val profile_image = respObj.getString("profile_image")
-                        val secret_number = respObj.getString("sn")
-                        val number = respObj.getString("phone")
-                        val status = respObj.getString("status")
-                        val userModel = UserModel(
-                            user_id,
-                            first_name,
-                            last_name,
-                            email,
-                            number,
-                            secret_number,
-                            profile_image,
-                            status
-                        )
-                        classSharedPreferences.user = userModel
-                    } catch (e: JSONException) {
-                        e.printStackTrace()
-                    }
-                },
-                Response.ErrorListener {
-                }) {
 
-                @Throws(AuthFailureError::class)
-                override fun getParams(): Map<String, String>? {
-                    val params: MutableMap<String, String> = HashMap()
-                    params["id"] = userModel!!.userId!!
-                    return params
-                }
 
-                /*
-                 *pass files using below method
-                 * */
-                override fun getByteData(): Map<String, DataPart> {
-                    val params: MutableMap<String, DataPart> = HashMap()
-                    params["img_profile"] = DataPart(imageName, inputData, "plan/text")
-                    return params
-                }
+     fun uploadImageToFireBase(imageName: String, pdfFile: Uri) {
+        val message_id = System.currentTimeMillis().toString() + "_" + (userModel?.userId ?: "")
+//        registerViewModel.setLoading(true)
+        val iStream: InputStream? = null
+        if (pdfFile.toString() != "n") {
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), pdfFile)
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-            volleyMultipartRequest.retryPolicy = DefaultRetryPolicy(
-                0,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-            )
-            rQueue = Volley.newRequestQueue(activity)
-            //            rQueue.add(volleyMultipartRequest);
-            myBase.addToRequestQueue(volleyMultipartRequest)
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
+            val baos = ByteArrayOutputStream()
+            //
+            if (bitmap != null) {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 40, baos)
+                imageBytes = baos.toByteArray()
+                val path = "profile_images/$message_id.png"
+                val storageRef: StorageReference = storage.getReference(path)
+                val metadata = StorageMetadata.Builder()
+                    .setContentType("image/jpg")
+                    .build()
+                val uploadTask = storageRef.putBytes(imageBytes, metadata)
+                uploadTask.addOnFailureListener { exception ->
+                    Log.d(
+                        "uploadTask",
+                        "onFailure \${}: " + exception.message
+                    )
+                }.addOnSuccessListener { taskSnapshot ->
+                    Log.d("uploadTask", "onSuccess: " + taskSnapshot.uploadSessionUri)
+//                    registerViewModel.register(
+//                        email,
+//                        "$message_id.png",
+//                        fName,
+//                        lName,
+//                        spennerItemChooser,
+//                        "",
+//                        classSharedPreferences.verficationNumber
+//                    )
+                    settingsFragmentViewModel.updateImage(userModel?.userId.toString(),"$message_id.png" )
+                }
+
+            }
         }
     }
 
-    @Throws(IOException::class)
-    fun getBytes(inputStream: InputStream?): ByteArray {
-        val byteBuffer = ByteArrayOutputStream()
-        val bufferSize = 1024
-        val buffer = ByteArray(bufferSize)
-        var len = 0
-        while (inputStream!!.read(buffer).also { len = it } != -1) {
-            byteBuffer.write(buffer, 0, len)
+
+    fun deleteFireBaseImage(imageName: String, pdfFile: Uri){
+
+        settingsFragmentViewModel.setLoading(true)
+
+        val storageRef = storage.reference
+
+        val path = "profile_images/${classSharedPreferences.user.image}"
+
+        Log.d(TAG, "deleteFireBaseImage: ${path}")
+        val desertRef = storage.getReference(path);
+//        val desertRef = storageRef.child("profile_images/" + classSharedPreferences.user.image + ".png")
+
+        desertRef.delete().addOnSuccessListener {
+            Log.d(TAG, "deleteFireBaseImage: success")
+            uploadImageToFireBase(imageName, pdfFile)
+            // File deleted successfully
+        }.addOnFailureListener {
+            Log.d(TAG, "deleteFireBaseImage: success")
         }
-        return byteBuffer.toByteArray()
+
     }
+
 
     companion object {
         const val TAG = "bottom_sheet"
     }
+
+
+
 }

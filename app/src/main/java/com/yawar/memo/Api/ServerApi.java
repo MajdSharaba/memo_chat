@@ -122,7 +122,9 @@ public class ServerApi {
     public void updateProfile(String firstName, String lastName, String status, String imageString,String userId) {
 //        classSharedPreferences = new ClassSharedPreferences(context);
         // url to post our data
-        String url = AllConstants.base_url_final+"APIS/updateprofile.php";
+//        String url = AllConstants.base_url_final+"APIS/updateprofile.php";
+        String url = AllConstants.base_url+"APIS/updateprofile.php";
+
         progressDialog = new ProgressDialog(context);
         progressDialog.setMessage(context.getResources().getString(R.string.prograss_message));
         progressDialog.show();
@@ -403,7 +405,9 @@ public class ServerApi {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"APIS/delete_my_account.php", new com.android.volley.Response.Listener<String>() {
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"APIS/delete_my_account.php", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url+"APIS/delete_my_account.php", new com.android.volley.Response.Listener<String>() {
+
             @Override
             public void onResponse(String response) {
                 progressDialo.dismiss();
@@ -422,6 +426,9 @@ public class ServerApi {
                     authRepo.setjsonObjectMutableLiveData(null);
                     chatRoomRepoo.setChatRoomListMutableLiveData(null);
                     blockUserRepo.setUserBlockListMutableLiveData(null);
+                    Intent service = new Intent(context, SocketIOService.class);
+                    service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
+                    context.startService(service);
 
                 Intent intent = new Intent(context, SplashScreen.class);
                 context.startActivity(intent);

@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.provider.ContactsContract
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -218,6 +219,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
 
     override fun onClickItem(position: Int, searchRespone: SearchRespone?) {
         val bundle = Bundle()
+        Log.d("searchFragment", "onClickItem: ")
         bundle.putString("sender_id", my_id)
         bundle.putString("reciver_id", searchRespone!!.id)
         bundle.putString("name", searchRespone.name)

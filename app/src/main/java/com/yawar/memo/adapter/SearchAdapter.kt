@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.ContentProviderOperation
 import android.net.Uri
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -132,12 +133,13 @@ class SearchAdapter(
             } else {
                 imageView.setImageDrawable(activity.resources.getDrawable(R.drawable.th))
             }
-            if (!contactExists(model.phone,activity)) {
-                button.visibility = View.VISIBLE
-            } else {
-                button.visibility = View.INVISIBLE
-            }
+//            if (!contactExists(model.phone,activity)) {
+//                button.visibility = View.VISIBLE
+//            } else {
+//                button.visibility = View.INVISIBLE
+//            }
             itemView.setOnClickListener {
+                Log.d("searchFragment", "bind: ")
                 mCallback?.onClickItem(adapterPosition, model)
             }
             button.setOnClickListener {

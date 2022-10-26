@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.CallModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,7 +41,11 @@ class CallHistoryModelView : ViewModel() {
         val callModelsList =  ArrayList<CallModel?>()
 
         coroutineScope.launch {
-            val getResponeDeferred = GdgApi.apiService.getMyCalls(my_id)
+//            val getResponeDeferred = GdgApi.apiService.getMyCalls(my_id)
+//                        val getResponeDeferred =GdgApi(AllConstants.base_url_final).apiService
+//                            .getMyCalls(my_id)
+            val getResponeDeferred =GdgApi(AllConstants.base_node_url).apiService
+                .getMyCalls(my_id)
             try {
                 val listResult = getResponeDeferred?.await()
                 _loadingMutableLiveData.value = false

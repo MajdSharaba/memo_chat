@@ -89,7 +89,7 @@
     <string name="resend">اعادة ارسال الكود</string>
     <string name="sendText">ادخل رقمك الهاتف وسوف نقوم بأرسال رمز التحقق اليك ليتم تأكيد حسابك </string>
     <string name="verifictionText">ادخل الرمز الذي قمنا بأرساله الى رقمك </string>
-    <string name="choose_special_number">اختر رقمك الخاص</string>
+    <string name="choose_special_number">اختر رقمك المعرف</string>
     <string name="register">انشاء حساب</string>
     <string name="alert_delete_message">حذف الرسائل؟</string>
     <string name="delete_for_me">الحذف لدي</string>
@@ -263,7 +263,13 @@
     <string name="n_file"> ملف 📖</string>
     <string name="download_app">حمل التطبيق الأن</string>
     <string name="key_exchange">جاري تبادل المفاتيح</string>
-    <string name="login_by_google">تسجيل الدخول باستخدام غوغل</string>تسجيل الدخول باستخدام غوغل
+    <string name="login_by_google">الاستمرار باستخدام غوغل</string>
+
+    <string name="facebook_app_id">851477176031611</string>
+    <string name="fb_login_protocol_scheme">fb851477176031611</string>
+    <string name="facebook_client_token">c30d8ac147f1b971419857a603eb8150</string>
+    <string name="choose_image_alert">قم بتحميل صورتك ليتعرف عليك اصدقاءك!! </string>
+
 
 
 

@@ -1,9 +1,8 @@
 package com.yawar.memo.Api
 
+import com.android.volley.NetworkResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatRoomRespone
-import io.reactivex.Single
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -76,7 +75,7 @@ interface ChatApi {
 
     @FormUrlEncoded
     @POST("APIS/signup.php")
-    fun  getSpecialNumbers (@Field("phone") phoneNumber: String?): Deferred<String?>?
+    fun  getSpecialNumbers (@Field("uuid") uuid: String?): Deferred<String?>?
 
 
     @FormUrlEncoded
@@ -117,20 +116,63 @@ interface ChatApi {
         @Field("id") my_id: String?,
     ): Deferred<String?>?
 
-    
+    @FormUrlEncoded
+    @POST("googlesignup")
+    fun register(
+        @Field("email") email: String?,
+        @Field("image") img: String?,
+        @Field("first_name") firstName: String?,
+        @Field("last_name") lastName: String?,
+        @Field("sn") sn: String?,
+        @Field("phone") phone: String?,
+        @Field("uuid") uuid: String?,
+    ): Deferred<String?>?
+
+
+    @FormUrlEncoded
+    @POST("upadteImageProfile")
+    fun updateImage(
+        @Field("id") email: String?,
+        @Field("image") img: String?,
+    ): Deferred<String?>?
+
+
+    @FormUrlEncoded
+    @POST("APIS/updateprofile.php")
+    fun updateProfile(
+        @Field("first_name") firstName: String?,
+        @Field("last_name") lastName: String?,
+        @Field("id") userId: String?,
+
+        ): Deferred<String?>?
+
+
+
 
 }
 
 
-    private val retrofit = Retrofit.Builder()
+//    private val retrofit = Retrofit.Builder()
+//        .addConverterFactory(ScalarsConverterFactory.create())
+//        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .baseUrl(AllConstants.base_url_final)
+//        .build()
+
+fun retrofit(string: String): Retrofit {
+         val retrofit = Retrofit.Builder()
         .addConverterFactory(ScalarsConverterFactory.create())
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(AllConstants.base_url_final)
+        .baseUrl(string)
         .build()
 
+    return retrofit
+}
 
-object GdgApi {
-val apiService: ChatApi = retrofit.create(ChatApi::class.java)
+
+class GdgApi(string: String) {
+    //val apiService: ChatApi = retrofit.create(ChatApi::class.java)
+    val apiService: ChatApi = retrofit(string).create(ChatApi::class.java)
 
 }

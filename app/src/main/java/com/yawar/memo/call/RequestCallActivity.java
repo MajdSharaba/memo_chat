@@ -561,7 +561,7 @@ public class RequestCallActivity extends AppCompatActivity {
             }
             public void onFinish() {
                 requestCallViewModel.setEndCalll(true);
-                SendMissingCall();
+//                SendMissingCall();
                 finishCall ();
 
             }

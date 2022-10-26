@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.utils.BaseApp
 import kotlinx.coroutines.CoroutineScope
@@ -47,7 +48,13 @@ import java.util.*
          coroutineScope.launch {
              val userBlockList = ArrayList<UserModel?>()
 
-             var getBlockDeferred = GdgApi.apiService.getBlockKist(user_id)
+//             var getBlockDeferred = GdgApi.apiService.getBlockKist(user_id)
+//             var getBlockDeferred = GdgApi(AllConstants.base_url_final).apiService
+             var getBlockDeferred = GdgApi(AllConstants.base_node_url).apiService
+
+                 .getBlockKist(user_id)
+
+
              try {
                  var listResult = getBlockDeferred?.await()
 
@@ -118,7 +125,13 @@ import java.util.*
     fun sendBlockRequest( my_id: String,  anthor_user_id:String) {
         coroutineScope.launch {
 
-            val respone = GdgApi.apiService.blockUser(my_id, anthor_user_id)
+//            val respone = GdgApi.apiService.blockUser(my_id, anthor_user_id)
+//            val respone =   GdgApi(AllConstants.base_url_final).apiService.blockUser(my_id, anthor_user_id)
+            val respone =   GdgApi(AllConstants.base_node_url).apiService.blockUser(my_id, anthor_user_id)
+
+
+
+
             try {
                 val listResult = respone?.await()
 
@@ -148,7 +161,12 @@ import java.util.*
     fun sendUnbBlockUser( my_id: String,  anthor_user_id:String) {
         coroutineScope.launch {
 
-            var respone = GdgApi.apiService.unBlockUser(my_id, anthor_user_id)
+//            var respone = GdgApi.apiService.unBlockUser(my_id, anthor_user_id)
+//                        var respone = GdgApi(AllConstants.base_url_final).apiService
+//                            .unBlockUser(my_id, anthor_user_id)
+            var respone = GdgApi(AllConstants.base_node_url).apiService
+                .unBlockUser(my_id, anthor_user_id)
+
             try {
                 val listResult = respone?.await()
 

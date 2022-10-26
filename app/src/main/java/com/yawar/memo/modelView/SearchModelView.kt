@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.CallModel
 import com.yawar.memo.model.SearchRespone
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +36,12 @@ class SearchModelView : ViewModel() {
         val searchResponeArrayList =  ArrayList<SearchRespone?>()
 
         coroutineScope.launch {
-            val getResponeDeferred = GdgApi.apiService.search(searchParameter,page,myId)
+//            val getResponeDeferred = GdgApi.apiService.search(searchParameter,page,myId)
+//            val getResponeDeferred = GdgApi(AllConstants.base_url_final).apiService
+//                .search(searchParameter,page,myId)
+            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
+                .search(searchParameter,page,myId)
+
             try {
                 val listResult = getResponeDeferred?.await()
                 _loadingMutableLiveData.value = false

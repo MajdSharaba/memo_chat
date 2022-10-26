@@ -63,7 +63,9 @@ class UserDetailsActivity : AppCompatActivity() {
 
     private fun initAction() {}
     private fun getUserInfo(user_id: String) {
-        val url = AllConstants.base_url_final + "APIS/getuserinfo.php"
+//        val url = AllConstants.base_url_final + "APIS/getuserinfo.php"
+        val url = AllConstants.base_url + "APIS/getuserinfo.php"
+
         progressDialog = ProgressDialog(this)
         progressDialog!!.setMessage("Uploading, please wait...")
         progressDialog!!.show()

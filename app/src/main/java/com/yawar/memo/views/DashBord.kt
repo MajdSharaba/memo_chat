@@ -2,6 +2,7 @@ package com.yawar.memo.views
 
 import CallHistoryFragment
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -106,6 +107,7 @@ class DashBord : AppCompatActivity(), Observer {
 
     }
     private val reciveNwMessage: BroadcastReceiver = object : BroadcastReceiver() {
+        @SuppressLint("SuspiciousIndentation")
         override fun onReceive(context: Context, intent: Intent) {
             val objectString = intent.extras!!.getString("message")
             var message: JSONObject? = null
@@ -136,6 +138,7 @@ class DashBord : AppCompatActivity(), Observer {
                 //                        id = message.getString("message_id");
                 reciverId = message.getString("reciver_id")
                 chatId = message.getString("chat_id")
+                if(!text.equals("welcome to memo"))
                 dateTime = message.getString("dateTime")
                 //                        fileName = message.getString("orginalName");
             } catch (e: JSONException) {

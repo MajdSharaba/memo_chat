@@ -150,7 +150,9 @@ class GroupSelectorActivity : AppCompatActivity(), GroupSelectorAdapter.Callback
         }
 
     private fun sendContactNumber(arrayList: ArrayList<ContactModel>) {
-        val url = AllConstants.base_url_final + "APIS/mycontact.php"
+//        val url = AllConstants.base_url_final + "APIS/mycontact.php"
+        val url = AllConstants.base_url + "APIS/mycontact.php"
+
         val progressDialog = ProgressDialog(this)
         progressDialog.setMessage("Uploading, please wait...")
         progressDialog.show()

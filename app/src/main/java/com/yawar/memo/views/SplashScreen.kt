@@ -51,7 +51,8 @@ class SplashScreen : AppCompatActivity() {
         splachActViewModel = ViewModelProvider(this).get(SplachActViewModel::class.java)
         Handler().postDelayed({
             val intent: Intent
-            if (classSharedPreferences.user != null) {
+            if (classSharedPreferences.user != null && !classSharedPreferences.user.secretNumber.equals("") ) {
+                Log.d("classSharedPreferences", classSharedPreferences.user.secretNumber.toString())
                 intent = Intent(
                     this,
                     IntroActivity::class.java
@@ -82,7 +83,7 @@ class SplashScreen : AppCompatActivity() {
                                 var status = ""
                                 try {
                                     val userObject = jsonObject.getJSONObject("user")
-                                    sn = userObject.getString("sn")
+//                                    sn = userObject.getString("sn")
                                     user_id = userObject.getString("id")
                                     first_name = userObject.getString("first_name")
                                     last_name = userObject.getString("last_name")
@@ -102,21 +103,27 @@ class SplashScreen : AppCompatActivity() {
                                     startActivity(intent)
                                     finish()
                                 } else {
-                                    val userModel = UserModel(
-                                        user_id,
-                                        first_name,
-                                        last_name,
-                                        email,
-                                        number,
-                                        secret_number,
-                                        profile_image,
-                                        status
+                                    val intent = Intent(
+                                        this@SplashScreen,
+                                        RegisterActivity::class.java
                                     )
-                                    classSharedPreferences.user = userModel
-                                    val intent =
-                                        Intent(this@SplashScreen, IntroActivity::class.java)
                                     startActivity(intent)
                                     finish()
+//                                    val userModel = UserModel(
+//                                        user_id,
+//                                        first_name,
+//                                        last_name,
+//                                        email,
+//                                        number,
+//                                        secret_number,
+//                                        profile_image,
+//                                        status
+//                                    )
+//                                    classSharedPreferences.user = userModel
+//                                    val intent =
+//                                        Intent(this@SplashScreen, IntroActivity::class.java)
+//                                    startActivity(intent)
+//                                    finish()
                                 }
                             }
                         }

@@ -38,7 +38,7 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
     lateinit var text: TextView
     lateinit var authApi: AuthApi
     lateinit var orText: TextView
-    lateinit var progressDialog: ProgressDialog
+    var progressDialog: ProgressDialog?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CallProperty.setStatusBarOrScreenStatus(this)
@@ -83,18 +83,18 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
                         startActivity(intent)
                         finish()
                     } else {
-                        val userModel = UserModel(
-                            user_id,
-                            first_name,
-                            last_name,
-                            email,
-                            number,
-                            secret_number,
-                            profile_image,
-                            status
-                        )
-                        classSharedPreferences.user = userModel
-                        val intent = Intent(this@VerificationActivity, IntroActivity::class.java)
+//                        val userModel = UserModel(
+//                            user_id,
+//                            first_name,
+//                            last_name,
+//                            email,
+//                            number,
+//                            secret_number,
+//                            profile_image,
+//                            status
+//                        )
+//                        classSharedPreferences.user = userModel
+                        val intent = Intent(this@VerificationActivity, RegisterActivity::class.java)
                         startActivity(intent)
                         finish()
                     }
@@ -107,12 +107,14 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         ) { aBoolean ->
             if (aBoolean != null) {
                 if (aBoolean) {
-                    progressDialog = ProgressDialog(this)
-                    progressDialog.setMessage(resources.getString(R.string.prograss_message))
-                    progressDialog.setCancelable(false)
-                    progressDialog.show()
+                    if (progressDialog?.isShowing == false) {
+                        progressDialog = ProgressDialog(this)
+                        progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
+                        progressDialog!!.setCancelable(false)
+                        progressDialog!!.show()
+                    }
                 } else {
-                    progressDialog.dismiss()
+                    progressDialog?.dismiss()
                 }
             }
         }
@@ -165,11 +167,11 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         authApi.loading.observe(this) { aBoolean ->
             if (aBoolean) {
                 progressDialog = ProgressDialog(this)
-                progressDialog.setMessage(resources.getString(R.string.prograss_message))
-                progressDialog.setCancelable(false)
-                progressDialog.show()
+                progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
+                progressDialog!!.setCancelable(false)
+                progressDialog!!.show()
             } else {
-                progressDialog.dismiss()
+                progressDialog?.dismiss()
             }
         }
         authApi.showErrorMessage.observe(
@@ -202,7 +204,7 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
     }
 
     override fun onDestroy() {
-        progressDialog.dismiss()
+        progressDialog?.dismiss()
         super.onDestroy()
     }
 

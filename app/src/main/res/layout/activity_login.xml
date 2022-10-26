@@ -80,7 +80,22 @@
                 android:textColorHint="@color/gray" />
         </LinearLayout>
 
-        <!--    <EditText-->
+        <Button
+            android:id="@+id/btn_send_code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/btn_custom_blue_back"
+            android:elevation="10dp"
+            android:fontFamily="@font/roboto_regular"
+            android:text="@string/send_code"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+
+    <!--    <EditText-->
         <!--        android:id="@+id/et_password"-->
         <!--        android:layout_width="match_parent"-->
         <!--        android:layout_height="50dp"-->
@@ -95,36 +110,57 @@
         <!--        android:textSize="15sp" />-->
 
 
-        <Button
-            android:id="@+id/btn_send_code"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:orientation="horizontal"
+        android:layout_below="@+id/liner"
+        >
 
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/btn_custom_blue_back"
-            android:elevation="10dp"
-            android:fontFamily="@font/roboto_regular"
-            android:text="@string/send_code"
-            android:textColor="@android:color/white" />
 
-        <Button
+
+
+
+        <FrameLayout
+            android:layout_below="@+id/no_network_bar"
+            android:id="@+id/FrameLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/btn_facebook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+            <ImageButton
+                android:id="@+id/custom_facebook_btn"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/facebook_login"
+                android:background="@drawable/btn_facebook_background"
+                android:elevation="10dp"
+                />
+        </FrameLayout>
+        <ImageButton
             android:id="@+id/btn_google"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_marginLeft="20dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
             android:layout_marginRight="20dp"
-            android:background="@drawable/btn_custom_blue_back"
+            android:src="@drawable/google_login"
+            android:background="@drawable/btn_login_background"
             android:elevation="10dp"
-            android:fontFamily="@font/roboto_regular"
-            android:text="@string/login_by_google"
-            android:textColor="@android:color/white" />
-
-
-<!--           <com.google.android.gms.common.SignInButton-->
+            />
+        <!--           <com.google.android.gms.common.SignInButton-->
 <!--               android:layout_width="match_parent"-->
 <!--               android:layout_height="wrap_content"-->
 <!--               android:layout_marginLeft="20dp"-->
@@ -139,18 +175,12 @@
 
 <!--           </com.google.android.gms.common.SignInButton>-->
     </LinearLayout>
-
-
-
     <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:layout_alignParentBottom="true"
-         app:srcCompat="@drawable/line_green" />
-
-
-
+     android:layout_width="match_parent"
+     android:layout_height="wrap_content"
+     android:layout_marginBottom="20dp"
+     android:layout_alignParentBottom="true"
+     app:srcCompat="@drawable/line_green" />
     </RelativeLayout>
 
 

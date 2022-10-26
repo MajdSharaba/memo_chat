@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.MediaModel
 import com.yawar.memo.model.UserModel
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +37,12 @@ class UserInformationRepo {
     fun  getMedia( user_id : String ,  anthor_user_id :String){
         var mediaModels = ArrayList<MediaModel>()
         coroutineScope.launch {
-            val getMediaDeferred = GdgApi.apiService.getMedia(user_id,anthor_user_id)
+//            val getMediaDeferred = GdgApi.apiService.getMedia(user_id,anthor_user_id)
+//            val getMediaDeferred = GdgApi(AllConstants.base_url_final).apiService
+//                .getMedia(user_id,anthor_user_id)
+            val getMediaDeferred = GdgApi(AllConstants.base_node_url).apiService
+                .getMedia(user_id,anthor_user_id)
+
             try {
                 val listResult = getMediaDeferred?.await()
 
@@ -62,7 +68,12 @@ class UserInformationRepo {
     fun  getUserInformation( anthor_user_id :String): LiveData<UserModel> {
         var mediaModels = ArrayList<MediaModel>()
         coroutineScope.launch {
-            val getMediaDeferred = GdgApi.apiService.getUserInformation(anthor_user_id)
+//            val getMediaDeferred = GdgApi.apiService.getUserInformation(anthor_user_id)
+//            val getMediaDeferred =  GdgApi(AllConstants.base_url_final).apiService
+//                .getUserInformation(anthor_user_id)
+            val getMediaDeferred =  GdgApi(AllConstants.base_node_url).apiService
+                .getUserInformation(anthor_user_id)
+
             try {
                 val listResult = getMediaDeferred?.await()
 

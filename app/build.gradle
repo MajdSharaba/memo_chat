@@ -74,6 +74,7 @@ dependencies {
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-storage'
     implementation 'com.google.android.gms:play-services-auth:20.3.0'
     implementation 'com.google.android.gms:play-services-auth-api-phone:18.0.1'
     implementation "androidx.recyclerview:recyclerview-selection:1.2.0-alpha01"
@@ -115,6 +116,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
     implementation 'com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2'
     implementation 'com.github.AbedElazizShe:LightCompressor:1.2.0'
+    implementation 'com.facebook.android:facebook-login:latest.release'
+
 //    implementation 'com.iceteck.silicompressorr:silicompressor:2.2.4'
 //    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
 //    implementation 'com.arthenica:mobile-ffmpeg-full-gpl:4.4.LTS'

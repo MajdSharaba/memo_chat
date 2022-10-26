@@ -4,12 +4,14 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.utils.BaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import java.util.UUID
 
 class AuthRepo {
 
@@ -30,10 +32,12 @@ class AuthRepo {
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
 
 
-    fun getspecialNumbers(phoneNumber :String ): LiveData<JSONObject?> {
+    fun getspecialNumbers(uuid :String ): LiveData<JSONObject?> {
         _loadingMutableLiveData.value = true
         coroutineScope.launch {
-            val getChatRoomsDeferred = GdgApi.apiService.getSpecialNumbers(phoneNumber)
+//            val getChatRoomsDeferred = GdgApi(AllConstants.base_url_final).apiService.getSpecialNumbers(phoneNumber)
+            val getChatRoomsDeferred = GdgApi(AllConstants.base_url).apiService.getSpecialNumbers(uuid)
+
             try {
                 val listResult = getChatRoomsDeferred?.await()
                 val respObj = JSONObject(listResult)
@@ -55,7 +59,9 @@ class AuthRepo {
 
     fun sendFcmToken( user_id : String,  token: String ) {
         coroutineScope.launch {
-            val getChatRoomsDeferred = GdgApi.apiService.sendFcmToken(user_id,token)
+//            val getChatRoomsDeferred = GdgApi(AllConstants.base_url_final).apiService.sendFcmToken(user_id,token)
+            val getChatRoomsDeferred = GdgApi(AllConstants.base_url).apiService.sendFcmToken(user_id,token)
+
             try {
                 val listResult = getChatRoomsDeferred?.await()
                 BaseApp.getInstance().classSharedPreferences.fcmToken = token

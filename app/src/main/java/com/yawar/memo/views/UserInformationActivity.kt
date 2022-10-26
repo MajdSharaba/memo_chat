@@ -2,8 +2,13 @@ package com.yawar.memo.views
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.*
+import android.app.Dialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -18,6 +23,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.facebook.AccessToken
+import com.github.chrisbanes.photoview.PhotoView
 import com.yawar.memo.Api.ServerApi
 import com.yawar.memo.R
 import com.yawar.memo.adapter.MediaAdapter
@@ -29,13 +36,11 @@ import com.yawar.memo.modelView.UserInformationViewModel
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.sessionManager.SharedPreferenceStringLiveData
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.TimeProperties
 import de.hdodenhof.circleimageview.CircleImageView
 import org.json.JSONException
 import org.json.JSONObject
-import java.security.Key
 
 
 class UserInformationActivity : AppCompatActivity() {
@@ -245,14 +250,14 @@ class UserInformationActivity : AppCompatActivity() {
                     val thirtyString = userModel.phone!!.substring(7, 10)
                     val lastString = userModel.phone!!.substring(10)
                     txtSpecialNumber.text = "$firstString-$secondString-$thirtyString-$lastString"
-                    if (userModel.image != null) {
-                        Glide.with(circleImageView.context)
-                            .load(AllConstants.imageUrl + userModel.image)
-                            .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
-                            .into(
-                                circleImageView
-                            )
-                    }
+//                    if (userModel.image != null) {
+//                        Glide.with(circleImageView.context)
+//                            .load(AllConstants.imageUrl + userModel.image)
+//                            .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
+//                            .into(
+//                                circleImageView
+//                            )
+//                    }
                 }
             }
         }
@@ -360,7 +365,15 @@ class UserInformationActivity : AppCompatActivity() {
         more = findViewById(R.id.more)
         special_number = findViewById(R.id.special_number)
         media = findViewById(R.id.media)
-        println(sn + "special_number")
+        if (imageUrl != null) {
+            Glide.with(circleImageView.context)
+                .load(AllConstants.imageUrl + imageUrl)
+                .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
+                .into(
+                    circleImageView
+                )
+        }
+
         userInformationViewModel.mediaRequest(my_id, another_user_id)
     }
 
@@ -414,6 +427,22 @@ class UserInformationActivity : AppCompatActivity() {
             }
             classSharedPreferences.muteUsers = muteList
         }
+
+        circleImageView.setOnClickListener {
+                val dialog = Dialog(this)
+                dialog.setContentView(R.layout.dialog_image_cht)
+                dialog.setTitle("Title...")
+                dialog.window!!
+                    .setLayout(
+                        ViewGroup.LayoutParams.FILL_PARENT,
+                        ViewGroup.LayoutParams.FILL_PARENT
+                    )
+                val image: PhotoView = dialog.findViewById(R.id.photo_view)
+                Glide.with(image.context).load(AllConstants.imageUrl + imageUrl).centerCrop()
+                    .into(image)
+                dialog.show()
+            }
+
     }
 
     private fun popupMenuExample() {
@@ -478,4 +507,6 @@ class UserInformationActivity : AppCompatActivity() {
     companion object {
         const val CHEK = "ConversationActivity.CHECK_CONNECT"
     }
+
+
 }

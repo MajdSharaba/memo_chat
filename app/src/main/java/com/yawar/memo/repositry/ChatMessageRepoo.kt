@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +50,12 @@ class ChatMessageRepoo {
         coroutineScope.launch {
             val chatMessageList = ArrayList<ChatMessage?>()
 
-            val getChatRoomsDeferred = GdgApi.apiService.getChatMessgeHistory( my_id,  anthor_user_id)
+//            val getChatRoomsDeferred = GdgApi.apiService.getChatMessgeHistory( my_id,  anthor_user_id)
+//            val getChatRoomsDeferred = GdgApi(AllConstants.base_url_final).apiService
+//                .getChatMessgeHistory( my_id,  anthor_user_id)
+            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
+                .getChatMessgeHistory( my_id,  anthor_user_id)
+
             try {
                 val listResult = getChatRoomsDeferred?.await()
                 _loadingMutableLiveData.value = false
@@ -281,7 +287,13 @@ class ChatMessageRepoo {
         coroutineScope.launch {
             var chatMessageList = _chatMessageistMutableLiveData.value
 
-            var deleteDeferred = GdgApi.apiService.deleteMessage(message_id,user_id)
+//            var deleteDeferred = GdgApi.apiService.deleteMessage(message_id,user_id)
+//            var deleteDeferred =  GdgApi(AllConstants.base_url_final).apiService
+//                .deleteMessage(message_id,user_id)
+            var deleteDeferred =  GdgApi(AllConstants.base_node_url).apiService
+                .deleteMessage(message_id,user_id)
+
+
             try {
                 var listResult = deleteDeferred?.await()
                 if (chatMessages != null) {
