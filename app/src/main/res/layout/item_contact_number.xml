@@ -85,12 +85,11 @@
 
 
 </LinearLayout>
-<!--        <include layout="@layout/item_divider"-->
-<!--            android:layout_marginStart="50dp"-->
-<!--            android:layout_width="match_parent"-->
-<!--             android:visibility="gone"-->
-<!--            android:layout_height="0.2dp">-->
+        <include layout="@layout/item_divider"
+            android:layout_marginStart="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp">
 
-<!--        </include>-->
+        </include>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

@@ -46,6 +46,8 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         virvectbtn = findViewById(R.id.btn_verification)
         authRepo = BaseApp.getInstance().authRepo
         text = findViewById(R.id.text)
+        progressDialog = ProgressDialog(this)
+        progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
         orText = findViewById(R.id.orText)
         verficationViewModel = ViewModelProvider(this).get(
             VerficationViewModel::class.java
@@ -107,11 +109,12 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         ) { aBoolean ->
             if (aBoolean != null) {
                 if (aBoolean) {
-                    if (progressDialog?.isShowing == false) {
-                        progressDialog = ProgressDialog(this)
-                        progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
-                        progressDialog!!.setCancelable(false)
-                        progressDialog!!.show()
+                    if(progressDialog!=null) {
+                        if (!progressDialog!!.isShowing) {
+
+                            progressDialog!!.setCancelable(false)
+                            progressDialog!!.show()
+                        }
                     }
                 } else {
                     progressDialog?.dismiss()

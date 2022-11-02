@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="75dp"
-    app:cardElevation="0dp"
+    app:cardElevation="1dp"
     app:cardCornerRadius="5dp"
     app:cardBackgroundColor="@color/backgroundColor"
     android:foreground="?attr/selectableItemBackground"
@@ -88,12 +88,12 @@
 
 
     </LinearLayout>
-<!--    <include layout="@layout/item_divider"-->
-<!--        android:layout_marginStart="50dp"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="0.2dp">-->
+    <include layout="@layout/item_divider"
+        android:layout_marginStart="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp">
 
-<!--    </include>-->
+    </include>
 </LinearLayout>
 
 

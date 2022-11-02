@@ -41,10 +41,10 @@ class CallHistoryModelView : ViewModel() {
         val callModelsList =  ArrayList<CallModel?>()
 
         coroutineScope.launch {
-//            val getResponeDeferred = GdgApi.apiService.getMyCalls(my_id)
-//                        val getResponeDeferred =GdgApi(AllConstants.base_url_final).apiService
-//                            .getMyCalls(my_id)
-            val getResponeDeferred =GdgApi(AllConstants.base_node_url).apiService
+
+//            val getResponeDeferred =GdgApi(AllConstants.base_node_url).apiService
+//                .getMyCalls(my_id)
+            val getResponeDeferred =GdgApi.apiService
                 .getMyCalls(my_id)
             try {
                 val listResult = getResponeDeferred?.await()

@@ -28,6 +28,10 @@ class SettingsFragmentViewModel : ViewModel() {
     val loadingMutableLiveData : LiveData<Boolean>
     get() = _loadingMutableLiveData
 
+    private val _isDeleteAccount =  MutableLiveData<Boolean>(false)
+    val isDeleteAccount : LiveData<Boolean>
+        get() = _isDeleteAccount
+
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
@@ -38,7 +42,9 @@ class SettingsFragmentViewModel : ViewModel() {
 
         coroutineScope.launch {
 
-            val getResponeDeferred = GdgApi(AllConstants.base_node_url).apiService
+//            val getResponeDeferred = GdgApi(AllConstants.base_node_url).apiService
+//                .updateImage(id,img)
+            val getResponeDeferred = GdgApi.apiService
                 .updateImage(id,img)
 
 
@@ -80,9 +86,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
         coroutineScope.launch {
 
-            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
+//            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
+//                .updateProfile(firstNmae,lastName,id)
+            val getResponeDeferred = GdgApi.apiService
                 .updateProfile(firstNmae,lastName,id)
-
 
             try {
                 Log.d("updateProfile", "reg")
@@ -131,8 +138,52 @@ class SettingsFragmentViewModel : ViewModel() {
             }
         }
     }
+
+
+
+    fun deleteAccount( id : String, sn:String) {
+        Log.d("deleteAccount", "delete")
+        _loadingMutableLiveData.value = true
+
+
+        coroutineScope.launch {
+
+//            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
+//                .deleteAccount(sn, id)
+            val getResponeDeferred = GdgApi.apiService
+                .deleteAccount(sn, id)
+
+            try {
+                Log.d("deleteAccount", "delete")
+
+                val listResult = getResponeDeferred?.await()
+                Log.d("deleteAccount", listResult.toString())
+
+
+
+                // on below line we are passing our response
+                // to json object to extract data from it.
+                val respObj = JSONObject(listResult)
+                _isDeleteAccount.value = respObj.getBoolean("data")
+                _loadingMutableLiveData.value = false
+
+
+
+            } catch (e: Exception) {
+                Log.d("deleteAccount",  e.toString())
+                _loadingMutableLiveData.value = false
+                _showErrorMessage.value = true
+
+
+
+            }
+        }
+    }
     fun setLoading(s : Boolean){
         _loadingMutableLiveData.value = s
+    }
+    fun setIsDeleted(s : Boolean){
+        _isDeleteAccount.value = s
     }
     fun setErrorMessage(s : Boolean){
         _showErrorMessage.value = s

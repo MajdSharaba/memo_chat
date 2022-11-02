@@ -63,12 +63,9 @@ class SettingsFragment : Fragment() {
     var currentLang: String? = null
     var seekValue = 2
     var progressDialog: ProgressDialog? = null
-
     var imageBytes = byteArrayOf()
     lateinit var settingsFragmentViewModel:SettingsFragmentViewModel
-
     var storage = FirebaseStorage.getInstance()
-
     //  TextView name ;
     lateinit var userName: TextView
     lateinit var phoneNumber: TextView
@@ -159,17 +156,50 @@ class SettingsFragment : Fragment() {
                     progressDialog?.dismiss()
                 }
             })
+
+        settingsFragmentViewModel.isDeleteAccount.observe(requireActivity(),
+            Observer<Boolean> { aBoolean ->
+                if (aBoolean) {
+                    classSharedPreferences.user = null
+                    classSharedPreferences.verficationNumber = null
+                    classSharedPreferences.number = null
+
+                    authRepo.setjsonObjectMutableLiveData(null)
+                    chatRoomRepoo.setChatRoomListMutableLiveData(null)
+                    blockUserRepo.setUserBlockListMutableLiveData(null)
+                    val service = Intent( requireActivity(), SocketIOService::class.java)
+                    service.putExtra(
+                        SocketIOService.EXTRA_EVENT_TYPE,
+                        SocketIOService.EVENT_TYPE_DISCONNECT
+                    )
+                    requireActivity().startService(service)
+                    settingsFragmentViewModel.setIsDeleted(false)
+                    val intent = Intent( requireActivity(), SplashScreen::class.java)
+                    requireActivity().startActivity(intent)
+                    requireActivity().finish()
+
+                } else {
+
+                }
+            })
+
+
+
+
+
         ///// register Button
 
 
 
 
         imageView = view.findViewById(R.id.imageView)
-        if (!userModel!!.image!!.isEmpty()) {
+        Log.d(TAG, userModel!!.image!!+"imageeee")
+        if (userModel!=null) {
 
             Glide.with(imageView.context).load(AllConstants.imageUrl + userModel!!.image)
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
                 .into(imageView)
+
             Log.d(TAG, AllConstants.imageUrl + userModel!!.image)
         }
         userName = view.findViewById(R.id.username)
@@ -206,7 +236,9 @@ class SettingsFragment : Fragment() {
                     ViewGroup.LayoutParams.FILL_PARENT
                 )
             val image: PhotoView = dialog.findViewById(R.id.photo_view)
-            Glide.with(image.context).load(AllConstants.imageUrl + userModel!!.image).centerCrop()
+            Glide.with(image.context).load(AllConstants.imageUrl + userModel!!.image)
+                .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
+                .centerCrop()
                 .into(image)
             dialog.show()
         }
@@ -294,7 +326,12 @@ class SettingsFragment : Fragment() {
             dialog.setTitle(R.string.alert_delete_account)
             dialog.setPositiveButton(
                 R.string.delete_account
-            ) { dialog, which -> serverApi.deleteAccount() }
+            ) { dialog, which ->
+                settingsFragmentViewModel.deleteAccount(
+                    userModel!!.userId.toString(),
+                    userModel!!.secretNumber.toString()
+                )}
+//                serverApi.deleteAccount() }
             dialog.setNegativeButton(
                 R.string.cancel
             ) { dialog, which -> dialog.dismiss() }
@@ -312,6 +349,7 @@ class SettingsFragment : Fragment() {
             ) { dialog, which ->
                 classSharedPreferences.user = null
                 classSharedPreferences.verficationNumber = null
+                classSharedPreferences.number = null
                 authRepo.setjsonObjectMutableLiveData(null)
                 chatRoomRepoo.setChatRoomListMutableLiveData(null)
                 blockUserRepo.setUserBlockListMutableLiveData(null)
@@ -369,7 +407,11 @@ class SettingsFragment : Fragment() {
                 val displayNamee = myFileImage.name
                 deleteFireBaseImage(displayNamee, imageUri)
             }
-            imageView.setImageURI(imageUri)
+            Log.d(TAG,imageUri.toString() +"imageUri" )
+
+            Glide.with(imageView.context).load(imageUri)
+                .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
+                .into(imageView)
         }
     }
 
@@ -424,20 +466,27 @@ class SettingsFragment : Fragment() {
 
         settingsFragmentViewModel.setLoading(true)
 
-        val storageRef = storage.reference
+        if(!classSharedPreferences.user.image!!.isEmpty()) {
 
-        val path = "profile_images/${classSharedPreferences.user.image}"
+            val storageRef = storage.reference
 
-        Log.d(TAG, "deleteFireBaseImage: ${path}")
-        val desertRef = storage.getReference(path);
+            val path = "profile_images/${classSharedPreferences.user.image}"
+
+            Log.d(TAG, "deleteFireBaseImage: ${path}")
+            val desertRef = storage.getReference(path);
 //        val desertRef = storageRef.child("profile_images/" + classSharedPreferences.user.image + ".png")
 
-        desertRef.delete().addOnSuccessListener {
-            Log.d(TAG, "deleteFireBaseImage: success")
+            desertRef.delete().addOnSuccessListener {
+                Log.d(TAG, "deleteFireBaseImage: success")
+                uploadImageToFireBase(imageName, pdfFile)
+                // File deleted successfully
+            }.addOnFailureListener {
+                Log.d(TAG, "deleteFireBaseImage: success")
+            }
+        }
+        else{
             uploadImageToFireBase(imageName, pdfFile)
-            // File deleted successfully
-        }.addOnFailureListener {
-            Log.d(TAG, "deleteFireBaseImage: success")
+
         }
 
     }

@@ -21,15 +21,18 @@ import org.json.JSONObject;
 public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        System.out.println("clickeeesddddddddd");
         Bundle bundle = intent.getExtras();
         String id = bundle.getString("id","0");
         String callRequest = bundle.getString("callRequest");
+        String call_id = bundle.getString("call_id");
+
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
         notificationManager.cancel(AllConstants.onGoingCallChannelId);
         Intent closeCallActivity = new Intent(ResponeCallActivity.ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY);
-
+        closeCallActivity.putExtra("call_id",call_id);
         LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeCallActivity);
+
+
 //        Intent closeRequestCallActivity = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
 //
 //        LocalBroadcastManager.getInstance(context.getApplicationContext()).sendBroadcast(closeRequestCallActivity);

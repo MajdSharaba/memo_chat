@@ -1,11 +1,13 @@
 package com.yawar.memo.modelView
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.yawar.memo.model.MediaModel
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.utils.BaseApp
+import kotlin.math.log
 
 class UserInformationViewModel: ViewModel() {
     var baseApp = BaseApp.getInstance()
@@ -65,8 +67,13 @@ class UserInformationViewModel: ViewModel() {
         return repository.mediaModelsMutableLiveData
     }
 
-    fun getUserInfo(anthor_user_id: String): LiveData<UserModel>{
-        return repository.getUserInformation(anthor_user_id)
+    fun getUserInfo(): LiveData<UserModel>{
+        Log.d("getUserInfo", "getUserInfo: ")
+        return repository.userInformation
+    }
+    fun userInfoRequest(anthor_user_id: String){
+        Log.d("getUserInfo", "getUserInfo: ")
+        repository.getUserInformation(anthor_user_id)
     }
 
     fun set_state(state: String) {

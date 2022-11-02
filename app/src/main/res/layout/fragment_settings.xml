@@ -151,7 +151,7 @@
                        <ImageView
                            android:layout_width="20dp"
                            android:layout_height="20dp"
-
+                            android:layout_gravity="center"
                            android:src="@drawable/devices">
 
                        </ImageView>
@@ -287,8 +287,8 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-
-                            android:src="@drawable/appearance"/>
+                            android:layout_gravity="center"
+                            android:src="@drawable/apperance"/>
 
 
                         <TextView
@@ -332,8 +332,9 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:layout_gravity="center"
                             android:src="@drawable/language"
-                            app:tint="@color/green" />
+                            />
 
                         <TextView
                             android:id="@+id/languag"
@@ -420,14 +421,11 @@
                         android:paddingTop="15dp"
                         android:paddingBottom="15dp"
                         android:orientation="horizontal">
-
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-
-                            android:src="@drawable/chat"/>
-
-
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_block_call"/>
                         <TextView
                             android:id="@+id/askMemoQuesti"
                             android:layout_width="match_parent"
@@ -514,6 +512,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
+                            android:layout_gravity="center"
                             android:src="@drawable/recv_ic_delete"
                             app:tint="@color/red" />
 
@@ -560,7 +559,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-
+                            android:layout_gravity="center"
                             android:src="@drawable/ic_logout"/>
 
 

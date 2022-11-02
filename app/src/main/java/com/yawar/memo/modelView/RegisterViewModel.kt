@@ -45,7 +45,9 @@ class RegisterViewModel : ViewModel() {
 
         coroutineScope.launch {
 
-            val getResponeDeferred = GdgApi(AllConstants.base_node_url).apiService
+//            val getResponeDeferred = GdgApi(AllConstants.base_node_url).apiService
+//                .register(email,img,firstName,lastName,sn,phone,uuid)
+            val getResponeDeferred = GdgApi.apiService
                 .register(email,img,firstName,lastName,sn,phone,uuid)
             try {
                 Log.d("register", "reg")

@@ -115,8 +115,6 @@
             android:layout_marginRight="5dp"
             android:layout_height="match_parent"
             android:background="@drawable/biv_call"
-            android:paddingTop="20dp"
-            android:paddingBottom="20dp"
 
 
             android:src="@drawable/ic_baseline_call_end_24" />

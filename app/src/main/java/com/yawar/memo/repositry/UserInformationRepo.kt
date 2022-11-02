@@ -36,11 +36,12 @@ class UserInformationRepo {
 
     fun  getMedia( user_id : String ,  anthor_user_id :String){
         var mediaModels = ArrayList<MediaModel>()
+        _mediaModelsMutableLiveData.value = ArrayList()
         coroutineScope.launch {
-//            val getMediaDeferred = GdgApi.apiService.getMedia(user_id,anthor_user_id)
-//            val getMediaDeferred = GdgApi(AllConstants.base_url_final).apiService
-//                .getMedia(user_id,anthor_user_id)
-            val getMediaDeferred = GdgApi(AllConstants.base_node_url).apiService
+
+//            val getMediaDeferred = GdgApi(AllConstants.base_node_url).apiService
+//                .getMedia(user_id,anthor_user_id)\
+            val getMediaDeferred = GdgApi.apiService
                 .getMedia(user_id,anthor_user_id)
 
             try {
@@ -65,17 +66,22 @@ class UserInformationRepo {
 
     }
 
-    fun  getUserInformation( anthor_user_id :String): LiveData<UserModel> {
+    fun  getUserInformation( anthor_user_id :String) {
         var mediaModels = ArrayList<MediaModel>()
+        _userInformation.value = UserModel()
+
         coroutineScope.launch {
-//            val getMediaDeferred = GdgApi.apiService.getUserInformation(anthor_user_id)
-//            val getMediaDeferred =  GdgApi(AllConstants.base_url_final).apiService
+
+//            val getMediaDeferred =  GdgApi(AllConstants.base_node_url).apiService
 //                .getUserInformation(anthor_user_id)
-            val getMediaDeferred =  GdgApi(AllConstants.base_node_url).apiService
+            val getMediaDeferred =  GdgApi.apiService
                 .getUserInformation(anthor_user_id)
+            Log.d("getUserInformation", "getUserInformation: ")
 
             try {
                 val listResult = getMediaDeferred?.await()
+
+                Log.d("getUserInformation", listResult.toString())
 
                 val jsonArray = JSONArray(listResult)
                 val jsonObject: JSONObject = jsonArray.getJSONObject(0)
@@ -98,7 +104,6 @@ class UserInformationRepo {
 
             }
         }
-        return userInformation
 
     }
 

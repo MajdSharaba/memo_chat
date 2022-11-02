@@ -123,7 +123,7 @@ class SearchAdapter(
 
         ) {
             tvName.text = model.name
-            tvNumber.text = model.phone
+//            tvNumber.text = model.phone
             println(model.image)
 
             if (model.image!!.isNotEmpty()) {

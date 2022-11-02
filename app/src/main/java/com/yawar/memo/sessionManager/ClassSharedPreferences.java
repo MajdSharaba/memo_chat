@@ -138,7 +138,7 @@ public class ClassSharedPreferences {
     public String getNumber() {
         SharedPreferences prefs = context.getSharedPreferences("profile", MODE_PRIVATE);
 
-        String number = prefs.getString("number", "UserName");
+        String number = prefs.getString("number", "");
         return number;
 
     }

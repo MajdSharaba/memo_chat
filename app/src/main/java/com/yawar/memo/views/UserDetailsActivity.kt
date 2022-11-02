@@ -3,6 +3,7 @@ package com.yawar.memo.views
 import android.app.ProgressDialog
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
@@ -63,8 +64,10 @@ class UserDetailsActivity : AppCompatActivity() {
 
     private fun initAction() {}
     private fun getUserInfo(user_id: String) {
-//        val url = AllConstants.base_url_final + "APIS/getuserinfo.php"
-        val url = AllConstants.base_url + "APIS/getuserinfo.php"
+        val url = AllConstants.base_url_final + "APIS/getuserinfo.php"
+//        val url = AllConstants.base_url + "APIS/getuserinfo.php"
+        Log.d("getUserInfo", "majd")
+
 
         progressDialog = ProgressDialog(this)
         progressDialog!!.setMessage("Uploading, please wait...")
@@ -89,6 +92,8 @@ class UserDetailsActivity : AppCompatActivity() {
                     val secret_number = data.getString("sn")
                     val number = data.getString("phone")
                     val status = data.getString("status")
+
+                    Log.d("getUserInfo", "majd")
 
                     //UserModel userModel = new UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
                     supportActionBar!!.title = first_name + last_name

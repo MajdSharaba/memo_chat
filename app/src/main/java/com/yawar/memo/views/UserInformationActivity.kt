@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.ImageView
@@ -233,23 +234,29 @@ class UserInformationActivity : AppCompatActivity() {
             this
         ) { mediaModelArrayList ->
             if (mediaModelArrayList != null) {
+                Log.d("mediaModelArrayList", mediaModelArrayList.size.toString())
                 for (media in mediaModelArrayList) {
                     recyclerDataArrayList.add(media)
                 }
             }
             adapter!!.notifyDataSetChanged()
         }
-        userInformationViewModel.getUserInfo(another_user_id).observe(
+
+        userInformationViewModel.getUserInfo().observe(
             this
         ) { userModel ->
+            Log.d("initInfooo", userModel.userName.toString())
             if (userModel != null) {
                 txtUserName.text = userModel.userName + " " + userModel.lastName
-                if (userModel.phone != null) {
+                if (userModel.phone != null ) {
+                    if(userModel.phone!!.isNotEmpty()){
+
                     val firstString = userModel.phone!!.substring(0, 4)
                     val secondString = userModel.phone!!.substring(4, 7)
                     val thirtyString = userModel.phone!!.substring(7, 10)
                     val lastString = userModel.phone!!.substring(10)
                     txtSpecialNumber.text = "$firstString-$secondString-$thirtyString-$lastString"
+
 //                    if (userModel.image != null) {
 //                        Glide.with(circleImageView.context)
 //                            .load(AllConstants.imageUrl + userModel.image)
@@ -257,7 +264,7 @@ class UserInformationActivity : AppCompatActivity() {
 //                            .into(
 //                                circleImageView
 //                            )
-//                    }
+                    }
                 }
             }
         }
@@ -375,6 +382,8 @@ class UserInformationActivity : AppCompatActivity() {
         }
 
         userInformationViewModel.mediaRequest(my_id, another_user_id)
+        userInformationViewModel.userInfoRequest( another_user_id)
+
     }
 
     private fun initAction() {

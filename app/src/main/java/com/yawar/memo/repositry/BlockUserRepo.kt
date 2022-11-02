@@ -48,9 +48,11 @@ import java.util.*
          coroutineScope.launch {
              val userBlockList = ArrayList<UserModel?>()
 
-//             var getBlockDeferred = GdgApi.apiService.getBlockKist(user_id)
-//             var getBlockDeferred = GdgApi(AllConstants.base_url_final).apiService
-             var getBlockDeferred = GdgApi(AllConstants.base_node_url).apiService
+
+//             var getBlockDeferred = GdgApi(AllConstants.base_node_url).apiService
+//
+//                 .getBlockKist(user_id)
+             var getBlockDeferred = GdgApi.apiService
 
                  .getBlockKist(user_id)
 
@@ -125,10 +127,10 @@ import java.util.*
     fun sendBlockRequest( my_id: String,  anthor_user_id:String) {
         coroutineScope.launch {
 
-//            val respone = GdgApi.apiService.blockUser(my_id, anthor_user_id)
-//            val respone =   GdgApi(AllConstants.base_url_final).apiService.blockUser(my_id, anthor_user_id)
-            val respone =   GdgApi(AllConstants.base_node_url).apiService.blockUser(my_id, anthor_user_id)
+//
+//            val respone =   GdgApi(AllConstants.base_node_url).apiService.blockUser(my_id, anthor_user_id)
 
+            val respone =   GdgApi.apiService.blockUser(my_id, anthor_user_id)
 
 
 
@@ -161,12 +163,11 @@ import java.util.*
     fun sendUnbBlockUser( my_id: String,  anthor_user_id:String) {
         coroutineScope.launch {
 
-//            var respone = GdgApi.apiService.unBlockUser(my_id, anthor_user_id)
-//                        var respone = GdgApi(AllConstants.base_url_final).apiService
-//                            .unBlockUser(my_id, anthor_user_id)
-            var respone = GdgApi(AllConstants.base_node_url).apiService
-                .unBlockUser(my_id, anthor_user_id)
 
+//            var respone = GdgApi(AllConstants.base_node_url).apiService
+//                .unBlockUser(my_id, anthor_user_id)
+            var respone = GdgApi.apiService
+                .unBlockUser(my_id, anthor_user_id)
             try {
                 val listResult = respone?.await()
 

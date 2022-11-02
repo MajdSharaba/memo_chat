@@ -247,7 +247,9 @@ public class ResponeCallActivity extends AppCompatActivity {
 
                         message = new JSONObject(stopCallString);
                         String id = message.getString("snd_id");
-                        if(id.equals(anthor_user_id)){
+                        String callId = message.getString("call_id");
+
+                        if(id.equals(anthor_user_id)&&callId.equals(responeCallViewModel.getCallId())){
                             finish();
 
                         }
@@ -264,15 +266,20 @@ public class ResponeCallActivity extends AppCompatActivity {
             });
         }
     };
-    private final BroadcastReceiver reciveclosecallfromnotification = new BroadcastReceiver() {
+    private final BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("reciveclosecallfromnotification");
-                    closeCall();
-                    finish();
+                    String callId = intent.getExtras().getString("call_id");
+
+                    Log.i("CallNotificatio", callId+"mmmm"+responeCallViewModel.getCallId());
+                    if(callId.equals(responeCallViewModel.getCallId())) {
+                        closeCall();
+                        finish();
+                    }
+
 
                     ///////////
 
@@ -535,7 +542,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         Intent closeIntent = new Intent(CallNotificationActivity.ON_CLOSE_CALL_FROM_NOTIFICATION);
 
         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(closeIntent);
-        LocalBroadcastManager.getInstance(this).registerReceiver(reciveclosecallfromnotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY));
+        LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAskForCall, new IntentFilter(ON_RECIVED_ASK_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAcceptChangeToVideoCall, new IntentFilter(ON_RECIVED_RESPONE_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveMessageCall, new IntentFilter(ON_RECIVE_MESSAGE));
@@ -580,23 +587,29 @@ public class ResponeCallActivity extends AppCompatActivity {
                         imgBtnSwitchMic.setVisibility(View.GONE);
                         imgBtnSwitchCamera.setVisibility(View.VISIBLE);
 
-
+                        binding.callAudioButtons.setVisibility(View.GONE);
                         binding.remoteVideoView.setVisibility(View.VISIBLE);
                         binding.localVideoView.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
                         layoutCallProperties.setVisibility(View.VISIBLE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+
 //                    binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //                    binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,500));
 //                    binding.remoteVideoView.setPadding(2,2,2,2);
 
                         if (videoCapturer != null) {
                             videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
+                            binding.openCloseVideo.setBackground(getDrawable(R.drawable.btx_custom));
+
 
                         }
                     }
 
                 } else {
                     imgBtnOpenCameraCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
+                    binding.openCloseVideo.setBackground(getDrawable(R.drawable.bv_background_white));
+
 
                     try {
                         videoCapturer.stopCapture();
@@ -611,11 +624,19 @@ public class ResponeCallActivity extends AppCompatActivity {
 
                         binding.remoteVideoView.setVisibility(View.GONE);
                         binding.localVideoView.setVisibility(View.GONE);
+                        binding.callAudioButtons.setVisibility(View.VISIBLE);
+                        layoutCallProperties.setVisibility(View.GONE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.GONE);
+
 
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
 
                     } else {
+                        binding.audioOnlyLayout.setVisibility(View.GONE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+
+
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(300,500));
 //                        binding.localVideoView.setPadding(2,2,2,2);
 //
@@ -636,7 +657,9 @@ public class ResponeCallActivity extends AppCompatActivity {
                     if(responeCallViewModel.getConnected().getValue()) {
                         binding.remoteVideoView.setVisibility(View.VISIBLE);
                         binding.localVideoView.setVisibility(View.VISIBLE);
+                        binding.audioOnlyLayout.setVisibility(View.GONE);
 
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
 
                         layoutCallProperties.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
@@ -655,9 +678,15 @@ public class ResponeCallActivity extends AppCompatActivity {
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
                         imgBtnSwitchMic.setVisibility(View.VISIBLE);
                         imgBtnSwitchCamera.setVisibility(View.GONE);
+                        binding.callAudioButtons.setVisibility(View.VISIBLE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.GONE);
 
 
                     } else {
+                        binding.audioOnlyLayout.setVisibility(View.GONE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+
+
 
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //
@@ -680,10 +709,14 @@ public class ResponeCallActivity extends AppCompatActivity {
 
                 if (s) {
                     imgBtnOpenAudioCallLp.setBackground(null);
+                    binding.mute.setBackground(getDrawable(R.drawable.btx_custom));
+
 
 
                 } else {
                     imgBtnOpenAudioCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
+                    binding.mute.setBackground(getDrawable(R.drawable.bv_background_white));
+
 
 
                 }
@@ -699,10 +732,14 @@ public class ResponeCallActivity extends AppCompatActivity {
             public void onChanged(Boolean s) {
                 if (s) {
                     imgBtnSwitchMic.setBackground(getDrawable(R.drawable.bv_background_white));
+                    binding.speaker.setBackground(getDrawable(R.drawable.bv_background_white));
+
 
 
                 } else {
                     imgBtnSwitchMic.setBackground(null);
+                    binding.speaker.setBackground(getDrawable(R.drawable.btx_custom));
+
 
 
                 }
@@ -841,6 +878,54 @@ public class ResponeCallActivity extends AppCompatActivity {
 
 
         });
+
+        binding.mute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"linerMute");
+                closeOpenAudio();
+
+            }
+        });
+
+        binding.openCloseVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"linerVideo");
+                if (!responeCallViewModel.isVideoForMe().getValue() && !responeCallViewModel.isVideoForYou().getValue()) {
+                    showSwitchToVideoWhenIAskDialog(getResources().getString(R.string.alert_switch_to_video_message));
+                    responeCallViewModel.setIsVideoForMe(!responeCallViewModel.isVideoForMe().getValue());
+                    sendAskForVideoCall(responeCallViewModel.isVideoForMe().getValue());
+
+                } else {
+                    closeOpenVideo();
+                }
+
+
+
+
+
+
+
+            }
+        });
+
+        binding.speaker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"linerSpeaker");
+
+                responeCallViewModel.setIsSpeaker(!responeCallViewModel.isSpeaker().getValue());
+            }
+        });
+        binding.imgButtonStopCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"imgButtonStopCall");
+                closeCall();
+                finish();            }
+        });
+
     }
     @Override
     protected void onDestroy() {
@@ -851,7 +936,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         notificationManager.cancel( AllConstants.onGoingCallChannelId);
 
 
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveclosecallfromnotification);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveCloseCallFromNotification);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAskForCall);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveMessageCall);
 
@@ -1366,6 +1451,8 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                 = new Intent(this, CancelCallFromCallOngoingNotification.class);
 
         intentCancel.putExtra("id", anthor_user_id);
+        intentCancel.putExtra("call_id", responeCallViewModel.getCallId());
+
 
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //                PendingIntent pendingIntentCancell = PendingIntent.getBroadcast(FirebaseMessageReceiver.this, 0,
@@ -1383,9 +1470,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                 .Builder(getApplicationContext(),
                 channel_id)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-
                 .setFullScreenIntent(pendingIntent, true)
-
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setSound(null)
@@ -1500,6 +1585,8 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     onGoingTitle = getResources().getString(R.string.ongoing_video_call);
 //                    binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setBackground(null);
+                    binding.callAudioButtons.setVisibility(View.GONE);
+
 //                    binding.remoteVideoView.setVisibility(View.VISIBLE);
 //                    binding.localVideoView.setVisibility(View.VISIBLE);
 
@@ -1511,6 +1598,8 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
 //                    binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                     binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
+                    binding.callAudioButtons.setVisibility(View.VISIBLE);
+
 //                    binding.remoteVideoView.setVisibility(View.GONE);
 //                    binding.localVideoView.setVisibility(View.GONE);
 

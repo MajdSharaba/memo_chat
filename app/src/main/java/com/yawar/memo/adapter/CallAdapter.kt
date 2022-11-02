@@ -1,8 +1,10 @@
 package com.yawar.memo.adapter
 
+import CallHistoryFragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,19 +20,31 @@ import com.bumptech.glide.request.RequestOptions
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.CallModel
+import com.yawar.memo.model.UserModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.TimeProperties
 import java.util.*
 import kotlin.collections.ArrayList
 
-class CallAdapter(var context: Context) :
+class CallAdapter(var context: CallHistoryFragment) :
     ListAdapter<CallModel, CallAdapter.ViewHolder?>(MyDiffUtilCall()), Filterable {
     var listsearch: MutableList<CallModel?> = ArrayList()
     var classSharedPreferences: ClassSharedPreferences?
+    var mCallback: CallbackInterface? = null
+
+    interface CallbackInterface {
+        fun onHandleSelection(position: Int, callModel:
+        CallModel?)
+    }
     init {
         listsearch.addAll(currentList)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        try {
+            mCallback = context as CallbackInterface
+        } catch (ex: ClassCastException) {
+            //.. should log the error or throw and exception
+        }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         //Inflate the layout, initialize the View Holder
@@ -42,7 +56,7 @@ class CallAdapter(var context: Context) :
 
         //Use the provided View Holder on the onCreateViewHolder method to populate the current row on the RecyclerView
         val callModel = getItem(position)
-        holder.bind(callModel,context,classSharedPreferences)
+        holder.bind(callModel,context,classSharedPreferences,mCallback)
     }
 
 
@@ -93,13 +107,14 @@ class CallAdapter(var context: Context) :
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(
             callModel: CallModel,
-            context: Context,
-            classSharedPreferences : ClassSharedPreferences?
+            context: CallHistoryFragment,
+            classSharedPreferences : ClassSharedPreferences?,
+            mCallback:CallbackInterface?
 
 
         ) {
             name.text = callModel.username
-            time.text = TimeProperties.getDate(callModel.createdAt.toLong(), "MMMM dd,h:mm aa")
+            time.text = TimeProperties.getDate(callModel.createdAt.toLong(), "dd MMMM , h:mm")
             // Glide.with(holder.imageView.getContext()).load(model.getImage()).into(holder.imageView);
             if (!callModel.image.isEmpty()) {
                 Glide.with(imageView.context).load(AllConstants.imageUrl + callModel.image)
@@ -107,15 +122,22 @@ class CallAdapter(var context: Context) :
                     .into(imageView)
             }
             if (callModel.call_type == "video") {
-                imageType.setImageDrawable(context.getDrawable(R.drawable.ic_video_call))
+                imageType.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_video_call))
+
+
             } else {
-                imageType.setImageDrawable(context.getDrawable(R.drawable.ic_call_blue))
+                imageType.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_call_blue))
+
+            }
+            imageType.setOnClickListener {
+                Log.d("calllllll", "bind: ")
+                mCallback?.onHandleSelection(position, callModel)
             }
             if (classSharedPreferences != null) {
                 if (callModel.caller_id == classSharedPreferences.user.userId) {
-                    imageStatuse.setImageDrawable(context.getDrawable(R.drawable.ic_out_going_call))
+                    imageStatuse.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_out_going_call))
                 } else {
-                    imageStatuse.setImageDrawable(context.getDrawable(R.drawable.ic_incoming_call))
+                    imageStatuse.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_incoming_call))
                 }
             }
             when (callModel.call_status) {
@@ -128,7 +150,7 @@ class CallAdapter(var context: Context) :
                         ColorStateList.valueOf(context.resources.getColor(R.color.memo_background_color_new))
                 }
                 else -> {
-                    imageStatuse.setImageDrawable(context.getDrawable(R.drawable.ic_close))
+                    imageStatuse.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_close))
                     imageStatuse.imageTintList =
                         ColorStateList.valueOf(context.resources.getColor(R.color.red))
                 }

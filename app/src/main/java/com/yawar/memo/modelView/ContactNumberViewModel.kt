@@ -47,12 +47,11 @@ class ContactNumberViewModel : ViewModel() {
 
 
         coroutineScope.launch {
-//            val getResponeDeferred = GdgApi.apiService.sendContactNumber(data,my_id)
-//            val getResponeDeferred = GdgApi(AllConstants.base_url_final).apiService
-//                .sendContactNumber(data,my_id)
-            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
-                .sendContactNumber(data,my_id)
 
+//            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
+//                .sendContactNumber(data,my_id)
+            val getResponeDeferred = GdgApi.apiService
+                .sendContactNumber(data,my_id)
 
             try {
                 val listResult = getResponeDeferred?.await()

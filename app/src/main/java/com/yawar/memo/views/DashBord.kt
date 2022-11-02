@@ -279,6 +279,7 @@ class DashBord : AppCompatActivity(), Observer {
 
 /////////////////////
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        Log.d("onCreate:", classSharedPreferences.number)
         permissions = Permissions()
         checkPermission()
         myId = classSharedPreferences.user.userId.toString()

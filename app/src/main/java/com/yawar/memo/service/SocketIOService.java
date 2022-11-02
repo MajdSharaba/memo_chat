@@ -510,10 +510,17 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     System.out.println("EVENT_TYPE_Stop_calling");
 
                     String stop_calling_paramter = intent.getExtras().getString(EXTRA_STOP_CALL_PARAMTERS);
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "EVENT_TYPE_Stop_calling: ");
+                        stopCalling(stop_calling_paramter);
 
-                    if (isSocketConnected()) {
+                    } else {
                         stopCalling(stop_calling_paramter);
                     }
+
+
                     break;
                 case EVENT_TYPE_SETTING_CALL:
                     System.out.println("EVENT_TYPE_Stop_calling");

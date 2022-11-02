@@ -1,3 +1,4 @@
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.R
 import com.yawar.memo.adapter.CallAdapter
+import com.yawar.memo.call.RequestCallActivity
 import com.yawar.memo.model.CallModel
 import com.yawar.memo.modelView.CallHistoryModelView
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 
 
-class CallHistoryFragment : Fragment() {
+class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
 
     lateinit var callHistoryModelView: CallHistoryModelView
     lateinit var recyclerView: RecyclerView
@@ -42,7 +44,7 @@ class CallHistoryFragment : Fragment() {
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         recyclerView.layoutManager = linearLayoutManager
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
-        itemAdapter = CallAdapter(requireActivity())
+        itemAdapter = CallAdapter(this)
         callHistoryModelView = ViewModelProvider(this)[CallHistoryModelView::class.java]
         callHistoryModelView.loadData(classSharedPreferences.user.userId!!)
             .observe(
@@ -95,7 +97,45 @@ class CallHistoryFragment : Fragment() {
         })
         return view
     }
-}
+
+    override fun onHandleSelection(position: Int, callModel: CallModel?) {
+        if (callModel != null) {
+            val id : String
+            if(callModel.answer_id == classSharedPreferences.user.userId){
+                  id = callModel.caller_id.toString()
+            }
+            else{
+                id = callModel.answer_id.toString()
+
+            }
+
+            if(callModel.call_type == "video"){
+                val intent = Intent(requireActivity(), RequestCallActivity::class.java)
+                //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
+
+                intent.putExtra("anthor_user_id", id)
+                intent.putExtra("user_name", callModel.username)
+                intent.putExtra("isVideo", true)
+                intent.putExtra("fcm_token", "")
+                intent.putExtra("image_profile", callModel.image)
+                startActivity(intent)
+            }
+            else{
+                val intent = Intent(requireActivity(), RequestCallActivity::class.java)
+                //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
+
+                intent.putExtra("anthor_user_id", id)
+                intent.putExtra("user_name", callModel.username)
+                intent.putExtra("isVideo", false)
+                intent.putExtra("fcm_token", "")
+                intent.putExtra("image_profile", callModel.image)
+                startActivity(intent)
+            }
+            }
+
+        }
+    }
+
 
 
 

@@ -67,6 +67,7 @@ import com.yawar.memo.R
 import com.yawar.memo.adapter.ChatAdapter
 import com.yawar.memo.call.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.fragment.DialogFragmentVideoBeforeSend
 import com.yawar.memo.fragment.ForwardDialogFragment
 import com.yawar.memo.model.ChatMessage
 import com.yawar.memo.model.ChatRoomModel
@@ -88,7 +89,7 @@ import java.io.IOException
 import java.nio.file.Path
 import java.util.*
 class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
-    PickiTCallbacks {
+    PickiTCallbacks , CallbackListener {
     private var messageET: EditText? = null
     private var tv_name: TextView? = null
     private lateinit var tv_state: TextView
@@ -973,7 +974,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     private fun initAction() {
         tv_name!!.text = userName
         //////////
-        messagesContainer.setOnClickListener { println("pressssed") }
+        messagesContainer.setOnClickListener {
+            println("pressssed") }
         /////////
         linerNameState!!.setOnClickListener { view ->
             val intent = Intent(view.context, UserInformationActivity::class.java)
@@ -1077,7 +1079,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             chatMessage.id = message_id //dummy
             chatMessage.message = messageText
             chatMessage.dateTime =
-                Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+            Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
             chatMessage.isMe = true
             chatMessage.userId = user_id
             chatMessage.type = "text"
@@ -1651,7 +1653,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     if (!FileUtil.isVideoFile(selectedMediaUri.toString())) {
                         showImageBeforeSend(selectedMediaUri, "pix")
                     } else {
-                        showVideoBeforeSend(selectedMediaUri, "pix")
+//                        showVideoBeforeSend(selectedMediaUri, "pix")
+                        showDialogVideo(selectedMediaUri.toString())
                     }
                 }
                 PICK_IMAGE_FROM_GALLERY -> {
@@ -2409,8 +2412,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         dialog.setContentView(R.layout.dialog_image_before_send)
         dialog.setTitle("Title...")
         dialog.window!!.setLayout(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            ViewGroup.LayoutParams.FILL_PARENT,
+            ViewGroup.LayoutParams.FILL_PARENT
         )
         val image = dialog.findViewById<PhotoView>(R.id.photo_view)
         image.setImageURI(uri)
@@ -2475,8 +2478,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         dialog.setContentView(R.layout.dialog_video_before_send)
         dialog.setTitle("Title...")
         dialog.window!!.setLayout(
-            ViewGroup.LayoutParams.WRAP_CONTENT,
-            ViewGroup.LayoutParams.WRAP_CONTENT
+            ViewGroup.LayoutParams.FILL_PARENT,
+            ViewGroup.LayoutParams.FILL_PARENT
         )
         val videoView = dialog.findViewById<VideoView>(R.id.simpleVideoView)
         mediaControl = MediaController(dialog.context)
@@ -2558,6 +2561,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             dialog.dismiss()
         }
         dialog.show()
+    }
+    private fun showDialogVideo(path: String) {
+        val dialogFragment = DialogFragmentVideoBeforeSend(this@ConversationActivity,path)
+        dialogFragment.show(supportFragmentManager, "signature")
+    }
+    override fun onDataReceived(data: String) {
+        Log.d(TAG, "onDataReceived: ${data}")
     }
 
     companion object {

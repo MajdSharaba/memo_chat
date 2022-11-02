@@ -2,6 +2,7 @@ package com.yawar.memo.Api
 
 import com.android.volley.NetworkResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatRoomRespone
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
@@ -132,7 +133,7 @@ interface ChatApi {
     @FormUrlEncoded
     @POST("upadteImageProfile")
     fun updateImage(
-        @Field("id") email: String?,
+        @Field("id") id: String?,
         @Field("image") img: String?,
     ): Deferred<String?>?
 
@@ -147,32 +148,42 @@ interface ChatApi {
         ): Deferred<String?>?
 
 
+    @FormUrlEncoded
+    @POST("APIS/delete_my_account.php")
+    fun deleteAccount(
+        @Field("sn") sn: String?,
+        @Field("user_id") my_id: String?,
+        ): Deferred<String?>?
+
+
+
+
 
 
 }
 
 
-//    private val retrofit = Retrofit.Builder()
-//        .addConverterFactory(ScalarsConverterFactory.create())
-//        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-//        .addConverterFactory(GsonConverterFactory.create())
-//        .baseUrl(AllConstants.base_url_final)
-//        .build()
-
-fun retrofit(string: String): Retrofit {
-         val retrofit = Retrofit.Builder()
+    private val retrofit = Retrofit.Builder()
         .addConverterFactory(ScalarsConverterFactory.create())
         .addCallAdapterFactory(CoroutineCallAdapterFactory())
         .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(string)
+        .baseUrl(AllConstants.base_url_final)
         .build()
 
-    return retrofit
-}
+//fun retrofit(string: String): Retrofit {
+//         val retrofit = Retrofit.Builder()
+//        .addConverterFactory(ScalarsConverterFactory.create())
+//        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+//        .addConverterFactory(GsonConverterFactory.create())
+//        .baseUrl(string)
+//        .build()
+//
+//    return retrofit
+//}
 
 
-class GdgApi(string: String) {
-    //val apiService: ChatApi = retrofit.create(ChatApi::class.java)
-    val apiService: ChatApi = retrofit(string).create(ChatApi::class.java)
+ public  object  GdgApi {
+   public val apiService: ChatApi = retrofit.create(ChatApi::class.java)
+//    val apiService: ChatApi = retrofit(string).create(ChatApi::class.java)
 
 }

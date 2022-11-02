@@ -72,7 +72,6 @@ public class NotificationCallWorker extends Worker {
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
         final String callId = getInputData().getString("call_id");
-
         final String imageUrl = getInputData().getString("image");
         final String name = getInputData().getString("name" );
         final String message = getInputData().getString("body" );
@@ -226,39 +225,35 @@ public class NotificationCallWorker extends Worker {
                     = (NotificationManager) applicationContext.getSystemService(
                     NOTIFICATION_SERVICE);
             // Check if the Android Version is greater than Oreo
-            if (Build.VERSION.SDK_INT
-                    >= Build.VERSION_CODES.O) {
-                NotificationChannel notificationChannel
-                        = new NotificationChannel(
-                        channelCall, "call  Notifications",
+            NotificationChannel notificationChannel
+                    = new NotificationChannel(
+                    channelCall, "call  Notifications",
 
-                        NotificationManager.IMPORTANCE_HIGH);
-                notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+                    NotificationManager.IMPORTANCE_HIGH);
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 
 //                    notificationChannel.setLightColor(Color.GREEN);
 //                    notificationChannel.enableLights(true);
 //                      notificationChannel.enableVibration(true);
-                notificationChannel.setDescription("Call Notifications");
-                AudioAttributes audioAttributes = new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+            notificationChannel.setDescription("Call Notifications");
+            AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
 
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
 
-                        .setLegacyStreamType(AudioManager.STREAM_RING)
-                        .build();
+                    .setLegacyStreamType(AudioManager.STREAM_RING)
+                    .build();
 //                    notificationChannel.setSound(alarmSound, null);
-                notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE),null);
+            notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE),null);
 //                notificationChannel.setSound(Uri.parse("android.resource://" + applicationContext.getPackageName() + "/" + R.raw.ring), audioAttributes);
 //                notificationChannel.setSound(RingtoneManager. getDefaultUri (RingtoneManager.TYPE_RINGTONE), audioAttributes);
 
 
-
-                notificationManager.createNotificationChannel(
-                        notificationChannel);
+            notificationManager.createNotificationChannel(
+                    notificationChannel);
 //                    notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
 
-            }
-//            Notification note = builder.build();
+            //            Notification note = builder.build();
 //            note.flags |= Notification.FLAG_INSISTENT;
 //                note.flags |= Notification.FLAG_NO_CLEAR;
             Glide.with(applicationContext)
@@ -273,7 +268,7 @@ public class NotificationCallWorker extends Worker {
                             note.sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
                             notificationManager.notify(-1, note);
-                            isRining(anthor_user_id,applicationContext);
+                            isRining(anthor_user_id,applicationContext,callId);
 
                         }
 
@@ -293,7 +288,7 @@ public class NotificationCallWorker extends Worker {
 //                            notificationManager.notify(Integer.parseInt(channel), note);
                             notificationManager.notify(-1, note);
 
-                            isRining(anthor_user_id,applicationContext);
+                            isRining(anthor_user_id,applicationContext,callId);
                         }
                     });
 
@@ -314,7 +309,7 @@ public class NotificationCallWorker extends Worker {
 
 
     }
-    public void isRining(String yout_id,Context context) {
+    public void isRining(String yout_id,Context context, String callId) {
         BaseApp myBase = BaseApp.getInstance();
         ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 
@@ -323,8 +318,8 @@ public class NotificationCallWorker extends Worker {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
@@ -346,6 +341,8 @@ public class NotificationCallWorker extends Worker {
                 params.put("my_id", classSharedPreferences.getUser().getUserId());
                 params.put("your_id", yout_id);
                 params.put("state", "true");
+                params.put("call_id", callId);
+
 
                 // at last we are
                 // returning our params.

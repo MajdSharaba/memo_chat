@@ -52,10 +52,7 @@
     <color name="converstion_editText_color">#EEEEEE</color>
     <color name="icon_converstion_color">#00A79D</color>
     <color name="background_conversation_toolbar">#00A79D</color>
-
-
-
-
+    <color name="line_color">#F1F1F1</color>
 
 
 </resources>

@@ -30,19 +30,17 @@ import java.util.*
 class ArchivedAdapter(var context: Activity) :
     ListAdapter<ChatRoomModel?, ArchivedAdapter.ViewHolder?>(MyDiffUtilCallBack()),
     Filterable {
-
     var listsearch: MutableList<ChatRoomModel?> = ArrayList()
     var mCallback: CallbackInterfac? = null
     var timeProperties = TimeProperties()
     var classSharedPreferences: ClassSharedPreferences
-
     interface CallbackInterfac {
         fun onHandleSelection(position: Int, chatRoomModel: ChatRoomModel?)
     }
     init {
         try {
             mCallback = context as CallbackInterfac
-        } catch (ex: ClassCastException) {
+        } catch (_: ClassCastException) {
         }
         listsearch.addAll(currentList)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
@@ -91,10 +89,6 @@ class ArchivedAdapter(var context: Activity) :
             submitList(results.values   as List<ChatRoomModel?>?)
         }
     }
-
-
-
-
     fun setData(newData: ArrayList<ChatRoomModel?>) {
         listsearch = newData
         submitList(newData)

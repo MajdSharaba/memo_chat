@@ -116,13 +116,15 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         edFname = findViewById(R.id.et_fName);
         if(classSharedPreferences.getUser()!=null) {
             edFname.setText(classSharedPreferences.getUser().getUserName());
+            Glide.with(image).load(classSharedPreferences.getUser().getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(image);
+
         }
         edLname = findViewById(R.id.et_lName);
         image = findViewById(R.id.imageProfile);
-        if (classSharedPreferences.getUser()!=null) {
-            System.out.println(classSharedPreferences.getUser().getImage()+"classSharedPreferences.getUser()");
-            Glide.with(image).load(classSharedPreferences.getUser().getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(image);
-        }
+//        if (classSharedPreferences.getUser()!=null) {
+//            System.out.println(classSharedPreferences.getUser().getImage()+"classSharedPreferences.getUser()");
+//            Glide.with(image).load(classSharedPreferences.getUser().getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(image);
+//        }
         btnRegister = findViewById(R.id.btn_Register);
         serverApi = new  ServerApi(RegisterActivity.this);
         dropdown = findViewById(R.id.spinner1);
@@ -370,7 +372,7 @@ private void uploadImage(final String imageName, Uri pdfFile) {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d("uploadTask", "onSuccess: "+taskSnapshot.getUploadSessionUri());
-                    registerViewModel.register(email, message_id + ".png",fName,lName,spennerItemChooser,"",classSharedPreferences.getVerficationNumber());
+                    registerViewModel.register(email, message_id + ".png",fName,lName,spennerItemChooser,classSharedPreferences.getNumber(),classSharedPreferences.getVerficationNumber());
                 }
             });
 
@@ -491,7 +493,7 @@ private void uploadImage(final String imageName, Uri pdfFile) {
                     public void onClick(DialogInterface dialog,
                                         int which) {
 
-                     registerViewModel.register(email, "",fName,lName,spennerItemChooser,"",classSharedPreferences.getVerficationNumber());
+                     registerViewModel.register(email, "",fName,lName,spennerItemChooser,classSharedPreferences.getNumber(),classSharedPreferences.getVerficationNumber());
 
                     }
                 });
@@ -501,8 +503,6 @@ private void uploadImage(final String imageName, Uri pdfFile) {
                 dialog.dismiss();
             }
         });
-
-
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }

@@ -50,10 +50,10 @@ class ChatMessageRepoo {
         coroutineScope.launch {
             val chatMessageList = ArrayList<ChatMessage?>()
 
-//            val getChatRoomsDeferred = GdgApi.apiService.getChatMessgeHistory( my_id,  anthor_user_id)
-//            val getChatRoomsDeferred = GdgApi(AllConstants.base_url_final).apiService
+
+//            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
 //                .getChatMessgeHistory( my_id,  anthor_user_id)
-            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
+            val getChatRoomsDeferred = GdgApi.apiService
                 .getChatMessgeHistory( my_id,  anthor_user_id)
 
             try {
@@ -287,10 +287,10 @@ class ChatMessageRepoo {
         coroutineScope.launch {
             var chatMessageList = _chatMessageistMutableLiveData.value
 
-//            var deleteDeferred = GdgApi.apiService.deleteMessage(message_id,user_id)
-//            var deleteDeferred =  GdgApi(AllConstants.base_url_final).apiService
+
+//            var deleteDeferred =  GdgApi(AllConstants.base_node_url).apiService
 //                .deleteMessage(message_id,user_id)
-            var deleteDeferred =  GdgApi(AllConstants.base_node_url).apiService
+            var deleteDeferred =  GdgApi.apiService
                 .deleteMessage(message_id,user_id)
 
 

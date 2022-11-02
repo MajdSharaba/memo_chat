@@ -123,8 +123,8 @@
     <string name="valied_name_message">ادخل اسم بلا أرقام</string>
     <string name="valied_special_message">اختر رقم خاص لو سمحت</string>
     <string name="user_name">اسم المستخدم</string>
-    <string name="set_photo">اختر صورة</string>
-    <string name="set_user_name">اختر اسم مستخدم</string>
+    <string name="set_photo">تعديل الصورة</string>
+    <string name="set_user_name">تعديل اسم مستخدم</string>
     <string name="recent_call">المكالمات الاخيرة</string>
     <string name="notification_sounds">الأشعارات والأصوات</string>
     <string name="appearance">المظهر</string>

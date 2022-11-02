@@ -92,13 +92,20 @@
                 android:layout_marginTop="25dp"
                 android:layout_margin="15dp"
                 android:layout_gravity="center"
-                android:background="@null"
+                android:background="?android:attr/actionBarItemBackground"
                 android:src="@drawable/ic_call_blue"
                 app:tint="@color/memo_background_color" />
 
 
 
         </LinearLayout>
+
+        <include layout="@layout/item_divider"
+            android:layout_marginStart="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="0.1dp">
+
+        </include>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

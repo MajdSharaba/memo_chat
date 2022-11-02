@@ -120,18 +120,11 @@ public class RequestCallActivity extends AppCompatActivity {
     Timer callTimer = new Timer();
     ObjectAnimator objectanimator1, objectanimator2;
     Animation animation;
-
-
-
-
-
     private boolean isInitiator;
     private boolean isChannelReady;
     private boolean isStarted;
     String anthor_user_id;
     VideoCapturer videoCapturer;
-
-
     MediaConstraints audioConstraints;
     MediaConstraints videoConstraints;
     MediaConstraints sdpConstraints;
@@ -142,24 +135,17 @@ public class RequestCallActivity extends AppCompatActivity {
     SurfaceTextureHelper surfaceTextureHelper;
     ClassSharedPreferences classSharedPreferences;
     public static final String ON_RECIVE_MESSAGE_VIDEO_CALL = "ON_RECIVE_MESSAGE_VIDEO_CALL";
-
-
     private ActivityRequestCallBinding binding;
     private PeerConnection peerConnection;
     private EglBase rootEglBase;
     private PeerConnectionFactory factory;
     private VideoTrack videoTrackFromCamera;
-
     Boolean isPeerConnected = false;
     boolean isRining = false;
     boolean isVideoForMe = false;
     boolean isVideoForYou = false;
     String onGoingTitle = "";
-
-
     RequestCallViewModel requestCallViewModel;
-
-
     ServerApi serverApi;
     AlertDialog alertDialog,alertDialogForME;
     private final int requestcode = 1;
@@ -173,38 +159,23 @@ public class RequestCallActivity extends AppCompatActivity {
     private AudioManager mAudioManager;
     CountDownTimer countDownTimer;
     CountDownTimer countEndCallDownTimer;
-
     AlertDialog.Builder dialogForMe;
 
 
     UserModel userModel;
-    String fcm_token;
+//    String fcm_token;
     Boolean isAudio = true;
     LinearLayout layoutCallProperties;
-
     ImageButton imgBtnStopCallLp;
     ImageButton imgBtnOpenCameraCallLp;
     ImageButton imgBtnOpenAudioCallLp;
     ImageButton imgBtnSwitchCamera;
     final Handler handler = new Handler();
-
-
-
-
-
     TextView callStatusTV;
-
     public static final String FETCH_PEER_ID = "RequestCallActivity.FETCH_PEER_ID";
     public static final String ON_RECIVED_SETTINGS_CALL = "RequestCallActivity.ON_RECIVED_SETTINGS_CALL";
-
-
-
-
     String userName;
     String my_id;
-
-
-
 
 
     private final BroadcastReceiver reciveRining = new BroadcastReceiver() {
@@ -215,13 +186,15 @@ public class RequestCallActivity extends AppCompatActivity {
                 public void run() {
                     String reciveCallString = intent.getExtras().getString("get rining");
                     JSONObject message = null;
+                    String callId = "";
                     try {
                         message = new JSONObject(reciveCallString);
                         isRining = message.getBoolean("state");
-                        System.out.println("requestCallViewModel.setRining(rining)");
-                        requestCallViewModel.setRining("rining");
-
-
+                        callId = message.getString("call_id");
+                        if(callId.equals(requestCallViewModel.getCallId())) {
+                            System.out.println(callId+"requestCallViewModel.setRining(rining)" + requestCallViewModel.getCallId());
+                            requestCallViewModel.setRining("rining");
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -233,16 +206,18 @@ public class RequestCallActivity extends AppCompatActivity {
             });
         }
     };
+
     private final BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i("CallNotificatio", "run: close ");
-                    requestCallViewModel.setEndCalll(true);                    ///////////
-
-
+                    String callId = intent.getExtras().getString("call_id");
+                    Log.i("CallNotificatio", callId+"mmmm"+requestCallViewModel.getCallId());
+                    if(callId.equals(requestCallViewModel.getCallId())) {
+                        startEndCallCounter();
+                    }
                 }
             });
         }
@@ -254,42 +229,26 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
 //                    isVideoForYou = !isVideoForYou;
-
                     String stopCallString = intent.getExtras().getString("get responeAskVideo");
-                    System.out.println("get responeAskVideo");
+                    System.out.println("get responeAskVideo"+stopCallString);
                     JSONObject message = null;
                     try {
                         message = new JSONObject(stopCallString);
                         isVideoForYou = message.getBoolean("video");
 //                        requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
                         requestCallViewModel.setIsVideoForYou(isVideoForYou);
-
                         if (!isVideoForYou){
-//
                             requestCallViewModel.setIsVideoForMe(false);
-
                         }
                         else {
                             requestCallViewModel.setIsSpeaker(isVideoForYou);
-
                         }
                         if(alertDialogForME!=null){
-
                             alertDialogForME.dismiss();
                         }
-
-
-
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
-
-
-
                 }
             });
         }
@@ -300,24 +259,18 @@ public class RequestCallActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
                     String stopCallString = intent.getExtras().getString("get settings");
+                    Log.i("stopCallString", stopCallString);
                     JSONObject message = null;
                     try {
                         message = new JSONObject(stopCallString);
                         isVideoForYou = message.getBoolean("camera");
                         boolean audioSetting = message.getBoolean("microphone");
-//                        callJavascriptFunction("javascript:toggleStream(\"" +isVideoForYou  + "\")");
-//                        requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
                         requestCallViewModel.setIsVideoForYou(isVideoForYou);
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                     ///////////
-
-
                 }
             });
         }
@@ -325,40 +278,25 @@ public class RequestCallActivity extends AppCompatActivity {
     private final BroadcastReceiver reciveAskForCall = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
                     String stopCallString = intent.getExtras().getString("get askVideo");
                     JSONObject message = null;
                     try {
                         message = new JSONObject(stopCallString);
                         isVideoForYou = message.getBoolean("video");
-
 //                         requestCallViewModel.isVideoForYou.setValue(isVideoForYou);
                         requestCallViewModel.setIsVideoForYou(isVideoForYou);
-
-
-
                         if(isVideoForYou) {
-
                             showSwitchToVideoWhenANthorUserRequestDialog( getResources().getString(R.string.alert_switch_to_video_from_anthor_message));
-
                         } else {
-
                             if(alertDialog!=null){
                                 alertDialog.dismiss();}
-
-
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    ///////////
-
-
                 }
             });
         }
@@ -370,22 +308,25 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String callString = intent.getExtras().getString("fetchPeer");
-//                    requestCallViewModel.rining.setValue(false);
                     requestCallViewModel.setRining("answare");
-
                     String call_peer_id = "no connect";
+                    String call_id = "";
+
                     JSONObject message = null;
                     ///////////
                     try {
-
                         message = new JSONObject(callString);
-                        System.out.println("this is message"+message.getString("peerId"));
+                        System.out.println("this is message"+message);
                         if(message.getString("peerId")!=null){
+
                             call_peer_id = message.getString("peerId");
-                            requestCallViewModel.setPeerId(call_peer_id);
+                            call_id = message.getString("call_id");
+                            if(call_id.equals(requestCallViewModel.getCallId())) {
+                                System.out.println(call_id+"call_id"+requestCallViewModel.getCallId());
+                                requestCallViewModel.setPeerId(call_peer_id);
+                            }
 
                         }
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -396,8 +337,6 @@ public class RequestCallActivity extends AppCompatActivity {
         }
     };
 
-
-
     private final BroadcastReceiver reciveStopCalling = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -406,28 +345,17 @@ public class RequestCallActivity extends AppCompatActivity {
                 public void run() {
                     String stopCallString = intent.getExtras().getString("get stopCalling");
                     System.out.println("stopCallString"+stopCallString);
-
                     JSONObject message = null;
                     try {
-
                         message = new JSONObject(stopCallString);
                         String id = message.getString("snd_id");
-                        if(id.equals(anthor_user_id)){
+                        String callId = message.getString("call_id");
+                        if(id.equals(anthor_user_id)&&callId.equals(requestCallViewModel.getCallId())){
                             finishCall();
-
                         }
-
-
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-
-
-                    ///////////
-
-
                 }
             });
         }
@@ -441,42 +369,24 @@ public class RequestCallActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     String unBlockString = intent.getExtras().getString("Call Sdp");
-
-
-
                     String id = "";
                     String type = "";
                     String sdp = "";
-
                     try {
                         JSONObject jsonObject = new JSONObject(unBlockString);
                         id = jsonObject.getString("your_id");
                         type = jsonObject.getString("type");
                         String anthor_id = jsonObject.getString("my_id");
-
-
-
                         if (type.equals("offer")) {
-
                             System.out.println("type offer");
                             sdp = jsonObject.getString("sdp");
-
-
-
-
-
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
                                 System.out.println("iduser" + sdp);
                                 requestCallViewModel.setRining("answare");
                                 System.out.println("requestCallViewModel.setRining(answare)");
-
                                 peerConnection.setRemoteDescription(new SimpleSdpObserver(), new SessionDescription(OFFER, sdp));
                                 Log.d(TAG, "SimpleSdpObserver: "+sdp);
                                 requestCallViewModel.setPeerId("opwn");
-
-
-
-
                                 doAnswer();
                             }
                         }
@@ -528,7 +438,6 @@ public class RequestCallActivity extends AppCompatActivity {
 
         try {
             type.put("video", requestCallViewModel.isVideoForMe().getValue());
-
             type.put("audio", true);
             userObject.put("name", userModel.getUserName()+" "+ userModel.getLastName());
             userObject.put("image_profile", userModel.getImage());
@@ -539,7 +448,6 @@ public class RequestCallActivity extends AppCompatActivity {
             data.put("message", "");
             data.put("snd_id", my_id);
             data.put("call_id", requestCallViewModel.getCallId());
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -555,7 +463,6 @@ public class RequestCallActivity extends AppCompatActivity {
 
         int i=0;
         countDownTimer = new CountDownTimer(30000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
-
             public void onTick(long millisUntilFinished) {
                 System.out.println(i+1);
             }
@@ -572,10 +479,6 @@ public class RequestCallActivity extends AppCompatActivity {
         System.out.println("startEndCallCounter");
         callTimer.cancel();
         binding.callStatue.setText(R.string.call_ended);
-
-
-
-
         int j=0;
         countEndCallDownTimer = new CountDownTimer(1000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
 
@@ -585,12 +488,6 @@ public class RequestCallActivity extends AppCompatActivity {
             public void onFinish() {
                 System.out.println("EndEndCallCounter");
 
-//                if(requestCallViewModel.getRining().getValue()){
-//
-//                    SendMissingCall();
-//                    finishCall ();
-//                }
-//                else
                 if (!requestCallViewModel.getPeerIdRecived().getValue().equals("no connect")&&!requestCallViewModel.getPeerIdRecived().getValue().equals("null")) {
 
                     closeCall();
@@ -707,7 +604,6 @@ public class RequestCallActivity extends AppCompatActivity {
             userObject.put("name", userModel.getUserName());
             userObject.put("image_profile", userModel.getImage());
             type.put("video", requestCallViewModel.isVideoForMe().getValue());
-
             type.put("audio", true);
             data.put("rcv_id", anthor_user_id);
             data.put("typeCall", "missingCall");
@@ -724,6 +620,7 @@ public class RequestCallActivity extends AppCompatActivity {
         startService(service);
 
     }
+
     private void SendSwitchTOVideoCallRespone(boolean video) {
         Intent service = new Intent(this, SocketIOService.class);
         JSONObject data = new JSONObject();
@@ -737,10 +634,7 @@ public class RequestCallActivity extends AppCompatActivity {
         service.putExtra(SocketIOService.EXTRA_RESPONE_VIDEO_CALL_PARAMTERS, data.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_RESPONE_VIDEO_CALL);
         startService(service);
-
     }
-
-
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -772,7 +666,7 @@ public class RequestCallActivity extends AppCompatActivity {
         serverApi = new ServerApi(this);
         anthor_user_id = bundle.getString("anthor_user_id", null);
         userName = bundle.getString("user_name", null);
-        fcm_token = bundle.getString("fcm_token", null);
+//        fcm_token = bundle.getString("fcm_token", null);
         isVideoForMe = bundle.getBoolean("isVideo", true);
         imageUrl = bundle.getString("image_profile", " mm");
         initalCallProperties();
@@ -802,19 +696,23 @@ public class RequestCallActivity extends AppCompatActivity {
                         binding.remoteVideoView.setVisibility(View.VISIBLE);
                         binding.localVideoView.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
+                        binding.callAudioButtons.setVisibility(View.GONE);
                         layoutCallProperties.setVisibility(View.VISIBLE);
                         imgBtnSwitchMic.setVisibility(View.GONE);
                         imgBtnOpenCameraCallLp.setBackground(null);
                         imgBtnSwitchCamera.setVisibility(View.VISIBLE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
                         if(videoCapturer!=null) {
                             videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
 
                         }
-
                         imgBtnOpenCameraCallLp.setImageResource(R.drawable.ic_baseline_videocam_off_24);
+                        binding.openCloseVideo.setBackground(getDrawable(R.drawable.btx_custom));
                     }
                 } else {
                     imgBtnOpenCameraCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
+                    binding.openCloseVideo.setBackground(getDrawable(R.drawable.bv_background_white));
+
 
                     try {
                         videoCapturer.stopCapture();
@@ -825,17 +723,24 @@ public class RequestCallActivity extends AppCompatActivity {
                     if(!requestCallViewModel.isVideoForYou().getValue()) {
                         imgBtnSwitchMic.setVisibility(View.VISIBLE);
                         imgBtnSwitchCamera.setVisibility(View.GONE);
-
+                        //////
+                        layoutCallProperties.setVisibility(View.GONE);
+                        ////
+                        binding.callAudioButtons.setVisibility(View.VISIBLE);
 
                         binding.remoteVideoView.setVisibility(View.GONE);
                         binding.localVideoView.setVisibility(View.GONE);
                         binding.audioOnlyLayout.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.GONE);
+
 
                     }
                     else {
 //                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+                        binding.audioOnlyLayout.setVisibility(View.GONE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
 
 
                     }
@@ -857,7 +762,10 @@ public class RequestCallActivity extends AppCompatActivity {
                         binding.localVideoView.setVisibility(View.VISIBLE);
                         binding.audioOnlyLayout.setVisibility(View.GONE);
                         imgBtnSwitchMic.setVisibility(View.GONE);
+                        binding.callAudioButtons.setVisibility(View.GONE);
                         imgBtnSwitchCamera.setVisibility(View.VISIBLE);
+                        binding.audioOnlyLayout.setVisibility(View.GONE);
+
 //                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(500,500));
                     }
@@ -871,9 +779,14 @@ public class RequestCallActivity extends AppCompatActivity {
                         binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
                         imgBtnSwitchMic.setVisibility(View.VISIBLE);
                         imgBtnSwitchCamera.setVisibility(View.GONE);
+                        binding.callAudioButtons.setVisibility(View.VISIBLE);
+                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.GONE);
+
 
                     }
                     else{
+                        binding.audioOnlyLayout.setVisibility(View.GONE);
+
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(500,500));
                     }
@@ -919,6 +832,8 @@ public class RequestCallActivity extends AppCompatActivity {
             @Override
             public void onChanged(Boolean s) {
                 if (s) {
+                    Log.i("CallNotificatio", "EndCall");
+
                     startEndCallCounter();
                 }
             }
@@ -930,15 +845,11 @@ public class RequestCallActivity extends AppCompatActivity {
 
                 if (s) {
                     imgBtnOpenAudioCallLp.setBackground(null);
-
-
+                    binding.mute.setBackground(getDrawable(R.drawable.btx_custom));
 
                 } else {
-
                     imgBtnOpenAudioCallLp.setBackground(getDrawable(R.drawable.bv_background_white));
-
-
-
+                    binding.mute.setBackground(getDrawable(R.drawable.bv_background_white));
                 }
                 localAudioTrack.setEnabled(s);
 
@@ -950,6 +861,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
                 if (s) {
                     imgBtnSwitchMic.setBackground(getDrawable(R.drawable.bv_background_white));
+                    binding.speaker.setBackground(getDrawable(R.drawable.bv_background_white));
 
 
 
@@ -959,6 +871,8 @@ public class RequestCallActivity extends AppCompatActivity {
 
                 } else {
                     imgBtnSwitchMic.setBackground(null);
+                    binding.speaker.setBackground(getDrawable(R.drawable.btx_custom));
+
 
                 }
                 toggleSpeaker(s);
@@ -1171,6 +1085,56 @@ public class RequestCallActivity extends AppCompatActivity {
 
 
         });
+        binding.mute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"linerMute");
+                closeOpenAudio();
+
+            }
+        });
+
+        binding.openCloseVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"linerVideo");
+                if (!requestCallViewModel.getPeerIdRecived().getValue().equals("no connect")) {
+                    if(!requestCallViewModel.isVideoForYou().getValue() && !requestCallViewModel.isVideoForMe().getValue()){
+                        requestCallViewModel.setIsVideoForMe(!requestCallViewModel.isVideoForMe().getValue());
+
+                        sendAskForVideoCall(requestCallViewModel.isVideoForMe().getValue());
+                        showSwitchToVideoDialog(getResources().getString(R.string.requesting_to_switch_to_video_call));
+
+
+                    }
+                    else{
+                        closeOpenVideo();
+                    }
+
+
+                }
+
+
+
+
+            }
+        });
+
+        binding.speaker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"linerSpeaker");
+
+                requestCallViewModel.setIsSpeaker(!requestCallViewModel.isSpeaker().getValue());
+            }
+        });
+        binding.imgButtonStopCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: "+"imgButtonStopCall");
+                requestCallViewModel.setEndCalll(true);
+            }
+        });
 
 
 //        binding.localVideoView.setOnClickListener(new View.OnClickListener() {
@@ -1222,23 +1186,22 @@ public class RequestCallActivity extends AppCompatActivity {
 
     void initalCallProperties(){
         if (isVideoForMe) {
-
             onGoingTitle = getResources().getString(R.string.ongoing_video_call);
             binding.audioOnlyLayout.setVisibility(View.VISIBLE);
             binding.audioOnlyLayout.setBackground(null);
             binding.remoteVideoView.setVisibility(View.VISIBLE);
+            binding.callAudioButtons.setVisibility(View.GONE);
             binding.localVideoView.setVisibility(View.VISIBLE);
             binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
             typeCall = "video";
         } else {
             onGoingTitle = getResources().getString(R.string.ongoing_audio_call);
             binding.audioOnlyLayout.setVisibility(View.VISIBLE);
+            binding.callAudioButtons.setVisibility(View.VISIBLE);
             binding.audioOnlyLayout.setBackground(getDrawable(R.drawable.background_call));
             binding.remoteVideoView.setVisibility(View.GONE);
             binding.localVideoView.setVisibility(View.GONE);
             typeCall = "audio";
-
-
         }
         binding.userName.setText(userName);
         if (!imageUrl.isEmpty()) {
@@ -1352,12 +1315,7 @@ public class RequestCallActivity extends AppCompatActivity {
         callTimer.cancel();
 
         finish();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                finish();
-//            }
-//        }, 100);
+
     }
 
     void showSwitchToVideoDialog(String message){
@@ -1569,8 +1527,6 @@ public class RequestCallActivity extends AppCompatActivity {
             message.put("type", "got user media");
             message.put("your_id", anthor_user_id);
             message.put("my_id", classSharedPreferences.getUser().getUserId());
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1795,11 +1751,7 @@ public class RequestCallActivity extends AppCompatActivity {
                         AudioManager.FX_KEY_CLICK);
                 audioManager.setSpeakerphoneOn(true);
             } else {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
-                } else {
-                    audioManager.setMode(AudioManager.MODE_IN_CALL);
-                }
+                audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
                 audioManager.setStreamVolume(
                         AudioManager.STREAM_VOICE_CALL,
                         audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL),
@@ -1884,16 +1836,9 @@ public class RequestCallActivity extends AppCompatActivity {
         }
     }
     private void showInCallNotification() {
-
         Intent intent
                 = new Intent(this, RequestCallActivity.class);
-        // Assign channel ID
-        // Here FLAG_ACTIVITY_CLEAR_TOP flag is set to clear
-        // the activities present in the activity stack,
-        // on the top of the Activity that is to be launched
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        // Pass the intent to PendingIntent to start the
-        // next Activity
         PendingIntent pendingIntent
                 = PendingIntent.getActivity(this
                 , 0, intent,
@@ -1903,6 +1848,8 @@ public class RequestCallActivity extends AppCompatActivity {
                 = new Intent(this, CancelCallFromCallOngoingNotification.class);
 
         intentCancel.putExtra("id", anthor_user_id);
+        intentCancel.putExtra("call_id", requestCallViewModel.getCallId());
+
 
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -1910,62 +1857,35 @@ public class RequestCallActivity extends AppCompatActivity {
                 intentCancel, PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         String channel_id = "notification_channel";
-
-
-
         NotificationCompat.Builder builder
                 = new NotificationCompat
                 .Builder(getApplicationContext(),
                 channel_id)
                 .setPriority(NotificationCompat.PRIORITY_MAX)
-
                 .setFullScreenIntent(pendingIntent, true)
-
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setSound(null)
                 .setOngoing(true)
                 .setUsesChronometer(true)
-
-
                 .setVibrate(new long[]{10000, 10000})
                 .setTicker("Call_STATUS")
                 .addAction(R.drawable.btx_custom, getResources().getString(R.string.cancel), pendingIntentCancell)
-
-
                 .setSmallIcon(R.drawable.ic_memo_logo)
                 .setContentTitle(userName)
                 .setContentText(onGoingTitle);
-
-
-
-
-
-
-
-
-
-
         NotificationManager notificationManager
                 = (NotificationManager) getSystemService(
                 Context.NOTIFICATION_SERVICE);
         // Check if the Android Version is greater than Oreo
-        if (Build.VERSION.SDK_INT
-                >= Build.VERSION_CODES.O) {
-            NotificationChannel notificationChannel
-                    = new NotificationChannel(
-                    channel_id, "Memo",
-
-                    NotificationManager.IMPORTANCE_DEFAULT);
-            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-
-            notificationManager.createNotificationChannel(
-                    notificationChannel);
-            notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
-
-        }
-
-
+        NotificationChannel notificationChannel
+                = new NotificationChannel(
+                channel_id, "Memo",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        notificationManager.createNotificationChannel(
+                notificationChannel);
+        notificationManager.createNotificationChannelGroup(new NotificationChannelGroup(channel_id, "Memo"));
         Notification note = builder.build();
         note.flags |= Notification.FLAG_ONGOING_EVENT;
         notificationManager.notify(AllConstants.onGoingCallChannelId,note);
