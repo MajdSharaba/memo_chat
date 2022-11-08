@@ -132,7 +132,7 @@ public class NotificationWorker extends Worker {
 
 
 
-//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(applicationContext);
             stackBuilder.addNextIntentWithParentStack(intent);
 
@@ -141,7 +141,7 @@ public class NotificationWorker extends Worker {
             PendingIntent pendingIntent
                     = stackBuilder.getPendingIntent(
                      0,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE );
 
 
 
@@ -155,7 +155,9 @@ public class NotificationWorker extends Worker {
                     = new NotificationCompat
                     .Builder(getApplicationContext(),
                     channel_id)
-                    .setNumber(id++)
+//                    .setNumber(id++)
+                    .setFullScreenIntent(null, true)
+
                     .setPriority(NotificationCompat.PRIORITY_MAX)
 //                            .setContentTitle(name)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
@@ -195,7 +197,10 @@ public class NotificationWorker extends Worker {
                         = new NotificationChannel(
                         channel_id, "Memo",
 
+
                         NotificationManager.IMPORTANCE_HIGH);
+                notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+
                 AudioAttributes audioAttributes = new AudioAttributes.Builder()
                         .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
 

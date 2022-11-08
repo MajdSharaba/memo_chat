@@ -16,6 +16,7 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.OnCompleteListener
@@ -23,6 +24,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.ActivityDashBordBinding
 import com.yawar.memo.fragment.ChatRoomFragment
 import com.yawar.memo.fragment.SearchFragment
 import com.yawar.memo.fragment.SettingsFragment
@@ -44,14 +46,14 @@ import java.util.*
 
 class DashBord : AppCompatActivity(), Observer {
     lateinit var bottomNavigation: BottomNavigationView
-    private lateinit var fragment: Fragment
     private lateinit var permissions: Permissions
     lateinit var myBase: BaseApp
+    lateinit var binding: ActivityDashBordBinding
     lateinit var chatRoomRepoo: ChatRoomRepoo
+    lateinit var fragment : Fragment
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myId: String
     lateinit var authRepo: AuthRepo
-    lateinit var bottomNavigationView: BottomNavigationView
     private fun connectSocket() {
         val service = Intent(this, SocketIOService::class.java)
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN)
@@ -79,7 +81,7 @@ class DashBord : AppCompatActivity(), Observer {
                 if (user.getString("id") != myId) {
                     chatRoomRepoo.addChatRoom(
                         ChatRoomModel(
-                            user.getString("first_name"),
+                            user.getString("first_name")+" "+user.getString("last_name"),
                             user.getString("id"),
                             text,
                             user.getString("profile_image"),
@@ -130,7 +132,7 @@ class DashBord : AppCompatActivity(), Observer {
 
                 /// JSONObject jsonObject= (JSONObject) messageJson.get("data");
                 id = message!!.getString("message_id")
-                id_user = message.getString("id")
+//                id_user = message.getString("id")
                 text = message.getString("message")
                 type = message.getString("message_type")
                 state = message.getString("state")
@@ -236,9 +238,8 @@ class DashBord : AppCompatActivity(), Observer {
             conf,
             baseContext.resources.displayMetrics
         )
-        setContentView(R.layout.activity_dash_bord)
-        Log.i("TAG", "onCreate:  " + context.resources.getString(R.string.chat))
-        Log.i("TAG", "onCreate:  " + resources.getString(R.string.chat))
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_bord)
+
         connectSocket()
         LocalBroadcastManager.getInstance(this).registerReceiver(
             reciveNwMessage, IntentFilter(
@@ -289,13 +290,12 @@ class DashBord : AppCompatActivity(), Observer {
                 NEW_MESSAGE
             )
         )
-        bottomNavigationView = findViewById(R.id.navigationChip)
         if (savedInstanceState == null) {
-            bottomNavigationView.selectedItemId = R.id.chat
+            binding.navigationChip.selectedItemId = R.id.chat
             supportFragmentManager.beginTransaction()
                 .replace(R.id.dashboardContainer, ChatRoomFragment()).commit()
         }
-        bottomNavigationView.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        binding.navigationChip.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.chat -> fragment = ChatRoomFragment()
                 R.id.searchSn -> fragment = SearchFragment()
@@ -316,10 +316,10 @@ class DashBord : AppCompatActivity(), Observer {
     override fun update(observable: Observable, o: Any) {}
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        if (bottomNavigationView.selectedItemId != R.id.chat) {
+        if (binding.navigationChip.selectedItemId != R.id.chat) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.dashboardContainer, ChatRoomFragment()).commit()
-            bottomNavigationView.selectedItemId = R.id.chat
+            binding.navigationChip.selectedItemId = R.id.chat
         } else {
             finish()
         }

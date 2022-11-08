@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -35,7 +36,7 @@
         android:id="@+id/txt_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
+        android:textSize="25sp"
         android:layout_margin="5dp"
         android:textStyle="bold"
         android:fontFamily="@font/font"
@@ -79,6 +80,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="19dp"
                         android:textSize="14sp"
+                        android:textColor="@color/memo_background_color_new"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:text="@string/call">
 
 
@@ -106,6 +111,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="19dp"
                         android:textSize="14sp"
+                        android:textColor="@color/memo_background_color_new"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:text="@string/video">
 
 
@@ -133,6 +142,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="19dp"
                         android:textSize="14sp"
+                        android:textColor="@color/memo_background_color_new"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:text="@string/message">
 
 
@@ -160,6 +173,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="19dp"
                         android:textSize="14sp"
+                        android:textColor="@color/memo_background_color_new"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:text="@string/mute">
 
 
@@ -188,6 +205,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="19dp"
                         android:textSize="14sp"
+                        android:textColor="@color/memo_background_color_new"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center"
+                        android:layout_gravity="center"
                         android:text="@string/more">
 
 
@@ -208,6 +229,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="60dp"
+        android:visibility="gone"
         app:cardBackgroundColor="@color/background_chat_page"
         android:foreground="?attr/selectableItemBackground"
         android:layout_marginTop="20dp"
@@ -263,13 +285,14 @@
              android:layout_height="wrap_content"
              android:textSize="15sp"
              android:textStyle="bold"
+             android:layout_marginStart="5dp"
              android:fontFamily="@font/font"
              android:textColor="@color/memo_background_color_new"
              android:text="@string/media"/>
 
          <androidx.recyclerview.widget.RecyclerView
              android:layout_marginTop="10dp"
-             android:id="@+id/idCourseRV"
+             android:id="@+id/recycle_view"
              android:scrollbars="horizontal"
              android:layout_width="match_parent"
              android:layout_height="wrap_content" />
@@ -281,3 +304,4 @@
     
 
 </LinearLayout>
+</layout>

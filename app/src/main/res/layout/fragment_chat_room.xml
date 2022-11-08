@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<layout>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -75,7 +76,9 @@
 
 
 
-    <include layout="@layout/content_scrolling2" />
+    <include
+        android:id="@+id/content"
+        layout="@layout/content_scrolling2" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -89,3 +92,4 @@
         android:backgroundTint="@color/memo_background_color_new"
         android:src="@drawable/ic_add" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

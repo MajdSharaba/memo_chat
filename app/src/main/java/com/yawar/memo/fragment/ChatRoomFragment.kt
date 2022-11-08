@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,6 +17,8 @@ import com.tsuryo.swipeablerv.SwipeableRecyclerView
 import com.yawar.memo.Api.ServerApi
 import com.yawar.memo.R
 import com.yawar.memo.adapter.ChatRoomAdapter
+import com.yawar.memo.databinding.ActivitySplashScreenBinding
+import com.yawar.memo.databinding.FragmentChatRoomBinding
 import com.yawar.memo.model.ChatRoomModel
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.modelView.ChatRoomViewModel
@@ -27,52 +30,43 @@ import com.yawar.memo.views.ConversationActivity
 import com.yawar.memo.views.GroupSelectorActivity
 
 class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
-    lateinit var recyclerView: SwipeableRecyclerView
     var postList: MutableList<ChatRoomModel> = ArrayList()
     lateinit var myId: String
     lateinit var myBase: BaseApp
     lateinit var chatRoomViewModel: ChatRoomViewModel
     lateinit var itemAdapter: ChatRoomAdapter
-    lateinit var startNewChat: Button
-    lateinit var searchView: SearchView
-    lateinit var toolbar: Toolbar
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var serverApi: ServerApi
     lateinit var userModel: UserModel
-    lateinit var linerArchived: LinearLayout
-    lateinit var lineerNoMessage: LinearLayout
-    lateinit var fab: FloatingActionButton
-    lateinit var chat: TextView
+    lateinit var binding: FragmentChatRoomBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_chat_room, container, false)
+//        val view = inflater.inflate(R.layout.fragment_chat_room, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat_room,container,false)
+        val view = binding.getRoot();
         myBase = BaseApp.getInstance()
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myId = classSharedPreferences.user.userId.toString()
-        linerArchived = view.findViewById(R.id.liner_archived)
-        lineerNoMessage = view.findViewById(R.id.liner_no_chat)
-        startNewChat = view.findViewById(R.id.btn_start_chat)
-        fab = view.findViewById(R.id.fab)
-        linerArchived.setOnClickListener(View.OnClickListener {
+
+        binding.content.linerArchived.setOnClickListener(View.OnClickListener {
             val intent = Intent(context, ArchivedActivity::class.java)
             startActivity(intent)
         })
-        recyclerView = view.findViewById(R.id.recycler)
-        recyclerView.setHasFixedSize(true)
+        binding.content.recycler.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        recyclerView.layoutManager = linearLayoutManager
+        binding.content.recycler.layoutManager = linearLayoutManager
         chatRoomViewModel = ViewModelProvider(this).get(ChatRoomViewModel::class.java)
         chatRoomViewModel.getIsArchived().observe(
             requireActivity()) { aBoolean ->
             if (aBoolean) {
-                linerArchived.visibility = View.VISIBLE
+                binding.content.linerArchived.visibility = View.VISIBLE
             } else {
-                linerArchived.visibility = View.GONE
+                binding.content.linerArchived.visibility = View.GONE
             }
         }
         itemAdapter = ChatRoomAdapter(this)
@@ -81,13 +75,13 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
             Observer<ArrayList<ChatRoomModel?>?> { chatRoomModels ->
                 if (chatRoomModels != null) {
                     if (chatRoomModels.isEmpty()) {
-                        lineerNoMessage.visibility = View.VISIBLE
-                        fab.visibility = View.GONE
-                        recyclerView.visibility = View.GONE
+                        binding.content.linerNoChat.visibility = View.VISIBLE
+                        binding.fab.visibility = View.GONE
+                        binding.content.recycler.visibility = View.GONE
                     } else {
-                        lineerNoMessage.visibility = View.GONE
-                        recyclerView.visibility = View.VISIBLE
-                        fab.visibility = View.VISIBLE
+                        binding.content.linerNoChat.visibility = View.GONE
+                        binding.content.recycler.visibility = View.VISIBLE
+                        binding.fab.visibility = View.VISIBLE
                         val list = ArrayList<ChatRoomModel?>()
                         postList.clear()
                         for (chatRoomModel in chatRoomModels) {
@@ -104,8 +98,8 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
                     }
                 }
             })
-        recyclerView.adapter = itemAdapter
-        recyclerView.setListener(object : SwipeLeftRightCallback.Listener {
+        binding.content.recycler.adapter = itemAdapter
+        binding.content.recycler.setListener(object : SwipeLeftRightCallback.Listener {
             override fun onSwipedLeft(position: Int) {
                 chatRoomViewModel.deleteChatRoom(myId, postList[position].other_id)
             }
@@ -117,21 +111,20 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
 
 
         ////////////////FloatingActionButton
-        fab.setOnClickListener(View.OnClickListener {
+        binding.fab.setOnClickListener(View.OnClickListener {
             val intent = Intent(context, ContactNumberActivity::class.java)
             startActivity(intent)
         })
 
         ///////new chat
-        startNewChat.setOnClickListener(View.OnClickListener {
+        binding.content.btnStartChat.setOnClickListener(View.OnClickListener {
             val intent = Intent(context, ContactNumberActivity::class.java)
             startActivity(intent)
         })
 
 
 ////////////// for search
-        searchView = view.findViewById(R.id.search)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
             }
@@ -145,7 +138,6 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
 /////// for Bottom nav
 
 
-        chat = view.findViewById(R.id.chat)
         return view
     }
 

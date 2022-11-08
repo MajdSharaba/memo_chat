@@ -3,7 +3,6 @@ package com.yawar.memo.views
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.Handler
@@ -13,11 +12,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.yawar.memo.R
 import com.yawar.memo.call.CallProperty
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.databinding.ActivitySplashScreenBinding
 import com.yawar.memo.modelView.SplachActViewModel
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
@@ -31,23 +31,21 @@ import java.nio.file.Paths
 
 class SplashScreen : AppCompatActivity() {
     lateinit var classSharedPreferences: ClassSharedPreferences
-    var text: TextView? = null
-    var powerd: TextView? = null
     lateinit var authRepo: AuthRepo
     lateinit var myBase: BaseApp
+    lateinit var binding: ActivitySplashScreenBinding
+
     var splachActViewModel: SplachActViewModel? = null
-    var progressDialog: ProgressDialog? = null
-    var progressBar: ProgressBar? = null
+//    var progressDialog: ProgressDialog? = null
+//    var progressBar: ProgressBar? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         CallProperty.setStatusBarOrScreenStatus(this)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash_screen)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_screen)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myBase = BaseApp.getInstance()
         authRepo = myBase.authRepo
-        text = findViewById(R.id.text)
-        powerd = findViewById(R.id.powerd)
-        progressBar = findViewById(R.id.progress_circular)
+
         splachActViewModel = ViewModelProvider(this).get(SplachActViewModel::class.java)
         Handler().postDelayed({
             val intent: Intent

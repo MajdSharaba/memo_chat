@@ -64,14 +64,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
     boolean isOpen =  false;
 //    private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
-
-
-
-
-
-
-
-
     private static final String EVENT_CHANGE = "change";
     private static final String CHECK_CONNECT= "check connect";
     private static final String FORWARD= "forward message";
@@ -82,23 +74,12 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String UPDATE_MESSAGE= "editmsg";
     private static final String FETCH_PEER_ID= "fetchPeerId";
     private static final String SEND_CALL_MESSAGE= "sdp";
-
-
-
-
-
-
-
-
-
     private static final String EVENT_JOIN = "join";
     private static final String EVENT_RECEIVED = "received";
     private static final String EVENT_TYPING = "on typing";
     private static final String NEW_CHAT = "new chat";
     Bitmap bitmap;
     String imageString;
-
-
     public static final String EXTRA_DATA = "extra_data_message";
     public static final String EXTRA_ROOM_ID = "extra_room_id";
 //    public static final String EXTRA_USER_ENTER = "extra_user_enter";
@@ -111,18 +92,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_SEND_ASK_VIDEO_CALL_PARAMTERS = "extra_send_ask_video_call_paramters";
     public static final String EXTRA_RESPONE_VIDEO_CALL_PARAMTERS = "extra_respone_video_video_call_paramters";
     public static final String EXTRA_SEND_MESSAGE_FOR_CALL_PARAMTES = "extra_send_message_for_call_paramtes";
-
-
-
-
-
-
-
-
-
-
-
-
     public static final String EXTRA_CHECK_CONNECT_PARAMTERS = "extra_check_connect_paramters";
     public static final String EXTRA_TYPING_PARAMTERS = "extra_typing_paramters";
     public static final String EXTRA_NEW_MESSAGE_PARAMTERS = "extra_new_message_paramters";
@@ -130,11 +99,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_CHECK_QR_PARAMTERS = "extra_check_qr_paramters";
     public static final String EXTRA_GET_QR_PARAMTERS = "extra_get_qr_paramters";
     public static final String EXTRA_ON_UPDTE_MESSAGE_PARAMTERS = "extra_update_message_paramters";
-
-
-
-
-
     public static final String EXTRA_ON_SEEN_PARAMTERS = "extra_on_seen_paramters";
     public static final String EXTRA_EVENT_TYPE = "extra_event_type";
     public static final String EXTRA_EVENT_CALL = "extra_event_call";
@@ -142,13 +106,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
     public static final String EXTRA_SETTINGS_CALL_PARAMTERS = "extra_settings_call_paramters";
     public static final String EXTRA_RECIVED_CALL_PARAMTERS = "extra_recived_call_paramters";
     public static final String EXTRA_MISSING_CALL_PARAMTERS = "extra_missing_call_paramters";
-
-
-
-
-
-
-
     private static final String TAG = "SocketIOService";
     private Socket mSocket;
     private Boolean isConnected = true;
@@ -162,13 +119,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private HeartBeat heartBeat;
     private String room_id;
     BaseApp myBase;
-
     private ConcurrentHashMap<String, SocketEventListener> listenersMap;
-
     //-------------------------------------------------------------------------------------------
     private IO.Options IOOption;
     public static final String EXTRA_EVENT_SEND_MESSAGE = "message_detection";
-
     @Override
     public void update(Observable observable, Object o) {
 
@@ -262,7 +216,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //        listenersMap.put(Socket.EVENT_DISCONNECT, new SocketEventListener(Socket.EVENT_DISCONNECT, this));
 //        listenersMap.put(Socket.EVENT_CONNECT_ERROR, new SocketEventListener(Socket.EVENT_CONNECT_ERROR, this));
 //        listenersMap.put(Socket.EVENT_CONNECT_TIMEOUT, new SocketEventListener(Socket.EVENT_CONNECT_TIMEOUT, this));
-
         listenersMap.put("connect user", new SocketEventListener("connect user", this));
         listenersMap.put("enter", new SocketEventListener("enter", this));
         listenersMap.put("seen", new SocketEventListener("seen", this));
@@ -278,7 +231,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("recivePeerId", new SocketEventListener("recivePeerId", this));
         listenersMap.put("fetchPeerId", new SocketEventListener("fetchPeerId", this));
         listenersMap.put("closeCall", new SocketEventListener("closeCall", this));
-
         listenersMap.put("check connect", new SocketEventListener("check connect", this));
         listenersMap.put("on typing", new SocketEventListener("on typing", this));
         listenersMap.put("new message", new SocketEventListener("new message", this));
@@ -288,14 +240,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
         listenersMap.put("askForVideo", new SocketEventListener("askForVideo", this));
         listenersMap.put("turn_to_video", new SocketEventListener("turn_to_video", this));
         listenersMap.put("sdp", new SocketEventListener("sdp", this));
-
-
-
-
-
-
-
-
     }
 
     @Override
@@ -355,8 +299,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     break;
                 case EVENT_TYPE_TYPING:
                     System.out.println("EVENT_TYPE_TYPING");
-
-
                     if (isSocketConnected()) {
 //                        sendMessage(chat, eventType);
                         String typingString = intent.getExtras().getString(EXTRA_TYPING_PARAMTERS);
@@ -364,13 +306,15 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         onTyping(typingString);
                     }
                     break;
-
                 case EVENT_TYPE_ENTER:
                     System.out.println("EVENT_TYPE_ENTER");
-
                     String paramter = intent.getExtras().getString(EXTRA_ENTER_PARAMTERS);
-
-                    if (isSocketConnected()) {
+                    if (!mSocket.connected()) {
+                        mSocket.connect();
+                        joinSocket();
+                        Log.i(TAG, "reconnecting socket...");
+                        enter(paramter);
+                    } else {
                         enter(paramter);
                     }
                     break;
@@ -1239,19 +1183,16 @@ public void onTaskRemoved(Intent rootIntent) {
 
                     }
                     else if (type.equals("offer")) {
-
                         System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO"+args[0].toString());
                         intent = new Intent(RequestCallActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
                         intent.putExtra("Call Sdp", args[0].toString());
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-
                     }
                     else if (type.equals("answer"))  {
                         intent = new Intent(ResponeCallActivity.ON_RECIVE_MESSAGE);
                         intent.putExtra("Call Sdp", args[0].toString());
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                     }
-
                    else {
                         intent = new Intent(RequestCallActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
                         intent.putExtra("Call Sdp", args[0].toString());
@@ -1260,22 +1201,10 @@ public void onTaskRemoved(Intent rootIntent) {
                         intent.putExtra("Call Sdp", args[0].toString());
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                     }
-
-
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-
-
-
-
-
                 break;
-
-
         }
     }
 }

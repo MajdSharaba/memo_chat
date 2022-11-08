@@ -1,9 +1,11 @@
 package com.yawar.memo.service;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
+import android.system.StructTimespec;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -13,6 +15,11 @@ import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.yawar.memo.Api.ServerApi;
@@ -29,6 +36,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -215,6 +223,14 @@ public class FirebaseMessageReceiver
                             .putString("fcm_token", remoteMessage.getData().get("fcm_token")).build();
 
 
+
+
+                    sendMessageStateTwo(remoteMessage.getData().get("sender_id"), message, remoteMessage.getData().get("type"),
+                            remoteMessage.getData().get("message_id") , remoteMessage.getData().get("dateTime"), remoteMessage.getData().get("chat_id"));
+
+
+
+
                     OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)
                             .setInputData(inputDataNotification)
                             .addTag(workTag)
@@ -236,5 +252,59 @@ void wackLock(){
             wakeLock.acquire(1*60*1000L);
 
 }
+
+
+
+    public void sendMessageStateTwo ( String anthorUserId, String message, String typeMessage,
+    String messageId , String dateTime, String chatId ) {
+        BaseApp myBase = BaseApp.getInstance();
+        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+
+        // creating a new variable for our request queue
+        RequestQueue queue = Volley.newRequestQueue(FirebaseMessageReceiver.this);
+        // on below line we are calling a string
+        // request method to post the data to our API
+        // in this we are calling a post method.
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"change_state", new com.android.volley.Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                System.out.println("responseeee"+response);
+
+            }
+        }, new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("erroreeee"+error);
+
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() {
+                // below line we are creating a map for
+                // storing our values in key and value pair.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // on below line we are passing our key
+                // and value pair to our parameters.
+                params.put("my_id", classSharedPreferences.getUser().getUserId());
+                params.put("your_id", anthorUserId);
+                params.put("message", message);
+                params.put("message_type", typeMessage);
+                params.put("state", "2");
+                params.put("message_id", messageId);
+                params.put("sender_id", anthorUserId);
+                params.put("reciver_id",classSharedPreferences.getUser().getUserId());
+                params.put("chat_id",chatId);
+                params.put("dateTime",dateTime);
+
+                return params;
+            }
+        };
+        // below line is to make
+        // a json object request.
+        myBase.addToRequestQueue(request);
+    }
 }
 

@@ -37,10 +37,10 @@ class SearchModelView : ViewModel() {
 
         coroutineScope.launch {
 
-//            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
-//                .search(searchParameter,page,myId)
-            val getResponeDeferred = GdgApi.apiService
+            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
                 .search(searchParameter,page,myId)
+//            val getResponeDeferred = GdgApi.apiService
+//                .search(searchParameter,page,myId)
 
             try {
                 val listResult = getResponeDeferred?.await()

@@ -9,6 +9,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,7 @@ import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
 import com.yawar.memo.R
 import com.yawar.memo.adapter.DeviceLinkAdapter
+import com.yawar.memo.databinding.ActivityDevicesLinkBinding
 import com.yawar.memo.model.DeviceLinkModel
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
@@ -28,13 +30,13 @@ import java.util.*
 
 
 class DevicesLinkActivity : AppCompatActivity() {
-    lateinit var btnScan: Button
     var deviceLinkModels = ArrayList<DeviceLinkModel>()
     lateinit var mainAdapter: DeviceLinkAdapter
-    lateinit var recyclerView: RecyclerView
     lateinit var resultQr: String
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myId: String
+    lateinit var binding: ActivityDevicesLinkBinding
+
     private fun checkQr() {
         val service = Intent(this, SocketIOService::class.java)
         val `object` = JSONObject()
@@ -118,19 +120,17 @@ class DevicesLinkActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        setContentView(R.layout.activity_devices_link)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_devices_link)
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(recivecheckQr, IntentFilter(SCAN_QR))
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveGetQr, IntentFilter(GET_QR))
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myId = classSharedPreferences.getUser().userId.toString()
-        recyclerView = findViewById(R.id.recycler_view)
         //        deviceLinkModels.add(new DeviceLinkModel("chrome",""));
-        recyclerView.setLayoutManager(LinearLayoutManager(this))
+        binding.recyclerView.setLayoutManager(LinearLayoutManager(this))
         mainAdapter = DeviceLinkAdapter(this, deviceLinkModels)
-        recyclerView.setAdapter(mainAdapter)
-        btnScan = findViewById(R.id.btn_link)
-        btnScan.setOnClickListener(View.OnClickListener { barcodeLauncher.launch(ScanOptions()) })
+        binding.recyclerView.setAdapter(mainAdapter)
+        binding.btnLink.setOnClickListener(View.OnClickListener { barcodeLauncher.launch(ScanOptions()) })
     }
 
     private val barcodeLauncher = registerForActivityResult(

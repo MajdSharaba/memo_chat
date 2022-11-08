@@ -1,100 +1,114 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="75dp"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="5dp"
-    app:cardBackgroundColor="@color/backgroundColor"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardMaxElevation="5dp"
-    android:padding="5dp"
-    app:cardPreventCornerOverlap="true"
-    app:cardUseCompatPadding="false"
-    android:orientation="vertical">
-    <LinearLayout
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="searchRespone"
+            type="com.yawar.memo.model.SearchRespone" />
+    </data>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:id="@+id/layout_id">
-
-
-
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/iv_image"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/th"
-                android:layout_margin="5dp"
-                />
-
-
+        android:layout_height="75dp"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/backgroundColor"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardMaxElevation="5dp"
+        android:padding="5dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="false"
+        android:orientation="vertical"
+        >
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="5"
-            android:layout_marginStart="5dp"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            >
-
-            <TextView
-                android:id="@+id/tv_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:maxLength="30"
-                android:fontFamily="@font/roboto_bold"
-                android:textColor="@color/textColor"
-                android:text="@string/name"
-                android:textSize="16sp" />
-            <TextView
-                android:id="@+id/tv_number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:maxLines="1"
-                android:maxLength="30"
-                android:textDirection="ltr"
-                android:textColor="#808080"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-        <Button
-            android:id="@+id/btn_add"
-            android:layout_width="0dp"
-            android:layout_weight="0.7"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_toRightOf="@id/iv_image"
-            android:layout_marginTop="25dp"
-            android:layout_margin="10dp"
-            android:layout_gravity="center"
-            android:text="@string/add"
-            android:background="@null"
-            android:drawableTop="@drawable/ic_add_phone_green"
-            android:visibility="invisible"
-            android:textColor="@color/memo_background_color_new"
-            android:fontFamily="@font/roboto_regular"
-            android:textSize="10sp" />
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:id="@+id/layout_id">
 
 
-    </LinearLayout>
-    <include layout="@layout/item_divider"
-        android:layout_marginStart="50dp"
-        android:layout_width="match_parent"
-        android:layout_height="0.1dp">
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/iv_image"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/th"
+                    android:layout_margin="5dp"
+                    app:userImage = "@{searchRespone}"
+                    />
 
-    </include>
-</LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_marginStart="5dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tv_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:maxLines="1"
+                        android:maxLength="30"
+                        android:fontFamily="@font/roboto_bold"
+                        android:textColor="@color/textColor"
+                        android:text="@string/name"
+                        android:textSize="16sp"
+                        app:name = "@{searchRespone}"
+                        />
+
+                    <TextView
+                        android:id="@+id/tv_number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:maxLines="1"
+                        android:maxLength="30"
+                        android:textDirection="ltr"
+                        android:textColor="#808080"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btn_add"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.7"
+                    android:layout_height="match_parent"
+                    android:layout_toRightOf="@id/iv_image"
+                    android:layout_marginTop="25dp"
+                    android:layout_margin="10dp"
+                    android:layout_gravity="center"
+                    android:text="@string/add"
+                    android:background="@null"
+                    android:drawableTop="@drawable/ic_add_phone_green"
+                    android:visibility="invisible"
+                    android:textColor="@color/memo_background_color_new"
+                    android:fontFamily="@font/roboto_regular"
+                    android:textSize="10sp" />
 
 
-</androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <include
+                layout="@layout/item_divider"
+                android:layout_marginStart="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp">
+
+            </include>
+        </LinearLayout>
+
+
+    </androidx.cardview.widget.CardView>
+</layout>

@@ -1,18 +1,17 @@
 package com.yawar.memo.views
 
-import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.yawar.memo.R
+import com.yawar.memo.databinding.ActivityIntroBinding
+import com.yawar.memo.databinding.ActivityRequestCallBinding
 import com.yawar.memo.model.ChatRoomModel
 import com.yawar.memo.modelView.IntroActModelView
 import com.yawar.memo.sessionManager.ClassSharedPreferences
@@ -22,14 +21,14 @@ class IntroActivity : AppCompatActivity() {
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myBase: BaseApp
     lateinit var myId: String
+    lateinit var binding : ActivityIntroBinding
     var introActModelView: IntroActModelView? = null
-    lateinit var progressBar: ProgressBar
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_intro)
-        progressBar = findViewById(R.id.progress_circular)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_intro)
+
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
-        myId = classSharedPreferences.getUser().userId.toString()
+        myId = classSharedPreferences.user.userId.toString()
         myBase = BaseApp.getInstance()
         introActModelView = ViewModelProvider(this).get(IntroActModelView::class.java)
         introActModelView!!.loadData().observe(this, object : Observer<ArrayList<ChatRoomModel?>?> {
@@ -47,9 +46,9 @@ class IntroActivity : AppCompatActivity() {
         ) { aBoolean ->
             if (aBoolean != null) {
                 if (aBoolean) {
-                    progressBar.setVisibility(View.VISIBLE)
+                    binding.progressCircular.visibility = View.VISIBLE
                 } else {
-                    progressBar.setVisibility(View.GONE)
+                    binding.progressCircular.visibility = View.GONE
                 }
             }
         }

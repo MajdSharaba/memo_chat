@@ -1,6 +1,7 @@
 package com.yawar.memo.views;//package com.yawar.memo.views;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -50,6 +51,7 @@ import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.yawar.memo.call.CallProperty;
+import com.yawar.memo.databinding.ActivityRegisterBinding;
 import com.yawar.memo.model.SpecialNumber;
 import com.yawar.memo.modelView.RegisterViewModel;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -70,15 +72,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegisterActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
-    ImageView image;
-    Spinner dropdown;
     List<String> spennerItems = new ArrayList<String>();
     String spennerItemChooser;
-    EditText edFname,edLname;
+    ActivityRegisterBinding binding;
     byte[] inputData = new byte[]{};
     byte[] imageBytes = new byte[]{};
     ClassSharedPreferences classSharedPreferences;
-    Button btnRegister,btnSkip;
     private static final int PICK_IMAGE = 100;
     Uri imageUri = Uri.parse("n");
     Bitmap bitmap;
@@ -99,7 +98,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CallProperty.setStatusBarOrScreenStatus(this);
-        setContentView(R.layout.activity_register);
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_register);
         if(android.os.Build.MANUFACTURER.equals("Xiaomi")){
           showXhaomiDialog();
         }
@@ -108,26 +107,17 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     }
 
     private void initView() {
-        image = findViewById(R.id.imageProfile);
         spennerItemChooser=getResources().getString(R.string.choose_special_number);
         myBase = BaseApp.getInstance();
         authRepo = myBase.getAuthRepo();
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
-        edFname = findViewById(R.id.et_fName);
         if(classSharedPreferences.getUser()!=null) {
-            edFname.setText(classSharedPreferences.getUser().getUserName());
-            Glide.with(image).load(classSharedPreferences.getUser().getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(image);
+            binding.etFName.setText(classSharedPreferences.getUser().getUserName());
+            Glide.with(binding.imageProfile).load(classSharedPreferences.getUser().getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(binding.imageProfile);
 
         }
-        edLname = findViewById(R.id.et_lName);
-        image = findViewById(R.id.imageProfile);
-//        if (classSharedPreferences.getUser()!=null) {
-//            System.out.println(classSharedPreferences.getUser().getImage()+"classSharedPreferences.getUser()");
-//            Glide.with(image).load(classSharedPreferences.getUser().getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(image);
-//        }
-        btnRegister = findViewById(R.id.btn_Register);
+
         serverApi = new  ServerApi(RegisterActivity.this);
-        dropdown = findViewById(R.id.spinner1);
         registerViewModel = new ViewModelProvider(this).get(RegisterViewModel.class);
         progressDialog = new ProgressDialog(RegisterActivity.this);
         progressDialog.setMessage(getResources().getString(R.string.prograss_message));
@@ -191,10 +181,10 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
                 }
             }
         }});
-            dropdown.setAdapter(adapter1);
-            dropdown.setOnItemSelectedListener(this);
+        binding.spinner1.setAdapter(adapter1);
+        binding.spinner1.setOnItemSelectedListener(this);
 
-        image.setOnClickListener(new View.OnClickListener() {
+        binding.imageProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 openGallery();
@@ -248,11 +238,11 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             }
         });
         ///// register Button
-        btnRegister.setOnClickListener(new View.OnClickListener() {
+        binding.btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fName = edFname.getText().toString();
-                lName = edLname.getText().toString();
+                fName = binding.etFName.getText().toString();
+                lName = binding.etLName.getText().toString();
                 if(CheckAllFields()){
                     if(imageUri.toString().equals("n")){
                         if(classSharedPreferences.getUser()!=null) {
@@ -310,7 +300,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
                 Log.d("nameeeee>>>>  ", displayNamee);
             }
-                        image.setImageURI(imageUri);
+            binding.imageProfile.setImageURI(imageUri);
 
         }
     }

@@ -51,10 +51,10 @@ class ChatMessageRepoo {
             val chatMessageList = ArrayList<ChatMessage?>()
 
 
-//            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
-//                .getChatMessgeHistory( my_id,  anthor_user_id)
-            val getChatRoomsDeferred = GdgApi.apiService
+            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
                 .getChatMessgeHistory( my_id,  anthor_user_id)
+//            val getChatRoomsDeferred = GdgApi.apiService
+//                .getChatMessgeHistory( my_id,  anthor_user_id)
 
             try {
                 val listResult = getChatRoomsDeferred?.await()
@@ -288,10 +288,10 @@ class ChatMessageRepoo {
             var chatMessageList = _chatMessageistMutableLiveData.value
 
 
-//            var deleteDeferred =  GdgApi(AllConstants.base_node_url).apiService
-//                .deleteMessage(message_id,user_id)
-            var deleteDeferred =  GdgApi.apiService
+            var deleteDeferred =  GdgApi(AllConstants.base_node_url).apiService
                 .deleteMessage(message_id,user_id)
+//            var deleteDeferred =  GdgApi.apiService
+//                .deleteMessage(message_id,user_id)
 
 
             try {

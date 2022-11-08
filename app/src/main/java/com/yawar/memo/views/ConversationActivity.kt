@@ -35,6 +35,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -67,7 +68,7 @@ import com.yawar.memo.R
 import com.yawar.memo.adapter.ChatAdapter
 import com.yawar.memo.call.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.fragment.DialogFragmentVideoBeforeSend
+import com.yawar.memo.databinding.ActivityConversationBinding
 import com.yawar.memo.fragment.ForwardDialogFragment
 import com.yawar.memo.model.ChatMessage
 import com.yawar.memo.model.ChatRoomModel
@@ -90,34 +91,16 @@ import java.nio.file.Path
 import java.util.*
 class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     PickiTCallbacks , CallbackListener {
-    private var messageET: EditText? = null
-    private var tv_name: TextView? = null
-    private lateinit var tv_state: TextView
-    private lateinit var gallery: AppCompatTextView
-    private lateinit var pdf: AppCompatTextView
-    private lateinit var contact: AppCompatTextView
-    private lateinit var location: AppCompatTextView
-    private var fowordImageBtn: ImageView? = null
-    private lateinit var videoCallBtn: ImageView
-    private lateinit var audioCallBtn: ImageView
-    private var linerNoMessage: LinearLayout? = null
-    private var linerNameState: LinearLayout? = null
-    private lateinit var progressBar: ProgressBar
+    lateinit var  binding: ActivityConversationBinding
     var mediaControl: MediaController? = null
     private val requestcode = 1
     var first = true
-    private var backImageBtn: ImageView? = null
-    private lateinit var personImage: CircleImageView
-    private lateinit var messagesContainer: RecyclerView
-    private var sendMessageBtn: ImageButton? = null
-    private var sendImageBtn: ImageButton? = null
     var timeProperties: TimeProperties? = null
     var blockUserRepo: BlockUserRepo? = null
-    lateinit var textForBlock: TextView
+//    lateinit var textForBlock: TextView
     var blockedForMe = false
     var serverApi: ServerApi? = null
     var conversationModelView: ConversationModelView? = null
-    private var deletImageBtn: ImageButton? = null
     private var adapter: ChatAdapter? = null
     val myBase: BaseApp? = BaseApp.getInstance()
     var chatRoomRepoo: ChatRoomRepoo? = null
@@ -128,28 +111,20 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     var client: FusedLocationProviderClient? = null
     var latLng: LatLng? = null
     lateinit var stringLatLng: String
-    private lateinit var openMaps: LinearLayout
-    private lateinit var sendLocation: Button
-    private lateinit var relativeMaps: RelativeLayout
-    private lateinit var container: RelativeLayout
     var locationLatLng: LatLng? = null
     var chatMessageRepoo: ChatMessageRepoo? = null
-    private var cardOpenItLocation: CardView? = null
     var lat: String? = null
-    var view: RelativeLayout? = null
     var viewVisability = false
     private var userName: String? = null
     private var imageUrl: String? = null
     var bitmap: Bitmap? = null
     var imageString: String? = null
-    var toolbar: Toolbar? = null
     var audioPath: String? = null
     var audioName: String? = null
     var returnValue = ArrayList<String>()
     private var chatHistory: ArrayList<ChatMessage?>? = null
     private val deleteMessage = ArrayList<String?>()
-    var searchView: SearchView? = null
-    private val hasConnection = false
+   private val hasConnection = false
    private var timer: Timer? = Timer()
     private val DELAY: Long = 1000
     var user_id = "8"
@@ -157,17 +132,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     var specialNumber = ""
     private var permissions: Permissions? = null
     private var mediaRecorder: MediaRecorder? = null
-    var recordView: RecordView? = null
-    lateinit var recordButton: RecordButton
-    lateinit var messageLayout: LinearLayout
-    lateinit var personInformationLiner: LinearLayout
-    lateinit var toolsLiner: LinearLayout
     var classSharedPreferences: ClassSharedPreferences? = null
-    lateinit var messageLiner: LinearLayout
-    var imageLiner: LinearLayout? = null
-    var gallaryLiner: LinearLayout? = null
-    var fileLiner: LinearLayout? = null
-    var contactLiner: LinearLayout? = null
+
     private val check: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val check = intent.extras!!.getString("check")
@@ -477,9 +443,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         var message: String? = ""
         var type = ""
         var time: String? = "1646028789098"
+        var message_id: String? = ""
+
+
         try {
             type = chatMessage.getString("message_type")
             time = chatMessage.getString("dateTime")
+            message_id = chatMessage.getString("message_id")
             message = if (type == "text") {
                 chatMessage.getString("message")
             } else if (type == "imageWeb" || type == "location") {
@@ -505,7 +475,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             type,
             fcmToken,
             chat_id,
-            conversationModelView!!.blockedFor().value
+            conversationModelView!!.blockedFor().value,
+            message_id,
+                    time
         )
         println("contact $chatMessage")
         val service = Intent(this, SocketIOService::class.java)
@@ -583,19 +555,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     var pickiT: PickiT? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_conversation)
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_conversation)
+        setSupportActionBar(binding.toolbar)
         pickiT = PickiT(this, this, this)
         if (!isPermissionGranted) {
             askPermissions()
         }
-        reply = findViewById<View>(R.id.reply) as TextView
-        username = findViewById<View>(R.id.username) as TextView
-        close = findViewById<View>(R.id.close) as ImageButton
-        cardview = findViewById<View>(R.id.cardview) as CardView
-        linerNoMessage = findViewById(R.id.liner_no_messsage)
-        linerNameState = findViewById(R.id.name_state)
         pickiT = PickiT(this, this, this)
         initViews()
         initAction()
@@ -641,10 +606,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         conversationModelView = ViewModelProvider(this).get(
             ConversationModelView::class.java
         )
-        messageLiner = findViewById(R.id.liner)
-        videoCallBtn = findViewById(R.id.video_call)
-        audioCallBtn = findViewById(R.id.audio_call)
-        textForBlock = findViewById(R.id.text_for_block)
+
         serverApi = ServerApi(this)
         chatRoomRepoo = myBase?.chatRoomRepoo
         blockUserRepo = myBase?.blockUserRepo
@@ -652,7 +614,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         user_id = bundle!!.getString("sender_id", "1")
         anthor_user_id = bundle.getString("reciver_id", "2")
         userName = bundle.getString("name", "user")
-        println("userrrrNAme$userName")
         imageUrl = bundle.getString("image")
         specialNumber = bundle.getString("special", "")
         chat_id = bundle.getString("chat_id", "")
@@ -662,65 +623,28 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
         }
         fcmToken = bundle.getString("fcm_token", "")
-        personImage = findViewById(R.id.user_image)
         if (!imageUrl!!.isEmpty()) {
-            Glide.with(personImage).load(AllConstants.imageUrl + imageUrl)
+            Glide.with(binding.userImage).load(AllConstants.imageUrl + imageUrl)
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
-                .into(personImage)
+                .into(binding.userImage)
         }
         val blockedFor = bundle.getString("blockedFor", "null")
         conversationModelView!!.setBlockedFor(blockedFor)
         closeCurrentNotification()
         chatMessageRepoo = myBase?.chatMessageRepoo
         chatMessageRepoo?.loadChatRoom(user_id, anthor_user_id)
-        backImageBtn = findViewById(R.id.image_button_back)
-        progressBar = findViewById(R.id.progress_circular)
-        val linearLayout = findViewById<LinearLayout>(R.id.liner_conversation)
-        messagesContainer = findViewById(R.id.messagesContainer)
-        messagesContainer.setHasFixedSize(true)
+        binding.messagesContainer.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        messagesContainer.layoutManager = linearLayoutManager
-        messageET = findViewById(R.id.messageEdit)
-        sendMessageBtn = findViewById(R.id.btn_send_message_text)
-        sendImageBtn = findViewById(R.id.btn_send_message_image)
-        searchView = findViewById(R.id.search_con)
-        fowordImageBtn = findViewById(R.id.image_button_foword)
-        tv_name = findViewById(R.id.name)
-        tv_state = findViewById(R.id.state)
-        gallery = findViewById(R.id.gallery)
-        gallery.textSize = textSize
-        pdf = findViewById(R.id.pdf)
-        pdf.textSize = textSize
-        contact = findViewById(R.id.contact)
-        contact.textSize = textSize
-        location = findViewById(R.id.location)
-        location.textSize = textSize
-        view = findViewById(R.id.dataLayout)
-        imageLiner = findViewById(R.id.lytCameraPick)
-        fileLiner = findViewById(R.id.pickFile)
-        gallaryLiner = findViewById(R.id.lytGallaryPick)
-        contactLiner = findViewById(R.id.pick_contact)
+        binding.messagesContainer.layoutManager = linearLayoutManager
         permissions = Permissions()
-        messageLayout = findViewById(R.id.messageLayout)
-        personInformationLiner = findViewById(R.id.person_information_liner)
-        toolsLiner = findViewById(R.id.tools_liner_layout)
         supportMapFragment = supportFragmentManager
             .findFragmentById(R.id.google_map) as SupportMapFragment?
         client = LocationServices.getFusedLocationProviderClient(this)
-        recordView = findViewById(R.id.recordView)
-        recordButton = findViewById(R.id.recordButton)
-        deletImageBtn = findViewById(R.id.image_button_delete)
-        recordButton.setRecordView(recordView)
-        recordButton.isListenForRecord = false
-        deletImageBtn = findViewById(R.id.image_button_delete)
+        binding.recordButton.setRecordView(binding.recordView)
+        binding.recordButton.isListenForRecord = false
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         chatRoomRepoo?.setInChat(anthor_user_id, true)
-        container = findViewById(R.id.container)
-        openMaps = findViewById(R.id.pick_location)
-        sendLocation = findViewById(R.id.sendLocation)
-        relativeMaps = findViewById(R.id.relativeMaps)
-        cardOpenItLocation = findViewById(R.id.cardOpenItLocation)
         conversationModelView!!.blockedFor().observe(
             this
         ) { s ->
@@ -728,48 +652,48 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             if (s != null) {
                 when (s) {
                     user_id -> {
-                        textForBlock.text = resources.getString(R.string.block_message)
-                        audioCallBtn.isEnabled = false
-                        videoCallBtn.isEnabled = false
-                        tv_state.visibility = View.GONE
-                        textForBlock.visibility = View.VISIBLE
-                        messageLiner.visibility = View.GONE
+                        binding.textForBlock.text = resources.getString(R.string.block_message)
+                        binding.audioCall.isEnabled = false
+                        binding.videoCall.isEnabled = false
+                        binding.state.visibility = View.GONE
+                        binding.textForBlock.visibility = View.VISIBLE
+                        binding.liner.visibility = View.GONE
                         blockedForMe = true
                         isAnyOneBlock = true
                     }
                     anthor_user_id -> {
-                        textForBlock.visibility = View.VISIBLE
-                        messageLiner.visibility = View.GONE
-                        audioCallBtn.isEnabled = false
-                        videoCallBtn.isEnabled = false
-                        tv_state.visibility = View.GONE
-                        textForBlock.text = resources.getString(R.string.block_message2)
+                        binding.textForBlock.visibility = View.VISIBLE
+                        binding.liner.visibility = View.GONE
+                        binding.audioCall.isEnabled = false
+                        binding.videoCall.isEnabled = false
+                        binding.state.visibility = View.GONE
+                        binding.textForBlock.text = resources.getString(R.string.block_message2)
                         blockedForMe = false
                         isAnyOneBlock = true
                     }
                     "0" -> {
-                        textForBlock.visibility = View.VISIBLE
-                        messageLiner.visibility = View.GONE
-                        audioCallBtn.isEnabled = false
-                        videoCallBtn.isEnabled = false
-                        tv_state.visibility = View.GONE
-                        textForBlock.text = resources.getString(R.string.block_message2)
+                        binding.textForBlock.visibility = View.VISIBLE
+                        binding.liner.visibility = View.GONE
+                        binding.audioCall.isEnabled = false
+                        binding.videoCall.isEnabled = false
+                        binding.state.visibility = View.GONE
+                        binding.textForBlock.text = resources.getString(R.string.block_message2)
                         blockedForMe = true
                         isAnyOneBlock = true
                     }
                 }
             } else {
-                textForBlock.visibility = View.GONE
-                messageLiner.visibility = View.VISIBLE
+                binding.textForBlock.visibility = View.GONE
+                binding.liner.visibility = View.VISIBLE
                 blockedForMe = false
                 isAnyOneBlock = false
             }
             if (!isAnyOneBlock) {
-                textForBlock.visibility = View.GONE
-                messageLiner.visibility = View.VISIBLE
-                audioCallBtn.isEnabled = true
-                videoCallBtn.isEnabled = true
-                tv_state.visibility = View.VISIBLE
+                binding.textForBlock.visibility = View.GONE
+                binding.liner.visibility = View.VISIBLE
+                binding.audioCall.isEnabled = true
+                binding.videoCall.isEnabled = true
+                binding.state.visibility = View.VISIBLE
                 blockedForMe = false
             }
         }
@@ -804,21 +728,21 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             println("stateee$s")
             if (s != null) {
                 if (s == "true") {
-                    tv_state.visibility = View.VISIBLE
-                    tv_state.setText(R.string.connect_now)
+                    binding.state.visibility = View.VISIBLE
+                    binding.state.setText(R.string.connect_now)
                 } else if (s == "false") {
                     if (conversationModelView!!.lastSeen != "null") {
-                        tv_state.visibility = View.VISIBLE
-                        tv_state.text = resources.getString(R.string.last_seen) + " " + timeProperties!!.getDateForLastSeen(
+                        binding.state.visibility = View.VISIBLE
+                        binding.state.text = resources.getString(R.string.last_seen) + " " + timeProperties!!.getDateForLastSeen(
                             this,
                             conversationModelView!!.lastSeen.toLong()
                         )
                     } else {
-                        tv_state.visibility = View.GONE
+                        binding.state.visibility = View.GONE
                     }
                 }
             } else {
-                tv_state.visibility = View.GONE
+                binding.state.visibility = View.GONE
             }
         }
         conversationModelView!!.isTyping.observe(
@@ -827,11 +751,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             println("stateee$s")
             if (s != null) {
                 if (s == "true") {
-                    tv_state.setText(R.string.writing_now)
+                    binding.state.setText(R.string.writing_now)
                 } else if (conversationModelView!!.state.value == "true") {
-                    tv_state.setText(R.string.connect_now)
+                    binding.state.setText(R.string.connect_now)
                 } else {
-                    if (conversationModelView!!.lastSeen != "null") tv_state.text = resources.getString(
+                    if (conversationModelView!!.lastSeen != "null") binding.state.text = resources.getString(
                         R.string.last_seen
                     ) + " " + timeProperties!!.getDateForLastSeen(
                         this,
@@ -844,8 +768,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             Observer<ArrayList<ChatMessage?>?> { chatMessages ->
                 if (chatMessages != null) {
                     if (chatMessages.isEmpty()) {
-                        linerNoMessage!!.visibility = View.VISIBLE
-                        messagesContainer.visibility = View.GONE
+                        binding.linerNoMesssage.visibility = View.VISIBLE
+                        binding.messagesContainer.visibility = View.GONE
                     } else {
 
                         val list = ArrayList<ChatMessage?>()
@@ -859,11 +783,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         if (conversationModelView!!.isFirst.value!!) {
                         conversationModelView!!.setIsFirst(false)
                             if (conversationModelView!!.getChatMessaheHistory().value!!.size > 0) {
-                                messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
+                                binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
                             }
                     }
-                        linerNoMessage!!.visibility = View.GONE
-                        messagesContainer.visibility = View.VISIBLE
+                        binding.linerNoMesssage!!.visibility = View.GONE
+                        binding.messagesContainer.visibility = View.VISIBLE
                     }
 //                    if (!chatMessages.isEmpty() && conversationModelView!!.isFirst.value!!) {
 //                        conversationModelView!!.setIsFirst(false)
@@ -878,9 +802,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             if (chatMessages != null) {
                 //                    selectedMessage = chatMessages;
                 if (chatMessages.isEmpty()) {
-                    toolsLiner.visibility = View.GONE
-                    personInformationLiner.visibility = View.VISIBLE
-                    toolbar!!.setBackgroundColor(resources.getColor(R.color.memo_background_color))
+                    binding.toolsLinerLayout.visibility = View.GONE
+                    binding.personInformationLiner.visibility = View.VISIBLE
+                    binding.toolbar.setBackgroundColor(resources.getColor(R.color.memo_background_color))
                 }
             }
         }
@@ -889,13 +813,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         ) { aBoolean ->
             if (aBoolean != null) {
                 if (aBoolean) {
-                    progressBar.visibility = View.VISIBLE
-                    messagesContainer.visibility = View.GONE
-                    linerNoMessage!!.visibility = View.GONE
+                    binding.progressCircular.visibility = View.VISIBLE
+                    binding.messagesContainer.visibility = View.GONE
+                    binding.linerNoMesssage.visibility = View.GONE
                 } else {
-                    progressBar.visibility = View.GONE
-                    messagesContainer.visibility = View.VISIBLE
-                    linerNoMessage!!.visibility = View.VISIBLE
+                    binding.progressCircular.visibility = View.GONE
+                    binding.messagesContainer.visibility = View.VISIBLE
+                    binding.linerNoMesssage.visibility = View.VISIBLE
                 }
             }
         }
@@ -914,26 +838,26 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
         }
         adapter = ChatAdapter(this)
-        messagesContainer.adapter = adapter
-        messagesContainer.addOnLayoutChangeListener(OnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        binding.messagesContainer.adapter = adapter
+        binding.messagesContainer.addOnLayoutChangeListener(OnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
             if (bottom < oldBottom) {
-                messagesContainer.postDelayed(Runnable {
-                    if (adapter!!.currentList.size > 1) messagesContainer.smoothScrollToPosition(
+                binding.messagesContainer.postDelayed(Runnable {
+                    if (adapter!!.currentList.size > 1)  binding.messagesContainer.smoothScrollToPosition(
                         adapter!!.currentList.size - 1
                     )
                 }, 100)
             }
         })
-        openMaps.setOnClickListener(View.OnClickListener {
+        binding.pickLocation.setOnClickListener(View.OnClickListener {
             hideLayout()
             makeMapsAction()
-            container.visibility = View.GONE
-            relativeMaps.visibility = View.VISIBLE
-            sendLocation.visibility = View.VISIBLE
+            binding.container.visibility = View.GONE
+            binding.relativeMaps.visibility = View.VISIBLE
+            binding.sendLocation.visibility = View.VISIBLE
 
             //
         })
-        sendLocation.setOnClickListener(View.OnClickListener {
+        binding.sendLocation.setOnClickListener(View.OnClickListener {
             if (stringLatLng == null) {
                 return@OnClickListener
             }
@@ -955,8 +879,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
-            relativeMaps.visibility = View.GONE
-            container.visibility = View.VISIBLE
+            binding.relativeMaps.visibility = View.GONE
+            binding.container.visibility = View.VISIBLE
             val chatMessage = ChatMessage()
             chatMessage.id = message_id //dummy
             chatMessage.message = stringLatLng
@@ -972,12 +896,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
 
     private fun initAction() {
-        tv_name!!.text = userName
+        binding.name!!.text = userName
         //////////
-        messagesContainer.setOnClickListener {
+        binding.messagesContainer.setOnClickListener {
             println("pressssed") }
         /////////
-        linerNameState!!.setOnClickListener { view ->
+        binding.nameState!!.setOnClickListener { view ->
             val intent = Intent(view.context, UserInformationActivity::class.java)
             val bundle = Bundle()
             bundle.putString("user_id", anthor_user_id)
@@ -990,8 +914,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             intent.putExtras(bundle)
             startActivity(intent)
         }
-        backImageBtn!!.setOnClickListener { finish() }
-        messageET!!.addTextChangedListener(object : TextWatcher {
+        binding.imageButtonBack.setOnClickListener { finish() }
+        binding.messageEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
                 if (timer != null) {
@@ -1000,15 +924,15 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 //
                 onTyping(true)
                 if (charSequence.toString().trim { it <= ' ' }.isNotEmpty()) {
-                    sendMessageBtn!!.isEnabled = true
-                    recordButton.visibility = View.GONE
-                    sendMessageBtn!!.visibility = View.VISIBLE
+                    binding.btnSendMessageText.isEnabled = true
+                    binding.recordButton.visibility = View.GONE
+                    binding.btnSendMessageText.visibility = View.VISIBLE
                 } else {
-                    sendMessageBtn!!.isEnabled = false
-                    sendMessageBtn!!.visibility = View.GONE
-                    cardview!!.visibility =
+                    binding.btnSendMessageText.isEnabled = false
+                    binding.btnSendMessageText.visibility = View.GONE
+                    binding.cardview.visibility =
                         View.GONE
-                    recordButton.visibility = View.VISIBLE
+                    binding.recordButton.visibility = View.VISIBLE
                 }
             }
 
@@ -1025,14 +949,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
         })
         ///for send textMessage
-        sendImageBtn!!.setOnClickListener { // MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.song);
+        binding.btnSendMessageImage.setOnClickListener { // MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.song);
             if (!viewVisability) {
                 showLayout()
             } else hideLayout()
         } ///////////////////
 
         /////////////////////////send btn
-        videoCallBtn.setOnClickListener { //                System.out.println("clickeddddddd");
+        binding.videoCall.setOnClickListener { //                System.out.println("clickeddddddd");
             //                startCall();
             val intent = Intent(this, RequestCallActivity::class.java)
             //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
@@ -1043,7 +967,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             intent.putExtra("image_profile", imageUrl)
             startActivity(intent)
         }
-        audioCallBtn.setOnClickListener {
+        binding.audioCall.setOnClickListener {
             val intent = Intent(this, RequestCallActivity::class.java)
             intent.putExtra("anthor_user_id", anthor_user_id)
             intent.putExtra("user_name", userName)
@@ -1052,11 +976,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             intent.putExtra("image_profile", imageUrl)
             startActivity(intent)
         }
-        sendMessageBtn!!.setOnClickListener(View.OnClickListener {
-            username!!.visibility = View.GONE
-            reply!!.visibility = View.GONE
+        binding.btnSendMessageText.setOnClickListener(View.OnClickListener {
+            binding.username.visibility = View.GONE
+            binding.reply.visibility = View.GONE
             val message_id = System.currentTimeMillis().toString() + "_" + user_id
-            val messageText = messageET!!.text.toString()
+            val messageText = binding.messageEdit.text.toString()
             if (TextUtils.isEmpty(messageText)) {
                 return@OnClickListener
             }
@@ -1087,11 +1011,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             chatMessage.isChecked = false
             chatMessage.id = message_id
             chatMessage.isUpdate = "0"
-            messageET!!.setText("")
+            binding.messageEdit.setText("")
             displayMessage(chatMessage)
             newMeesage(jsonObject)
         })
-        searchView!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.searchCon.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
             }
@@ -1102,7 +1026,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
         })
         ////to pick image
-        imageLiner!!.setOnClickListener {
+        binding.lytCameraPick.setOnClickListener {
             hideLayout()
             val options = Options.init()
                 .setRequestCode(PICK_IMAGE_VIDEO) //Request code for activity results
@@ -1115,7 +1039,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             Pix.start(this, options)
         }
         ////pick from gallery
-        gallaryLiner!!.setOnClickListener {
+        binding.lytGallaryPick.setOnClickListener {
             hideLayout()
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
@@ -1127,20 +1051,20 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             )
         }
         //// to pick file
-        fileLiner!!.setOnClickListener {
+        binding.pickFile.setOnClickListener {
             hideLayout()
             println("file")
             askPermissionAndBrowseFile()
         }
-        contactLiner!!.setOnClickListener {
+        binding.pickContact.setOnClickListener {
             hideLayout()
             checkContactpermission()
         }
         //// for voice record
-        recordButton.isListenForRecord = true
-        recordButton.setOnClickListener { view: View? -> }
-        recordView!!.setLessThanSecondAllowed(false)
-        recordView!!.setRecordPermissionHandler(RecordPermissionHandler {
+        binding.recordButton.isListenForRecord = true
+        binding.recordButton.setOnClickListener { view: View? -> }
+        binding.recordView.setLessThanSecondAllowed(false)
+        binding.recordView.setRecordPermissionHandler(RecordPermissionHandler {
             if (permissions!!.isRecordingOk(this)) if (permissions!!.isStorageReadOk(
                     this
                 )
@@ -1149,10 +1073,10 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             )
             false
         })
-        recordView!!.setSlideToCancelText(resources.getString(R.string.slide_to_cancel))
-        recordView!!.setCustomSounds(0, R.raw.record_finished, 0)
-        recordView!!.timeLimit = 30000 //30 sec
-        recordView!!.setOnRecordListener(object : OnRecordListener {
+        binding.recordView.setSlideToCancelText(resources.getString(R.string.slide_to_cancel))
+        binding.recordView.setCustomSounds(0, R.raw.record_finished, 0)
+        binding.recordView.timeLimit = 30000 //30 sec
+        binding.recordView.setOnRecordListener(object : OnRecordListener {
             override fun onStart() {
                 //Start Recording..
                 setUpRecording()
@@ -1162,8 +1086,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }
-                messageLayout.visibility = View.GONE
-                recordView!!.visibility = View.VISIBLE
+                binding.messageLayout.visibility = View.GONE
+                binding.recordView.visibility = View.VISIBLE
             }
 
             override fun onCancel() {
@@ -1172,8 +1096,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 mediaRecorder!!.release()
                 val file = File(audioPath.toString())
                 if (file.exists()) file.delete()
-                recordView!!.visibility = View.GONE
-                messageLayout.visibility = View.VISIBLE
+                binding.recordView.visibility = View.GONE
+                binding.messageLayout.visibility = View.VISIBLE
             }
 
             override fun onFinish(recordTime: Long, limitReached: Boolean) {
@@ -1184,8 +1108,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-                recordView!!.visibility = View.GONE
-                messageLayout.visibility = View.VISIBLE
+                binding.recordView.visibility = View.GONE
+                binding.messageLayout.visibility = View.VISIBLE
                 val f = File(audioPath.toString())
                 val chatMessage = FileUtil.uploadVoice(
                     audioName,
@@ -1203,13 +1127,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 mediaRecorder!!.release()
                 val file = File(audioPath.toString())
                 if (file.exists()) file.delete()
-                recordView!!.visibility = View.GONE
-                messageLayout.visibility = View.VISIBLE
+                binding.recordView.visibility = View.GONE
+                binding.messageLayout.visibility = View.VISIBLE
             }
         })
 
-        deletImageBtn!!.setOnClickListener { alertDeleteDialog() }
-        fowordImageBtn!!.setOnClickListener {
+        binding.imageButtonDelete.setOnClickListener { alertDeleteDialog() }
+        binding.imageButtonFoword.setOnClickListener {
             val fm = supportFragmentManager
             val forwardDialogFragment = ForwardDialogFragment.newInstance(
                 conversationModelView?.selectedMessage?.value!!, "jj"
@@ -1323,8 +1247,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         val viewRect = Rect()
-        view!!.getGlobalVisibleRect(viewRect)
-        if (view!!.visibility == View.VISIBLE && !viewRect.contains(
+        binding.dataLayout.getGlobalVisibleRect(viewRect)
+        if ( binding.dataLayout.visibility == View.VISIBLE && !viewRect.contains(
                 ev.rawX.toInt(),
                 ev.rawY.toInt()
             )
@@ -1422,7 +1346,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     this
                 )
             }
-            AllConstants.OPEN_MAP_PERMISSION -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            AllConstants.OPEN_MAP_PERMISSION -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 openMap()
             } else {
@@ -1472,26 +1396,26 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
 
     private fun showLayout() {
-        val radius = Math.max(view!!.width, view!!.height).toFloat()
+        val radius = Math.max( binding.dataLayout.width,  binding.dataLayout.height).toFloat()
         val animator =
-            ViewAnimationUtils.createCircularReveal(view, view!!.left, view!!.top, 0f, radius * 2)
+            ViewAnimationUtils.createCircularReveal( binding.dataLayout, binding.dataLayout.left,  binding.dataLayout.top, 0f, radius * 2)
         animator.duration = 800
-        view!!.visibility = View.VISIBLE
+       binding.dataLayout.visibility = View.VISIBLE
         viewVisability = true
         animator.start()
     }
 
     private fun hideLayout() {
-        val radius = Math.max(view!!.width, view!!.height).toFloat()
+        val radius = Math.max( binding.dataLayout.width,  binding.dataLayout.height).toFloat()
         val animator =
-            ViewAnimationUtils.createCircularReveal(view, view!!.left, view!!.top, radius * 2, 0f)
+            ViewAnimationUtils.createCircularReveal( binding.dataLayout,  binding.dataLayout.left,  binding.dataLayout.top, radius * 2, 0f)
         animator.duration = 800
         viewVisability = false
-        view!!.visibility = View.INVISIBLE
+        binding.dataLayout.visibility = View.INVISIBLE
         animator.addListener(object : Animator.AnimatorListener {
             override fun onAnimationStart(animation: Animator) {}
             override fun onAnimationEnd(animation: Animator) {
-                view!!.visibility = View.INVISIBLE
+                binding.dataLayout.visibility = View.INVISIBLE
                 viewVisability = false
             }
 
@@ -1504,9 +1428,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
 
     private fun scroll() {
-        messagesContainer.postDelayed({
+        binding.messagesContainer.postDelayed({
             if (conversationModelView!!.getChatMessaheHistory().value!!.size > 0) {
-                messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
+                binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
             }
         }, 500)
     }
@@ -1653,8 +1577,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     if (!FileUtil.isVideoFile(selectedMediaUri.toString())) {
                         showImageBeforeSend(selectedMediaUri, "pix")
                     } else {
-//                        showVideoBeforeSend(selectedMediaUri, "pix")
-                        showDialogVideo(selectedMediaUri.toString())
+                        showVideoBeforeSend(selectedMediaUri, "pix")
+//                        showDialogVideo(selectedMediaUri.toString())
                     }
                 }
                 PICK_IMAGE_FROM_GALLERY -> {
@@ -1707,7 +1631,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             chatMessage.isMe = true
             chatMessage.type = "contact"
             chatMessage.state = "0"
-            messageET!!.setText("")
+            binding.messageEdit.setText("")
             chatMessage.isChecked = false
             displayMessage(chatMessage)
         } catch (e: Exception) {
@@ -1746,20 +1670,24 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
 
     override fun onBackPressed() {
-        if (relativeMaps.visibility == View.VISIBLE) {
-            container.visibility = View.VISIBLE
-            relativeMaps.visibility = View.GONE
+        val intent = Intent(this, DashBord::class.java)
+
+        if (binding.relativeMaps.visibility == View.VISIBLE) {
+            binding.container.visibility = View.VISIBLE
+            binding.relativeMaps.visibility = View.GONE
         } else if (conversationModelView!!.selectedMessage.value != null) {
             if (conversationModelView!!.selectedMessage.value!!.size > 0) {
                 conversationModelView!!.clearSelectedMessage()
             } else if (viewVisability) {
                 hideLayout()
             } else {
+//                startActivity(intent)
                 finish()
             }
         } else if (viewVisability) {
             hideLayout()
         } else {
+//            startActivity(intent)
             finish()
         }
     }
@@ -1968,16 +1896,16 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
     override fun onClickLocation(position: Int, chatMessage: ChatMessage?, myMessage: Boolean) {
         if (myMessage) {
-            sendLocation.visibility = View.VISIBLE
+            binding.sendLocation.visibility = View.VISIBLE
         } else {
-            sendLocation.visibility = View.GONE
+            binding.sendLocation.visibility = View.GONE
         }
         val latlong = chatMessage!!.message.split(",").toTypedArray()
         val latitude = latlong[0].toDouble()
         val longitude = latlong[1].toDouble()
         locationLatLng = LatLng(latitude, longitude)
-        container.visibility = View.GONE
-        relativeMaps.visibility = View.VISIBLE
+        binding.container.visibility = View.GONE
+        binding.relativeMaps.visibility = View.VISIBLE
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -2041,16 +1969,20 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     @SuppressLint("ResourceType")
     override fun onLongClick(position: Int, chatMessage: ChatMessage?, isChecked: Boolean) {
         println(isChecked)
-        personInformationLiner.visibility = View.GONE
-        toolbar!!.setBackgroundColor(resources.getColor(R.color.memo_background_color))
-        conversationModelView!!.setMessageChecked(chatMessage!!.id, isChecked)
-        toolsLiner.visibility = View.VISIBLE
+        binding.personInformationLiner.visibility = View.GONE
+        binding.toolbar.setBackgroundColor(resources.getColor(R.color.memo_background_color))
+        conversationModelView?.setMessageChecked(chatMessage!!.id, isChecked)
+        binding.toolsLinerLayout.visibility = View.VISIBLE
         if (isChecked) {
             conversationModelView!!.addSelectedMessage(chatMessage)
-            deleteMessage.add("\"" + chatMessage.id + "\"")
+            if (chatMessage != null) {
+                deleteMessage.add("\"" + chatMessage.id + "\"")
+            }
         } else {
             conversationModelView!!.removeSelectedMessage(chatMessage)
-            deleteMessage.remove("\"" + chatMessage.id + "\"")
+            if (chatMessage != null) {
+                deleteMessage.remove("\"" + chatMessage.id + "\"")
+            }
 
         }
     }
@@ -2119,7 +2051,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         val b = dialogBuilder.create()
         b.show()
     }
-
     private fun makeMapsAction() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -2135,7 +2066,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             )
         }
     }
-
     private val currentLocation: Unit
         private get() {
             //Initialize Task Location
@@ -2183,7 +2113,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 showGPSDisabledAlertToUser(SEND_LOCATION)
             }
         }
-
     private fun alertDeleteDialog() {
         for (message in conversationModelView!!.selectedMessage.value!!) {
             if (!message!!.isMe) {
@@ -2224,7 +2153,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         val alertDialog = dialog.create()
         alertDialog.show()
     }
-
     private fun checkContactpermission() {
         if (permissions!!.isContactOk(this)) {
             val `in` =
@@ -2234,11 +2162,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             permissions!!.requestContact(this)
         }
     }
-
     private fun askPermissions() {
         ActivityCompat.requestPermissions(this, callPermissions, requestcode)
     }
-
     private val isPermissionGranted: Boolean
         private get() {
             for (permission in callPermissions) {
@@ -2250,12 +2176,10 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
             return true
         }
-
     fun closeCurrentNotification() {
         val mNotificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         mNotificationManager.cancel(anthor_user_id.toInt())
     }
-
     private fun showGPSDisabledAlertToUser(requestcode: Int) {
         val alertDialogBuilder = AlertDialog.Builder(this)
         alertDialogBuilder.setMessage(getString(R.string.gps_message))
@@ -2276,7 +2200,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         val alert = alertDialogBuilder.create()
         alert.show()
     }
-
     fun download(chatMessage: ChatMessage?, d: File?, downloadUrl: String?, fileName: String?) {
         conversationModelView!!.setMessageDownload(chatMessage!!.id, true)
         val downloadID = PRDownloader.download(downloadUrl, d!!.path, fileName)
@@ -2384,7 +2307,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         }
         return null
     }
-
     fun downloadSocket(
         chatMessage: ChatMessage,
         d: File?,
@@ -2405,7 +2327,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
         })
     }
-
     @SuppressLint("Range")
     fun showImageBeforeSend(uri: Uri?, type: String) {
         val dialog = Dialog(this)
@@ -2471,7 +2392,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         }
         dialog.show()
     }
-
     @SuppressLint("Range")
     fun showVideoBeforeSend(uri: Uri?, type: String) {
         val dialog = Dialog(this)
@@ -2563,13 +2483,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         dialog.show()
     }
     private fun showDialogVideo(path: String) {
-        val dialogFragment = DialogFragmentVideoBeforeSend(this@ConversationActivity,path)
-        dialogFragment.show(supportFragmentManager, "signature")
+//        val dialogFragment = DialogFragmentVideoBeforeSend(this@ConversationActivity,path)
+//        dialogFragment.show(supportFragmentManager, "signature")
+
+
     }
     override fun onDataReceived(data: String) {
         Log.d(TAG, "onDataReceived: ${data}")
     }
-
     companion object {
         private val callPermissions =
             arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
@@ -2609,9 +2530,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             return true
         }
 
-        var reply: TextView? = null
-        var username: TextView? = null
-        var close: ImageButton? = null
-        var cardview: CardView? = null
+
     }
 }

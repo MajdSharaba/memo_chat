@@ -1,111 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="75dp"
-    app:cardElevation="0dp"
-    app:cardCornerRadius="5dp"
-    app:cardBackgroundColor="@color/backgroundColor"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardMaxElevation="5dp"
-    android:padding="5dp"
-    app:cardPreventCornerOverlap="true"
-    app:cardUseCompatPadding="false"
-    android:orientation="vertical">
-    <LinearLayout
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="callModel"
+            type="com.yawar.memo.model.CallModel" />
+    </data>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="75dp"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="5dp"
+        app:cardBackgroundColor="@color/backgroundColor"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardMaxElevation="5dp"
+        android:padding="5dp"
+        app:cardPreventCornerOverlap="true"
+        app:cardUseCompatPadding="false"
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:id="@+id/layout_id">
-
-
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:id="@+id/layout_id">
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/iv_image"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_margin="5dp"
-                    android:src="@drawable/th"  />
-
-
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="5"
-                android:layout_marginStart="5dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                >
-
-                <TextView
-                    android:id="@+id/tv_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_bold"
-                    android:textColor="@color/textColor"
-                    android:textSize="16sp" />
-
+                    android:src="@drawable/th"
+                    app:userImage = "@{callModel}"
+                    />
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_marginTop="5dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="5"
+                    android:layout_marginStart="5dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    >
-
-                    <ImageView
-                        android:id="@+id/image_call_status"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tv_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:background="@null"
-                        android:src="@drawable/ic_incoming_call"
-                        app:tint="@color/memo_background_color" />
+                        android:fontFamily="@font/roboto_bold"
+                        android:textColor="@color/textColor"
+                        android:textSize="16sp"
+                        app:name = "@{callModel}"
+                        />
 
-                <TextView
-                    android:id="@+id/tv_time"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:textColor="#808080"
-                    android:layout_margin="5dp"
-                    android:textSize="14sp" />
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/image_call_status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@null"
+                            android:src="@drawable/ic_incoming_call"
+                            app:tint="@color/memo_background_color_new"
+                            app:imageStatus = "@{callModel}"
+
+                            />
+
+                        <TextView
+                            android:id="@+id/tv_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="1"
+                            android:textColor="#808080"
+                            android:layout_margin="5dp"
+                            android:textSize="14sp"
+                            app:time = "@{callModel}"
 
 
+                            />
 
 
+                    </LinearLayout>
 
                 </LinearLayout>
 
+                <ImageView
+                    android:id="@+id/image_call_type"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.4"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:layout_margin="15dp"
+                    android:layout_gravity="center"
+                    android:background="?android:attr/actionBarItemBackground"
+                    android:src="@drawable/ic_call_blue"
+                    app:tint="@color/memo_background_color_new"
+                    app:imageType = "@{callModel}"
+                    />
+
+
             </LinearLayout>
-            <ImageView
-                android:id="@+id/image_call_type"
-                android:layout_width="0dp"
-                android:layout_weight="0.4"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="25dp"
-                android:layout_margin="15dp"
-                android:layout_gravity="center"
-                android:background="?android:attr/actionBarItemBackground"
-                android:src="@drawable/ic_call_blue"
-                app:tint="@color/memo_background_color" />
 
+            <include
+                layout="@layout/item_divider"
+                android:layout_marginStart="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="0.1dp">
 
+            </include>
 
         </LinearLayout>
-
-        <include layout="@layout/item_divider"
-            android:layout_marginStart="50dp"
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp">
-
-        </include>
-
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+    </androidx.cardview.widget.CardView>
+</layout>

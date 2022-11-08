@@ -21,6 +21,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.cardview.widget.CardView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -35,6 +36,10 @@ import com.google.firebase.storage.StorageReference
 import com.yawar.memo.Api.ServerApi
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.DialogImageChtBinding
+import com.yawar.memo.databinding.FragmentCallHistoryBinding
+import com.yawar.memo.databinding.FragmentSettingsBinding
+import com.yawar.memo.databinding.InputNameDialogBinding
 import com.yawar.memo.language.BottomSheetFragment
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.modelView.SettingsFragmentViewModel
@@ -56,44 +61,21 @@ import java.io.InputStream
 
 
 class SettingsFragment : Fragment() {
-    lateinit var imageView: CircleImageView
     lateinit var myBase: BaseApp
     private lateinit var rQueue: RequestQueue
+    lateinit var binding: FragmentSettingsBinding
     var currentLanguage: String? = "en"
     var currentLang: String? = null
+    lateinit var bitmap: Bitmap
     var seekValue = 2
     var progressDialog: ProgressDialog? = null
     var imageBytes = byteArrayOf()
     lateinit var settingsFragmentViewModel:SettingsFragmentViewModel
     var storage = FirebaseStorage.getInstance()
-    //  TextView name ;
-    lateinit var userName: TextView
-    lateinit var phoneNumber: TextView
-    lateinit var setPhoto: TextView
-    lateinit var setUserName: TextView
-    lateinit var devises: CardView
-    lateinit var dev: TextView
-    lateinit var bitmap: Bitmap
-    lateinit var recentCalls: CardView
-    lateinit var recentCall: TextView
-    lateinit var notificationAndSounds: CardView
-    lateinit var notificationAnd: TextView
-    lateinit var appearance: CardView
-    lateinit var Appearanc: TextView
-    lateinit var language: CardView
-    lateinit var languag: TextView
+
     lateinit var serverApi: ServerApi
     lateinit var imageUri: Uri
-    lateinit var fontSize: CardView
-    lateinit var fontSiz: TextView
-    lateinit var blockList: CardView
-    lateinit var askMemoQuesti: TextView
-    lateinit var deleteAccount: CardView
-    lateinit var preferene: TextView
-    lateinit var tellafriend: CardView
-    lateinit var tellafri: TextView
-    lateinit var logOut: CardView
-    lateinit var hel: TextView
+
 
     var userModel: UserModel? = null
 
@@ -103,13 +85,15 @@ class SettingsFragment : Fragment() {
     var lastName: String? = ""
     lateinit var authRepo: AuthRepo
 
+
     lateinit var blockUserRepo: BlockUserRepo
     lateinit var chatRoomRepoo: ChatRoomRepoo
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_settings, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings,container,false)
+        val view = binding.root
         currentLanguage = requireActivity().intent.getStringExtra(currentLang)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         userModel = classSharedPreferences.user
@@ -192,19 +176,16 @@ class SettingsFragment : Fragment() {
 
 
 
-        imageView = view.findViewById(R.id.imageView)
         Log.d(TAG, userModel!!.image!!+"imageeee")
         if (userModel!=null) {
 
-            Glide.with(imageView.context).load(AllConstants.imageUrl + userModel!!.image)
+            Glide.with(binding.imageView.context).load(AllConstants.imageUrl + userModel!!.image)
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
-                .into(imageView)
+                .into(binding.imageView)
 
             Log.d(TAG, AllConstants.imageUrl + userModel!!.image)
         }
-        userName = view.findViewById(R.id.username)
-        userName.text = userModel!!.userName + " " + userModel!!.lastName
-        phoneNumber = view.findViewById(R.id.phoneNumber)
+        binding.username.text = userModel!!.userName + " " + userModel!!.lastName
         if (userModel!!.phone != null) {
 //            val firstString = userModel!!.phone!!.substring(0, 4)
 //            val secondString = userModel!!.phone!!.substring(4, 7)
@@ -212,78 +193,74 @@ class SettingsFragment : Fragment() {
 //            val lastString = userModel!!.phone!!.substring(10)
 //            phoneNumber.text = "$firstString-$secondString-$thirtyString-$lastString"
         }
-        setPhoto = view.findViewById(R.id.selectImage)
-        setUserName = view.findViewById(R.id.setUserName)
-        devises = view.findViewById(R.id.devices)
-        dev = view.findViewById(R.id.dev)
-        appearance = view.findViewById(R.id.Appearance)
-        Appearanc = view.findViewById(R.id.Appearanc)
-        language = view.findViewById(R.id.language)
-        languag = view.findViewById(R.id.languag)
-        blockList = view.findViewById(R.id.contact_number_blocked)
-        askMemoQuesti = view.findViewById(R.id.askMemoQuesti)
-        deleteAccount = view.findViewById(R.id.delete_accont)
-        preferene = view.findViewById(R.id.preferene)
-        logOut = view.findViewById(R.id.log_out)
-        hel = view.findViewById(R.id.hel)
-        imageView.setOnClickListener {
+
+        binding.imageView.setOnClickListener {
             val dialog = Dialog(requireActivity())
-            dialog.setContentView(R.layout.dialog_image_cht)
+//            dialog.setContentView(R.layout.dialog_image_cht)
+            val dialogBinding: DialogImageChtBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(
+                    context
+                ), R.layout.dialog_image_cht, null, false
+            )
+            dialog.setContentView(dialogBinding.root)
             dialog.setTitle("Title...")
             dialog.window!!
                 .setLayout(
                     ViewGroup.LayoutParams.FILL_PARENT,
                     ViewGroup.LayoutParams.FILL_PARENT
                 )
-            val image: PhotoView = dialog.findViewById(R.id.photo_view)
-            Glide.with(image.context).load(AllConstants.imageUrl + userModel!!.image)
+            Glide.with(dialogBinding.photoView.context).load(AllConstants.imageUrl + userModel!!.image)
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
                 .centerCrop()
-                .into(image)
+                .into(dialogBinding.photoView)
             dialog.show()
         }
 
-        userName.setOnClickListener {
+        binding.username.setOnClickListener {
             Toast.makeText(
                 activity,
                 "This User Name",
                 Toast.LENGTH_SHORT
             ).show()
         }
-        phoneNumber.setOnClickListener {
+        binding.phoneNumber.setOnClickListener {
             Toast.makeText(
                 activity,
                 "This phoneNumber",
                 Toast.LENGTH_SHORT
             ).show()
         }
-        setPhoto.setOnClickListener {
+        binding.selectImage.setOnClickListener {
 
             openGallery()
         }
-        setUserName.setOnClickListener {
+        binding.setUserName.setOnClickListener {
             val alert = AlertDialog.Builder(
                 requireActivity()
             )
-            val mView = layoutInflater.inflate(R.layout.input_name_dialog, null)
-            val txt_inputFirstName = mView.findViewById<EditText>(R.id.ed_first_name)
-            val txt_inputLastName = mView.findViewById<EditText>(R.id.ed_last_name)
-            txt_inputFirstName.hint = userModel!!.userName
-            txt_inputLastName.hint = userModel!!.lastName
-            val btn_cancel = mView.findViewById<Button>(R.id.btn_cancel)
-            val btn_okay = mView.findViewById<Button>(R.id.btn_add)
-            alert.setView(mView)
+            val viewBinding : InputNameDialogBinding = DataBindingUtil.inflate(
+                LayoutInflater.from(
+                    context
+                ), R.layout.input_name_dialog, null, false
+            )
+//            val txt_inputFirstName = mView.findViewById<EditText>(R.id.ed_first_name)
+//            val txt_inputLastName = mView.findViewById<EditText>(R.id.ed_last_name)
+            viewBinding.edFirstName.hint = userModel!!.userName
+            viewBinding.edLastName.hint = userModel!!.lastName
+//            val btn_cancel = mView.findViewById<Button>(R.id.btn_cancel)
+//            val btn_okay = mView.findViewById<Button>(R.id.btn_add)
+            alert.setView(viewBinding.root)
             val alertDialog = alert.create()
             alertDialog.setCanceledOnTouchOutside(false)
-            btn_cancel.setOnClickListener { alertDialog.dismiss() }
-            btn_okay.setOnClickListener {
-                firstName = if (!txt_inputFirstName.text.toString().isEmpty()) {
-                    txt_inputFirstName.text.toString()
+            viewBinding.btnCancel.setOnClickListener { alertDialog.dismiss() }
+            viewBinding.btnAdd.setOnClickListener {
+                firstName = if (!viewBinding.edFirstName.text.toString().isEmpty()) {
+                    viewBinding.edFirstName.text.toString()
                 } else {
                     userModel!!.userName
                 }
-                lastName = if (!txt_inputLastName.text.toString().isEmpty()) {
-                    txt_inputLastName.text.toString()
+                lastName = if (!viewBinding.edLastName.text.toString().isEmpty()) {
+                    viewBinding.edLastName.text.toString()
                 } else {
                     userModel!!.lastName
                 }
@@ -291,23 +268,23 @@ class SettingsFragment : Fragment() {
                     firstName.toString(), lastName.toString()
                 )
 //                serverApi.updateProfile(firstName, lastName, "", "", userModel!!.userId)
-                userName.text = "$firstName $lastName"
+                binding.username.text = "$firstName $lastName"
                 userModel!!.userName = firstName
                 userModel!!.lastName = lastName
                 alertDialog.dismiss()
             }
             alertDialog.show()
         }
-        devises.setOnClickListener {
+        binding.devices.setOnClickListener {
             val intent = Intent(activity, DevicesLinkActivity::class.java)
             startActivity(intent)
         }
 
-        appearance.setOnClickListener {
+        binding.Appearance.setOnClickListener {
             val intent = Intent(context, SettingsActivity::class.java)
             startActivity(intent) //                Toast.makeText(getActivity(), "This Notification And Sounds", Toast.LENGTH_SHORT).show();
         }
-        language.setOnClickListener {
+        binding.language.setOnClickListener {
             val fragment = BottomSheetFragment()
             fragment.show(
                 requireActivity().supportFragmentManager,
@@ -315,11 +292,11 @@ class SettingsFragment : Fragment() {
             )
         }
 
-        blockList.setOnClickListener {
+        binding.contactNumberBlocked.setOnClickListener {
             val intent = Intent(context, BlockedUsersActivity::class.java)
             startActivity(intent)
         }
-        deleteAccount.setOnClickListener {
+        binding.deleteAccont.setOnClickListener {
             val dialog = android.app.AlertDialog.Builder(
                 activity
             )
@@ -339,7 +316,7 @@ class SettingsFragment : Fragment() {
             alertDialog.show()
         }
 
-        logOut.setOnClickListener {
+        binding.logOut.setOnClickListener {
             val dialog = android.app.AlertDialog.Builder(
                 activity
             )
@@ -409,9 +386,9 @@ class SettingsFragment : Fragment() {
             }
             Log.d(TAG,imageUri.toString() +"imageUri" )
 
-            Glide.with(imageView.context).load(imageUri)
+            Glide.with(binding.imageView.context).load(imageUri)
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
-                .into(imageView)
+                .into(binding.imageView)
         }
     }
 

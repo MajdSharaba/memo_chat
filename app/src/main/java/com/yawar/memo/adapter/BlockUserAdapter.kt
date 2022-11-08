@@ -3,7 +3,6 @@ package com.yawar.memo.adapter
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
@@ -14,6 +13,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.yawar.memo.R
 import com.yawar.memo.adapter.BlockUserAdapter.ViewHolder.Companion.from
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.ItemBlockUserBinding
 import com.yawar.memo.model.UserModel
 
 class BlockUserAdapter(var activity: Activity, arrayList: List<UserModel>) :
@@ -55,12 +55,8 @@ class BlockUserAdapter(var activity: Activity, arrayList: List<UserModel>) :
         notifyDataSetChanged()
     }
 
-     class ViewHolder private  constructor (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        ///Initialize variable
-        var tvName: TextView = itemView.findViewById(R.id.tv_name)
-        var tvNumber: TextView = itemView.findViewById(R.id.tv_number)
-        var imageView: ImageView = itemView.findViewById(R.id.iv_image)
-        var button: Button = itemView.findViewById(R.id.btn_unBlock)
+     class ViewHolder private  constructor (val binding: ItemBlockUserBinding) : RecyclerView.ViewHolder(binding.root) {
+
 
 
         @SuppressLint("UseCompatLoadingForDrawables")
@@ -70,34 +66,25 @@ class BlockUserAdapter(var activity: Activity, arrayList: List<UserModel>) :
              mCallback: CallbackInterface?,
              activity: Activity
         ) {
-            tvName.text = model.userName
-            tvNumber.text = model.phone
-            println(model.image)
-            if (model.image!!.isNotEmpty()) {
-                Glide.with(imageView.context).load(AllConstants.imageUrl + model.image)
-                    .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
-                    .into(imageView)
-            } else {
-                imageView.setImageDrawable(activity.resources.getDrawable(R.drawable.th))
-            }
+            binding.blockUser = model
+            binding.executePendingBindings()
             itemView.setOnClickListener {
                 if (mCallback != null) {
-                    mCallback!!.onHandleSelection(position,model)
+                    mCallback.onHandleSelection(position,model)
                 }
             }
         }
 
        companion object {
             fun from( parent: ViewGroup): ViewHolder {
-                val view: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.item_block_user, parent, false)
-                return ViewHolder(view)
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ItemBlockUserBinding.inflate(layoutInflater,parent, false)
+                return ViewHolder(binding)
             }
         }
 
     }
 
-    ///Create constructor
 
 
 }

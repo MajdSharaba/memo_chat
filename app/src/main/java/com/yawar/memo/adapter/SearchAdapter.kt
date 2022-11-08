@@ -7,7 +7,6 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
@@ -20,6 +19,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.yawar.memo.R
 import com.yawar.memo.adapter.SearchAdapter.ViewHolders
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.ItemSearchBinding
 import com.yawar.memo.fragment.SearchFragment
 import com.yawar.memo.model.SearchRespone
 
@@ -108,11 +108,8 @@ class SearchAdapter(
         }
     }
 
-     class ViewHolders private  constructor (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var tvName: TextView = itemView.findViewById(R.id.tv_name)
-        var tvNumber: TextView = itemView.findViewById(R.id.tv_number)
-        var imageView: ImageView = itemView.findViewById(R.id.iv_image)
-        var button: Button = itemView.findViewById(R.id.btn_add)
+     class ViewHolders private  constructor (val binding: ItemSearchBinding) : RecyclerView.ViewHolder(binding.root) {
+
 
 
         @SuppressLint("UseCompatLoadingForDrawables")
@@ -122,27 +119,14 @@ class SearchAdapter(
             mCallback: CallbackInterface?
 
         ) {
-            tvName.text = model.name
-//            tvNumber.text = model.phone
-            println(model.image)
 
-            if (model.image!!.isNotEmpty()) {
-                Glide.with(imageView.context).load(AllConstants.imageUrl + model.image)
-                    .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
-                    .into(imageView)
-            } else {
-                imageView.setImageDrawable(activity.resources.getDrawable(R.drawable.th))
-            }
-//            if (!contactExists(model.phone,activity)) {
-//                button.visibility = View.VISIBLE
-//            } else {
-//                button.visibility = View.INVISIBLE
-//            }
+            binding.searchRespone = model
+            binding.executePendingBindings()
             itemView.setOnClickListener {
                 Log.d("searchFragment", "bind: ")
                 mCallback?.onClickItem(adapterPosition, model)
             }
-            button.setOnClickListener {
+            binding.btnAdd.setOnClickListener {
                 mCallback?.onHandleSelection(adapterPosition, model)
             }
         }
@@ -170,10 +154,10 @@ class SearchAdapter(
 
          companion object {
              fun from(parent: ViewGroup): ViewHolders {
-                 val view: View =
-                     LayoutInflater.from(parent.context).inflate(R.layout.item_search, parent, false)
+                 val layoutInflater = LayoutInflater.from(parent.context)
+                 val binding = ItemSearchBinding.inflate(layoutInflater,parent, false)
 
-                 return ViewHolders(view)
+                 return ViewHolders(binding)
              }
          }
 

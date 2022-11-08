@@ -42,10 +42,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
         coroutineScope.launch {
 
-//            val getResponeDeferred = GdgApi(AllConstants.base_node_url).apiService
-//                .updateImage(id,img)
-            val getResponeDeferred = GdgApi.apiService
+            val getResponeDeferred = GdgApi(AllConstants.base_node_url).apiService
                 .updateImage(id,img)
+//            val getResponeDeferred = GdgApi.apiService
+//                .updateImage(id,img)
 
 
             try {
@@ -86,10 +86,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
         coroutineScope.launch {
 
-//            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
-//                .updateProfile(firstNmae,lastName,id)
-            val getResponeDeferred = GdgApi.apiService
+            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
                 .updateProfile(firstNmae,lastName,id)
+//            val getResponeDeferred = GdgApi.apiService
+//                .updateProfile(firstNmae,lastName,id)
 
             try {
                 Log.d("updateProfile", "reg")
@@ -148,10 +148,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
         coroutineScope.launch {
 
-//            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
-//                .deleteAccount(sn, id)
-            val getResponeDeferred = GdgApi.apiService
+            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
                 .deleteAccount(sn, id)
+//            val getResponeDeferred = GdgApi.apiService
+//                .deleteAccount(sn, id)
 
             try {
                 Log.d("deleteAccount", "delete")

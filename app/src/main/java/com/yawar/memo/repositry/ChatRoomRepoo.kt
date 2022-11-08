@@ -40,10 +40,10 @@ class ChatRoomRepoo {
          _loadingMutableLiveData.value = true
         coroutineScope.launch {
 
-//            val getChatRoomsDeferred =   GdgApi(AllConstants.base_url).apiService
-//                .getChatRoom(user_id)
-            val getChatRoomsDeferred =   GdgApi.apiService
+            val getChatRoomsDeferred =   GdgApi(AllConstants.base_url).apiService
                 .getChatRoom(user_id)
+//            val getChatRoomsDeferred =   GdgApi.apiService
+//                .getChatRoom(user_id)
 
 
             try {
@@ -66,10 +66,10 @@ class ChatRoomRepoo {
      fun addToArchived(my_id : String, your_id :String) {
         coroutineScope.launch {
 
-//            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
-//                .addToArchived(my_id , your_id)
-            var srchivedDeferred =  GdgApi.apiService
+            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
                 .addToArchived(my_id , your_id)
+//            var srchivedDeferred =  GdgApi.apiService
+//                .addToArchived(my_id , your_id)
 
 
             try {
@@ -87,10 +87,10 @@ class ChatRoomRepoo {
      fun removeFromArchived(my_id : String, your_id :String) {
         coroutineScope.launch {
 
-//            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
-//                .removeFromArchived(my_id , your_id)
-            var srchivedDeferred =  GdgApi.apiService
+            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
                 .removeFromArchived(my_id , your_id)
+//            var srchivedDeferred =  GdgApi.apiService
+//                .removeFromArchived(my_id , your_id)
 
             try {
                 var listResult = srchivedDeferred.await()
@@ -108,8 +108,8 @@ class ChatRoomRepoo {
         var  chatRooms = _chatRoomListMutableLiveData.value
          coroutineScope.launch  {
 
-//             var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService.deleteChatRoom(my_id , your_id)
-             var deleteDeferred = GdgApi.apiService.deleteChatRoom(my_id , your_id)
+             var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService.deleteChatRoom(my_id , your_id)
+//             var deleteDeferred = GdgApi.apiService.deleteChatRoom(my_id , your_id)
 
 
 

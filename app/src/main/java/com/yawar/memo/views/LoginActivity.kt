@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
@@ -31,6 +32,7 @@ import com.hbb20.CountryCodePicker
 import com.yawar.memo.Api.AuthApi
 import com.yawar.memo.R
 import com.yawar.memo.call.CallProperty
+import com.yawar.memo.databinding.ActivityLoginBinding
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.modelView.LoginModelView
 import com.yawar.memo.repositry.AuthRepo
@@ -46,24 +48,14 @@ import java.util.*
 class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener,
     Observer {
     private val mCallbackManager = CallbackManager.Factory.create()
-    lateinit var sendBtn: Button
-    lateinit var googleBtn: ImageButton
-    lateinit var facebookBtn: LoginButton
-    lateinit var customFacebookBtn: ImageButton
-
+    lateinit var binding: ActivityLoginBinding
     private val EMAIL = "email"
-
     private val mAuth: FirebaseAuth? = null
     var name: String? = null
     var email: String? = null
-    private lateinit var ccp: CountryCodePicker
-    private var text: TextView? = null
     lateinit var loginModelView : LoginModelView
-
-
     var progressDialog: ProgressDialog? = null
     private val verificationId: String? = null
-    private lateinit var edtPhone: EditText
     private var firebaseAuth: FirebaseAuth? = null
     private var authStateListener: AuthStateListener? = null
     private var googleApiClient: GoogleApiClient? = null
@@ -74,25 +66,10 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CallProperty.setStatusBarOrScreenStatus(this)
-        setContentView(R.layout.activity_login)
-        text = findViewById(R.id.text)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         authApi = AuthApi(this)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         firebaseAuth = FirebaseAuth.getInstance()
-
-//        try {
-//            val info = packageManager.getPackageInfo(
-//                "com.yawar.memo",
-//                PackageManager.GET_SIGNATURES
-//            )
-//            for (signature in info.signatures) {
-//                val md: MessageDigest = MessageDigest.getInstance("SHA")
-//                md.update(signature.toByteArray())
-//                Log.d("KeyHash:", android.util.Base64.encodeToString(md.digest(), android.util.Base64.DEFAULT))
-//            }
-//        } catch (e: PackageManager.NameNotFoundException) {
-//        } catch (e: NoSuchAlgorithmException) {
-//        }
         loginModelView = ViewModelProvider(this).get(
             LoginModelView::class.java
         )
@@ -112,17 +89,13 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             .enableAutoManage(this, this)
             .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
             .build()
-
-        googleBtn = findViewById(R.id.btn_google)
-        facebookBtn = findViewById(R.id.btn_facebook)
-        customFacebookBtn = findViewById(R.id.custom_facebook_btn)
-        googleBtn.setOnClickListener(View.OnClickListener {
+        binding.btnGoogle.setOnClickListener(View.OnClickListener {
             val intent = Auth.GoogleSignInApi.getSignInIntent(googleApiClient!!)
             startActivityForResult(intent, RC_SIGN_IN)
         })
-        facebookBtn.setReadPermissions(Arrays.asList(EMAIL));
+        binding.btnFacebook.setReadPermissions(Arrays.asList(EMAIL));
 
-        facebookBtn.registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
+        binding.btnFacebook.registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d(TAG, "facebook:onSuccess:$loginResult")
                 handleFacebookAccessToken(loginResult.accessToken)
@@ -136,25 +109,20 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                 Log.d(TAG, "facebook:onError", error)
             }
         })
-        customFacebookBtn.setOnClickListener(View.OnClickListener {
-            facebookBtn.performClick();
+        binding.customFacebookBtn.setOnClickListener(View.OnClickListener {
+            binding.btnFacebook.performClick();
 
         })
-
-
-        sendBtn = findViewById(R.id.btn_send_code)
-        ccp = findViewById(R.id.ccp)
-        ccp.showNameCode(false)
-        edtPhone = findViewById(R.id.editTextPhone)
-        sendBtn.setOnClickListener(View.OnClickListener {
-            if (TextUtils.isEmpty(edtPhone.text.toString())) {
+        binding.ccp.showNameCode(false)
+        binding.btnSendCode.setOnClickListener(View.OnClickListener {
+            if (TextUtils.isEmpty(binding.editTextPhone.text.toString())) {
 
                 Toast.makeText(this, R.string.valied_message, Toast.LENGTH_SHORT)
                     .show()
             } else {
 
-                val code = ccp.selectedCountryCode
-                val phone = "+" + code + edtPhone.text.toString()
+                val code = binding.ccp.selectedCountryCode
+                val phone = "+" + code + binding.editTextPhone.text.toString()
                 classSharedPreferences.number = phone
                 authApi!!.sendVerificationCode(phone, this)
             }

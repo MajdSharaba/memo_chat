@@ -1,154 +1,160 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/tools"
-    android:id="@+id/item_relative"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layoutDirection="locale"
-    >
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
-        android:id="@+id/content"
+    <data>
+        <variable
+            name="chatMessage"
+            type="com.yawar.memo.model.ChatMessage" />
+    </data>
+
+
+    <RelativeLayout
+        android:id="@+id/item_relative"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/txtInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="30sp"
-            android:layout_gravity="right"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
-            android:visibility="gone" />
+        android:layoutDirection="locale">
 
         <LinearLayout
-            android:id="@+id/contentWithBackground"
-            android:layout_width="wrap_content"
+            android:id="@+id/content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:padding="3dp"
-            android:layout_margin="10dp"
-            android:orientation="vertical"
-            >
+            android:layout_alignParentRight="true"
+            android:orientation="vertical">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardOpenItLocation"
+            <TextView
+                android:id="@+id/txtInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="30sp"
+                android:layout_gravity="right"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/contentWithBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_above="@+id/openMaps"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:visibility="visible"
-                android:layout_margin="2dp"
-                android:background="@color/cardview_light_background"
-                 android:orientation="vertical">
+                android:layout_gravity="right"
+                android:padding="3dp"
+                android:layout_margin="10dp"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardOpenItLocation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/openMaps"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:visibility="visible"
+                    android:layout_margin="2dp"
+                    android:background="@color/cardview_light_background"
                     android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="45dp"
-                        android:background="@color/colorPrimaryDark"
-                        android:gravity="start|center">
-
-                        <de.hdodenhof.circleimageview.CircleImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:padding="7dp"
-                            android:src="@mipmap/ic_logo" />
-
-                        <TextView
-                            android:id="@+id/name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/location"
-                            android:textColor="@color/cardview_light_background"
-                            android:textSize="20dp"
-                            android:textStyle="bold" />
-
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical">
-<!--                        <com.google.android.gms.maps.MapView-->
-<!--                            android:name="com.google.android.apps.maps"-->
-<!--                            android:id="@+id/map"-->
-<!--                            android:layout_width="fill_parent"-->
-<!--                            android:layout_height="fill_parent"-->
-<!--                            map:uiMapToolbar="true"-->
-<!--                            map:cameraZoom="30"-->
-<!--                            map:mapType="normal"-->
-<!--                            map:liteMode="false"/>-->
 
-                        <ImageView
-                            android:layout_width="250dp"
-                            android:layout_height="75dp"
-                            android:background="@drawable/image_google_map" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="45dp"
+                            android:background="@color/colorPrimaryDark"
+                            android:gravity="start|center">
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:layout_width="50dp"
+                                android:layout_height="50dp"
+                                android:padding="7dp"
+                                android:src="@mipmap/ic_logo" />
+
+                            <TextView
+                                android:id="@+id/name"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/location"
+                                android:textColor="@color/cardview_light_background"
+                                android:textSize="20dp"
+                                android:textStyle="bold" />
+
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <!--                        <com.google.android.gms.maps.MapView-->
+                            <!--                            android:name="com.google.android.apps.maps"-->
+                            <!--                            android:id="@+id/map"-->
+                            <!--                            android:layout_width="fill_parent"-->
+                            <!--                            android:layout_height="fill_parent"-->
+                            <!--                            map:uiMapToolbar="true"-->
+                            <!--                            map:cameraZoom="30"-->
+                            <!--                            map:mapType="normal"-->
+                            <!--                            map:liteMode="false"/>-->
+
+                            <ImageView
+                                android:layout_width="250dp"
+                                android:layout_height="75dp"
+                                android:background="@drawable/image_google_map" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 
-                </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
 
 
-            </androidx.cardview.widget.CardView>
+                <!-- for time and seen or not seen-->
 
-
-
-
-            <!-- for time and seen or not seen-->
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_margin="5dp"
-                android:gravity="end"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/tv_date"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
+                    android:layout_margin="5dp"
                     android:gravity="end"
-                    android:textStyle="bold"
-                    android:maxWidth="240dp"
-                    android:text="11:45 Am"
-                    android:textColor="@color/white"
-                    android:textSize="11sp" />
+                    android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/iv_state"
-                    android:layout_width="15dp"
-                    android:layout_height="15dp"
-                    android:layout_gravity="end"
-                    android:textColor="@color/textColor"
-                    android:visibility="gone" />
-<!--                <com.google.android.gms.maps.MapView-->
-<!--                    android:name="com.google.android.apps.maps"-->
-<!--                    android:id="@+id/map"-->
-<!--                    android:layout_width="300dp"-->
-<!--                    android:layout_marginTop="5dp"-->
-<!--                    android:layout_height="250dp"-->
-<!--                    map:uiMapToolbar="false"-->
-<!--                    android:layout_marginBottom="20dp"-->
-<!--                    map:cameraZoom="13"-->
-<!--                    map:mapType="normal"-->
-<!--                    map:liteMode="true"/>-->
+                    <TextView
+                        android:id="@+id/tv_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:gravity="end"
+                        android:textStyle="bold"
+                        android:maxWidth="240dp"
+                        android:text="11:45 Am"
+                        android:textColor="@color/white"
+                        android:textSize="11sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_state"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="end"
+                        android:textColor="@color/textColor"
+                        android:visibility="gone" />
+                    <!--                <com.google.android.gms.maps.MapView-->
+                    <!--                    android:name="com.google.android.apps.maps"-->
+                    <!--                    android:id="@+id/map"-->
+                    <!--                    android:layout_width="300dp"-->
+                    <!--                    android:layout_marginTop="5dp"-->
+                    <!--                    android:layout_height="250dp"-->
+                    <!--                    map:uiMapToolbar="false"-->
+                    <!--                    android:layout_marginBottom="20dp"-->
+                    <!--                    map:cameraZoom="13"-->
+                    <!--                    map:mapType="normal"-->
+                    <!--                    map:liteMode="true"/>-->
+                </LinearLayout>
+
+
             </LinearLayout>
 
 
         </LinearLayout>
-
-
-    </LinearLayout>
-</RelativeLayout>
+    </RelativeLayout>
+</layout>

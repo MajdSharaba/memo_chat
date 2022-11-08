@@ -23,6 +23,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.widget.NestedScrollView
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -32,6 +33,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.yawar.memo.R
 import com.yawar.memo.adapter.SearchAdapter
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.FragmentChatRoomBinding
+import com.yawar.memo.databinding.FragmentSearchBinding
 import com.yawar.memo.model.SearchRespone
 import com.yawar.memo.modelView.SearchModelView
 import com.yawar.memo.permissions.Permissions
@@ -41,20 +44,16 @@ import com.yawar.memo.views.ConversationActivity
 import java.util.*
 
 class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
-    lateinit var recyclerView: RecyclerView
-    lateinit var searchView: SearchView
-//    lateinit var toolbar: Toolbar
-    var list = ArrayList<SearchRespone?>()
-    lateinit var progressBar: ProgressBar
 
+    var list = ArrayList<SearchRespone?>()
+    lateinit var binding: FragmentSearchBinding
     lateinit var searchAdapter: SearchAdapter
-    lateinit var bottomNavigationView: BottomNavigationView
     var res = ArrayList<SearchRespone>()
-    lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var permissions: Permissions
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var my_id: String
     var searchParamters = ""
+    lateinit var  linearLayoutManager : LinearLayoutManager
     private var timer: Timer? = Timer()
     private val DELAY: Long = 1000
     private lateinit var loadingPB: ProgressBar
@@ -63,32 +62,28 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
     private var FIRST_PAGE = 1
     var limit = 2
     var end = false
-    lateinit var search: TextView
     lateinit var searchModelView: SearchModelView
-    lateinit var linerNOSearchResult: LinearLayout
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_search, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search,container,false)
+        val view = binding.root
+
+
         timer = Timer()
         permissions = Permissions()
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         my_id = classSharedPreferences.user.userId.toString()
-        recyclerView = view.findViewById(R.id.recycler_view)
-        recyclerView.setHasFixedSize(true)
+        binding.recyclerView.setHasFixedSize(true)
         linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        progressBar = view.findViewById(R.id.progress_circular)
 //        toolbar = view.findViewById(R.id.toolbar)
-        search = view.findViewById(R.id.search)
-        searchView = view.findViewById(R.id.search_by_secret_number)
-        linerNOSearchResult = view.findViewById(R.id.liner_no_search_result)
         searchModelView = ViewModelProvider(this)[SearchModelView::class.java]
         checkpermission()
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.searchBySecretNumber.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (timer != null) {
                     timer!!.cancel()
@@ -122,7 +117,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
         })
 
 
-        recyclerView.layoutManager = linearLayoutManager
+        binding.recyclerView.layoutManager = linearLayoutManager
         searchAdapter = SearchAdapter(this, requireActivity())
         searchModelView.searchResponeArrayList.observe(
             requireActivity(),
@@ -131,11 +126,11 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
                 list = ArrayList()
                 if (searchResponeArrayList != null) {
                     if (searchResponeArrayList.isEmpty()) {
-                        linerNOSearchResult.visibility = View.VISIBLE
-                        recyclerView.visibility = View.GONE
+                        binding.linerNoSearchResult.visibility = View.VISIBLE
+                        binding.recyclerView.visibility = View.GONE
                     } else {
-                        linerNOSearchResult.visibility = View.GONE
-                        recyclerView.visibility = View.VISIBLE
+                        binding.linerNoSearchResult.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
                         for (searchRespone in searchResponeArrayList) {
                             if (searchRespone != null) {
                                 list.add(searchRespone.clone())
@@ -147,19 +142,19 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
                     }
                 }
             })
-        recyclerView.adapter = searchAdapter
+        binding.recyclerView.adapter = searchAdapter
         searchModelView.loadingMutableLiveData.observe(
             requireActivity()
         ) { aBoolean ->
             if (aBoolean != null) {
                 if (aBoolean) {
-                    recyclerView.visibility = View.GONE
-                    progressBar.visibility = View.VISIBLE
-                    linerNOSearchResult.visibility = View.GONE
+                    binding.recyclerView.visibility = View.GONE
+                    binding.progressCircular.visibility = View.VISIBLE
+                    binding.linerNoSearchResult.visibility = View.GONE
                 } else {
-                    recyclerView.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
-                    linerNOSearchResult.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.progressCircular.visibility = View.GONE
+                    binding.linerNoSearchResult.visibility = View.VISIBLE
                 }
             }
         }

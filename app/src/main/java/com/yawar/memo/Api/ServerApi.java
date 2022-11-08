@@ -46,7 +46,7 @@ public class ServerApi {
     public ServerApi(Activity context) {
         this.context = context;
     }
-    public void sendNotification(String message, String type,String fcmToken, String chat_id, String blockedFor) {
+    public void sendNotification(String message, String type,String fcmToken, String chat_id, String blockedFor, String messageId, String dateTime) {
         try {
             JSONObject data = new JSONObject();
             JSONObject android = new JSONObject();
@@ -58,6 +58,8 @@ public class ServerApi {
             data.put("sender_id", classSharedPreferences.getUser().getUserId());
             data.put("fcm_token", classSharedPreferences.getFcmToken());
             data.put("special", classSharedPreferences.getUser().getSecretNumber());
+            data.put("message_id", messageId);
+            data.put("dateTime", dateTime);
             data.put("blockedFor", blockedFor);
             data.put("type", type);
             JSONObject notification_data = new JSONObject();

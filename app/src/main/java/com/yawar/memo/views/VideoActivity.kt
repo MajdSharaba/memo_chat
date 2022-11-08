@@ -7,11 +7,13 @@ import android.view.WindowManager
 import android.widget.MediaController
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import com.yawar.memo.R
+import com.yawar.memo.databinding.ActivityVideoBinding
 
 class VideoActivity : AppCompatActivity() {
     var mediaControls: MediaController? = null
-    lateinit var videoView: VideoView
+    lateinit var binding: ActivityVideoBinding
     var bundle: Bundle? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -19,23 +21,22 @@ class VideoActivity : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        setContentView(R.layout.activity_video)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_video)
         val bundle = intent.extras
         val path = bundle!!.getString("path", "1")
-        videoView = findViewById(R.id.simpleVideoView)
-        videoView.requestFocus()
-        videoView.setOnPreparedListener(OnPreparedListener { mediaPlayer ->
+        binding.simpleVideoView.requestFocus()
+        binding.simpleVideoView.setOnPreparedListener(OnPreparedListener { mediaPlayer ->
             mediaPlayer.setOnVideoSizeChangedListener { mp, width, height ->
                 mediaControls = MediaController(this)
-                videoView.setMediaController(mediaControls)
-                mediaControls!!.setAnchorView(videoView)
+                binding.simpleVideoView.setMediaController(mediaControls)
+                mediaControls!!.setAnchorView(binding.simpleVideoView)
             }
         })
-        videoView.setMediaController(mediaControls)
-        videoView.setVideoURI(Uri.parse(path))
-        videoView.start()
-        videoView.setOnCompletionListener(OnCompletionListener { finish() })
-        videoView.setOnErrorListener(OnErrorListener { mp, what, extra ->
+        binding.simpleVideoView.setMediaController(mediaControls)
+        binding.simpleVideoView.setVideoURI(Uri.parse(path))
+        binding.simpleVideoView.start()
+        binding.simpleVideoView.setOnCompletionListener(OnCompletionListener { finish() })
+        binding.simpleVideoView.setOnErrorListener(OnErrorListener { mp, what, extra ->
             finish()
             false
         })

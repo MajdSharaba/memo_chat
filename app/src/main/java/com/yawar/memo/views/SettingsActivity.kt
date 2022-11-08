@@ -8,25 +8,30 @@ import android.preference.PreferenceManager
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.databinding.DataBindingUtil
 import androidx.preference.ListPreference
 import androidx.preference.Preference.SummaryProvider
 import androidx.preference.PreferenceFragmentCompat
 import com.yawar.memo.R
+import com.yawar.memo.databinding.ActivityBlockedUsersBinding
+import com.yawar.memo.databinding.SettingsActivityBinding
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 import java.util.*
 
 class SettingsActivity : AppCompatActivity(), OnSharedPreferenceChangeListener,
     SummaryProvider<ListPreference> {
+    lateinit var  binding: SettingsActivityBinding
     var classSharedPreferences: ClassSharedPreferences? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
+        binding = DataBindingUtil.setContentView(this, R.layout.settings_activity)
+
         supportActionBar!!.setTitle(R.string.appearance)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         supportFragmentManager
             .beginTransaction()
-            .replace(R.id.block, SettingsFragment())
+            .replace(binding.block.id, SettingsFragment())
             .commit()
         val supportActionBar = supportActionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)

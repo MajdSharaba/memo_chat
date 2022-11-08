@@ -18,6 +18,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,6 +26,7 @@ import com.yawar.memo.Api.ServerApi
 import com.yawar.memo.R
 import com.yawar.memo.adapter.ContactNumberAdapter
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.ActivityContactNumberBinding
 import com.yawar.memo.model.ContactModel
 import com.yawar.memo.model.SendContactNumberResponse
 import com.yawar.memo.modelView.ContactNumberViewModel
@@ -33,46 +35,37 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 
 class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.CallbackInterface {
-    lateinit var recyclerView: RecyclerView
-    lateinit var searchView: SearchView
-    lateinit var toolbar: Toolbar
+    lateinit var binding: ActivityContactNumberBinding
     lateinit var myId: String
     lateinit var myBase: BaseApp
     lateinit var serverApi: ServerApi
-    lateinit var linaerNoContact: LinearLayout
     lateinit var contactNumberViewModel: ContactNumberViewModel
-    lateinit var progressBar: ProgressBar
     lateinit var classSharedPreferences: ClassSharedPreferences
     var arrayList = ArrayList<ContactModel>()
     var sendContactNumberResponses = ArrayList<SendContactNumberResponse?>()
     var mainAdapter: ContactNumberAdapter? = null
     lateinit var permissions: Permissions
-    lateinit var contact_number: TextView
-    var textSize = 25f
-    lateinit var sharedPreferences: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_contact_number)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_contact_number)
+
         serverApi = ServerApi(this)
         permissions = Permissions()
-        linaerNoContact = findViewById(R.id.liner_no_contacts_number)
-        recyclerView = findViewById(R.id.recycler_view)
-        contact_number = findViewById(R.id.contact_number)
+
         myBase = BaseApp.getInstance()
         classSharedPreferences = myBase.classSharedPreferences
         myId = classSharedPreferences.user.userId.toString()
-        progressBar = findViewById<View>(R.id.progress_circular) as ProgressBar
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
 //        sendContactNumberResponses = myBase.contactNumberObserve.contactNumberResponseList
         mainAdapter = ContactNumberAdapter(this, sendContactNumberResponses)
-        recyclerView.adapter = mainAdapter
+        binding.recyclerView.adapter = mainAdapter
         permissions = Permissions()
         contactNumberViewModel = ViewModelProvider(this).get(
             ContactNumberViewModel::class.java
         )
         checkContactpermission()
-        searchView = findViewById(R.id.search_by_secret_number)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.searchBySecretNumber.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
             }
@@ -87,14 +80,14 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
         ) { sendContactNumberResponses ->
             if (sendContactNumberResponses != null) {
                 if (sendContactNumberResponses.isEmpty()) {
-                    linaerNoContact.visibility = View.VISIBLE
-                    recyclerView.visibility = View.GONE
+                    binding.linerNoContactsNumber.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.GONE
                 } else {
-                    linaerNoContact.visibility = View.GONE
-                    recyclerView.visibility = View.VISIBLE
+                    binding.linerNoContactsNumber.visibility = View.GONE
+                    binding.recyclerView.visibility = View.VISIBLE
                     mainAdapter =
                         ContactNumberAdapter(this, sendContactNumberResponses)
-                    recyclerView.adapter = mainAdapter
+                    binding.recyclerView.adapter = mainAdapter
                     mainAdapter!!.notifyDataSetChanged()
                 }
             }
@@ -105,13 +98,13 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
             if (aBoolean != null) {
                 println("loadinggggg")
                 if (aBoolean) {
-                    recyclerView.visibility = View.GONE
-                    progressBar.visibility = View.VISIBLE
-                    linaerNoContact.visibility = View.GONE
+                    binding.recyclerView.visibility = View.GONE
+                    binding.progressCircular.visibility = View.VISIBLE
+                    binding.linerNoContactsNumber.visibility = View.GONE
                 } else {
-                    recyclerView.visibility = View.VISIBLE
-                    progressBar.visibility = View.GONE
-                    linaerNoContact.visibility = View.VISIBLE
+                    binding.recyclerView.visibility = View.VISIBLE
+                    binding.progressCircular.visibility = View.GONE
+                    binding.linerNoContactsNumber.visibility = View.VISIBLE
                 }
             }
         }

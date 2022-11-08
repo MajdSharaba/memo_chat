@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,31 +18,26 @@ import com.tsuryo.swipeablerv.SwipeLeftRightCallback
 import com.tsuryo.swipeablerv.SwipeableRecyclerView
 import com.yawar.memo.R
 import com.yawar.memo.adapter.ArchivedAdapter
+import com.yawar.memo.databinding.ActivityArchivedBinding
 import com.yawar.memo.model.ChatRoomModel
 import com.yawar.memo.modelView.ArchivedActViewModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 
 class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
-    lateinit var recyclerView: SwipeableRecyclerView
-    lateinit var linear_no_archived: LinearLayout
      var archived: MutableList<ChatRoomModel> = ArrayList()
     lateinit var itemAdapter: ArchivedAdapter
-    lateinit var searchView: SearchView
-    lateinit var toolbar: Toolbar
     lateinit var archivedActViewModel: ArchivedActViewModel
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myId: String
     lateinit var myBase: BaseApp
-    lateinit var archive: TextView
+    lateinit var binding: ActivityArchivedBinding
+
 
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_archived)
-        recyclerView = findViewById(R.id.recycler_view)
-        linear_no_archived = findViewById(R.id.liner_no_chat_history)
-        archive = findViewById(R.id.archived)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_archived)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myId = classSharedPreferences.user.userId!!
         archivedActViewModel = ViewModelProvider(this).get(
@@ -49,10 +45,10 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
         )
         myBase = application as BaseApp
         //        chatRoomRepo = myBase.getChatRoomRepo();
-        recyclerView.setHasFixedSize(true)
+        binding.recyclerView.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        recyclerView.layoutManager = linearLayoutManager
+        binding.recyclerView.layoutManager = linearLayoutManager
         archivedActViewModel.loadData().observe(this,
             Observer<ArrayList<ChatRoomModel?>?> { chatRoomModels ->
                 if (chatRoomModels != null) {
@@ -67,19 +63,19 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
                         }
                     }
                     if (archived.isEmpty()) {
-                        linear_no_archived.visibility = View.VISIBLE
-                        recyclerView.visibility = View.GONE
+                        binding.linerNoChatHistory.visibility = View.VISIBLE
+                        binding.recyclerView.visibility = View.GONE
                         archivedActViewModel.setArchived(false)
                     } else {
-                        linear_no_archived.visibility = View.GONE
-                        recyclerView.visibility = View.VISIBLE
+                        binding.linerNoChatHistory.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
                         itemAdapter.setData(list)
                     }
                 }
             })
         itemAdapter = ArchivedAdapter(this)
-        recyclerView.adapter = itemAdapter
-        recyclerView.setListener(object : SwipeLeftRightCallback.Listener {
+        binding.recyclerView.adapter = itemAdapter
+        binding.recyclerView.setListener(object : SwipeLeftRightCallback.Listener {
             override fun onSwipedLeft(position: Int) {
                 println(position)
             }
@@ -88,8 +84,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
                 archivedActViewModel.removeFromArchived(myId, archived[position].other_id)
             }
         })
-        searchView = findViewById(R.id.search)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 return false
             }

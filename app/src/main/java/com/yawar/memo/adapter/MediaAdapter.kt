@@ -3,7 +3,6 @@ package com.yawar.memo.adapter
 import android.app.Dialog
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
@@ -11,68 +10,44 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.github.chrisbanes.photoview.PhotoView
 import com.yawar.memo.R
-import com.yawar.memo.adapter.MediaAdapter.RecyclerViewHolder.Companion.from
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.MediaItemBinding
 import com.yawar.memo.model.MediaModel
 
 class MediaAdapter(
     private val courseDataArrayList: ArrayList<MediaModel>,
     private val mcontext: Context,
 ) :
-    RecyclerView.Adapter<MediaAdapter.RecyclerViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerViewHolder {
+    RecyclerView.Adapter<MediaAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // Inflate Layout
         return from( parent)
     }
-
-    override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val imgid = courseDataArrayList[position]
-
         holder.bind(position,imgid,mcontext)
     }
-
-
-
     override fun getItemCount(): Int {
         // this method returns the size of recyclerview
         return courseDataArrayList.size
     }
 
     // View Holder Class to handle Recycler View.
-     class RecyclerViewHolder private  constructor (itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val courseIV: ImageView = itemView.findViewById(R.id.idIVcourseIV)
-
+     class ViewHolder(val binding: MediaItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(position: Int,model :MediaModel , mcontext: Context ) {
-            if (model.imgid!!.isNotEmpty()) {
+            binding.mediaModel = model
+            binding.executePendingBindings()
 
-                Glide.with(courseIV.context).load(AllConstants.imageUrlInConversation + model.imgid)
-                    .centerCrop()
-                    .apply(RequestOptions.placeholderOf(R.color.black).error(R.color.black))
-                    .into(courseIV)
-                courseIV.setOnClickListener {
-                    val dialog = Dialog(mcontext)
-                    dialog.setContentView(R.layout.dialog_image_cht)
-                    dialog.setTitle("Title...")
-                    dialog.window!!.setLayout(ViewGroup.LayoutParams.FILL_PARENT,
-                        ViewGroup.LayoutParams.FILL_PARENT)
-                    val image: PhotoView = dialog.findViewById(R.id.photo_view)
-                    Glide.with(image.context)
-                        .load(AllConstants.imageUrlInConversation + model.imgid).centerCrop()
-                        .apply(RequestOptions.placeholderOf(R.color.black).error(R.color.black))
-                        .into(image)
-                    dialog.show()
-                }
             }
         }
         companion object {
-            fun from( parent: ViewGroup): RecyclerViewHolder {
-                val view: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.media_item, parent, false)
-                return RecyclerViewHolder(view)
+            fun from( parent: ViewGroup): ViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = MediaItemBinding.inflate(layoutInflater,parent, false)
+                return ViewHolder(binding)
             }
         }
 
     }
 
 
-}

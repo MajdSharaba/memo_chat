@@ -16,6 +16,7 @@ import android.widget.LinearLayout
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.rxjava2.RxDataStore
 import androidx.lifecycle.ViewModelProvider
@@ -29,8 +30,10 @@ import com.github.chrisbanes.photoview.PhotoView
 import com.yawar.memo.Api.ServerApi
 import com.yawar.memo.R
 import com.yawar.memo.adapter.MediaAdapter
+import com.yawar.memo.call.CallProperty
 import com.yawar.memo.call.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.ActivityUserInformationBinding
 import com.yawar.memo.model.MediaModel
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.modelView.UserInformationViewModel
@@ -46,29 +49,16 @@ import org.json.JSONObject
 
 class UserInformationActivity : AppCompatActivity() {
 //    var EXAMPLE_COUNTER: Key<Int>
-    private lateinit var recyclerView: RecyclerView
     private val recyclerDataArrayList = ArrayList<MediaModel>()
     lateinit var serverApi: ServerApi
-    lateinit var circleImageView: CircleImageView
-    lateinit var linerMore: LinearLayout
-    lateinit var linerAudioCall: LinearLayout
-    lateinit var linerVideoCall: LinearLayout
-    lateinit var txtUserName: TextView
-    lateinit var txtSpecialNumber: TextView
-    lateinit var txtState: TextView
     lateinit var timeProperties: TimeProperties
     lateinit var dataStore: RxDataStore<Preferences>
+    lateinit var binding : ActivityUserInformationBinding
 //    lateinit var sharedPreferenceLiveData: SharedPreferenceStringLiveData
     var muteList: ArrayList<String?>? = ArrayList()
     lateinit var blockUserRepo: BlockUserRepo
     lateinit var userInformationViewModel: UserInformationViewModel
-    lateinit var call: TextView
-    lateinit var video: TextView
-    lateinit var message: TextView
-    lateinit var mute: TextView
-    lateinit var more: TextView
-    lateinit var special_number: TextView
-    lateinit var media: TextView
+
     lateinit var userName: String
     lateinit var sn: String
     lateinit var chatId: String
@@ -79,17 +69,12 @@ class UserInformationActivity : AppCompatActivity() {
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myBase: BaseApp
     var adapter: MediaAdapter? = null
-    var imgBtnMessage: ImageView? = null
     var p: PopupMenu? = null
 
     //    ChatRoomRepo chatRoomRepo;
     lateinit var blockedFor: String
     var isBlockForMe = false
-    lateinit var imageVideoCall: ImageView
-    lateinit var imageAudioCall: ImageView
-    lateinit var imageMore: ImageView
-    lateinit var imageChat: ImageView
-    lateinit var imageMute: ImageView
+
     private val check: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val check = intent.extras!!.getString("check")
@@ -162,22 +147,23 @@ class UserInformationActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        CallProperty.setStatusBarOrScreenStatus(this)
         super.onCreate(savedInstanceState)
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
-        setContentView(R.layout.activity_user_information)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_user_information)
+
         LocalBroadcastManager.getInstance(this).registerReceiver(check, IntentFilter(CHEK))
-        recyclerView = findViewById(R.id.idCourseRV)
         adapter = MediaAdapter(recyclerDataArrayList, this)
 //        EXAMPLE_COUNTER = intPreferencesKey("key")
         dataStore = BaseApp.getInstance().dataStore
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         // at last set adapter to recycler view.
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = adapter
+        binding.recycleView.layoutManager = layoutManager
+        binding.recycleView.adapter = adapter
         initViews()
         initAction()
     }
@@ -200,28 +186,19 @@ class UserInformationActivity : AppCompatActivity() {
         imageUrl = bundle.getString("image", "Default")
         blockedFor = bundle.getString("blockedFor", "")
         my_id = classSharedPreferences.user.userId.toString()
-        imageMute = findViewById(R.id.img_mute)
         serverApi = ServerApi(this)
-        linerMore = findViewById(R.id.liner_more)
-        linerVideoCall = findViewById(R.id.liner_video_call)
-        linerAudioCall = findViewById(R.id.liner_audio_call)
-        imageVideoCall = findViewById(R.id.img_video_call)
-        imageAudioCall = findViewById(R.id.img_audio_call)
-        imageMore = findViewById(R.id.img_more)
-        imageChat = findViewById(R.id.img_message)
         checkConnect()
         userInformationViewModel.setBlockedFor(blockedFor)
-        txtState = findViewById(R.id.last_seen)
         userInformationViewModel.state.observe(
             this
         ) { s ->
             println("stateee$s")
             if (s != null) {
                 if (s == "true") {
-                    txtState.setText(R.string.connect_now)
+                    binding.lastSeen.setText(R.string.connect_now)
                 } else if (s == "false") {
                     if (userInformationViewModel.getLastSeen() != "null") {
-                        txtState.text = resources.getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(
+                        binding.lastSeen.text = resources.getString(R.string.last_seen) + " " + timeProperties.getDateForLastSeen(
                             this,
                             userInformationViewModel.getLastSeen()!!
                                 .toLong()
@@ -247,7 +224,7 @@ class UserInformationActivity : AppCompatActivity() {
         ) { userModel ->
             Log.d("initInfooo", userModel.userName.toString())
             if (userModel != null) {
-                txtUserName.text = userModel.userName + " " + userModel.lastName
+                binding.txtUserName.text = userModel.userName + " " + userModel.lastName
                 if (userModel.phone != null ) {
                     if(userModel.phone!!.isNotEmpty()){
 
@@ -255,7 +232,7 @@ class UserInformationActivity : AppCompatActivity() {
                     val secondString = userModel.phone!!.substring(4, 7)
                     val thirtyString = userModel.phone!!.substring(7, 10)
                     val lastString = userModel.phone!!.substring(10)
-                    txtSpecialNumber.text = "$firstString-$secondString-$thirtyString-$lastString"
+                    binding.txtSpecialNumber.text = "$firstString-$secondString-$thirtyString-$lastString"
 
 //                    if (userModel.image != null) {
 //                        Glide.with(circleImageView.context)
@@ -308,9 +285,9 @@ class UserInformationActivity : AppCompatActivity() {
             this
         ) { aBoolean ->
             if (aBoolean) {
-                imageMute.setImageDrawable(resources.getDrawable(R.drawable.ic_un_mute))
+                binding.imgMute.setImageDrawable(resources.getDrawable(R.drawable.ic_un_mute))
             } else {
-                imageMute.setImageDrawable(resources.getDrawable(R.drawable.ic_bell))
+                binding.imgMute.setImageDrawable(resources.getDrawable(R.drawable.ic_bell))
             }
         }
 
@@ -345,39 +322,30 @@ class UserInformationActivity : AppCompatActivity() {
             if (s != null) {
                 if (s == my_id || s == "0") {
                     isBlockForMe = true
-                    imageAudioCall.isEnabled = false
-                    imageVideoCall.isEnabled = false
+                   binding.imgAudioCall.isEnabled = false
+                    binding.imgVideoCall.isEnabled = false
                 } else if (s == another_user_id) {
                     isBlockForMe = false
-                    imageAudioCall.isEnabled = false
-                    imageVideoCall.isEnabled = false
+                    binding.imgAudioCall.isEnabled = false
+                    binding.imgVideoCall.isEnabled = false
                 } else {
                     isBlockForMe = false
-                    imageAudioCall.isEnabled = true
-                    imageVideoCall.isEnabled = true
+                    binding.imgAudioCall.isEnabled = true
+                    binding.imgVideoCall.isEnabled = true
                 }
             } else {
                 isBlockForMe = false
-                imageAudioCall.isEnabled = true
-                imageVideoCall.isEnabled = true
+                binding.imgAudioCall.isEnabled = true
+                binding.imgVideoCall.isEnabled = true
             }
         }
-        circleImageView = findViewById(R.id.imageView)
-        txtUserName = findViewById(R.id.txt_user_name)
-        txtSpecialNumber = findViewById(R.id.txt_special_number)
-        call = findViewById(R.id.call)
-        video = findViewById(R.id.video)
-        message = findViewById(R.id.message)
-        mute = findViewById(R.id.mute)
-        more = findViewById(R.id.more)
-        special_number = findViewById(R.id.special_number)
-        media = findViewById(R.id.media)
+
         if (imageUrl != null) {
-            Glide.with(circleImageView.context)
+            Glide.with(binding.imageView.context)
                 .load(AllConstants.imageUrl + imageUrl)
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
                 .into(
-                    circleImageView
+                    binding.imageView
                 )
         }
 
@@ -387,7 +355,7 @@ class UserInformationActivity : AppCompatActivity() {
     }
 
     private fun initAction() {
-        imageChat.setOnClickListener {
+        binding.imgMessage.setOnClickListener {
             val bundle = Bundle()
             bundle.putString("reciver_id", another_user_id)
             bundle.putString("sender_id", my_id)
@@ -403,10 +371,10 @@ class UserInformationActivity : AppCompatActivity() {
             startActivity(intent)
         }
         //////
-        imageMore.setOnClickListener { //                block();
+        binding.imgMore.setOnClickListener { //                block();
             popupMenuExample()
         }
-        imageAudioCall.setOnClickListener { //                block();
+        binding.imgAudioCall.setOnClickListener { //                block();
             val intent = Intent(this@UserInformationActivity, RequestCallActivity::class.java)
             intent.putExtra("anthor_user_id", another_user_id)
             intent.putExtra("user_name", userName)
@@ -415,7 +383,7 @@ class UserInformationActivity : AppCompatActivity() {
             intent.putExtra("image_profile", imageUrl)
             startActivity(intent)
         }
-        imageVideoCall.setOnClickListener { //                block();
+        binding.imgVideoCall.setOnClickListener { //                block();
             val intent = Intent(this@UserInformationActivity, RequestCallActivity::class.java)
             //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
             intent.putExtra("anthor_user_id", another_user_id)
@@ -425,7 +393,7 @@ class UserInformationActivity : AppCompatActivity() {
             intent.putExtra("image_profile", imageUrl)
             startActivity(intent)
         }
-        imageMute.setOnClickListener { //                System.out.println("muteeeeeeeeeeeee");
+        binding.imgMute.setOnClickListener { //                System.out.println("muteeeeeeeeeeeee");
             //                JSONObject jsonObject = new JSONObject();
             if (userInformationViewModel.loadingMutableLiveData.value!!) {
                 muteList!!.remove(another_user_id)
@@ -437,7 +405,7 @@ class UserInformationActivity : AppCompatActivity() {
             classSharedPreferences.muteUsers = muteList
         }
 
-        circleImageView.setOnClickListener {
+        binding.imageView.setOnClickListener {
                 val dialog = Dialog(this)
                 dialog.setContentView(R.layout.dialog_image_cht)
                 dialog.setTitle("Title...")
@@ -455,7 +423,7 @@ class UserInformationActivity : AppCompatActivity() {
     }
 
     private fun popupMenuExample() {
-        val p = PopupMenu(this, linerMore)
+        val p = PopupMenu(this, binding.linerMore)
         p.menuInflater.inflate(R.menu.main_menu, p.menu)
         if (isBlockForMe) {
             p.menu.findItem(R.id.block).isVisible = false

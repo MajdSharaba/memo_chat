@@ -163,27 +163,29 @@ interface ChatApi {
 }
 
 
-    private val retrofit = Retrofit.Builder()
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .addCallAdapterFactory(CoroutineCallAdapterFactory())
-        .addConverterFactory(GsonConverterFactory.create())
-        .baseUrl(AllConstants.base_url_final)
-        .build()
-
-//fun retrofit(string: String): Retrofit {
-//         val retrofit = Retrofit.Builder()
+//    private val retrofit = Retrofit.Builder()
 //        .addConverterFactory(ScalarsConverterFactory.create())
 //        .addCallAdapterFactory(CoroutineCallAdapterFactory())
 //        .addConverterFactory(GsonConverterFactory.create())
-//        .baseUrl(string)
+//        .baseUrl(AllConstants.base_url_final)
 //        .build()
-//
-//    return retrofit
-//}
+
+fun retrofit(string: String): Retrofit {
+         val retrofit = Retrofit.Builder()
+        .addConverterFactory(ScalarsConverterFactory.create())
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .addConverterFactory(GsonConverterFactory.create())
+        .baseUrl(string)
+        .build()
+
+    return retrofit
+}
 
 
- public  object  GdgApi {
-   public val apiService: ChatApi = retrofit.create(ChatApi::class.java)
-//    val apiService: ChatApi = retrofit(string).create(ChatApi::class.java)
+// public  object  GdgApi {
+   public class GdgApi(string: String) {
+
+//   public val apiService: ChatApi = retrofit.create(ChatApi::class.java)
+    val apiService: ChatApi = retrofit(string).create(ChatApi::class.java)
 
 }

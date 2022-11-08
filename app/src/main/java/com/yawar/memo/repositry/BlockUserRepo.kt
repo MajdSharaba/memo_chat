@@ -49,12 +49,12 @@ import java.util.*
              val userBlockList = ArrayList<UserModel?>()
 
 
-//             var getBlockDeferred = GdgApi(AllConstants.base_node_url).apiService
-//
-//                 .getBlockKist(user_id)
-             var getBlockDeferred = GdgApi.apiService
+             var getBlockDeferred = GdgApi(AllConstants.base_node_url).apiService
 
                  .getBlockKist(user_id)
+//             var getBlockDeferred = GdgApi.apiService
+//
+//                 .getBlockKist(user_id)
 
 
              try {
@@ -128,9 +128,9 @@ import java.util.*
         coroutineScope.launch {
 
 //
-//            val respone =   GdgApi(AllConstants.base_node_url).apiService.blockUser(my_id, anthor_user_id)
+            val respone =   GdgApi(AllConstants.base_node_url).apiService.blockUser(my_id, anthor_user_id)
 
-            val respone =   GdgApi.apiService.blockUser(my_id, anthor_user_id)
+//            val respone =   GdgApi.apiService.blockUser(my_id, anthor_user_id)
 
 
 
@@ -164,10 +164,10 @@ import java.util.*
         coroutineScope.launch {
 
 
-//            var respone = GdgApi(AllConstants.base_node_url).apiService
-//                .unBlockUser(my_id, anthor_user_id)
-            var respone = GdgApi.apiService
+            var respone = GdgApi(AllConstants.base_node_url).apiService
                 .unBlockUser(my_id, anthor_user_id)
+//            var respone = GdgApi.apiService
+//                .unBlockUser(my_id, anthor_user_id)
             try {
                 val listResult = respone?.await()
 

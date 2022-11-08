@@ -39,10 +39,10 @@ class UserInformationRepo {
         _mediaModelsMutableLiveData.value = ArrayList()
         coroutineScope.launch {
 
-//            val getMediaDeferred = GdgApi(AllConstants.base_node_url).apiService
-//                .getMedia(user_id,anthor_user_id)\
-            val getMediaDeferred = GdgApi.apiService
+            val getMediaDeferred = GdgApi(AllConstants.base_node_url).apiService
                 .getMedia(user_id,anthor_user_id)
+//            val getMediaDeferred = GdgApi.apiService
+//                .getMedia(user_id,anthor_user_id)
 
             try {
                 val listResult = getMediaDeferred?.await()
@@ -72,10 +72,10 @@ class UserInformationRepo {
 
         coroutineScope.launch {
 
-//            val getMediaDeferred =  GdgApi(AllConstants.base_node_url).apiService
-//                .getUserInformation(anthor_user_id)
-            val getMediaDeferred =  GdgApi.apiService
+            val getMediaDeferred =  GdgApi(AllConstants.base_node_url).apiService
                 .getUserInformation(anthor_user_id)
+//            val getMediaDeferred =  GdgApi.apiService
+//                .getUserInformation(anthor_user_id)
             Log.d("getUserInformation", "getUserInformation: ")
 
             try {

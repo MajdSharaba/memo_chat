@@ -9,12 +9,15 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.yawar.memo.Api.AuthApi
 import com.yawar.memo.R
 import com.yawar.memo.call.CallProperty
+import com.yawar.memo.databinding.ActivityRegisterBinding
+import com.yawar.memo.databinding.ActivityVerificationBinding
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.modelView.VerficationViewModel
 import com.yawar.memo.repositry.AuthRepo
@@ -25,30 +28,23 @@ import org.json.JSONObject
 import java.util.*
 
 class VerificationActivity : AppCompatActivity(), java.util.Observer {
-    lateinit var virvectbtn: Button
-    lateinit var resendbtn: TextView
     lateinit var classSharedPreferences: ClassSharedPreferences
-    private lateinit var edtOTP: EditText
     lateinit var myBase: BaseApp
+    lateinit var binding: ActivityVerificationBinding
     var count = 60
     lateinit var authRepo: AuthRepo
     lateinit var verficationViewModel: VerficationViewModel
     lateinit var T: Timer
     lateinit var forceResendingToken: ForceResendingToken
-    lateinit var text: TextView
     lateinit var authApi: AuthApi
-    lateinit var orText: TextView
     var progressDialog: ProgressDialog?=null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CallProperty.setStatusBarOrScreenStatus(this)
-        setContentView(R.layout.activity_verification)
-        virvectbtn = findViewById(R.id.btn_verification)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_verification)
         authRepo = BaseApp.getInstance().authRepo
-        text = findViewById(R.id.text)
         progressDialog = ProgressDialog(this)
         progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
-        orText = findViewById(R.id.orText)
         verficationViewModel = ViewModelProvider(this).get(
             VerficationViewModel::class.java
         )
@@ -136,14 +132,12 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
             }
         }
         timer()
-        edtOTP = findViewById(R.id.et_verifiction)
-        resendbtn = findViewById(R.id.btn_resendCode)
-        resendbtn.isEnabled = false
+        binding.btnResendCode.isEnabled = false
         myBase = BaseApp.getInstance()
         forceResendingToken = myBase.forceResendingToken.getForceResendingToken()
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
-        virvectbtn.setOnClickListener(View.OnClickListener {
-            if (TextUtils.isEmpty(edtOTP.text.toString())) {
+        binding.btnVerification.setOnClickListener(View.OnClickListener {
+            if (TextUtils.isEmpty(binding.etVerifiction.text.toString())) {
                 Toast.makeText(
                     this,
                     R.string.valied_message,
@@ -152,14 +146,14 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
             } else {
                 verficationViewModel.setLoading(true)
                 if (classSharedPreferences.verficationNumber == null) {
-                    authApi.verifyCode(edtOTP.text.toString())
+                    authApi.verifyCode(binding.etVerifiction.text.toString())
                 } else {
                     authRepo.getspecialNumbers(classSharedPreferences.verficationNumber)
                 }
             }
         })
-        resendbtn.setOnClickListener(View.OnClickListener {
-            resendbtn.isEnabled = false
+        binding.btnResendCode.setOnClickListener(View.OnClickListener {
+            binding.btnResendCode.isEnabled = false
             timer()
             authApi.resendVerificationCode(
                 classSharedPreferences.number,
@@ -193,11 +187,11 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         T.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
                 runOnUiThread {
-                    resendbtn.text = count.toString() + ""
+                    binding.btnResendCode.text = count.toString() + ""
                     count--
                     if (count < 0) {
-                        resendbtn.isEnabled = true
-                        resendbtn.setText(R.string.resend)
+                        binding.btnResendCode.isEnabled = true
+                        binding.btnResendCode.setText(R.string.resend)
                         count = 60
                         T.cancel()
                     }

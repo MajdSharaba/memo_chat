@@ -12,11 +12,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.databinding.DataBindingUtil
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.Api.ServerApi
 import com.yawar.memo.R
 import com.yawar.memo.adapter.BlockUserAdapter
+import com.yawar.memo.databinding.ActivityBlockedUsersBinding
+import com.yawar.memo.databinding.ActivityDevicesLinkBinding
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.modelView.BlockedActViewModel
 import com.yawar.memo.utils.BaseApp
@@ -30,7 +33,7 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myBase: BaseApp
     lateinit var userModel: UserModel
-    lateinit var recyclerView: RecyclerView
+    lateinit var binding: ActivityBlockedUsersBinding
     lateinit var blockedActViewModel: BlockedActViewModel
      var blockUserAdapter: BlockUserAdapter? = null
     lateinit var serverApi: ServerApi
@@ -53,7 +56,7 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_blocked_users)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_blocked_users)
         supportActionBar?.setTitle(R.string.contact_number_blocked)
         val supportActionBar = supportActionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -102,10 +105,9 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
             }
         }
 
-        recyclerView = findViewById(R.id.recycler_view)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        binding.recyclerView.layoutManager = LinearLayoutManager(this)
         blockUserAdapter = BlockUserAdapter(this, userBlockeds)
-        recyclerView.adapter = blockUserAdapter
+        binding.recyclerView.adapter = blockUserAdapter
 
 //        getUsersBlocked();
     })

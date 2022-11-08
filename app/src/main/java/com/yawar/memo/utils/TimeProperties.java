@@ -40,7 +40,7 @@ public class TimeProperties {
             }
         }
     }
-    public String getFormattedDate(Context context, long smsTimeInMilis) {
+    public String getFormattedDate( long smsTimeInMilis) {
         Calendar smsTime = Calendar.getInstance();
         smsTime.setTimeInMillis(smsTimeInMilis);
 
@@ -54,7 +54,7 @@ public class TimeProperties {
             return DateFormat.format(timeFormatString, smsTime).toString();
         } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
 //            return "Yesterday " + DateFormat.format(timeFormatString, smsTime);
-            return context.getResources().getString(R.string.yesterday);
+            return BaseApp.getInstance().getResources().getString(R.string.yesterday);
         } else if (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR)) {
             return DateFormat.format(dateTimeFormatString, smsTime).toString();
         } else {

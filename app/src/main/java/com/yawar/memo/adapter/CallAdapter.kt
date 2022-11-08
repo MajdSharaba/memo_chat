@@ -2,7 +2,6 @@ package com.yawar.memo.adapter
 
 import CallHistoryFragment
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.res.ColorStateList
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,8 +18,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.databinding.ItemCallsBinding
 import com.yawar.memo.model.CallModel
-import com.yawar.memo.model.UserModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.TimeProperties
@@ -43,7 +42,6 @@ class CallAdapter(var context: CallHistoryFragment) :
         try {
             mCallback = context as CallbackInterface
         } catch (ex: ClassCastException) {
-            //.. should log the error or throw and exception
         }
     }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -95,15 +93,8 @@ class CallAdapter(var context: CallHistoryFragment) :
     }
 
     //class View_Holder extends RecyclerView.ViewHolder implements View.OnClickListener{
-     class ViewHolder(itemView: View) :
-        RecyclerView.ViewHolder(itemView) {
-        var name: TextView = itemView.findViewById<View>(R.id.tv_name) as TextView
-        var time: TextView = itemView.findViewById<View>(R.id.tv_time) as TextView
-        var imageView: ImageView = itemView.findViewById<View>(R.id.iv_image) as ImageView
-        var imageType: ImageView = itemView.findViewById<View>(R.id.image_call_type) as ImageView
-        var imageStatuse: ImageView = itemView.findViewById<View>(R.id.image_call_status) as ImageView
-
-
+     class ViewHolder(val binding: ItemCallsBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(
             callModel: CallModel,
@@ -113,55 +104,18 @@ class CallAdapter(var context: CallHistoryFragment) :
 
 
         ) {
-            name.text = callModel.username
-            time.text = TimeProperties.getDate(callModel.createdAt.toLong(), "dd MMMM , h:mm")
-            // Glide.with(holder.imageView.getContext()).load(model.getImage()).into(holder.imageView);
-            if (!callModel.image.isEmpty()) {
-                Glide.with(imageView.context).load(AllConstants.imageUrl + callModel.image)
-                    .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
-                    .into(imageView)
-            }
-            if (callModel.call_type == "video") {
-                imageType.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_video_call))
 
-
-            } else {
-                imageType.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_call_blue))
-
-            }
-            imageType.setOnClickListener {
-                Log.d("calllllll", "bind: ")
+            binding.callModel = callModel
+            binding.executePendingBindings()
+            binding.imageCallType.setOnClickListener {
                 mCallback?.onHandleSelection(position, callModel)
-            }
-            if (classSharedPreferences != null) {
-                if (callModel.caller_id == classSharedPreferences.user.userId) {
-                    imageStatuse.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_out_going_call))
-                } else {
-                    imageStatuse.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_incoming_call))
-                }
-            }
-            when (callModel.call_status) {
-                "missed call" -> {
-                    imageStatuse.imageTintList =
-                        ColorStateList.valueOf(context.resources.getColor(R.color.red))
-                }
-                "answer" -> {
-                    imageStatuse.imageTintList =
-                        ColorStateList.valueOf(context.resources.getColor(R.color.memo_background_color_new))
-                }
-                else -> {
-                    imageStatuse.setImageDrawable(context.activity?.getDrawable(R.drawable.ic_close))
-                    imageStatuse.imageTintList =
-                        ColorStateList.valueOf(context.resources.getColor(R.color.red))
-                }
             }
         }
         companion object {
             public fun from( parent: ViewGroup): ViewHolder {
-                val v: View =
-                    LayoutInflater.from(parent.context).inflate(R.layout.item_calls, parent, false)
-                //ChatRoomAdapter.View_Holder holder = new View_Holder(v,mOnClickListener);
-                return ViewHolder(v)
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ItemCallsBinding.inflate(layoutInflater,parent, false)
+               return ViewHolder(binding)
             }
         }
 
@@ -173,7 +127,6 @@ class CallAdapter(var context: CallHistoryFragment) :
         }
 
         override fun areContentsTheSame(oldItem: CallModel, newItem: CallModel): Boolean {
-//        return 0 == oldItem.compareTo(newItem);
             return oldItem == newItem
         }
     }
