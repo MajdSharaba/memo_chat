@@ -1,30 +1,22 @@
 package com.yawar.memo.notification;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Person;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
-import android.text.format.Time;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -32,63 +24,33 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.pm.ShortcutInfoCompat;
-import androidx.core.text.HtmlCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yawar.memo.R;
-import com.yawar.memo.call.CallNotificationActivity;
-import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.service.FirebaseMessageReceiver;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.views.ConversationActivity;
 import com.yawar.memo.views.DashBord;
-import com.yawar.memo.views.SplashScreen;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TimeZone;
 
-public class NotificationWorker extends Worker {
+public class NotificationMessingCallWorker extends Worker {
 
-    public static final String WORK_NAME ="NotificationWorker" ;
-    private static final String TAG ="NotificationWorker" ;
+    public static final String WORK_NAME ="NotificationMessingCallWorker" ;
+    private static final String TAG ="NotificationMessingCallWorker" ;
     String call_ongoing_call_user_id;
     NotificationCompat.MessagingStyle inboxStyle ;
     ClassSharedPreferences classSharedPreferences;
     Notification.BubbleMetadata bubbleData;
 
 
-    /**
-     * Creates an instance of the {@link Worker}.
-     *
-     * @param appContext   the application {@link Context}
-     * @param workerParams the set of {@link WorkerParameters}
-     */
-    public NotificationWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
+    public NotificationMessingCallWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
     }
 
@@ -103,7 +65,7 @@ public class NotificationWorker extends Worker {
         Context applicationContext = getApplicationContext();
         ArrayList<String> arrayList = new ArrayList<String>();
 //        inboxStyle = new NotificationCompat.InboxStyle();
-       inboxStyle =  new NotificationCompat.MessagingStyle("Me");
+        inboxStyle =  new NotificationCompat.MessagingStyle("Me");
         final String imageUrl = getInputData().getString("image");
         final String name = getInputData().getString("name" );
         final String message = getInputData().getString("body" );
@@ -116,70 +78,25 @@ public class NotificationWorker extends Worker {
         String title = "";
         try {
 
-
-
-
-
             Intent intent
-                    = new Intent(applicationContext, ConversationActivity.class);
-            intent.putExtra("reciver_id",channel);
-            intent.putExtra("sender_id", classSharedPreferences.getUser().getUserId());
-            intent.putExtra("fcm_token",fcmToken);
-            intent.putExtra("name",name);
-            intent.putExtra("image",imageUrl);
-            intent.putExtra("chat_id","");
-            intent.putExtra("special", specialNumber);
-            intent.putExtra("blockedFor",blockedFor);
-//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    = new Intent(applicationContext, DashBord.class);
+            intent.setAction("calls");
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(applicationContext);
             stackBuilder.addNextIntentWithParentStack(intent);
             PendingIntent pendingIntent
-                    = stackBuilder.getPendingIntent(
-                     0,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE );
-            //////////////
+                    = PendingIntent.getActivity(applicationContext, 0,
+                    intent, PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT );
 
-//            Intent bubbintent
-//                    = new Intent(applicationContext, ConversationActivity.class);
-//            PendingIntent bubbleIntent =
-//                    PendingIntent.getActivity(applicationContext, 0, bubbintent,PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE );
-//
-//             String CATEGORY_TEXT_SHARE_TARGET =
-//                    "com.example.category.IMG_SHARE_TARGET";
-//
-//            Person chatPartner = new Person.Builder()
-//                    .setName("Chat partner")
-//                    .setImportant(true)
-//                    .build();
-//
-//                ShortcutInfo shortcut =
-//                        new ShortcutInfo.Builder(applicationContext, channel)
-//                                .setCategories(Collections.singleton(CATEGORY_TEXT_SHARE_TARGET))
-//                                .setIntent(new Intent(Intent.ACTION_DEFAULT))
-//                                .setLongLived(true)
-//                                .setShortLabel(chatPartner.getName())
-//                                .build();
-//
-//
-//            // Create bubble metadata
-//                 bubbleData = new Notification.BubbleMetadata.Builder(bubbleIntent,
-//                            Icon.createWithResource(applicationContext, R.drawable.th))
-//                            .setDesiredHeight(600)
-//                            .build();
-//
-
-
-            //////////
-            String channel_id = "notification_channelllllll";
+            String channel_id = "notification_messing_call";
             NotificationCompat.Builder builder
                     = new NotificationCompat
                     .Builder(getApplicationContext(),
                     channel_id)
-//                    .setNumber(id++)
                     .setFullScreenIntent(null, true)
 
                     .setPriority(NotificationCompat.PRIORITY_MAX)
-//                            .setContentTitle(name)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                     .setCategory(NotificationCompat.CATEGORY_MESSAGE)
                     .setContentText(message)
@@ -188,15 +105,9 @@ public class NotificationWorker extends Worker {
                     .setAutoCancel(false)
                     .setNumber(5)
 
-
-//                    .setSound(null)
-//                    .setOngoing(true)
                     .setGroup(GROUP_KEY_WORK_EMAIL)
-                    //specify which group this notification belongs to
-                    //set this notification as the summary for the group
                     .setVibrate(new long[]{1000, 1000, 1000,
                             1000, 1000})
-//                        .setOnlyAlertOnce(true)
                     .setContentIntent(pendingIntent)
                     .setGroupSummary(true);
             NotificationManager notificationManager
@@ -231,7 +142,6 @@ public class NotificationWorker extends Worker {
                     }
                 }
                 notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-//                notificationChannel.setAllowBubbles(true);
 
 
                 notificationManager.createNotificationChannel(

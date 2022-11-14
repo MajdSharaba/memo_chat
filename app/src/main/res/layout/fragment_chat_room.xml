@@ -90,6 +90,6 @@
         android:layout_gravity="bottom|end"
         app:borderWidth="0dp"
         android:backgroundTint="@color/memo_background_color_new"
-        android:src="@drawable/ic_add" />
+        android:src="@drawable/ic_add_white" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

@@ -56,6 +56,7 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
             val intent = Intent(context, ArchivedActivity::class.java)
             startActivity(intent)
         })
+
         binding.content.recycler.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL

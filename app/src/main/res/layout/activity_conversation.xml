@@ -408,7 +408,7 @@
                 android:layout_gravity="bottom"
                 android:layout_margin="5dp"
                 android:layout_weight="0.2"
-                android:src="@drawable/ic_add_blue"
+                android:src="@drawable/ic_add"
                  />
 
 

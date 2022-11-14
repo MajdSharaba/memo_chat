@@ -113,7 +113,8 @@ class ChatMessageRepoo {
 
      var chatMessageList = _chatMessageistMutableLiveData.value
         chatMessageList?.add(chatMessage)
-        _chatMessageistMutableLiveData.value = chatMessageList
+        Log.d("addMessage: ", chatMessage.message)
+        _chatMessageistMutableLiveData.postValue(chatMessageList)
     }
 
     fun setMessageState(message_id: String, state: String) {
@@ -168,12 +169,15 @@ class ChatMessageRepoo {
     }
 
     fun setMessageDownload(message_id: String, isDownload: Boolean) {
+        Log.d("setMessageDownload", "setMessageDownload: ")
         var chatMessageList = _chatMessageistMutableLiveData.value
         if (chatMessageList != null) {
             for (chatMessage in chatMessageList) {
                 if (chatMessage != null) {
                     if (chatMessage.id == message_id) {
                         chatMessage.isDownload = isDownload
+                        Log.d("setMessageDownload",  chatMessage.isDownload.toString())
+
                         break
                     }
                 }

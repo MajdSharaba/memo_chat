@@ -37,7 +37,7 @@ public abstract class SharedPreferenceLiveData<T> extends LiveData<T> {
         sharedPrefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener);
         super.onInactive();
     }
-    public SharedPreferenceLiveData<String> getStringLiveData(String key, String defaultValue) {
+    public SharedPreferenceLiveData<Integer> getStringLiveData(String key, Integer defaultValue) {
         return new SharedPreferenceStringLiveData(sharedPrefs, key, defaultValue);
     }
 

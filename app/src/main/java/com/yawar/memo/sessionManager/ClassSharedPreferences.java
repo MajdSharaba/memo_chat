@@ -46,7 +46,7 @@ public class ClassSharedPreferences {
         editor.putString(key, value);
         editor.apply();
         System.out.println("value"+value);
-        sharedPreferenceLiveData = new SharedPreferenceStringLiveData(userDetails,key,value);
+//        sharedPreferenceLiveData = new SharedPreferenceStringLiveData(userDetails,key,value);
     }
 
 
@@ -204,6 +204,25 @@ return arrayItems;
     }
 
 
+    public void setNumberMissingCall(Integer number) {
+        SharedPreferences prefs = context.getSharedPreferences("numberMissingCall", MODE_PRIVATE);
+        prefs.edit().putInt("numberMissingCall", number).commit();
+        System.out.println("numberMissingCall"+number);
+                sharedPreferenceLiveData = new SharedPreferenceStringLiveData(prefs,"numberMissingCall",number);
+
+    }
+
+
+    public Integer getNumberMissingCall() {
+        SharedPreferences prefs = context.getSharedPreferences("numberMissingCall", MODE_PRIVATE);
+
+        Integer number = prefs.getInt("numberMissingCall", 0);
+        return number;
+
+
+    }
+
+
 
     public void setMuteUsers(ArrayList<String> muteUsers) {
         SharedPreferences prefs = context.getSharedPreferences("muteUsers", MODE_PRIVATE);
@@ -211,7 +230,7 @@ return arrayItems;
         Gson gson = new Gson();
         String json = gson.toJson(muteUsers);
         prefsEditor.putString("muteUsers",json).commit();
-        sharedPreferenceLiveData = new SharedPreferenceStringLiveData(prefs,json,json);
+//        sharedPreferenceLiveData = new SharedPreferenceStringLiveData(prefs,json,json);
 
 
     }

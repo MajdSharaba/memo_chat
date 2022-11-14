@@ -392,13 +392,15 @@ public class FileUtil {
     }
 
     ///////for copy file
-    public static void copyFileOrDirectory(String srcDir, String dstDir) {
+    public static void copyFileOrDirectory(String srcDir, String dstDir, String fileName) {
 
         try {
             System.out.println(srcDir + dstDir + "copy Recorrrrrrd");
 
             File src = new File(srcDir);
-            File dst = new File(dstDir, src.getName());
+//            File dst = new File(dstDir, src.getName());
+            File dst = new File(dstDir, fileName);
+
 
 
             if (src.isDirectory()) {
@@ -408,7 +410,7 @@ public class FileUtil {
                 for (int i = 0; i < filesLength; i++) {
                     String src1 = (new File(src, files[i]).getPath());
                     String dst1 = dst.getPath();
-                    copyFileOrDirectory(src1, dst1);
+                    copyFileOrDirectory(src1, dst1,fileName);
 
                 }
             } else {
@@ -444,6 +446,36 @@ public class FileUtil {
             }
         }
     }
+    ///////for copy file
+    public static void copyPdfFileOrDirectory(String srcDir, String dstDir) {
+
+        try {
+            System.out.println(srcDir + dstDir + "copy Recorrrrrrd");
+
+            File src = new File(srcDir);
+            File dst = new File(dstDir, src.getName());
+//            File dst = new File(dstDir, fileName);
+
+
+
+            if (src.isDirectory()) {
+
+                String[] files = src.list();
+                int filesLength = files.length;
+                for (int i = 0; i < filesLength; i++) {
+                    String src1 = (new File(src, files[i]).getPath());
+                    String dst1 = dst.getPath();
+                    copyFileOrDirectory(src1, dst1,src.getName());
+
+                }
+            } else {
+                copyFile(src, dst);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public static boolean isVideoFile(String path) {
         String mimeType = URLConnection.guessContentTypeFromName(path);
         System.out.println(mimeType + "memeType");
@@ -468,7 +500,8 @@ public class FileUtil {
         return byteBuffer.toByteArray();
     }
     ////////////////////
-    public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id) {
+    public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id
+    , String blockrdFor, String token) {
         ChatMessageRepoo chatMessageRepo = BaseApp.getInstance().getChatMessageRepoo();
         BaseApp myBase = BaseApp.getInstance();
         Bitmap bitmap = null;
@@ -526,6 +559,8 @@ public class FileUtil {
                             JSONObject jsonObject = new JSONObject(new String(response.data));
 
                             JSONObject sendObject = new JSONObject();
+                            JSONObject notification = new JSONObject();
+
 
 
                             sendObject.put("sender_id", jsonObject.getString("sender_id"));
@@ -544,6 +579,13 @@ public class FileUtil {
 
                             sendObject.put("orginalName", jsonObject.getString("orginalName"));
                             sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                            notification.put("token", token);
+                            notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
+                            notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
+                            notification.put("chat_id", jsonObject.getInt("chat_id"));
+                            notification.put("blockedFor",blockrdFor);
+
+                            sendObject.put("notification",notification);
 
                             chatMessageRepo.setMessageUpload(message_id,false);
                             activity.newMeesage(sendObject);
@@ -606,7 +648,8 @@ public class FileUtil {
     }
 
     ///////////////////
-    public static ChatMessage uploadVideo(String pdfname, Uri pdffile, ConversationActivity activity, String user_id, String anthor_user_id) {
+    public static ChatMessage uploadVideo(String pdfname, Uri pdffile, ConversationActivity activity,
+                                          String user_id, String anthor_user_id, String blockedFor, String token) {
         BaseApp myBase = BaseApp.getInstance();
         ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
 
@@ -644,6 +687,8 @@ public class FileUtil {
                                 JSONObject jsonObject = new JSONObject(new String(response.data));
 
                                 JSONObject sendObject = new JSONObject();
+                                JSONObject notification = new JSONObject();
+
                                 System.out.println("responeeeeeeeee"+response);
 
                                 sendObject.put("sender_id", jsonObject.getString("sender_id"));
@@ -663,6 +708,14 @@ public class FileUtil {
 
                                 sendObject.put("orginalName", jsonObject.getString("orginalName"));
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+
+                                notification.put("token",token );
+                                notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
+                                notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
+                                notification.put("chat_id", jsonObject.getInt("chat_id"));
+                                notification.put("blockedFor",blockedFor);
+
+                                sendObject.put("notification",notification);
 
                                 chatMessageRepo.setMessageUpload(message_id,false);
                                 activity.newMeesage(sendObject);
@@ -729,7 +782,8 @@ public class FileUtil {
     return chatMessage;
     }
     ////////////////
-    public static ChatMessage uploadVoice(String voiceName, Uri voicedPath, ConversationActivity activity, String user_id, String anthor_user_id) {
+    public static ChatMessage uploadVoice(String voiceName, Uri voicedPath, ConversationActivity activity,
+                                          String user_id, String anthor_user_id, String blockedFor, String token) {
         BaseApp myBase = BaseApp.getInstance();
         ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
 
@@ -764,6 +818,8 @@ public class FileUtil {
                             try {
                                 JSONObject jsonObject = new JSONObject(new String(response.data));
                                 JSONObject sendObject = new JSONObject();
+                                JSONObject notification = new JSONObject();
+
 
                                 sendObject.put("sender_id", jsonObject.getString("sender_id"));
                                 sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
@@ -781,6 +837,14 @@ public class FileUtil {
                                 }
 
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                                notification.put("token", token);
+                                notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
+                                notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
+                                notification.put("chat_id", jsonObject.getInt("chat_id"));
+                                notification.put("blockedFor",blockedFor);
+
+                                sendObject.put("notification",notification);
+
 
                                 chatMessageRepo.setMessageUpload(message_id,false);
                                 activity.newMeesage(sendObject);
@@ -852,7 +916,8 @@ public class FileUtil {
 
     ////////////////////////
 
-    public static ChatMessage uploadPDF(String pdfname, Uri pdffile, ConversationActivity activity, String user_id, String anthor_user_id) {
+    public static ChatMessage uploadPDF(String pdfname, Uri pdffile, ConversationActivity activity, String user_id,
+                                        String anthor_user_id , String blockedFor, String token) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
         BaseApp myBase = BaseApp.getInstance();
         ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
@@ -891,6 +956,8 @@ public class FileUtil {
                                 System.out.println(jsonObject.getString("orginalName") + pdfname);
 
                                 JSONObject sendObject = new JSONObject();
+                                JSONObject notification = new JSONObject();
+
 
                                 sendObject.put("sender_id", jsonObject.getString("sender_id"));
                                 sendObject.put("reciver_id", jsonObject.getString("reciver_id"));
@@ -909,6 +976,13 @@ public class FileUtil {
 
                                 sendObject.put("orginalName", jsonObject.getString("orginalName"));
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                                notification.put("token", token);
+                                notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
+                                notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
+                                notification.put("chat_id", jsonObject.getInt("chat_id"));
+                                notification.put("blockedFor",blockedFor);
+
+                                sendObject.put("notification",notification);
 
 
                                 chatMessageRepo.setMessageUpload(message_id,false);

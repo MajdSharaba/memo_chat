@@ -11,6 +11,7 @@ import android.os.Environment
 import android.os.Handler
 import android.provider.ContactsContract
 import android.text.util.Linkify
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -159,6 +160,7 @@ class ChatAdapter(private val context: Activity) :
         }
     }
     fun setData(newData: ArrayList<ChatMessage?>?) {
+        Log.d("adapter", "setDataaaaaa: ")
         submitList(newData)
     }
     class LayoutImageViewHolder  private  constructor(val binding: ImageItemChatMeesageBinding) :
@@ -376,6 +378,8 @@ class ChatAdapter(private val context: Activity) :
                      binding.imagePlayPause.visibility = View.GONE
                  } else {
                      binding.pgbProgress.visibility = View.GONE
+                     Log.d("bind:ddddddddddd", binding.pgbProgress.visibility.toString())
+
                      binding.imagePlayPause.visibility = View.VISIBLE
                  }
              }

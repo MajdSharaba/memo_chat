@@ -109,7 +109,8 @@ public class BaseApp extends Application implements LifecycleObserver {
 
     @Override
     public void onTrimMemory(int level) {
-        Log.d(TAG, "onTrimMemory: ");
+        Log.d(TAG, "onTrimMemory: "+isActivityVisible()
+        );
         System.out.println("onTrimMemory BaseApp");
 
         super.onTrimMemory(level);
@@ -263,7 +264,7 @@ public class BaseApp extends Application implements LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     public void onMoveToBackground() {
         Log.d(TAG, "onMoveToBackground: ");
-        if(classSharedPreferences.getUser()!=null) {
+        if (classSharedPreferences.getUser() != null) {
 
 
             Intent service = new Intent(this, SocketIOService.class);
@@ -279,11 +280,11 @@ public class BaseApp extends Application implements LifecycleObserver {
 //            };
 //            handler.postDelayed(myRunnable, 30000);
         }
-
-
-
-
     }
+
+
+
+
     @SuppressLint("CheckResult")
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void onDestroy() {

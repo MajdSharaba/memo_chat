@@ -150,7 +150,6 @@
             android:name=".views.ConversationActivity"
             android:parentActivityName=".views.DashBord"
             android:screenOrientation="portrait"
-
             android:theme="@style/AppTheme" />
         <activity
             android:name=".views.DashBord"

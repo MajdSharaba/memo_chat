@@ -245,7 +245,7 @@ class UserInformationActivity : AppCompatActivity() {
                 }
             }
         }
-        ///////////////////check is mute
+        /////////////////check is mute
 //        SharedPreferences prefs = getSharedPreferences("muteUsers", MODE_PRIVATE);
 //        SharedPreferenceStringLiveData sharedPreferenceStringLiveData = new SharedPreferenceStringLiveData(prefs, "muteUsers", "");
 //        sharedPreferenceStringLiveData.getStringLiveData("muteUsers", "").observe(this, cid -> {
@@ -271,7 +271,7 @@ class UserInformationActivity : AppCompatActivity() {
 //                    }
 //
 //        });
-        //////////////////
+        ////////////////
         muteList = classSharedPreferences.muteUsers
         if (muteList != null) {
             for (s in muteList!!) {

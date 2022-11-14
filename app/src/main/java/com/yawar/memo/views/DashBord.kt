@@ -4,10 +4,7 @@ import CallHistoryFragment
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -18,8 +15,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
 import com.yawar.memo.R
@@ -30,11 +32,15 @@ import com.yawar.memo.fragment.SearchFragment
 import com.yawar.memo.fragment.SettingsFragment
 import com.yawar.memo.language.helper.LocaleHelper
 import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.modelView.DashbordViewModel
+import com.yawar.memo.notification.NotificationWorker
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
+import com.yawar.memo.service.FirebaseMessageReceiver
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
+import com.yawar.memo.sessionManager.SharedPreferenceStringLiveData
 import com.yawar.memo.utils.BaseApp
 import org.json.JSONException
 import org.json.JSONObject
@@ -44,6 +50,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
+
 class DashBord : AppCompatActivity(), Observer {
     lateinit var bottomNavigation: BottomNavigationView
     private lateinit var permissions: Permissions
@@ -51,7 +58,9 @@ class DashBord : AppCompatActivity(), Observer {
     lateinit var binding: ActivityDashBordBinding
     lateinit var chatRoomRepoo: ChatRoomRepoo
     lateinit var fragment : Fragment
+    lateinit var dashbordViewModel : DashbordViewModel
     lateinit var classSharedPreferences: ClassSharedPreferences
+    lateinit var badgeDrawableMissingCall: BadgeDrawable
     lateinit var myId: String
     lateinit var authRepo: AuthRepo
     private fun connectSocket() {
@@ -152,11 +161,18 @@ class DashBord : AppCompatActivity(), Observer {
             } else {
                 senderId
             }
+            println("mesagaaaaaa"+message)
+
             if (id != "0000") {
                 chatRoomRepoo.setLastMessage(
                     text,
                     chatId!!, myId, anthor_id!!, type!!, state, dateTime, senderId
                 )
+                if(senderId!=myId && !chatRoomRepoo.checkInChat(anthor_id)&& !checkIsMute(anthor_id)) {
+                   showNotification(message?.getString("title"), message?.getString("image"),
+                        text, senderId, null, "", "", type)
+                }
+
             } else {
                 chatRoomRepoo.updateLastMessageState(state, chatId!!)
             }
@@ -238,7 +254,11 @@ class DashBord : AppCompatActivity(), Observer {
             conf,
             baseContext.resources.displayMetrics
         )
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_bord)
+
+        dashbordViewModel = ViewModelProvider(this).get(DashbordViewModel::class.java)
+
 
         connectSocket()
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -261,6 +281,8 @@ class DashBord : AppCompatActivity(), Observer {
 ////// send Fcm Token
         myBase = BaseApp.getInstance()
         authRepo = myBase.authRepo
+        Log.d( "onCreatebaseApp",myBase.isActivityVisible)
+
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener(OnCompleteListener { task ->
                 if (!task.isSuccessful) {
@@ -279,6 +301,7 @@ class DashBord : AppCompatActivity(), Observer {
         ///////////////////
 
 /////////////////////
+
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         Log.d("onCreate:", classSharedPreferences.number)
         permissions = Permissions()
@@ -290,17 +313,67 @@ class DashBord : AppCompatActivity(), Observer {
                 NEW_MESSAGE
             )
         )
-        if (savedInstanceState == null) {
+
+
+
+
+        /////////////
+        val badgeDrawable: BadgeDrawable  = binding.navigationChip.getOrCreateBadge(R.id.chat)
+        badgeDrawable.backgroundColor = getColor(R.color.red)
+        badgeDrawable.badgeTextColor = getColor(R.color.white)
+        badgeDrawable.maxCharacterCount = 5
+        dashbordViewModel.loadData().observe(
+            this){ chatRoomModels ->
+            var number = 0
+
+            if (chatRoomModels != null) {
+
+
+                        for (chatRoom in chatRoomModels) {
+                            if (chatRoom != null) {
+                                number += chatRoom.num_msg.toInt()
+                            }
+
+                        }
+                        badgeDrawable.number = number
+                    }
+
+            badgeDrawable.isVisible = number != 0
+
+            }
+///////////////
+         badgeDrawableMissingCall  = binding.navigationChip.getOrCreateBadge(R.id.calls)
+        badgeDrawable.backgroundColor = getColor(R.color.red)
+        badgeDrawable.badgeTextColor = getColor(R.color.white)
+        badgeDrawable.maxCharacterCount = 5
+
+
+        val prefs: SharedPreferences = getSharedPreferences("numberMissingCall",MODE_PRIVATE)
+         val sharedPreferenceStringLiveData : SharedPreferenceStringLiveData =  SharedPreferenceStringLiveData(prefs, "muteUsers", 0);
+        sharedPreferenceStringLiveData.getStringLiveData("numberMissingCall", 0).observe(this) { number ->
+            Log.d("numberrr", number.toString())
+            badgeDrawableMissingCall.number = number
+            badgeDrawableMissingCall.isVisible = number != 0
+        }
+
+        if (savedInstanceState == null ) {
             binding.navigationChip.selectedItemId = R.id.chat
             supportFragmentManager.beginTransaction()
                 .replace(R.id.dashboardContainer, ChatRoomFragment()).commit()
         }
+
+
+
         binding.navigationChip.setOnNavigationItemSelectedListener(BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.chat -> fragment = ChatRoomFragment()
                 R.id.searchSn -> fragment = SearchFragment()
                 R.id.block -> fragment = SettingsFragment()
-                R.id.calls -> fragment = CallHistoryFragment()
+                R.id.calls -> {
+                    classSharedPreferences.numberMissingCall = 0
+                    badgeDrawableMissingCall.number = 0
+                    badgeDrawableMissingCall.isVisible = false
+                    fragment = CallHistoryFragment()}
             }
             supportFragmentManager.beginTransaction().replace(
                 R.id.dashboardContainer,
@@ -309,6 +382,29 @@ class DashBord : AppCompatActivity(), Observer {
             //            }
             true
         })
+
+
+
+        try {
+            val action = intent.action!!.uppercase(Locale.getDefault())
+            if (action != null) {
+                if(action == "CALLS") {
+                    Log.d("actinnnn", "onCreate: ")
+                    classSharedPreferences.numberMissingCall = 0
+                    badgeDrawableMissingCall.number = 0
+                    badgeDrawableMissingCall.isVisible = false
+                    supportFragmentManager.beginTransaction()
+                        .replace(R.id.dashboardContainer, CallHistoryFragment()).commit()
+                    binding.navigationChip.selectedItemId = R.id.calls
+                }
+
+            }
+
+        } catch (e: Exception) {
+        }
+
+
+
     }
 
 
@@ -458,7 +554,78 @@ class DashBord : AppCompatActivity(), Observer {
         val alert = alertBuilder.create()
         alert.show()
     }
+    fun checkIsMute(id:String): Boolean{
+        val muteList = classSharedPreferences.muteUsers
+        var isMute = false
+        if (muteList != null) {
+            for (s in muteList) {
+                if (s == id) {
+                    isMute = true
+                    break
+                }
+            }
+        }
+        return isMute
+    }
+    fun showNotification(name : String?, image : String?, body : String?,
+                         channel :String, blockedFor :String?, special: String, fcmToken: String, type: String)
+    {
+        //        myBase.getObserver().addObserver(this);
+        var message = ""
 
+        when (type) {
+            "imageWeb" -> {
+                message = resources.getString(R.string.n_photo)
+
+            }
+            "voice" -> {
+                message = resources.getString(R.string.n_voice)
+
+            }
+            "video" -> {
+                message = resources.getString(R.string.n_video)
+
+            }
+            "file" -> {
+                message = resources.getString(R.string.n_file)
+
+            }
+            "contact" -> {
+                message = resources.getString(R.string.n_contact)
+
+            }
+            "location" -> {
+                message = resources.getString(R.string.n_location)
+
+            }
+            else -> {
+                if (body != null) {
+                    message = body
+                }
+
+            }
+
+        }
+
+        val inputDataNotification =
+            Data.Builder().putString("name", name)
+                .putString("image",image)
+                .putString("body", message)
+                .putString("channel", channel)
+                .putString("blockedFor", null)
+                .putString("special", "")
+                .putString("fcm_token", "")
+                .build()
+
+        val notificationWork1 = OneTimeWorkRequest.Builder(
+            NotificationWorker::class.java
+        )
+            .setInputData(inputDataNotification)
+            .addTag(FirebaseMessageReceiver.workTag)
+            .build()
+        WorkManager.getInstance().enqueue(notificationWork1)
+
+    }
     companion object {
         const val NEW_MESSAGE = "new Message"
         const val ON_MESSAGE_RECEIVED = "ConversationActivity.ON_MESSAGE_RECEIVED"

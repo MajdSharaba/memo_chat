@@ -470,15 +470,15 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 )
             )
         }
-        serverApi!!.sendNotification(
-            message,
-            type,
-            fcmToken,
-            chat_id,
-            conversationModelView!!.blockedFor().value,
-            message_id,
-                    time
-        )
+//        serverApi!!.sendNotification(
+//            message,
+//            type,
+//            fcmToken,
+//            chat_id,
+//            conversationModelView!!.blockedFor().value,
+//            message_id,
+//                    time
+//        )
         println("contact $chatMessage")
         val service = Intent(this, SocketIOService::class.java)
         service.putExtra(SocketIOService.EXTRA_NEW_MESSAGE_PARAMTERS, chatMessage.toString())
@@ -595,6 +595,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        scroll()
+        closeCurrentNotification()
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("hasConnection", hasConnection)
@@ -630,7 +636,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         }
         val blockedFor = bundle.getString("blockedFor", "null")
         conversationModelView!!.setBlockedFor(blockedFor)
-        closeCurrentNotification()
+//        closeCurrentNotification()
         chatMessageRepoo = myBase?.chatMessageRepoo
         chatMessageRepoo?.loadChatRoom(user_id, anthor_user_id)
         binding.messagesContainer.setHasFixedSize(true)
@@ -767,6 +773,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         conversationModelView!!.getChatMessaheHistory().observe(this,
             Observer<ArrayList<ChatMessage?>?> { chatMessages ->
                 if (chatMessages != null) {
+                    Log.d(TAG, "initViews: "+chatMessages)
+
                     if (chatMessages.isEmpty()) {
                         binding.linerNoMesssage.visibility = View.VISIBLE
                         binding.messagesContainer.visibility = View.GONE
@@ -865,6 +873,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             println(stringLatLng + "stringLatLng")
             val message_id = System.currentTimeMillis().toString() + "_" + user_id
             val jsonObject = JSONObject()
+            val notification = JSONObject()
+
             try {
                 jsonObject.put("sender_id", user_id)
                 jsonObject.put("reciver_id", anthor_user_id)
@@ -876,9 +886,17 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     "dateTime",
                     Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
                 )
+                notification.put("token", fcmToken)
+                notification.put("image", classSharedPreferences?.user!!.image)
+                notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
+                notification.put("chat_id", chat_id)
+                notification.put("blockedFor",conversationModelView!!.blockedFor().value,
+                )
+                jsonObject.put("notification",notification)
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
+
             binding.relativeMaps.visibility = View.GONE
             binding.container.visibility = View.VISIBLE
             val chatMessage = ChatMessage()
@@ -985,6 +1003,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 return@OnClickListener
             }
             val jsonObject = JSONObject()
+            val notification = JSONObject()
+
+
             try {
                 jsonObject.put("sender_id", user_id)
                 jsonObject.put("reciver_id", anthor_user_id)
@@ -996,6 +1017,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     "dateTime",
                     Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
                 )
+                notification.put("token", fcmToken)
+                notification.put("image", classSharedPreferences?.user!!.image)
+                notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
+                notification.put("chat_id", chat_id)
+                notification.put("blockedFor",conversationModelView!!.blockedFor().value,
+                )
+                jsonObject.put("notification",notification)
+                
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
@@ -1117,7 +1146,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     this@ConversationActivity,
                     user_id,
                     anthor_user_id
-                )
+                ,conversationModelView!!.blockedFor().value,
+                    fcmToken)
                 displayMessage(chatMessage)
             }
 
@@ -1559,8 +1589,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                                     uri,
                                     this,
                                     user_id,
-                                    anthor_user_id
-                                )
+                                    anthor_user_id,
+                                    conversationModelView!!.blockedFor().value
+                                ,fcmToken)
                                 displayMessage(chatMessage)
                             }
                         } finally {
@@ -1638,6 +1669,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             e.printStackTrace()
         }
         val sendObject = JSONObject()
+        val notification = JSONObject()
+
         try {
             sendObject.put("sender_id", user_id)
             sendObject.put("reciver_id", anthor_user_id)
@@ -1650,7 +1683,17 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             sendObject.put(
                 "dateTime",
                 Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+
             )
+            notification.put("token", fcmToken)
+            notification.put("image", classSharedPreferences?.user!!.image)
+            notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
+            notification.put("chat_id", chat_id)
+            notification.put("blockedFor",conversationModelView!!.blockedFor().value,
+            )
+            sendObject.put("notification",notification)
+
+
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -2005,7 +2048,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         wasSuccessful: Boolean,
         Reason: String
     ) {
-        FileUtil.copyFileOrDirectory(
+        val fileNmae = System.currentTimeMillis().toString() + "_" + user_id
+
+        FileUtil.copyPdfFileOrDirectory(
             path, getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send")!!
                 .absolutePath
         )
@@ -2329,6 +2374,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
     @SuppressLint("Range")
     fun showImageBeforeSend(uri: Uri?, type: String) {
+        val fileNmae = System.currentTimeMillis().toString() + "_" + user_id
+
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_image_before_send)
         dialog.setTitle("Title...")
@@ -2351,7 +2398,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 FileUtil.getPath(this, pathImage),
                 getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video")!!
                     .absolutePath
-            )
+            ,fileNmae)
             if (pathImage.toString().startsWith("content://")) {
                 var cursor: Cursor? = null
                 try {
@@ -2366,12 +2413,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         displayNamee =
                             cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                         val chatMessage = FileUtil.uploadImage(
-                            displayNamee,
+                            fileNmae,
                             uri,
                             this,
                             user_id,
-                            anthor_user_id
-                        )
+                            anthor_user_id,
+                            conversationModelView!!.blockedFor().value
+                        ,fcmToken)
                         displayMessage(chatMessage)
                     }
                 } finally {
@@ -2384,8 +2432,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     pathImage,
                     this,
                     user_id,
-                    anthor_user_id
-                )
+                    anthor_user_id,
+                    conversationModelView!!.blockedFor().value
+                ,fcmToken)
                 displayMessage(chatMessage)
             }
             dialog.dismiss()
@@ -2394,6 +2443,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
     @SuppressLint("Range")
     fun showVideoBeforeSend(uri: Uri?, type: String) {
+        val fileNmae = System.currentTimeMillis().toString() + "_" + user_id
+
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_video_before_send)
         dialog.setTitle("Title...")
@@ -2438,7 +2489,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 FileUtil.getPath(this, pathhh),
                 getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video")!!
                     .absolutePath
-            )
+            ,fileNmae)
             var displayNamee: String? = null
             if (pathhh.toString().startsWith("content://")) {
                 var cursor: Cursor? = null
@@ -2455,12 +2506,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                             cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
                         println(displayNamee)
                         val chatMessage = FileUtil.uploadVideo(
-                            displayNamee,
+                            fileNmae,
                             uri,
                             this,
                             user_id,
-                            anthor_user_id
-                        )
+                            anthor_user_id,
+                            conversationModelView!!.blockedFor().value
+                        ,fcmToken)
                         displayMessage(chatMessage)
                         //                                                    compressVideo(compressPath,displayNamee);
                     }
@@ -2470,12 +2522,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             } else if (pathhh.toString().startsWith("file://")) {
                 displayNamee = myFilee.name
                 val chatMessage = FileUtil.uploadVideo(
-                    displayNamee,
+                    fileNmae,
                     pathhh,
                     this,
                     user_id,
-                    anthor_user_id
-                )
+                    anthor_user_id,
+                    conversationModelView!!.blockedFor().value
+                ,fcmToken)
                 displayMessage(chatMessage)
             }
             dialog.dismiss()

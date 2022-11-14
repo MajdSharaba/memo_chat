@@ -190,6 +190,7 @@ class ChatRoomRepoo {
                     if (chatRoom.id == senderId + reciverId) {
                         chatRoomsList.remove(chatRoom)
                         if (!chatRoom.inChat) {
+
                             chatRoom.num_msg = (Integer.parseInt(chatRoom.num_msg)+1).toString()
                         }
                         chatRoom.id = chatId
@@ -200,7 +201,7 @@ class ChatRoomRepoo {
                 }
             }
         }
-        _chatRoomListMutableLiveData.value = chatRoomsList
+        _chatRoomListMutableLiveData.postValue( chatRoomsList)
     }
 
     fun updateLastMessageState(state: String?, chat_id: String) {

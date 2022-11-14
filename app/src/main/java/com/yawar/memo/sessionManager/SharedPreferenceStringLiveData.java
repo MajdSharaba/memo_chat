@@ -2,15 +2,15 @@ package com.yawar.memo.sessionManager;
 
 import android.content.SharedPreferences;
 
-public class SharedPreferenceStringLiveData extends SharedPreferenceLiveData<String>{
+public class SharedPreferenceStringLiveData extends SharedPreferenceLiveData<Integer>{
 
-    public SharedPreferenceStringLiveData(SharedPreferences prefs, String key, String defValue) {
+    public SharedPreferenceStringLiveData(SharedPreferences prefs, String key, Integer defValue) {
         super(prefs, key, defValue);
     }
 
     @Override
-    String getValueFromPreferences(String key, String defValue) {
-        return sharedPrefs.getString(key, defValue);
+    Integer getValueFromPreferences(String key, Integer defValue) {
+        return sharedPrefs.getInt(key, defValue);
     }
 
 }

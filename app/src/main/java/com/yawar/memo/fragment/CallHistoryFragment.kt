@@ -1,22 +1,20 @@
+import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import android.widget.ProgressBar
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.R
 import com.yawar.memo.adapter.CallAdapter
 import com.yawar.memo.call.RequestCallActivity
 import com.yawar.memo.databinding.FragmentCallHistoryBinding
-import com.yawar.memo.databinding.FragmentSearchBinding
 import com.yawar.memo.model.CallModel
 import com.yawar.memo.modelView.CallHistoryModelView
 import com.yawar.memo.sessionManager.ClassSharedPreferences
@@ -38,6 +36,7 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_call_history,container,false)
         val view = binding.root
+        closeMessingCallCurrentNotification()
         binding.recyclerView.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -132,6 +131,19 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
             }
 
         }
+
+    private fun closeMessingCallCurrentNotification() {
+        val mNotificationManager = context?.getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager
+        /// for check current notification
+        for (statusBarNotification in mNotificationManager.activeNotifications) {
+            println(statusBarNotification.notification.channelId + "statusBarNotification.getId()")
+            if (statusBarNotification.notification.channelId  == "notification_messing_call") {
+                mNotificationManager.cancel(statusBarNotification.id)
+
+                break
+            }
+        }
+    }
     }
 
 

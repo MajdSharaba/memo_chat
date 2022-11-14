@@ -11,6 +11,7 @@
         android:id="@+id/navigationChip"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:theme="@style/Theme.MaterialComponents.DayNight.DarkActionBar"
         android:background="@color/background_bottom_navigation"
         app:itemIconTint="@drawable/bottom_navigation_selector"
         app:itemTextColor="@color/memo_background_color_new"
