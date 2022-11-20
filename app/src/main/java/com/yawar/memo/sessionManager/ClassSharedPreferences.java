@@ -2,12 +2,10 @@ package com.yawar.memo.sessionManager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yawar.memo.model.UserModel;
-import com.yawar.memo.views.UserInformationActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,10 +16,7 @@ import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
 
-import androidx.lifecycle.LiveData;
 import androidx.preference.PreferenceManager;
-
-import javax.inject.Singleton;
 
 public class ClassSharedPreferences {
     Context context;

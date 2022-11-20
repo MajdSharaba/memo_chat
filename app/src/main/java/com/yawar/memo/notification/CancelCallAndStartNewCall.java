@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.core.app.NotificationManagerCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.yawar.memo.call.ResponeCallActivity;
+import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;

@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
@@ -19,13 +18,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.yawar.memo.R;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.views.VerificationActivity;
+import com.yawar.memo.ui.verficationPage.VerificationActivity;
 
-import java.util.Objects;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.TimeUnit;
@@ -49,13 +46,13 @@ public class AuthApi implements Observer {
     }
 
     Activity context;
-    ServerApi serverApi;
+//    ServerApi serverApi;
     private String verificationId;
     ClassSharedPreferences classSharedPreferences;
 
 
     private void signInWithCredential(PhoneAuthCredential credential) {
-        serverApi = new  ServerApi(context);
+//        serverApi = new  ServerApi(context);
 
         ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
 

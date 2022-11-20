@@ -15,13 +15,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 //import com.yawar.memo.call.AnswerActivity;
 //import com.yawar.memo.call.CompleteActivity;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.call.ResponeCallActivity;
-import com.yawar.memo.call.RequestCallActivity;
+import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
+import com.yawar.memo.ui.requestCall.RequestCallActivity;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.fragment.ChatRoomFragment;
-import com.yawar.memo.model.UserModel;
-import com.yawar.memo.repositry.BlockUserRepo;
-import com.yawar.memo.views.ConversationActivity;
+import com.yawar.memo.ui.chatPage.ConversationActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,8 +34,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import com.yawar.memo.utils.BaseApp;
-import com.yawar.memo.views.DashBord;
-import com.yawar.memo.views.DevicesLinkActivity;
+import com.yawar.memo.ui.dashBoard.DashBord;
+import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity;
 
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 

@@ -71,20 +71,20 @@
         </activity>
 
         <activity
-            android:name=".call.CallNotificationActivity"
+            android:name=".ui.responeCallPage.CallNotificationActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:showOnLockScreen="true"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".call.RequestCallActivity"
+            android:name=".ui.requestCall.RequestCallActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/ThemeOverlay.ChatMemo.CallReq" />
         <activity
-            android:name=".call.ResponeCallActivity"
+            android:name=".ui.responeCallPage.ResponeCallActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
@@ -92,18 +92,18 @@
             android:theme="@style/AppTheme" /> <!-- android:excludeFromRecents="true" -->
         <!-- android:taskAffinity="" -->
         <activity
-            android:name=".views.BlockedUsersActivity"
+            android:name=".ui.blockUserPage.BlockedUsersActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".views.DevicesLinkActivity"
+            android:name=".ui.deviceLinkPage.DevicesLinkActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.UserInformationActivity"
+            android:name=".ui.userInformationPage.UserInformationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.IntroActivity"
+            android:name=".ui.introPage.IntroActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
 
@@ -144,43 +144,33 @@
         <!-- </intent-filter> -->
         <!-- </service> -->
         <activity
-            android:name=".views.VideoActivity"
+            android:name=".ui.chatPage.video.VideoActivity"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.ConversationActivity"
-            android:parentActivityName=".views.DashBord"
+            android:name=".ui.chatPage.ConversationActivity"
+            android:parentActivityName=".ui.dashBoard.DashBord"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.DashBord"
+            android:name=".ui.dashBoard.DashBord"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.ArchivedActivity"
+            android:name=".ui.AcrchivedPage.ArchivedActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.GroupPropertiesActivity"
+            android:name=".ui.contactNumberPage.ContactNumberActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.GroupSelectorActivity"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".views.ContactNumberActivity"
+            android:name=".ui.verficationPage.VerificationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
+
+        <activity android:name=".ui.settingPage.SettingsActivity" />
         <activity
-            android:name=".views.VerificationActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".views.UserDetailsActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".views.SettingsActivity" />
-        <activity
-            android:name=".views.SplashScreen"
+            android:name=".ui.splashPage.SplashScreen"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
@@ -191,11 +181,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".views.LoginActivity"
+            android:name=".ui.loginPage.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
-            android:name=".views.RegisterActivity"
+            android:name=".ui.registerPage.RegisterActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
     </application>

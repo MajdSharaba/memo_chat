@@ -35,8 +35,8 @@ class AuthRepo {
     fun getspecialNumbers(uuid :String ): LiveData<JSONObject?> {
         _loadingMutableLiveData.value = true
         coroutineScope.launch {
-            val getChatRoomsDeferred = GdgApi(AllConstants.base_url).apiService.getSpecialNumbers(uuid)
-//            val getChatRoomsDeferred = GdgApi.apiService.getSpecialNumbers(uuid)
+//            val getChatRoomsDeferred = GdgApi(AllConstants.base_url).apiService.getSpecialNumbers(uuid)
+            val getChatRoomsDeferred = GdgApi.apiService.getSpecialNumbers(uuid)
 
 
             try {
@@ -60,8 +60,8 @@ class AuthRepo {
 
     fun sendFcmToken( user_id : String,  token: String ) {
         coroutineScope.launch {
-            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService.sendFcmToken(user_id,token)
-//            val getChatRoomsDeferred = GdgApi.apiService.sendFcmToken(user_id,token)
+//            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService.sendFcmToken(user_id,token)
+            val getChatRoomsDeferred = GdgApi.apiService.sendFcmToken(user_id,token)
 
 
             try {

@@ -1,30 +1,22 @@
 package com.yawar.memo.notification;
 
-import static android.content.Context.NOTIFICATION_SERVICE;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Person;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
-import android.text.format.Time;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -32,45 +24,20 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.pm.ShortcutInfoCompat;
-import androidx.core.text.HtmlCompat;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yawar.memo.R;
-import com.yawar.memo.call.CallNotificationActivity;
-import com.yawar.memo.call.ResponeCallActivity;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.service.FirebaseMessageReceiver;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
-import com.yawar.memo.views.ConversationActivity;
-import com.yawar.memo.views.DashBord;
-import com.yawar.memo.views.SplashScreen;
+import com.yawar.memo.ui.chatPage.ConversationActivity;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.TimeZone;
 
 public class NotificationWorker extends Worker {
 
@@ -103,6 +70,7 @@ public class NotificationWorker extends Worker {
         Context applicationContext = getApplicationContext();
         ArrayList<String> arrayList = new ArrayList<String>();
 //        inboxStyle = new NotificationCompat.InboxStyle();
+
        inboxStyle =  new NotificationCompat.MessagingStyle("Me");
         final String imageUrl = getInputData().getString("image");
         final String name = getInputData().getString("name" );

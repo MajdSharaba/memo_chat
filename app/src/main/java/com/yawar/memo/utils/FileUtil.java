@@ -24,7 +24,7 @@ import com.android.volley.VolleyError;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
 import com.yawar.memo.repositry.ChatMessageRepoo;
-import com.yawar.memo.views.ConversationActivity;
+import com.yawar.memo.ui.chatPage.ConversationActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -580,6 +580,8 @@ public class FileUtil {
                             sendObject.put("orginalName", jsonObject.getString("orginalName"));
                             sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
                             notification.put("token", token);
+                            notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
+
                             notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
                             notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
                             notification.put("chat_id", jsonObject.getInt("chat_id"));
@@ -710,6 +712,7 @@ public class FileUtil {
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
                                 notification.put("token",token );
+                                notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
                                 notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
                                 notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
                                 notification.put("chat_id", jsonObject.getInt("chat_id"));
@@ -838,6 +841,7 @@ public class FileUtil {
 
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
                                 notification.put("token", token);
+                                notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
                                 notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
                                 notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
                                 notification.put("chat_id", jsonObject.getInt("chat_id"));
@@ -977,11 +981,11 @@ public class FileUtil {
                                 sendObject.put("orginalName", jsonObject.getString("orginalName"));
                                 sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
                                 notification.put("token", token);
+                                notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
                                 notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
                                 notification.put("title",  myBase.getClassSharedPreferences().getUser().getUserName() +" "+  myBase.getClassSharedPreferences().getUser().getLastName() );
                                 notification.put("chat_id", jsonObject.getInt("chat_id"));
                                 notification.put("blockedFor",blockedFor);
-
                                 sendObject.put("notification",notification);
 
 

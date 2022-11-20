@@ -13,9 +13,9 @@ import android.widget.ImageView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.yawar.memo.R;
-import com.yawar.memo.fragment.SettingsFragment;
+import com.yawar.memo.ui.settingPage.SettingsFragment;
 import com.yawar.memo.language.helper.LocaleHelper;
-import com.yawar.memo.views.DashBord;
+import com.yawar.memo.ui.dashBoard.DashBord;
 
 
 import java.util.Locale;

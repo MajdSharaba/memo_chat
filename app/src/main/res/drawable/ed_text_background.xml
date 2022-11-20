@@ -3,7 +3,7 @@
     android:padding="10dp"
     android:shape="rectangle" >
 
-    <solid android:color="@color/background_search_bar"
+    <solid android:color="#1fffffff"
         />
 
 

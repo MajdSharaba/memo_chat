@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
-import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatMessage
+import com.yawar.memo.utils.BaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -44,17 +44,17 @@ class ChatMessageRepoo {
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
 
 
-    fun loadChatRoom( my_id: String,  anthor_user_id:String) {
+    fun loadChatRoom(my_id: String?, anthor_user_id:String) {
         _loadingMutableLiveData.value = true
         _chatMessageistMutableLiveData.value = null
         coroutineScope.launch {
             val chatMessageList = ArrayList<ChatMessage?>()
 
 
-            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
-                .getChatMessgeHistory( my_id,  anthor_user_id)
-//            val getChatRoomsDeferred = GdgApi.apiService
+//            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
 //                .getChatMessgeHistory( my_id,  anthor_user_id)
+            val getChatRoomsDeferred = GdgApi.apiService
+                .getChatMessgeHistory( my_id,  anthor_user_id)
 
             try {
                 val listResult = getChatRoomsDeferred?.await()
@@ -292,16 +292,16 @@ class ChatMessageRepoo {
             var chatMessageList = _chatMessageistMutableLiveData.value
 
 
-            var deleteDeferred =  GdgApi(AllConstants.base_node_url).apiService
+//            var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService
+//                .deleteMessage(message_id, user_id)
+            var deleteDeferred =  GdgApi.apiService
                 .deleteMessage(message_id,user_id)
-//            var deleteDeferred =  GdgApi.apiService
-//                .deleteMessage(message_id,user_id)
 
 
             try {
                 var listResult = deleteDeferred?.await()
                 if (chatMessages != null) {
-                    for ( i in 0 until chatMessages.size) {
+                    for (i in 0 until chatMessages.size) {
 
                         val id = chatMessages?.get(i)?.id
                         if (chatMessageList != null) {
@@ -319,12 +319,83 @@ class ChatMessageRepoo {
             } catch (e: Exception) {
 
 
-
-                Log.d("getMarsRealEstateProperties: ","Failure: ${e.message}")
+                Log.d("getMarsRealEstateProperties: ", "Failure: ${e.message}")
 
             }
         }
     }
+        fun getUnRecivedMessages(
+        ) {
+            val chatMessageList = ArrayList<ChatMessage?>()
+
+            coroutineScope.launch {
+
+
+//                var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService
+//                    .getUnRecivedMessages(BaseApp.getInstance().classSharedPreferences.user.userId)
+                val deleteDeferred = GdgApi.apiService
+                    .getUnRecivedMessages( BaseApp.getInstance().classSharedPreferences.user.userId)
+
+
+
+                try {
+                    var listResult = deleteDeferred?.await()
+
+                    Log.d("getMarsRealEstateProperties: ", listResult.toString())
+                    val jsonArray = JSONArray(listResult)
+
+
+                    for (i in 0 until jsonArray.length()) {
+                        val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+                        val chatMessage = ChatMessage()
+                        chatMessage.userId = jsonObject.getString("sender_id")
+                        chatMessage.state = jsonObject.getString("state")
+                        chatMessage.isMe = jsonObject.getString("sender_id") == BaseApp.getInstance().classSharedPreferences.user.userId
+                        if (jsonObject.getString("message_type") == "file" || jsonObject.getString("message_type") == "voice" || jsonObject.getString(
+                                "message_type") == "video" || jsonObject.getString("message_type") == "contact" || jsonObject.getString(
+                                "message_type") == "imageWeb"
+                        ) {
+                            chatMessage.fileName = jsonObject.getString("orginalName")
+                        }
+                        //                            chatMessage.setFileName("orginalName");}
+                        chatMessage.id = jsonObject.getString("message_id")
+                        chatMessage.isChecked = false
+                        if (jsonObject.getString("message_type") != "imageWeb") {
+                            chatMessage.message = jsonObject.getString("message")
+                        } else {
+                            chatMessage.image = jsonObject.getString("message")
+                        }
+                        chatMessage.type = jsonObject.getString("message_type")
+                        chatMessage.dateTime = jsonObject.getString("created_at")
+                        chatMessage.isUpdate = jsonObject.getString("edited")
+                       if( BaseApp.getInstance().chatRoomRepoo.checkInChat(chatMessage.userId)){
+                           addMessage(chatMessage)
+                           Log.d("getMarsRealEstateProperties: ", "addddddddddddd")
+                       }
+                        else{
+                           Log.d("elseeeeeeeeeee: ", "addddddddddddd")
+
+                           BaseApp.getInstance().chatRoomRepoo.setLastMessageBySenderId(
+                               chatMessage.message,chatMessage.id, chatMessage.userId,
+                               chatMessage.id, chatMessage.type, chatMessage.state, chatMessage.dateTime, chatMessage.userId
+                           )
+                        }
+
+                        chatMessageList.add(chatMessage)
+                    }
+
+                    Log.d("getMarsRealEstateProperties: ", chatMessageList.size.toString())
+
+
+
+                } catch (e: Exception) {
+
+
+                    Log.d("getMarsRealEstateProperties: ", "Failure: ${e.message}")
+
+                }
+            }
+        }
 
 
 

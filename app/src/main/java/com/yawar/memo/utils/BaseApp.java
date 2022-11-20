@@ -22,7 +22,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.yawar.memo.R;
-import com.yawar.memo.observe.ContactNumberObserve;
 import com.yawar.memo.observe.FireBaseTokenObserve;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
@@ -36,7 +35,7 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 public class BaseApp extends Application implements LifecycleObserver {
 
     FireBaseTokenObserve fireBaseTokenObserve;
-    ContactNumberObserve contactNumberObserve;
+//    ContactNumberObserve contactNumberObserve;
     public static final String TAG = "BaseApp";
     private RequestQueue mRequestQueue;
     private static BaseApp sInstance;
@@ -132,12 +131,12 @@ public class BaseApp extends Application implements LifecycleObserver {
         return fireBaseTokenObserve;
     }
 
-    public ContactNumberObserve getContactNumberObserve() {
-        if(contactNumberObserve== null){
-            contactNumberObserve = new ContactNumberObserve();
-        }
-        return contactNumberObserve;
-    }
+//    public ContactNumberObserve getContactNumberObserve() {
+//        if(contactNumberObserve== null){
+//            contactNumberObserve = new ContactNumberObserve();
+//        }
+//        return contactNumberObserve;
+//    }
     public RequestQueue getRequestQueue() {
         if (mRequestQueue == null) {
             mRequestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -249,6 +248,7 @@ public class BaseApp extends Application implements LifecycleObserver {
 //                getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
 
 
+       getChatMessageRepoo().getUnRecivedMessages();
 
         Intent service = new Intent(this, SocketIOService.class);
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);

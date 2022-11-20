@@ -35,8 +35,7 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
-import com.yawar.memo.views.ConversationActivity;
-import com.yawar.memo.views.DashBord;
+import com.yawar.memo.ui.dashBoard.DashBord;
 
 import java.util.ArrayList;
 

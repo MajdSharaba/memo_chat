@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:background="@color/backgroundColor"
-    tools:context=".fragment.ChatRoomFragment">
+    tools:context=".ui.ChatRoomsPage.ChatRoomFragment">
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:background="@color/memo_background_color"
@@ -45,6 +45,8 @@
                 <androidx.appcompat.widget.SearchView
                     android:id="@+id/search"
                     app:queryHint="@string/search"
+                    android:shadowColor="@color/white"
+                    android:theme="@style/Theme.AppCompat"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:baselineAligned="false"

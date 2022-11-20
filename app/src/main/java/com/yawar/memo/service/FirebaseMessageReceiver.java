@@ -1,11 +1,9 @@
 package com.yawar.memo.service;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.PowerManager;
-import android.system.StructTimespec;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
@@ -22,11 +20,11 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
-import com.yawar.memo.Api.ServerApi;
 import com.yawar.memo.R;
-import com.yawar.memo.call.CallNotificationActivity;
+import com.yawar.memo.ui.responeCallPage.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
+import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.notification.NotificationCallWorker;
 import com.yawar.memo.notification.NotificationMessingCallWorker;
 import com.yawar.memo.notification.NotificationWorker;
@@ -52,7 +50,7 @@ public class FirebaseMessageReceiver
 
     BaseApp myBase;
     ChatRoomRepoo chatRoomRepoo;
-    ServerApi serverApi;
+//    ServerApi serverApi;
     String chat_id;
     private WorkManager mWorkManager;
     ArrayList<String> muteList = new ArrayList<String>();
@@ -160,11 +158,11 @@ public class FirebaseMessageReceiver
 
 
                         Data inputDataNotification = new Data.Builder().putString("name", userMissCallName).putString("image", userMissCallimage).putString("body", getResources().getString(R.string.missing_call)).putString("channel", String.valueOf(channelId + AllConstants.CHANNEL_ID)).build();
-                            if(myBase.getClassSharedPreferences()!=null){
+                        if (myBase.getClassSharedPreferences() != null) {
 
-                                myBase.getClassSharedPreferences().setNumberMissingCall(myBase.getClassSharedPreferences().getNumberMissingCall()+1);
+                            myBase.getClassSharedPreferences().setNumberMissingCall(myBase.getClassSharedPreferences().getNumberMissingCall() + 1);
 
-                            }
+                        }
                         OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationMessingCallWorker.class)
                                 .setInputData(inputDataNotification)
                                 .addTag("NotificationMessingCallWorker")
@@ -216,21 +214,18 @@ public class FirebaseMessageReceiver
                 }
 //                if (!chatRoomRepoo.checkInChat(remoteMessage.getData().get("sender_id")) && !isMute) {
                 if (!isMute) {
+                    System.out.println("not muteeeeeeeeeeee");
 
 
 //                    new showNotification(this).execute(remoteMessage.getData().get("title"), remoteMessage.getData().get("image"), message, remoteMessage.getData().get("sender_id"));
-                             Data inputDataNotification = new Data.Builder().putString("name", remoteMessage.getData().get("title")).putString("image", remoteMessage.getData().get("image"))
+                    Data inputDataNotification = new Data.Builder().putString("name", remoteMessage.getData().get("title")).putString("image", remoteMessage.getData().get("image"))
                             .putString("body", message).putString("channel", remoteMessage.getData().get("sender_id"))
                             .putString("blockedFor", remoteMessage.getData().get("blockedFor")).putString("special", remoteMessage.getData().get("special"))
                             .putString("fcm_token", remoteMessage.getData().get("fcm_token")).build();
 
 
-
-
                     sendMessageStateTwo(remoteMessage.getData().get("sender_id"), message, remoteMessage.getData().get("type"),
-                            remoteMessage.getData().get("message_id") , remoteMessage.getData().get("dateTime"), remoteMessage.getData().get("chat_id"));
-
-
+                            remoteMessage.getData().get("message_id"), remoteMessage.getData().get("dateTime"), remoteMessage.getData().get("chat_id"));
 
 
                     OneTimeWorkRequest notificationWork1 = new OneTimeWorkRequest.Builder(NotificationWorker.class)
@@ -238,40 +233,64 @@ public class FirebaseMessageReceiver
                             .addTag(workTag)
                             .build();
                     WorkManager.getInstance().enqueue(notificationWork1);
-                }
 
-                if(chatRoomRepoo.checkInChat(remoteMessage.getData().get("sender_id"))) {
-                    ChatMessage chatMessage = new ChatMessage();
-                    chatMessage.setId(remoteMessage.getData().get("message_id"));
+                    if (chatRoomRepoo.checkISNewChat(remoteMessage.getData().get("chat_id"))) {
+                        System.out.println("not new chattt");
+                        chatRoomRepoo.addChatRoom(
+                                new ChatRoomModel(
+                                        remoteMessage.getData().get("title"),
+                                        remoteMessage.getData().get("sender_id"),
+                                        message,
+                                        remoteMessage.getData().get("image"),
+                                        false,
+                                        "0",
+                                        remoteMessage.getData().get("chat_id"),
+                                        "null",
+                                        "1",
+                                        false,
+                                        remoteMessage.getData().get("my_token"),
+                                        "",
+                                        remoteMessage.getData().get("type"),
+                                        remoteMessage.getData().get("state"),
+                                        remoteMessage.getData().get("dateTime"),
+                                        false,
+                                        "null",
+                                        remoteMessage.getData().get("sender_id"),
+                                        ""
+                                )
+                        );
+                    } else if (chatRoomRepoo.checkInChat(remoteMessage.getData().get("sender_id"))) {
+                        ChatMessage chatMessage = new ChatMessage();
+                        chatMessage.setId(remoteMessage.getData().get("message_id"));
 
-                    chatMessage.setMessage(remoteMessage.getData().get("body"));
-                    if(remoteMessage.getData().get("type").equals( "imageWeb")){
-                        chatMessage.setImage(remoteMessage.getData().get("body"));
+                        chatMessage.setMessage(remoteMessage.getData().get("body"));
+                        if (remoteMessage.getData().get("type").equals("imageWeb")) {
+                            chatMessage.setImage(remoteMessage.getData().get("body"));
+                        }
+                        chatMessage.setDateTime(remoteMessage.getData().get("dateTime"));
+                        chatMessage.setMe(false);
+                        chatMessage.setUserId(remoteMessage.getData().get("sender_id"));
+                        chatMessage.setType(remoteMessage.getData().get("type"));
+                        chatMessage.setState(remoteMessage.getData().get("state"));
+                        chatMessage.setChecked(false);
+                        if (!remoteMessage.getData().get("type").equals("text") && !remoteMessage.getData().get("type").equals("location")) {
+                            System.out.println("(remoteMessage.getData().get(\"type\")" + remoteMessage.getData().get("type"));
+                            chatMessage.setFileName(remoteMessage.getData().get("orginalName"));
+                        }
+                        chatMessage.setUpdate("0");
+                        myBase.getChatMessageRepoo().addMessage(chatMessage);
+
+                    } else {
+
+                        chatRoomRepoo.setLastMessage(remoteMessage.getData().get("body"), remoteMessage.getData().get("chat_id"), remoteMessage.getData().get("sender_id"),
+                                remoteMessage.getData().get("reciver_id"), remoteMessage.getData().get("type"),
+                                remoteMessage.getData().get("state"), remoteMessage.getData().get("dateTime"),
+                                remoteMessage.getData().get("sender_id"));
+                        Log.d(TAG, "baseApp" + myBase.isActivityVisible());
+
                     }
-                    chatMessage.setDateTime(remoteMessage.getData().get("dateTime"));
-                    chatMessage.setMe(false);
-                    chatMessage.setUserId(remoteMessage.getData().get("sender_id"));
-                    chatMessage.setType(remoteMessage.getData().get("type"));
-                    chatMessage.setState(remoteMessage.getData().get("state"));
-                    chatMessage.setChecked(false);
-                    if(!remoteMessage.getData().get("type").equals( "text") && !remoteMessage.getData().get("type").equals("location")) {
-                        System.out.println("(remoteMessage.getData().get(\"type\")"+remoteMessage.getData().get("type"));
-                        chatMessage.setFileName(remoteMessage.getData().get("orginalName"));
-                    }
-                    chatMessage.setUpdate("0");
-                    myBase.getChatMessageRepoo().addMessage(chatMessage);
 
                 }
-                else{
-                   
-                    chatRoomRepoo.setLastMessage(remoteMessage.getData().get("body"),remoteMessage.getData().get("chat_id"),remoteMessage.getData().get("sender_id"),
-                            remoteMessage.getData().get("reciver_id"),remoteMessage.getData().get("type"),
-                            remoteMessage.getData().get("state"),remoteMessage.getData().get("dateTime"),
-                            remoteMessage.getData().get("sender_id"));
-                    Log.d(TAG, "baseApp"+myBase.isActivityVisible());
-
-                }
-
             }
         }
     }
@@ -300,8 +319,8 @@ void wackLock(){
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"change_state", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"change_state", new com.android.volley.Response.Listener<String>() {
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"change_state", new com.android.volley.Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {

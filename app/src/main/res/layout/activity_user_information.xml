@@ -8,7 +8,7 @@
     android:gravity="center_horizontal"
     android:background="@color/background_setting_color"
     android:orientation="vertical"
-    tools:context=".views.UserInformationActivity">
+    tools:context=".ui.UserInformationPage.UserInformationActivity">
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_gravity="center_horizontal"

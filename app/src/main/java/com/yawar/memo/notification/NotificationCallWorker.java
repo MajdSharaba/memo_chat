@@ -15,7 +15,6 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
@@ -37,8 +36,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.yawar.memo.R;
-import com.yawar.memo.call.ResponeCallActivity;
-import com.yawar.memo.call.CallNotificationActivity;
+import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
+import com.yawar.memo.ui.responeCallPage.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
@@ -318,8 +317,8 @@ public class NotificationCallWorker extends Worker {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"ringing", new com.android.volley.Response.Listener<String>() {
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"ringing", new com.android.volley.Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {

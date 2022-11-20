@@ -11,7 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.yawar.memo.call.CallNotificationActivity;
+import com.yawar.memo.ui.responeCallPage.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.utils.BaseApp;
 
@@ -72,8 +72,8 @@ public class CancelCallFromCallNotification extends BroadcastReceiver {
         // on below line we are calling a string
         // request method to post the data to our API
         // in this we are calling a post method.
-//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"reject", new com.android.volley.Response.Listener<String>() {
-        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"reject", new com.android.volley.Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_url_final+"reject", new com.android.volley.Response.Listener<String>() {
+//        StringRequest request = new StringRequest(Request.Method.POST, AllConstants.base_node_url+"reject", new com.android.volley.Response.Listener<String>() {
 
             @Override
             public void onResponse(String response) {
