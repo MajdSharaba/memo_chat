@@ -205,6 +205,8 @@ class ChatRoomRepoo {
         }
         _chatRoomListMutableLiveData.postValue( chatRoomsList)
     }
+
+
     fun setLastMessageBySenderId(
         message: String?,
         chatId: String,
@@ -220,7 +222,6 @@ class ChatRoomRepoo {
         for (chatRoom in chatRoomsList!!) {
             if (chatRoom != null) {
                 Log.d(TAG, "setLastMessage: ${chatRoom.other_id +senderId }")
-
                 if (chatRoom.other_id == senderId) {
                     chatRoom.last_message = message!!
                     chatRoom.message_type = type
@@ -232,7 +233,6 @@ class ChatRoomRepoo {
                         chatRoom.num_msg = (Integer.parseInt(chatRoom.num_msg)+1).toString()
                     }
                     Log.d(TAG, "setLastMessage:${ chatRoom.num_msg + message} ")
-
                     chatRoomsList.remove(chatRoom)
                     chatRoomsList.add(0, chatRoom)
                     break
@@ -256,15 +256,15 @@ class ChatRoomRepoo {
                 }
             }
         }
-        _chatRoomListMutableLiveData.value = chatRoomsList
+        _chatRoomListMutableLiveData.postValue(chatRoomsList)
     }
-    fun checkISNewChat( chat_id: String) : Boolean {
+    fun checkISNewChat( chatId: String) : Boolean {
         var chatRoomsList = _chatRoomListMutableLiveData.value
 
         if (chatRoomsList != null) {
             for (chatRoom in chatRoomsList) {
                 if (chatRoom != null) {
-                    if (chatRoom.id == chat_id) {
+                    if (chatRoom.id ==  chatId) {
                       return false
                         break
                     }

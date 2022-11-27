@@ -1,5 +1,6 @@
 package com.yawar.memo.ui.ChatRoomsPage
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
@@ -40,7 +41,7 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
         // Inflate the layout for this fragment
 //        val view = inflater.inflate(R.layout.fragment_chat_room, container, false)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat_room,container,false)
-        val view = binding.getRoot();
+        val view = binding.root;
         myBase = BaseApp.getInstance()
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myId = classSharedPreferences.user.userId.toString()
@@ -95,7 +96,22 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
         binding.content.recycler.adapter = itemAdapter
         binding.content.recycler.setListener(object : SwipeLeftRightCallback.Listener {
             override fun onSwipedLeft(position: Int) {
-                chatRoomViewModel.deleteChatRoom(myId, postList[position].other_id)
+//                chatRoomViewModel.deleteChatRoom(myId, postList[position].other_id)
+                val dialog = AlertDialog.Builder(requireActivity())
+                dialog.setTitle("${getString(R.string.alert_delete_chat)} ${postList[position].username}")
+                dialog.setPositiveButton(
+                    R.string.delete
+                ) { _, _ -> //
+                                    chatRoomViewModel.deleteChatRoom(myId, postList[position].other_id)
+
+                }
+                dialog.setNegativeButton(
+                    R.string.cancel
+                ) { dialog, which ->
+                 itemAdapter.notifyDataSetChanged()
+                    dialog.dismiss() }
+                val alertDialog = dialog.create()
+                alertDialog.show()
             }
 
             override fun onSwipedRight(position: Int) {

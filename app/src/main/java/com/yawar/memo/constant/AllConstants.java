@@ -28,12 +28,10 @@ public interface AllConstants {
     int OPEN_MAP_PERMISSION = 448;
     int OPEN_CAMERA_PERMISSION = 9921;
     String ip="109";
-//    public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
-        public String base_url_final = "http://137.184.155.225/";
-
+//  public String base_url = "http://192.168.0."+ip+":8080/yawar_chat/views/";
+    public String base_url_final = "http://137.184.155.225/";
     String delet_from_archived_url = base_url_final+"deletearchive";
     String delete_conversation = base_url_final+"deleteconversation";
-
     String upload_firebase_URL = " https://storage.googleapis.com/memoback-ea9c4.appspot.com";
     String upload_Voice_URL = base_url_final+"uploadAudio";
     String upload_file_URL = base_url_final+"uploadFile";
@@ -45,15 +43,10 @@ public interface AllConstants {
     String delete_message =base_url_final+"deletemessage2";
     String add_to_archived_url = base_url_final+"archivechat";
     String add_token = base_url_final+"addtoken";
-
     String api_key_fcm_token_header_value = "Key=AAAA4428f68:APA91bGmEQZqZESoHenOQGETIbiOWS9N3r7e_BkHs1KFXi6ThD81FPkIHWp4dCsksTALD9IxaeHySy8ORraWmpjwvGh7Zls7Sc75NZQ0qTEwqIkWQZlMFdDC6OEGRNI22VfnkTu8LjP6";
     String imageUrl="https://storage.googleapis.com/memo-d0344.appspot.com/profile_images/";
-
     String imageUrlInConversation="https://storage.googleapis.com/memo-d0344.appspot.com/";
     String fcm_send_notification_url = "https://fcm.googleapis.com/fcm/send";
-
-
-
     String CHANNEL_ID = "1000";
     int onGoingCallChannelId = 0;
 

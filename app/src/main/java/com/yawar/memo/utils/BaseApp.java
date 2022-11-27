@@ -32,6 +32,9 @@ import com.yawar.memo.repositry.UserInformationRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 
+import dagger.hilt.android.HiltAndroidApp;
+
+@HiltAndroidApp
 public class BaseApp extends Application implements LifecycleObserver {
 
     FireBaseTokenObserve fireBaseTokenObserve;

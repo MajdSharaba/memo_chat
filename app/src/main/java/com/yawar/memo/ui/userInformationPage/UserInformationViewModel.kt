@@ -8,7 +8,7 @@ import com.yawar.memo.model.MediaModel
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.utils.BaseApp
 
-class UserInformationViewModel: ViewModel() {
+class UserInformationViewModel(blockedForState: String): ViewModel() {
     var baseApp = BaseApp.getInstance()
     private val repository = baseApp.userInformationRepo
     private val blockUserRepo = baseApp.blockUserRepo
@@ -25,6 +25,14 @@ class UserInformationViewModel: ViewModel() {
         get() = _state
 
     private var lastSeen: String? = null
+
+
+    init {
+        if (blockedForState != null) {
+            blockUserRepo.setBlockedForRepo(blockedForState)
+        }
+
+    }
 
 
     fun setBlockedFor(blockedFor: String) {

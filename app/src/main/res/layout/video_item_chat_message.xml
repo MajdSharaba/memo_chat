@@ -47,6 +47,7 @@
                     android:layout_width="200dp"
                     android:layout_height="200dp"
                     app:riv_corner_radius="10dip"
+                    android:padding="3dp"
                     app:riv_mutate_background="true"
                     app:riv_tile_mode="repeat"
                     app:riv_oval="false"

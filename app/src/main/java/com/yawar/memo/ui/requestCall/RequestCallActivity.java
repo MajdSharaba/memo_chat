@@ -1254,7 +1254,7 @@ public class RequestCallActivity extends AppCompatActivity {
                         requestCallViewModel.setIsVideoForYou(isVideoForYou);
                         requestCallViewModel.setIsSpeaker(true);
                         setScreenSizes();
-                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+//                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                         SendSwitchTOVideoCallRespone(requestCallViewModel.isVideoForMe().getValue());
                         dialog.dismiss();
                     }
@@ -1359,7 +1359,7 @@ public class RequestCallActivity extends AppCompatActivity {
         rootEglBase = EglBase.create();
         binding.surfaceView.init(rootEglBase.getEglBaseContext(), null);
         binding.surfaceView.setEnableHardwareScaler(true);
-//        binding.surfaceView.setMirror(true);
+        binding.surfaceView.setMirror(true);
 
         binding.surfaceView2.init(rootEglBase.getEglBaseContext(), null);
         binding.surfaceView2.setEnableHardwareScaler(true);
@@ -1789,36 +1789,41 @@ public class RequestCallActivity extends AppCompatActivity {
 
     private void setScreenSizes(){
         binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
+
         final float scale = getResources().getDisplayMetrics().density;
         System.out.println(scale+"scale");
-        int pixelsWidth = (int) (120 * scale + 0.5f);
-        int pixelsHeight= (int) (170 * scale + 0.5f);
+        int pixelsWidth = (int) (130 * scale + 0.5f);
+        int pixelsHeight= (int) (190 * scale + 0.5f);
+        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(pixelsWidth,pixelsHeight));
+//
+//        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(binding.localVideoView, "scaleX", 0.4f);
+//        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.28f);
+//        scaleDownX.setDuration(1500);
+//        scaleDownY.setDuration(1500);
+//
+//        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", pixelsWidth);
+//        moveUpY.setDuration(1500);
+//        ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", pixelsHeight);
+//        moveUpx.setDuration(1500);
+//
+//
+//        AnimatorSet scaleDown = new AnimatorSet();
+//        AnimatorSet moveUp = new AnimatorSet();
+//        AnimatorSet moveEnd = new AnimatorSet();
+//
+//
+//        scaleDown.play(scaleDownX).with(scaleDownY);
+//        moveUp.play(moveUpY);
+//        moveEnd.play(moveUpx);
+//
+//        scaleDown.start();
+//        moveUp.start();
+//        moveEnd.start();
 
-        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(binding.localVideoView, "scaleX", 0.4f);
-        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.28f);
-        scaleDownX.setDuration(1500);
-        scaleDownY.setDuration(1500);
-
-        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", scale*-300f);
-        moveUpY.setDuration(1500);
-        ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", scale*110f);
-        moveUpx.setDuration(1500);
-
-
-        AnimatorSet scaleDown = new AnimatorSet();
-        AnimatorSet moveUp = new AnimatorSet();
-        AnimatorSet moveEnd = new AnimatorSet();
-
-
-        scaleDown.play(scaleDownX).with(scaleDownY);
-        moveUp.play(moveUpY);
-        moveEnd.play(moveUpx);
-
-        scaleDown.start();
-
-
-        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_out);
-        binding.localVideoView.startAnimation(animation);
+//        binding.localVideoView.setTranslationX(120 *scale+ 0.5f);
+//        binding.localVideoView.setTranslationY(-290 *scale+ 0.5f);
+//        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_out);
+//        binding.localVideoView.startAnimation(animation);
 
     }
 

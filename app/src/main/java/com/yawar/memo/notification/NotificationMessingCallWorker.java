@@ -38,23 +38,16 @@ import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.ui.dashBoard.DashBord;
 
 import java.util.ArrayList;
-
 public class NotificationMessingCallWorker extends Worker {
-
     public static final String WORK_NAME ="NotificationMessingCallWorker" ;
     private static final String TAG ="NotificationMessingCallWorker" ;
     String call_ongoing_call_user_id;
     NotificationCompat.MessagingStyle inboxStyle ;
     ClassSharedPreferences classSharedPreferences;
     Notification.BubbleMetadata bubbleData;
-
-
     public NotificationMessingCallWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
     }
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.Q)
     @NonNull
     @Override
@@ -77,8 +70,7 @@ public class NotificationMessingCallWorker extends Worker {
         String title = "";
         try {
 
-            Intent intent
-                    = new Intent(applicationContext, DashBord.class);
+            Intent intent = new Intent(applicationContext, DashBord.class);
             intent.setAction("calls");
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

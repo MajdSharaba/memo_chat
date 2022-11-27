@@ -46,6 +46,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.yawar.memo.utils.AutoStartHelper;
 import com.yawar.memo.utils.CallProperty;
 import com.yawar.memo.databinding.ActivityRegisterBinding;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
@@ -93,9 +94,11 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
         super.onCreate(savedInstanceState);
         CallProperty.setStatusBarOrScreenStatus(this);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_register);
-        if(android.os.Build.MANUFACTURER.equals("Xiaomi")){
-          showXhaomiDialog();
-        }
+//        if(android.os.Build.MANUFACTURER.equals("Xiaomi")){
+//          showXhaomiDialog();
+//        }
+        AutoStartHelper.getInstance().getAutoStartPermission(this);
+
         initView();
         initAction();
     }

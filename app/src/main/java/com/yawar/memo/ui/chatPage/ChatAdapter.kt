@@ -29,12 +29,13 @@ import com.yawar.memo.utils.ImageProperties
 import com.yawar.memo.utils.TimeProperties
 import java.io.File
 import java.util.*
+var previousMediaPlayer : MediaPlayer? = null
+var previousImageView : ImageView? = null
 
 class ChatAdapter(private val context: Activity) :
     ListAdapter<ChatMessage, RecyclerView.ViewHolder?>(MyDiffUtilChatMessage()) {
     private var mCallback: CallbackInterface? = null
     var userNameeee: String? = null
-
     interface CallbackInterface {
         fun onHandleSelection(position: Int, groupSelectorRespone: ChatMessage?, myMessage: Boolean)
         fun downloadFile(position: Int, chatMessage: ChatMessage?, myMessage: Boolean)
@@ -48,7 +49,9 @@ class ChatAdapter(private val context: Activity) :
     init {
         try {
             mCallback = context as CallbackInterface
-        } catch (ex: ClassCastException) {
+        }
+        catch (ex: ClassCastException) {
+
         }
     }
     override fun getItemViewType(position: Int): Int {
@@ -63,7 +66,6 @@ class ChatAdapter(private val context: Activity) :
             else -> 6
         }
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         run {
             return when (viewType) {
@@ -401,6 +403,7 @@ class ChatAdapter(private val context: Activity) :
                  binding.playerSeekBar.progress = 0
                  binding.imagePlayPause.setImageResource(R.drawable.ic_play_audio)
                  binding.textCurrentTime.text = "0.00"
+                 previousMediaPlayer = null
                  mediaPlayer.reset()
                  try {
                      this.mediaPlayer!!.setDataSource(voiceFile.absolutePath)
@@ -424,11 +427,18 @@ class ChatAdapter(private val context: Activity) :
              }
              binding.imagePlayPause.setOnClickListener {
                  if (mediaPlayer!!.isPlaying) {
+                     previousMediaPlayer = null
                      handler.removeCallbacks(updater!!)
                      mediaPlayer!!.pause()
                      binding.imagePlayPause.setImageResource(R.drawable.ic_play_audio)
                  } else {
                      mediaPlayer!!.start()
+                     ////
+                     previousMediaPlayer?.pause()
+                      previousImageView?.setImageResource(R.drawable.ic_play_audio)
+                     /////
+                     previousMediaPlayer = mediaPlayer
+                     previousImageView = binding.imagePlayPause
                      binding.imagePlayPause.setImageResource(R.drawable.ic_pause)
                      if (mediaPlayer!!.isPlaying) {
                          binding.playerSeekBar.progress =
@@ -511,6 +521,7 @@ class ChatAdapter(private val context: Activity) :
 //                 return LayoutVoiceViewHolder(layoutTwo)
                  val layoutInflater = LayoutInflater.from(parent.context)
                  val binding = VoiceRecordItemChatMessageBinding.inflate(layoutInflater,parent, false)
+
                  return LayoutVoiceViewHolder(binding)
              }
          }
@@ -1075,7 +1086,6 @@ class ChatAdapter(private val context: Activity) :
         }
 
     }
-
     class MyDiffUtilChatMessage : DiffUtil.ItemCallback<ChatMessage>() {
         override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
             return oldItem.id == newItem.id

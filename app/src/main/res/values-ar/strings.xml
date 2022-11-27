@@ -264,22 +264,14 @@
     <string name="download_app">حمل التطبيق الأن</string>
     <string name="key_exchange">جاري تبادل المفاتيح</string>
     <string name="login_by_google">الاستمرار باستخدام غوغل</string>
-
     <string name="facebook_app_id">851477176031611</string>
     <string name="fb_login_protocol_scheme">fb851477176031611</string>
     <string name="facebook_client_token">c30d8ac147f1b971419857a603eb8150</string>
     <string name="choose_image_alert">قم بتحميل صورتك ليتعرف عليك اصدقاءك!! </string>
-
-
-
-
-
-
-
-
-
-
-
+    <string name="alert_delete_chat">هل انت متأكد من حذف المحادثة مع</string>
+    <string name="allow_auto_start">تفعيل التشغيل التلقائي</string>
+    <string name="aloow_auto_start_message">قم بتفعيل التشغيل التلقائي لكي تتمكن من استقبال الأشعارات في الخلفية</string>
+    <string name="allow">سماح</string>
 
 
 </resources>

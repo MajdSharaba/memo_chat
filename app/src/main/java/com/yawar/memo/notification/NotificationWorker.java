@@ -105,39 +105,7 @@ public class NotificationWorker extends Worker {
                     = stackBuilder.getPendingIntent(
                      0,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE );
-            //////////////
 
-//            Intent bubbintent
-//                    = new Intent(applicationContext, ConversationActivity.class);
-//            PendingIntent bubbleIntent =
-//                    PendingIntent.getActivity(applicationContext, 0, bubbintent,PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE );
-//
-//             String CATEGORY_TEXT_SHARE_TARGET =
-//                    "com.example.category.IMG_SHARE_TARGET";
-//
-//            Person chatPartner = new Person.Builder()
-//                    .setName("Chat partner")
-//                    .setImportant(true)
-//                    .build();
-//
-//                ShortcutInfo shortcut =
-//                        new ShortcutInfo.Builder(applicationContext, channel)
-//                                .setCategories(Collections.singleton(CATEGORY_TEXT_SHARE_TARGET))
-//                                .setIntent(new Intent(Intent.ACTION_DEFAULT))
-//                                .setLongLived(true)
-//                                .setShortLabel(chatPartner.getName())
-//                                .build();
-//
-//
-//            // Create bubble metadata
-//                 bubbleData = new Notification.BubbleMetadata.Builder(bubbleIntent,
-//                            Icon.createWithResource(applicationContext, R.drawable.th))
-//                            .setDesiredHeight(600)
-//                            .build();
-//
-
-
-            //////////
             String channel_id = "notification_channelllllll";
             NotificationCompat.Builder builder
                     = new NotificationCompat
@@ -155,16 +123,9 @@ public class NotificationWorker extends Worker {
                     .setSmallIcon(R.drawable.ic_memo_logo)
                     .setAutoCancel(false)
                     .setNumber(5)
-
-
-//                    .setSound(null)
-//                    .setOngoing(true)
                     .setGroup(GROUP_KEY_WORK_EMAIL)
-                    //specify which group this notification belongs to
-                    //set this notification as the summary for the group
                     .setVibrate(new long[]{1000, 1000, 1000,
                             1000, 1000})
-//                        .setOnlyAlertOnce(true)
                     .setContentIntent(pendingIntent)
                     .setGroupSummary(true);
             NotificationManager notificationManager
@@ -184,10 +145,8 @@ public class NotificationWorker extends Worker {
                         .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
                         .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
                         .build();
-//                    notificationChannel.setSound(alarmSound, null);
                 notificationChannel.setSound(Uri.parse("android.resource://" + applicationContext.getPackageName() + "/" + R.raw.notification_sound), audioAttributes);
                 notificationChannel.setSound(RingtoneManager. getDefaultUri (RingtoneManager.TYPE_NOTIFICATION), audioAttributes);
-                /// for check current notification
                 for (StatusBarNotification statusBarNotification : notificationManager.getActiveNotifications()) {
                     System.out.println(statusBarNotification.getId() + "statusBarNotification.getId()");
                     if (statusBarNotification.getId() == Integer.parseInt(channel)) {

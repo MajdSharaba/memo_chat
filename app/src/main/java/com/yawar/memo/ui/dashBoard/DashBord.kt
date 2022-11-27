@@ -40,6 +40,7 @@ import com.yawar.memo.service.FirebaseMessageReceiver
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.sessionManager.SharedPreferenceStringLiveData
+import com.yawar.memo.utils.AutoStartHelper
 import com.yawar.memo.utils.BaseApp
 import org.json.JSONException
 import org.json.JSONObject
@@ -261,11 +262,11 @@ class DashBord : AppCompatActivity(), Observer {
 
 
         connectSocket()
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-            reciveNwMessage, IntentFilter(
-                ON_MESSAGE_RECEIVED
-            )
-        )
+//        LocalBroadcastManager.getInstance(this).registerReceiver(
+//            reciveNwMessage, IntentFilter(
+//                ON_MESSAGE_RECEIVED
+//            )
+//        )
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, IntentFilter(TYPING))
         LocalBroadcastManager.getInstance(this).registerReceiver(
             reciveBlockUser, IntentFilter(
@@ -308,6 +309,8 @@ class DashBord : AppCompatActivity(), Observer {
         checkPermission()
         myId = classSharedPreferences.user.userId.toString()
         chatRoomRepoo = myBase.chatRoomRepoo
+//        AutoStartHelper.getInstance().getAutoStartPermission(this);
+
         LocalBroadcastManager.getInstance(this).registerReceiver(
             reciveNewChat, IntentFilter(
                 NEW_MESSAGE
@@ -428,7 +431,7 @@ class DashBord : AppCompatActivity(), Observer {
     override fun onDestroy() {
         super.onDestroy()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNewChat)
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage)
+//        LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveNwMessage)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveTyping)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveBlockUser)
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveUnBlockUser)

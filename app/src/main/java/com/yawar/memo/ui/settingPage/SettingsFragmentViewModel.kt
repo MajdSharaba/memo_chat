@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -146,7 +147,7 @@ class SettingsFragmentViewModel : ViewModel() {
 
 
         coroutineScope.launch {
-//
+
 //            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
 //                .deleteAccount(sn, id)
             val getResponeDeferred = GdgApi.apiService

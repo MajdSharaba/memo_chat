@@ -24,11 +24,10 @@ class IntroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_intro)
-
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myId = classSharedPreferences.user.userId.toString()
         myBase = BaseApp.getInstance()
-        introActModelView = ViewModelProvider(this).get(IntroActModelView::class.java)
+        introActModelView = ViewModelProvider(this)[IntroActModelView::class.java]
         introActModelView!!.loadData().observe(this, object : Observer<ArrayList<ChatRoomModel?>?> {
             override fun onChanged(chatRoomModels: ArrayList<ChatRoomModel?>?) {
                 if (chatRoomModels != null) {

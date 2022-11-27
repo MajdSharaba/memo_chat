@@ -34,6 +34,8 @@ import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
+import com.yawar.memo.ui.chatPage.ConversationModelView
+import com.yawar.memo.ui.chatPage.ConversationViewModelFactory
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.TimeProperties
 import org.json.JSONException
@@ -43,7 +45,7 @@ import org.json.JSONObject
 class UserInformationActivity : AppCompatActivity() {
 //    var EXAMPLE_COUNTER: Key<Int>
     private val recyclerDataArrayList = ArrayList<MediaModel>()
-//    lateinit var serverApi: ServerApi
+    lateinit  var userInformationViewModelFactory: UserInformationViewModelFactory
     lateinit var timeProperties: TimeProperties
     lateinit var dataStore: RxDataStore<Preferences>
     lateinit var binding : ActivityUserInformationBinding
@@ -51,7 +53,6 @@ class UserInformationActivity : AppCompatActivity() {
     var muteList: ArrayList<String?>? = ArrayList()
     lateinit var blockUserRepo: BlockUserRepo
     lateinit var userInformationViewModel: UserInformationViewModel
-
     lateinit var userName: String
     lateinit var sn: String
     lateinit var chatId: String
@@ -165,9 +166,6 @@ class UserInformationActivity : AppCompatActivity() {
     private fun initViews() {
         myBase = BaseApp.getInstance()
         classSharedPreferences = myBase.classSharedPreferences
-        userInformationViewModel = ViewModelProvider(this).get(
-            UserInformationViewModel::class.java
-        )
         timeProperties = TimeProperties()
         blockUserRepo = myBase.blockUserRepo
         val bundle = intent.extras
@@ -179,9 +177,11 @@ class UserInformationActivity : AppCompatActivity() {
         imageUrl = bundle.getString("image", "Default")
         blockedFor = bundle.getString("blockedFor", "")
         my_id = classSharedPreferences.user.userId.toString()
+        userInformationViewModelFactory = UserInformationViewModelFactory(blockedFor)
+        userInformationViewModel = ViewModelProvider(this,userInformationViewModelFactory)[UserInformationViewModel::class.java]
 //        serverApi = ServerApi(this)
         checkConnect()
-        userInformationViewModel.setBlockedFor(blockedFor)
+//        userInformationViewModel.setBlockedFor(blockedFor)
         userInformationViewModel.state.observe(
             this
         ) { s ->

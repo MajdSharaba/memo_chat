@@ -133,6 +133,8 @@ public class ResponeCallActivity extends AppCompatActivity {
     private static final String TAG = "CompleteActivity";
     private static final int RC_CALL = 111;
     private static final int DO_CALL = 222;
+    Animation animation;
+
 
 
     public static final String VIDEO_TRACK_ID = "ARDAMSv0";
@@ -1059,8 +1061,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         rootEglBase = EglBase.create();
         binding.surfaceView.init(rootEglBase.getEglBaseContext(), null);
         binding.surfaceView.setEnableHardwareScaler(true);
-//        binding.surfaceView.setMirror(true);
-
+        binding.surfaceView.setMirror(true);
         binding.surfaceView2.init(rootEglBase.getEglBaseContext(), null);
         binding.surfaceView2.setEnableHardwareScaler(true);
 //        binding.surfaceView2.setMirror(true);
@@ -1574,6 +1575,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                     binding.callAudioButtons.setVisibility(View.GONE);
                     binding.remoteVideoView.setVisibility(View.VISIBLE);
                     binding.localVideoView.setVisibility(View.VISIBLE);
+                    binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                     calltType = "video";
 
                 }
@@ -1615,29 +1617,37 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         final float scale = getResources().getDisplayMetrics().density;
         ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(binding.localVideoView, "scaleX", 0.4f);
         ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.28f);
-        scaleDownX.setDuration(1500);
-        scaleDownY.setDuration(1500);
+        int pixelsWidth = (int) (120 * scale + 0.5f);
+        int pixelsHeight= (int) (170 * scale + 0.5f);
+        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(pixelsWidth,pixelsHeight));
 
-        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", ( scale *-300));
-        moveUpY.setDuration(1500);
-        ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", (  scale *110));
-        moveUpx.setDuration(1500);
+//        scaleDownX.setDuration(1500);
+//        scaleDownY.setDuration(1500);
+//
+//        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", (pixelsWidth));
+//        moveUpY.setDuration(1500);
+//        ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", ( pixelsHeight));
+//        moveUpx.setDuration(1500);
+//
+//
+//        AnimatorSet scaleDown = new AnimatorSet();
+//        AnimatorSet moveUp = new AnimatorSet();
+//        AnimatorSet moveEnd = new AnimatorSet();
+//
+//
+//        scaleDown.play(scaleDownX).with(scaleDownY);
+//        moveUp.play(moveUpY);
+//        moveEnd.play(moveUpx);
+//
+//        scaleDown.start();
+//        binding.localVideoView.setTranslationX(100 *scale+ 0.5f);
+//        binding.localVideoView.setTranslationY(scale+ 0.5f);
 
 
-        AnimatorSet scaleDown = new AnimatorSet();
-        AnimatorSet moveUp = new AnimatorSet();
-        AnimatorSet moveEnd = new AnimatorSet();
-
-
-        scaleDown.play(scaleDownX).with(scaleDownY);
-        moveUp.play(moveUpY);
-        moveEnd.play(moveUpx);
-
-        scaleDown.start();
 //                    moveUp.start();
 //                    moveEnd.start();
-        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_out);
-        binding.localVideoView.startAnimation(animation);
+//         animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_out);
+//        binding.localVideoView.startAnimation(animation);
 
     }
 

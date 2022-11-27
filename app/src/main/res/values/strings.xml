@@ -223,6 +223,10 @@
     <string name="fb_login_protocol_scheme">fb851477176031611</string>
     <string name="facebook_client_token">c30d8ac147f1b971419857a603eb8150</string>
     <string name="choose_image_alert">upload your image to make everyone know how you are !! </string>
+    <string name="alert_delete_chat">do you want to delete chat with</string>
+    <string name="allow_auto_start">Allow AutoStart</string>
+    <string name="aloow_auto_start_message">Please enable auto start in settings to receive push notification.</string>
+    <string name="allow">Allow</string>
 
 
 </resources>

@@ -127,6 +127,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     private var permissions: Permissions? = null
     private var mediaRecorder: MediaRecorder? = null
     var classSharedPreferences: ClassSharedPreferences? = null
+
+
     private val check: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             val check = intent.extras!!.getString("check")
@@ -136,7 +138,10 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             try {
                 checkObject = JSONObject(check.toString())
                 userId = checkObject.getString("user_id")
+                Log.d(TAG, "onReceive:${check+anthor_user_id+ userId}")
+
                 if (userId == anthor_user_id) {
+
                     checkConnect = checkObject.getString("is_connect")
                     conversationModelView!!.lastSeen = checkObject.getString("last_seen")
                     conversationModelView!!.set_state(checkConnect)
@@ -310,7 +315,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         }
                     } else {
                         if (id != "0000") {
-                            println("not id equels true")
                             chatRoomRepoo!!.setLastMessage(
                                 text,
                                 recive_chat_id,
@@ -554,8 +558,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         pickiT = PickiT(this, this, this)
         initViews()
         initAction()
-        EnterRoom()
-        checkConnect()
+//        checkConnect()
         LocalBroadcastManager.getInstance(this).registerReceiver(check, IntentFilter(CHEK))
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveTyping, IntentFilter(TYPING))
         LocalBroadcastManager.getInstance(this).registerReceiver(
@@ -587,6 +590,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
     override fun onResume() {
         super.onResume()
+        checkConnect()
+        EnterRoom()
         scroll()
         closeCurrentNotification()
     }
@@ -1093,7 +1098,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         })
         binding.recordView.setSlideToCancelText(resources.getString(R.string.slide_to_cancel))
         binding.recordView.setCustomSounds(0, R.raw.record_finished, 0)
-        binding.recordView.timeLimit = 30000 //30 sec
+        binding.recordView.timeLimit = 60000 //30 sec
         binding.recordView.setOnRecordListener(object : OnRecordListener {
             override fun onStart() {
                 //Start Recording..
@@ -2365,8 +2370,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
     @SuppressLint("Range")
     fun showImageBeforeSend(uri: Uri?, type: String) {
-        val fileNmae = System.currentTimeMillis().toString() + "_" + user_id
 
+        val fileNmae = System.currentTimeMillis().toString() + "_" + user_id
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_image_before_send)
         dialog.setTitle("Title...")
@@ -2419,7 +2424,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             } else if (pathImage.toString().startsWith("file://")) {
                 displayNamee = myFileImage.name
                 val chatMessage = FileUtil.uploadImage(
-                    displayNamee,
+                    fileNmae,
                     pathImage,
                     this,
                     user_id,

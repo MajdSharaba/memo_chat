@@ -14,6 +14,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 //import com.yawar.memo.call.AnswerActivity;
 //import com.yawar.memo.call.CompleteActivity;
+import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
 import com.yawar.memo.ui.requestCall.RequestCallActivity;
@@ -24,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
@@ -38,16 +40,16 @@ import com.yawar.memo.ui.dashBoard.DashBord;
 import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity;
 
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static com.yawar.memo.utils.ShowNotificationKt.showNotification;
 
 public class SocketIOService extends Service implements SocketEventListener.Listener, HeartBeat.HeartBeatListener, Observer {
     public static final String KEY_BROADCAST_MESSAGE = "b_message";
     public static final int EVENT_TYPE_JOIN = 1, EVENT_TYPE_MESSAGE = 2,
-            EVENT_TYPE_TYPING = 3, EVENT_TYPE_ENTER = 4, EVENT_TYPE_CHECK_CONNECT=5,
-            EVENT_TYPE_ON_SEEN=6, EVENT_TYPE_Forward=7, EVENT_TYPE_ON_DELETE =8,
-            EVENT_TYPE_CHECK_QR =9, EVENT_TYPE_GET_QR =10, EVENT_TYPE_DISCONNECT=11,
-            EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13, EVENT_TYPE_ON_UPDATE_MESSAGE=14
-            , EVENT_TYPE_CALLING=15, EVENT_TYPE_SEND_PEER_ID=16, EVENT_TYPE_STOP_CALLING=17,
-            EVENT_TYPE_SETTING_CALL=18, EVENT_TYPE_RECIVED_CALL =19, EVENT_TYPE_MISSING_CALL = 20,
+            EVENT_TYPE_TYPING = 3, EVENT_TYPE_ENTER = 4, EVENT_TYPE_CHECK_CONNECT = 5,
+            EVENT_TYPE_ON_SEEN = 6, EVENT_TYPE_Forward = 7, EVENT_TYPE_ON_DELETE = 8,
+            EVENT_TYPE_CHECK_QR = 9, EVENT_TYPE_GET_QR = 10, EVENT_TYPE_DISCONNECT = 11,
+            EVENT_TYPE_BLOCK = 12, EVENT_TYPE_UN_BLOCK = 13, EVENT_TYPE_ON_UPDATE_MESSAGE = 14, EVENT_TYPE_CALLING = 15, EVENT_TYPE_SEND_PEER_ID = 16, EVENT_TYPE_STOP_CALLING = 17,
+            EVENT_TYPE_SETTING_CALL = 18, EVENT_TYPE_RECIVED_CALL = 19, EVENT_TYPE_MISSING_CALL = 20,
             EVENT_TYPE_SEND_VIDEO_CALL_REQUEST = 21, EVENT_TYPE_RESPONE_VIDEO_CALL = 22,
             EVENT_TYPE_SEND_MESSAGE_FOR_CALL = 23;
     public static final String EVENT_DELETE = "delete message";
@@ -59,18 +61,18 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private static final String EVENT_SETTINGS_RINING = "settingsCall";
     private static final String EVENT_ASK_FOR_VIDEO = "askForVideo";
     private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
-    boolean isOpen =  false;
-//    private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
+    boolean isOpen = false;
+    //    private static final String EVENT_RESPONE_ASK_FOR_VIDEO = "turn_to_video";
     private static final String EVENT_CHANGE = "change";
-    private static final String CHECK_CONNECT= "check connect";
-    private static final String FORWARD= "forward message";
-    private static final String CHECK_QR= "checkQrKey";
-    private static final String GET_QR= "getIdForUser";
-    private static final String BLOCK_USER= "block";
-    private static final String UNBLOCK_USER= "unblock";
-    private static final String UPDATE_MESSAGE= "editmsg";
-    private static final String FETCH_PEER_ID= "fetchPeerId";
-    private static final String SEND_CALL_MESSAGE= "sdp";
+    private static final String CHECK_CONNECT = "check connect";
+    private static final String FORWARD = "forward message";
+    private static final String CHECK_QR = "checkQrKey";
+    private static final String GET_QR = "getIdForUser";
+    private static final String BLOCK_USER = "block";
+    private static final String UNBLOCK_USER = "unblock";
+    private static final String UPDATE_MESSAGE = "editmsg";
+    private static final String FETCH_PEER_ID = "fetchPeerId";
+    private static final String SEND_CALL_MESSAGE = "sdp";
     private static final String EVENT_JOIN = "join";
     private static final String EVENT_RECEIVED = "received";
     private static final String EVENT_TYPING = "on typing";
@@ -79,7 +81,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     String imageString;
     public static final String EXTRA_DATA = "extra_data_message";
     public static final String EXTRA_ROOM_ID = "extra_room_id";
-//    public static final String EXTRA_USER_ENTER = "extra_user_enter";
+    //    public static final String EXTRA_USER_ENTER = "extra_user_enter";
     public static final String EXTRA_ENTER_PARAMTERS = "extra_enter_paramters";
     public static final String EXTRA_ON_DELETE_PARAMTERS = "extra_on_delete_paramters";
     public static final String EXTRA_BLOCK_PARAMTERS = "extra_block_paramters";
@@ -109,8 +111,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private boolean mTyping;
     private Queue<Message> chatQueue;
     String my_id;
-//    BlockUserRepo blockUserRepo;
-     ClassSharedPreferences classSharedPreferences;
+    //    BlockUserRepo blockUserRepo;
+    ClassSharedPreferences classSharedPreferences;
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
     private HeartBeat heartBeat;
@@ -120,6 +122,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     //-------------------------------------------------------------------------------------------
     private IO.Options IOOption;
     public static final String EXTRA_EVENT_SEND_MESSAGE = "message_detection";
+
     @Override
     public void update(Observable observable, Object o) {
 
@@ -142,7 +145,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
                 case 2:
                     Log.w(TAG, "Disconnected");
                     stopSelfResult(msg.arg1);
-
 
 
                     break;
@@ -177,7 +179,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //        myBase.getObserver().addObserver(this);
 
 
-
         try {
             mSocket = IO.socket(AllConstants.socket_url);
 
@@ -194,9 +195,9 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.on("user left", new SocketEventListener("user left", this));
         mSocket.on("typing", new SocketEventListener("typing", this));
         mSocket.on("stop typing", new SocketEventListener("stop typing", this));*/
-        if (!isConnected && !mSocket.connected()&&!(classSharedPreferences.getUser() ==null)) {
+        if (!isConnected && !mSocket.connected() && !(classSharedPreferences.getUser() == null)) {
             mSocket.connect();
-            joinSocket();
+//            joinSocket();
             Log.d("getUserrr", "Sockettttttttttt is connecttttttttttttttt ");
         }
         heartBeat = new HeartBeat(this);
@@ -266,7 +267,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
                         System.out.println("connectttttttttttttted");
                         mSocket.connect();
                     }
-                    joinSocket();
+//                    joinSocket();
                     break;
                 case EVENT_TYPE_MESSAGE:
                     System.out.println("EVENT_TYPE_MESSAGEEEEEEE");
@@ -539,7 +540,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         }
         if (!mSocket.connected()) {
             mSocket.connect();
-            joinSocket();
+//            joinSocket();
             Log.i(TAG, "reconnecting socket...");
             return false;
         }
@@ -548,10 +549,10 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
     @Override
     public void onHeartBeat() {
-        Log.e(TAG, "onHeartBeat: " );
+        Log.e(TAG, "onHeartBeat: ");
         if (mSocket != null && !mSocket.connected()) {
             mSocket.connect();
-            joinSocket();
+//            joinSocket();
 
         }
     }
@@ -563,7 +564,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //        }
         JSONObject userId = new JSONObject();
         try {
-            userId.put("user_id",  classSharedPreferences.getUser().getUserId());
+            userId.put("user_id", classSharedPreferences.getUser().getUserId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -573,18 +574,18 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private void sendMessage(String messageObject) {
         JSONObject chat = null;
         JSONObject jsonObjec = new JSONObject();
-        String type= "";
+        String type = "";
         try {
             chat = new JSONObject(messageObject);
         } catch (JSONException e) {
-            e.printStackTrace();}
+            e.printStackTrace();
+        }
 
-                mSocket.emit("new message", chat);
-
-
+        mSocket.emit("new message", chat);
 
 
     }
+
     private void enter(String messageObject) {
         JSONObject chat = null;
         try {
@@ -596,6 +597,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
             e.printStackTrace();
         }
     }
+
     private void checkConnect(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -609,6 +611,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("check connect", chat);
 
     }
+
     private void onTyping(String messageObject) {
         JSONObject typingObject = null;
         try {
@@ -621,6 +624,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("on typing", typingObject);
 
     }
+
     private void onSeen(String seenObject) {
         JSONObject chat = null;
         try {
@@ -631,6 +635,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         System.out.println(seenObject);
         mSocket.emit("seen", chat);
     }
+
     private void forwardMessage(String messageObject) {
         JSONObject chat = null;
         JSONObject object1 = new JSONObject();
@@ -642,14 +647,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //            System.out.println(chat.getString("message_id"));
 //            object1.put("id",chat.getString("id"));
 //            object1.put("message_id",chat.getString("message_id"));
-       } catch (JSONException e) {
-            e.printStackTrace();}
-        mSocket.emit("forward message",chat);
-
-
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mSocket.emit("forward message", chat);
 
 
     }
+
     private void updateMessage(String messageObject) {
         JSONObject chat = null;
 
@@ -658,8 +663,9 @@ public class SocketIOService extends Service implements SocketEventListener.List
             chat = new JSONObject(messageObject);
 
         } catch (JSONException e) {
-            e.printStackTrace();}
-        mSocket.emit("editmsg",chat);
+            e.printStackTrace();
+        }
+        mSocket.emit("editmsg", chat);
     }
 
 
@@ -671,20 +677,20 @@ public class SocketIOService extends Service implements SocketEventListener.List
             chat = new JSONObject(messageObject);
 
         } catch (JSONException e) {
-            e.printStackTrace();}
-        mSocket.emit("delete message",chat);
-
-
+            e.printStackTrace();
+        }
+        mSocket.emit("delete message", chat);
 
 
     }
+
     private void checkQr(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat +"qr paramterssssssssss");
+            System.out.println(chat + "qr paramterssssssssss");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -693,13 +699,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("checkQrKey", chat);
 
     }
+
     private void getQr(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
         try {
 
             chat = new JSONObject(messageObject);
-            System.out.println(chat +"getIdForUser paramterssssssssss");
+            System.out.println(chat + "getIdForUser paramterssssssssss");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -708,6 +715,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("getIdForUser", chat);
 
     }
+
     private void blockUser(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -717,10 +725,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println(chat.toString()+"blocked paramters");
+        System.out.println(chat.toString() + "blocked paramters");
         mSocket.emit("block", chat);
 
     }
+
     private void unBlockUser(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -730,10 +739,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println(chat.toString()+"blocked paramters");
+        System.out.println(chat.toString() + "blocked paramters");
         mSocket.emit("unblock", chat);
 
     }
+
     private void call(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -743,10 +753,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println(chat.toString()+"call paramters");
+        System.out.println(chat.toString() + "call paramters");
         mSocket.emit("getPeerId", chat);
 
     }
+
     private void sendPeerId(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -757,10 +768,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
             e.printStackTrace();
         }
 //        System.out.println(chat.toString()+"send peer ID");
-        Log.i(TAG, "sendPeerId: "+chat.toString());
+        Log.i(TAG, "sendPeerId: " + chat.toString());
         mSocket.emit("recivePeerId", chat);
 
     }
+
     private void stopCalling(String messageObject) {
         JSONObject chat = null;
         String id = "";
@@ -773,10 +785,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println(chat.toString()+"send stop calling");
+        System.out.println(chat.toString() + "send stop calling");
         mSocket.emit("closeContact", chat);
 
     }
+
     private void sendSettingsCalling(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -786,10 +799,11 @@ public class SocketIOService extends Service implements SocketEventListener.List
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println(chat.toString()+"sendSettingsCalling");
+        System.out.println(chat.toString() + "sendSettingsCalling");
         mSocket.emit("settingsCall", chat);
 
     }
+
     private void recivedCall(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -802,6 +816,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("call_recived", chat);
 
     }
+
     private void sendMissingCall(String messageObject) {
         JSONObject chat = null;
 //        joinSocket();
@@ -814,6 +829,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("closeCall", chat);
 
     }
+
     private void sendAskCAll(String messageObject) {
         System.out.println("sendAskCAllmessageObject");
         JSONObject chat = null;
@@ -826,6 +842,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("askForVideo", chat);
 
     }
+
     private void sendResponeAskCAll(String messageObject) {
         System.out.println("sendAskCAllsendResponeAskCAllmessageObject");
 
@@ -839,8 +856,9 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("turn_to_video", chat);
 
     }
+
     private void sendCallMessage(String messageObject) {
-        System.out.println("sendCallMessage"+messageObject);
+        System.out.println("sendCallMessage" + messageObject);
 
         JSONObject chat = null;
         try {
@@ -852,8 +870,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
         mSocket.emit("sdp", chat);
 
     }
-
-
 
 
     @Override
@@ -882,7 +898,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
         }
 
     }
-//    @Override
+
+    //    @Override
 //    public void onResume() {
 //        super.onR();
 //        System.out.println("destroyyyyyyyyyyyyyyyy");
@@ -892,14 +909,14 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //            mSocket.off(entry.getKey(), entry.getValue());
 //        }
 //    }
-@Override
-public void onTaskRemoved(Intent rootIntent) {
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
 //    Intent restartServiceIntent = new Intent(getApplicationContext(),this.getClass());
 //    restartServiceIntent.setPackage(getPackageName());
 //    startService(restartServiceIntent);
-    System.out.println("on task removeeeeed");
-    super.onTaskRemoved(rootIntent);
-}
+        System.out.println("on task removeeeeed");
+        super.onTaskRemoved(rootIntent);
+    }
 
     @Override
     public void onEventCall(String event, Object... args) {
@@ -909,9 +926,11 @@ public void onTaskRemoved(Intent rootIntent) {
         switch (event) {
             case Socket.EVENT_CONNECT:
                 android.os.Message msg = mServiceHandler.obtainMessage();
+                joinSocket();
+
 //                msg.arg1 = 1;
 //                mServiceHandler.sendMessage(msg);
-//                System.out.println("Socket.EVENT_CONNECT");
+                System.out.println("Socket.EVENT_CONNECT");
 //                isConnected = true;
 //                intent = new Intent(ChatRoomFragment.ON_SOCKET_CONNECTION);
 //                intent.putExtra("status", true);
@@ -942,11 +961,13 @@ public void onTaskRemoved(Intent rootIntent) {
 //                break;
             case EVENT_MESSAGE:
                 data = (JSONObject) args[0];
-                String text="";
-                String chatId="";
+                String text = "";
+                String chatId = "";
+                System.out.println(data+"mesaaaaage");
+                reciveMessage(data);
                 try {
                     text = data.getString("message");
-                   chatId = data.getString("chat_id");
+                    chatId = data.getString("chat_id");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -960,6 +981,7 @@ public void onTaskRemoved(Intent rootIntent) {
 //                data = (JSONObject) args[0];
 
                 intent = new Intent(ConversationActivity.CHEK);
+                System.out.println("args[0].toString()"+args[0].toString());
                 intent.putExtra("check", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
@@ -972,39 +994,39 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
             case NEW_CHAT:
 //                data = (JSONObject) args[0];
-                System.out.println(args[0].toString()+"NEW_CHAT");
+                System.out.println(args[0].toString() + "NEW_CHAT");
                 intent = new Intent(DashBord.NEW_MESSAGE);
                 intent.putExtra("new chat", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case EVENT_DELETE:
 //                data = (JSONObject) args[0];
-                System.out.println(args[0].toString()+"NEW_DELETW");
+                System.out.println(args[0].toString() + "NEW_DELETW");
                 intent = new Intent(ConversationActivity.ON_MESSAGE_DELETED);
                 intent.putExtra("delete message", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case CHECK_QR:
 //                data = (JSONObject) args[0];
-                System.out.println(args[0].toString()+"NEW_DELETW");
+                System.out.println(args[0].toString() + "NEW_DELETW");
                 intent = new Intent(DevicesLinkActivity.SCAN_QR);
                 intent.putExtra("scan qr", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case GET_QR:
-                System.out.println(args[0].toString()+"NEW_GET_GR");
+                System.out.println(args[0].toString() + "NEW_GET_GR");
                 intent = new Intent(DevicesLinkActivity.GET_QR);
                 intent.putExtra("get qr", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case UPDATE_MESSAGE:
-                System.out.println(args[0].toString()+"Update_Messgae");
+                System.out.println(args[0].toString() + "Update_Messgae");
                 intent = new Intent(ConversationActivity.ON_MESSAGE_UPDATE);
                 intent.putExtra("updateMessage", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case EVENT_CALLING:
-                System.out.println(args[0].toString()+"callRequest");
+                System.out.println(args[0].toString() + "callRequest");
 //                intent = new Intent(CallMainActivity.ON_CALL_REQUEST);
 //                intent.putExtra("callRequest", args[0].toString());
 //                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1016,14 +1038,14 @@ public void onTaskRemoved(Intent rootIntent) {
 
                 break;
             case FETCH_PEER_ID:
-                System.out.println(args[0].toString()+"FETCH_PEER_IDDD");
+                System.out.println(args[0].toString() + "FETCH_PEER_IDDD");
                 intent = new Intent(RequestCallActivity.FETCH_PEER_ID);
                 intent.putExtra("fetchPeer", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
 
             case BLOCK_USER:
-                System.out.println("BLOCK_USER "+args[0].toString());
+                System.out.println("BLOCK_USER " + args[0].toString());
                 intent = new Intent(ConversationActivity.ON_BLOCK_USER);
                 intent.putExtra("block", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1062,7 +1084,7 @@ public void onTaskRemoved(Intent rootIntent) {
 //                }
                 break;
             case UNBLOCK_USER:
-                System.out.println("UNBLOCK_USER "+args[0].toString());
+                System.out.println("UNBLOCK_USER " + args[0].toString());
                 intent = new Intent(ConversationActivity.ON_UN_BLOCK_USER);
                 intent.putExtra("unBlock", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1095,7 +1117,7 @@ public void onTaskRemoved(Intent rootIntent) {
 //                }
                 break;
             case EVENT_RECIVE_STOP_CALLING:
-                  System.out.println("EVENT_RECIVE_STOP_CALLING");
+                System.out.println("EVENT_RECIVE_STOP_CALLING");
                 intent = new Intent(ResponeCallActivity.ON_STOP_CALLING_REQUEST);
                 intent.putExtra("get stopCalling", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1105,14 +1127,14 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
 
             case EVENT_RECIVE_RINING:
-                System.out.println("EVENT_RECIVE_RINING"+args[0].toString());
+                System.out.println("EVENT_RECIVE_RINING" + args[0].toString());
                 intent = new Intent(RequestCallActivity.ON_RINING_REQUEST);
                 intent.putExtra("get rining", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
 
             case EVENT_SETTINGS_RINING:
-                System.out.println("EVENT_SETTINGS_RINING"+args[0].toString());
+                System.out.println("EVENT_SETTINGS_RINING" + args[0].toString());
                 intent = new Intent(ResponeCallActivity.ON_RECIVED_SETTINGS_CALL);
                 intent.putExtra("get settings", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1123,7 +1145,7 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
 
             case EVENT_ASK_FOR_VIDEO:
-                System.out.println("EVENT_ASK_FOR_VIDEO"+args[0].toString());
+                System.out.println("EVENT_ASK_FOR_VIDEO" + args[0].toString());
                 intent = new Intent(ResponeCallActivity.ON_RECIVED_ASK_FOR_VIDEO);
                 intent.putExtra("get askVideo", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1132,7 +1154,7 @@ public void onTaskRemoved(Intent rootIntent) {
 //                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                 break;
             case EVENT_RESPONE_ASK_FOR_VIDEO:
-                System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO"+args[0].toString());
+                System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO" + args[0].toString());
 //                intent = new Intent(CallMainActivity.ON_RECIVED_RESPONE_FOR_VIDEO);
 //                intent.putExtra("get responeAskVideo", args[0].toString());
 //                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1142,7 +1164,7 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
 
             case SEND_CALL_MESSAGE:
-                Log.d(TAG, "onEventCall: "+args[0].toString());
+                Log.d(TAG, "onEventCall: " + args[0].toString());
 //                intent = new Intent(CompleteActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
 //                intent.putExtra("Call Sdp", args[0].toString());
 //                LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1164,7 +1186,7 @@ public void onTaskRemoved(Intent rootIntent) {
                     String anthor_id = jsonObject.getString("my_id");
 
                     if (type.equals("got user media")) {
-                        if(!anthor_id.equals(classSharedPreferences.getUser().getUserId())) {
+                        if (!anthor_id.equals(classSharedPreferences.getUser().getUserId())) {
                             if (!isOpen) {
                                 isOpen = true;
 //                intent = new Intent(AnswerActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
@@ -1178,19 +1200,16 @@ public void onTaskRemoved(Intent rootIntent) {
                             }
                         }
 
-                    }
-                    else if (type.equals("offer")) {
-                        System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO"+args[0].toString());
+                    } else if (type.equals("offer")) {
+                        System.out.println("EVENT_RESPONE_ASK_FOR_VIDEO" + args[0].toString());
                         intent = new Intent(RequestCallActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
                         intent.putExtra("Call Sdp", args[0].toString());
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                    }
-                    else if (type.equals("answer"))  {
+                    } else if (type.equals("answer")) {
                         intent = new Intent(ResponeCallActivity.ON_RECIVE_MESSAGE);
                         intent.putExtra("Call Sdp", args[0].toString());
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
-                    }
-                   else {
+                    } else {
                         intent = new Intent(RequestCallActivity.ON_RECIVE_MESSAGE_VIDEO_CALL);
                         intent.putExtra("Call Sdp", args[0].toString());
                         LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
@@ -1204,4 +1223,199 @@ public void onTaskRemoved(Intent rootIntent) {
                 break;
         }
     }
+
+
+//    public void reciveMessage(JSONObject data){
+//        String text = "";
+//        String type = "";
+//        String state = "";
+//        String senderId = "";
+//        String reciverId = "";
+//        String id = "";
+//        String recive_chat_id = "";
+//        String fileName = "";
+//        String MessageDate = "";
+//
+//        try {
+//            text = data.getString("message");
+//            type = data.getString("message_type");
+//            state = data.getString("state");
+//            senderId = data.getString("sender_id");
+//            id = data.getString("message_id");
+//            reciverId = data.getString("reciver_id");
+//            if(!text.equals("welcome to memo"))
+//                MessageDate = data.getString("dateTime");
+//            recive_chat_id = data.getString("chat_id");
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (senderId == user_id && reciverId == anthor_user_id) {
+//            if (state != "3" && chat_id == user_id + anthor_user_id) {
+//                //                            myBase.getObserver().setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
+//                if (!recive_chat_id.isEmpty()) {
+//                    chatRoomRepoo!!.setLastMessage(
+//                            text,
+//                            recive_chat_id,
+//                            user_id,
+//                            anthor_user_id,
+//                            type,
+//                            state,
+//                            MessageDate,
+//                            user_id
+//                    )
+//                    chat_id = recive_chat_id
+//                }
+//            } else {
+//                if (id != "0000") {
+//                    chatRoomRepoo!!.setLastMessage(
+//                            text,
+//                            recive_chat_id,
+//                            user_id,
+//                            anthor_user_id,
+//                            type,
+//                            state,
+//                            MessageDate,
+//                            senderId
+//                    )
+//                } else {
+//                    chatRoomRepoo!!.updateLastMessageState(state, chat_id)
+//                }
+//            }
+//            conversationModelView!!.setMessageState(id, state)
+//        } else if (senderId == anthor_user_id) {
+//            JSONObject jsonObject = JSONObject()
+//            try {
+//                jsonObject.put("message_id", id)
+//                jsonObject.put("sender_id", senderId)
+//                jsonObject.put("reciver_id", reciverId)
+//                jsonObject.put("message", text)
+//                jsonObject.put("message_type", type)
+//                jsonObject.put("state", "3")
+//                jsonObject.put("chat_id", recive_chat_id.toInt())
+//                jsonObject.put(
+//                        "dateTime",
+//                        Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+//                )
+//            } catch (e: JSONException) {
+//                e.printStackTrace()
+//            }
+//            onSeen(jsonObject)
+//            val chatMessage = ChatMessage()
+//            chatMessage.id = id
+//            when (type) {
+//                "text", "location" -> {
+//                    chatMessage.message = text!!
+//                }
+//                "file", "voice", "video", "contact" -> {
+//                    chatMessage.message = text!!
+//                    try {
+//                        chatMessage.fileName = message!!.getString("orginalName")
+//                    } catch (e: JSONException) {
+//                        e.printStackTrace()
+//                    }
+//                }
+//                        else -> {
+//                    chatMessage.image = text!!
+//                    try {
+//                        chatMessage.fileName = message!!.getString("orginalName")
+//                    } catch (e: JSONException) {
+//                        e.printStackTrace()
+//                    }
+//                }
+//            }
+//            chatMessage.type = type
+//            chatMessage.state = state
+//            chatMessage.dateTime = MessageDate!!
+//                    chatMessage.isUpdate = "0"
+//            chatMessage.isMe = false
+//            if (type == "text" || type == "location" || type == "contact" || type == "video") displayMessage(
+//                    chatMessage
+//            ) else processSocketFile(chatMessage)
+//        }
+//    }
+
+    public void reciveMessage(JSONObject data) {
+        ChatRoomRepoo chatRoomRepoo = BaseApp.getInstance().getChatRoomRepoo();
+        JSONObject message = null;
+        try {
+            message = new JSONObject(data.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String text = "";
+        String type = "";
+        String state = "";
+        String senderId = "";
+        String reciverId = "";
+        String id = "";
+        String fileName = "";
+        String chatId = "";
+        String dateTime = "";
+        String id_user = "";
+        try {
+
+            /// JSONObject jsonObject= (JSONObject) messageJson.get("data");
+            id = message.getString("message_id");
+//                id_user = message.getString("id")
+            text = message.getString("message");
+            type = message.getString("message_type");
+            state = message.getString("state");
+            senderId = message.getString("sender_id");
+            //                        id = message.getString("message_id");
+            reciverId = message.getString("reciver_id");
+            chatId = message.getString("chat_id");
+            if (!text.equals("welcome to memo"))
+                dateTime = message.getString("dateTime");
+            //                        fileName = message.getString("orginalName");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String anthor_id = "";
+        if (senderId.equals(classSharedPreferences.getUser().getUserId())) {
+            anthor_id = reciverId;
+        } else {
+            anthor_id = senderId;
+        }
+
+        if (!id.equals("0000")) {
+            chatRoomRepoo.setLastMessage(
+                    text,
+                    chatId, classSharedPreferences.getUser().getUserId(), anthor_id, type, state, dateTime, senderId
+            );
+            if (!senderId.equals(classSharedPreferences.getUser().getUserId()) && !chatRoomRepoo.checkInChat(anthor_id) && !checkIsMute(anthor_id)) {
+                Log.d(";g: ", "onReceive:${senderId+myId + chatRoomRepoo.checkInChat(anthor_id)+checkIsMute(anthor_id) } ");
+                try {
+                    showNotification(message.getString("title"), message.getString("image"),
+                            text, senderId, null, "", "", type);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        } else {
+            chatRoomRepoo.updateLastMessageState(state, chatId);
+        }
+    }
+
+    Boolean checkIsMute(String id) {
+        ArrayList<String> muteList = classSharedPreferences.getMuteUsers();
+        Boolean isMute = false;
+        if (muteList != null) {
+            for (String s : muteList) {
+                if (s == id) {
+                    isMute = true;
+                    break;
+                }
+            }
+        }
+        return isMute;
+    }
+
+
 }
+
+
+
+

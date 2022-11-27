@@ -27,8 +27,6 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
     lateinit var myId: String
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityArchivedBinding
-
-
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,8 +34,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myId = classSharedPreferences.user.userId!!
         archivedActViewModel = ViewModelProvider(this).get(
-            ArchivedActViewModel::class.java
-        )
+            ArchivedActViewModel::class.java)
         myBase = application as BaseApp
         //        chatRoomRepo = myBase.getChatRoomRepo();
         binding.recyclerView.setHasFixedSize(true)
@@ -90,7 +87,6 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
             }
         })
     }
-
     override fun onHandleSelection(position: Int, chatRoomModel: ChatRoomModel?) {
         Toast.makeText(this, "Position " + chatRoomModel!!.last_message, Toast.LENGTH_SHORT).show()
         println(chatRoomModel.username)
@@ -107,4 +103,5 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
         intent.putExtras(bundle)
         startActivity(intent)
     }
+
 }

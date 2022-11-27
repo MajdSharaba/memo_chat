@@ -502,6 +502,7 @@ public class FileUtil {
     ////////////////////
     public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id
     , String blockrdFor, String token) {
+        System.out.println("imageNameeeeeeeeeeeeeeee"+imageName);
         ChatMessageRepoo chatMessageRepo = BaseApp.getInstance().getChatMessageRepoo();
         BaseApp myBase = BaseApp.getInstance();
         Bitmap bitmap = null;

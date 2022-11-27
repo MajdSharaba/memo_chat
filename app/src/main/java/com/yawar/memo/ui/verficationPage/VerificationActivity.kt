@@ -43,7 +43,9 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         verficationViewModel = ViewModelProvider(this).get(
             VerficationViewModel::class.java
         )
+
         authApi = AuthApi(this)
+
         verficationViewModel.getSpecialNumber().observe(this, object : Observer<JSONObject?> {
             override fun onChanged(jsonObject: JSONObject?) {
                 if (jsonObject != null) {

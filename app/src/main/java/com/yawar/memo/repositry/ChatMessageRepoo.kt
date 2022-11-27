@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatMessage
 import com.yawar.memo.utils.BaseApp
 import kotlinx.coroutines.CoroutineScope
@@ -128,7 +129,9 @@ class ChatMessageRepoo {
 
                 if (state == "3") {
                     if (chatMessageList != null) {
-                        if (chatMessageList.get(i)!!.state == "3" || chatMessageList.get(i)!!.state == "0") {
+//                        if (chatMessageList.get(i)!!.state == "3" || chatMessageList.get(i)!!.state == "0") {
+                        if (chatMessageList.get(i)!!.state == "3" ) {
+
                             break
                         } else chatMessageList.get(i)!!.state = state
                     }

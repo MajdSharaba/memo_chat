@@ -233,8 +233,13 @@ public class FirebaseMessageReceiver
                             .addTag(workTag)
                             .build();
                     WorkManager.getInstance().enqueue(notificationWork1);
+                    chatRoomRepoo.setLastMessage(remoteMessage.getData().get("body"), remoteMessage.getData().get("chat_id"), remoteMessage.getData().get("sender_id"),
+                            remoteMessage.getData().get("reciver_id"), remoteMessage.getData().get("type"),
+                            remoteMessage.getData().get("state"), remoteMessage.getData().get("dateTime"),
+                            remoteMessage.getData().get("sender_id"));
+                    Log.d(TAG, "baseApp" + remoteMessage.getData().get("chat_id"));
 
-                    if (chatRoomRepoo.checkISNewChat(remoteMessage.getData().get("chat_id"))) {
+                    if (chatRoomRepoo.checkISNewChat( remoteMessage.getData().get("chat_id"))) {
                         System.out.println("not new chattt");
                         chatRoomRepoo.addChatRoom(
                                 new ChatRoomModel(
@@ -282,11 +287,11 @@ public class FirebaseMessageReceiver
 
                     } else {
 
-                        chatRoomRepoo.setLastMessage(remoteMessage.getData().get("body"), remoteMessage.getData().get("chat_id"), remoteMessage.getData().get("sender_id"),
-                                remoteMessage.getData().get("reciver_id"), remoteMessage.getData().get("type"),
-                                remoteMessage.getData().get("state"), remoteMessage.getData().get("dateTime"),
-                                remoteMessage.getData().get("sender_id"));
-                        Log.d(TAG, "baseApp" + myBase.isActivityVisible());
+//                        chatRoomRepoo.setLastMessage(remoteMessage.getData().get("body"), remoteMessage.getData().get("chat_id"), remoteMessage.getData().get("sender_id"),
+//                                remoteMessage.getData().get("reciver_id"), remoteMessage.getData().get("type"),
+//                                remoteMessage.getData().get("state"), remoteMessage.getData().get("dateTime"),
+//                                remoteMessage.getData().get("sender_id"));
+//                        Log.d(TAG, "baseApp" + myBase.isActivityVisible());
 
                     }
 
