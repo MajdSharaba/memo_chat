@@ -21,6 +21,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.widget.NestedScrollView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -32,8 +33,9 @@ import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.chatPage.ConversationActivity
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-
+@AndroidEntryPoint
 class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
 
     var list = ArrayList<SearchRespone?>()
@@ -53,7 +55,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
     private var FIRST_PAGE = 1
     var limit = 2
     var end = false
-    lateinit var searchModelView: SearchModelView
+     val searchModelView by viewModels<SearchModelView>()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -70,7 +72,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
         linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
 //        toolbar = view.findViewById(R.id.toolbar)
-        searchModelView = ViewModelProvider(this)[SearchModelView::class.java]
+//        searchModelView = ViewModelProvider(this)[SearchModelView::class.java]
         checkpermission()
         binding.searchBySecretNumber.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {

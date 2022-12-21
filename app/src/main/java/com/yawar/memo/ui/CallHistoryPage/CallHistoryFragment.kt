@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,11 +20,12 @@ import com.yawar.memo.databinding.FragmentCallHistoryBinding
 import com.yawar.memo.model.CallModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
-
-    lateinit var callHistoryModelView: CallHistoryModelView
+     val callHistoryModelView by viewModels<CallHistoryModelView> ()
     lateinit var itemAdapter: CallAdapter
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var binding: FragmentCallHistoryBinding
@@ -40,7 +42,7 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
         binding.recyclerView.layoutManager = linearLayoutManager
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         itemAdapter = CallAdapter(this)
-        callHistoryModelView = ViewModelProvider(this)[CallHistoryModelView::class.java]
+//        callHistoryModelView = ViewModelProvider(this)[CallHistoryModelView::class.java]
         callHistoryModelView.loadData(classSharedPreferences.user.userId!!)
             .observe(
                 requireActivity(),

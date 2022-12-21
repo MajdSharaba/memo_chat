@@ -503,7 +503,7 @@ public class FileUtil {
     public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id
     , String blockrdFor, String token) {
         System.out.println("imageNameeeeeeeeeeeeeeee"+imageName);
-        ChatMessageRepoo chatMessageRepo = BaseApp.getInstance().getChatMessageRepoo();
+        ChatMessageRepoo chatMessageRepo = BaseApp.getInstance().chatMessageRepoo;
         BaseApp myBase = BaseApp.getInstance();
         Bitmap bitmap = null;
         byte[] imageBytes = new byte[]{};
@@ -654,7 +654,9 @@ public class FileUtil {
     public static ChatMessage uploadVideo(String pdfname, Uri pdffile, ConversationActivity activity,
                                           String user_id, String anthor_user_id, String blockedFor, String token) {
         BaseApp myBase = BaseApp.getInstance();
-        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
+//        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
+        ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
+
 
 
         String message_id = System.currentTimeMillis() + "_" + user_id;
@@ -789,7 +791,8 @@ public class FileUtil {
     public static ChatMessage uploadVoice(String voiceName, Uri voicedPath, ConversationActivity activity,
                                           String user_id, String anthor_user_id, String blockedFor, String token) {
         BaseApp myBase = BaseApp.getInstance();
-        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
+//        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
+        ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
 
         String message_id = System.currentTimeMillis() + "_" + user_id;
         System.out.println("the message id is" + message_id);
@@ -925,7 +928,9 @@ public class FileUtil {
                                         String anthor_user_id , String blockedFor, String token) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
         BaseApp myBase = BaseApp.getInstance();
-        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
+//        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
+        ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
+
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());

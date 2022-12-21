@@ -12,6 +12,7 @@ import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -36,12 +37,18 @@ import com.yawar.memo.notification.NotificationWorker
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
+//import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
+//import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.FirebaseMessageReceiver
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.sessionManager.SharedPreferenceStringLiveData
 import com.yawar.memo.utils.AutoStartHelper
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.components.SingletonComponent
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -49,19 +56,22 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class DashBord : AppCompatActivity(), Observer {
+@AndroidEntryPoint
+class DashBord : AppCompatActivity() {
     lateinit var bottomNavigation: BottomNavigationView
     private lateinit var permissions: Permissions
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityDashBordBinding
     lateinit var chatRoomRepoo: ChatRoomRepoo
     lateinit var fragment : Fragment
-    lateinit var dashbordViewModel : DashbordViewModel
+     val dashbordViewModel by viewModels<DashbordViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var badgeDrawableMissingCall: BadgeDrawable
     lateinit var myId: String
+    @Inject
     lateinit var authRepo: AuthRepo
     private fun connectSocket() {
         val service = Intent(this, SocketIOService::class.java)
@@ -258,7 +268,7 @@ class DashBord : AppCompatActivity(), Observer {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_bord)
 
-        dashbordViewModel = ViewModelProvider(this).get(DashbordViewModel::class.java)
+//        dashbordViewModel = ViewModelProvider(this).get(DashbordViewModel::class.java)
 
 
         connectSocket()
@@ -281,7 +291,7 @@ class DashBord : AppCompatActivity(), Observer {
 
 ////// send Fcm Token
         myBase = BaseApp.getInstance()
-        authRepo = myBase.authRepo
+//        authRepo = myBase.authRepo
         Log.d( "onCreatebaseApp",myBase.isActivityVisible)
 
         FirebaseMessaging.getInstance().token
@@ -316,6 +326,7 @@ class DashBord : AppCompatActivity(), Observer {
                 NEW_MESSAGE
             )
         )
+        ///
 
 
 
@@ -415,8 +426,6 @@ class DashBord : AppCompatActivity(), Observer {
     }
 
 
-    @Deprecated("Deprecated in Java")
-    override fun update(observable: Observable, o: Any) {}
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (binding.navigationChip.selectedItemId != R.id.chat) {
@@ -643,3 +652,4 @@ class DashBord : AppCompatActivity(), Observer {
         private const val Contact_PERMISSION_CODE = 1000
     }
 }
+

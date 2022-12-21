@@ -1,9 +1,7 @@
 package com.yawar.memo.ui.responeCallPage;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,7 +13,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
@@ -26,19 +23,14 @@ import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.CallProperty;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.mutasem.slidetoanswer.SwipeToAnswerView;
-
 public class CallNotificationActivity extends AppCompatActivity {
     public static final String ON_CLOSE_CALL_FROM_NOTIFICATION = "CallNotificationActivity.ON_RINING_REQUEST";
-
     SwipeToAnswerView acceptBtn;
     SwipeToAnswerView rejectBtn;
     String callString;
@@ -59,11 +51,9 @@ public class CallNotificationActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.i("CallNotificatio", "run: close ");
+                 Log.i("CallNotificatio", "run: close ");
                  finish();
                     ///////////
-
-
                 }
             });
         }
@@ -97,12 +87,10 @@ public class CallNotificationActivity extends AppCompatActivity {
         showWhenLockedAndTurnScreenOn();
         setContentView(R.layout.activity_call_notification);
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION));
-
         tvName = findViewById(R.id.user_name);
         imageView = findViewById(R.id.image_user_calling);
         tvType = findViewById(R.id.type_call);
         startCounter();
-
         Bundle bundle = getIntent().getExtras();
         id = bundle.getString("id","0");
         callString = bundle.getString("callRequest", "code");
@@ -112,13 +100,10 @@ public class CallNotificationActivity extends AppCompatActivity {
         if (!imageUrl.isEmpty()) {
             Glide.with(imageView).load(AllConstants.imageUrl+imageUrl).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(imageView);
         }
-
         tvName.setText(userName);
         tvType.setText(title);
-
         acceptBtn = findViewById(R.id.acceptBtn);
         rejectBtn = findViewById(R.id.rejectBtn);
-
         acceptBtn.setSlideListner(new SwipeToAnswerView.SlideListner() {
             @Override
             public void onSlideCompleted() {
@@ -146,9 +131,7 @@ public class CallNotificationActivity extends AppCompatActivity {
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(CallNotificationActivity.this);
 //                notificationManager.cancel(Integer.parseInt(id)+10000);
                 notificationManager.cancel(-1);
-
                 reject(callString);
-
                 finish();
             }
         });

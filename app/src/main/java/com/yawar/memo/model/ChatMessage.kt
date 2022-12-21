@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class ChatMessage(
       var  id:String = "",
-      var isMe:Boolean = false,
+      var  isMe:Boolean = false,
       var  message:String = "",
       var  image:String = "",
       var  type:String= "",
@@ -14,9 +14,9 @@ data class ChatMessage(
       var  state:String = "",
       var  fileName:String= "",
       var  isUpdate:String="",
-      var isDownload:Boolean = false,
-      var upload:Boolean = false,
-      var isChecked:Boolean = false,
+      var  isDownload:Boolean = false,
+      var  upload:Boolean = false,
+      var  isChecked:Boolean = false,
 ):  Cloneable {
 
      public override fun  clone() :ChatMessage {

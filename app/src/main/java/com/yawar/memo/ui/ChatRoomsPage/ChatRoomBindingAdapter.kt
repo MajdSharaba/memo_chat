@@ -23,10 +23,11 @@ fun TextView.setName(item : ChatRoomModel?){
 @BindingAdapter("time")
 fun TextView.setTime(item : ChatRoomModel?) {
     item?.let {
-        var timeProperties = TimeProperties()
+        val timeProperties = TimeProperties()
         text = timeProperties.getFormattedDate(item.created_at.toLong())
     }
 }
+
     @BindingAdapter("lastMessage")
     fun TextView.setLastMessage(item : ChatRoomModel?) {
         item?.let {

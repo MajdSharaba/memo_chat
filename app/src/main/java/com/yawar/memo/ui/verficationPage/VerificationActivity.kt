@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -18,17 +19,20 @@ import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.registerPage.RegisterActivity
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class VerificationActivity : AppCompatActivity(), java.util.Observer {
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityVerificationBinding
     var count = 60
+    @Inject
     lateinit var authRepo: AuthRepo
-    lateinit var verficationViewModel: VerficationViewModel
+     val verficationViewModel by viewModels<VerficationViewModel>()
     lateinit var T: Timer
     lateinit var forceResendingToken: ForceResendingToken
     lateinit var authApi: AuthApi
@@ -37,12 +41,12 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         super.onCreate(savedInstanceState)
         CallProperty.setStatusBarOrScreenStatus(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_verification)
-        authRepo = BaseApp.getInstance().authRepo
+//        authRepo = BaseApp.getInstance().authRepo
         progressDialog = ProgressDialog(this)
         progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
-        verficationViewModel = ViewModelProvider(this).get(
-            VerficationViewModel::class.java
-        )
+//        verficationViewModel = ViewModelProvider(this).get(
+//            VerficationViewModel::class.java
+//        )
 
         authApi = AuthApi(this)
 

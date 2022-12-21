@@ -14,6 +14,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 //import com.yawar.memo.call.AnswerActivity;
 //import com.yawar.memo.call.CompleteActivity;
+//import com.yawar.memo.repositry.ChatRoomRepoo;
+//import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp;
 import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
@@ -33,6 +35,7 @@ import java.util.Observer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
+import dagger.hilt.android.AndroidEntryPoint;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import com.yawar.memo.utils.BaseApp;
@@ -42,6 +45,9 @@ import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static com.yawar.memo.utils.ShowNotificationKt.showNotification;
 
+import javax.inject.Inject;
+
+@AndroidEntryPoint
 public class SocketIOService extends Service implements SocketEventListener.Listener, HeartBeat.HeartBeatListener, Observer {
     public static final String KEY_BROADCAST_MESSAGE = "b_message";
     public static final int EVENT_TYPE_JOIN = 1, EVENT_TYPE_MESSAGE = 2,
@@ -118,6 +124,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     private HeartBeat heartBeat;
     private String room_id;
     BaseApp myBase;
+    @Inject
+    ChatRoomRepoo chatRoomRepoo;
     private ConcurrentHashMap<String, SocketEventListener> listenersMap;
     //-------------------------------------------------------------------------------------------
     private IO.Options IOOption;
@@ -1337,7 +1345,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
 //    }
 
     public void reciveMessage(JSONObject data) {
-        ChatRoomRepoo chatRoomRepoo = BaseApp.getInstance().getChatRoomRepoo();
+//        ChatRoomRepoo chatRoomRepoo = BaseApp.getInstance().getChatRoomRepoo();
         JSONObject message = null;
         try {
             message = new JSONObject(data.toString());

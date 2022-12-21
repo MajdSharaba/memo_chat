@@ -100,13 +100,9 @@ public class RequestCallActivity extends AppCompatActivity {
     //    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
     public static final int VIDEO_RESOLUTION_WIDTH = 480;
     float dX, dY;
-
-
-
     //    public static final int VIDEO_RESOLUTION_HEIGHT = 720;
+
     public static final int VIDEO_RESOLUTION_HEIGHT = 360;
-
-
     public static final int FPS = 25;
     boolean isVideo = false;
     private AudioManager audioManager;
@@ -390,8 +386,6 @@ public class RequestCallActivity extends AppCompatActivity {
                                 doAnswer();
                             }
                         }
-
-
                         else if (type.equals("answer") ) {
                             sdp = jsonObject.getString("sdp");
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
@@ -404,9 +398,6 @@ public class RequestCallActivity extends AppCompatActivity {
                                 peerConnection.addIceCandidate(candidate);
                             }
                         }
-
-
-
 
                     } catch (JSONException e) {
                         e.printStackTrace();

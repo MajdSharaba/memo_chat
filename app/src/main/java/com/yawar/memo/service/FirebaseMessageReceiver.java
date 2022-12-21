@@ -21,6 +21,9 @@ import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.yawar.memo.R;
+import com.yawar.memo.repositry.ChatMessageRepoo;
+import com.yawar.memo.repositry.ChatRoomRepoo;
+//import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp;
 import com.yawar.memo.ui.responeCallPage.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.model.ChatMessage;
@@ -28,7 +31,7 @@ import com.yawar.memo.model.ChatRoomModel;
 import com.yawar.memo.notification.NotificationCallWorker;
 import com.yawar.memo.notification.NotificationMessingCallWorker;
 import com.yawar.memo.notification.NotificationWorker;
-import com.yawar.memo.repositry.ChatRoomRepoo;
+//import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 
@@ -40,6 +43,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class FirebaseMessageReceiver
         extends FirebaseMessagingService  {
 
@@ -49,6 +57,7 @@ public class FirebaseMessageReceiver
     public static final String workTag = "notificationWork";
 
     BaseApp myBase;
+    @Inject
     ChatRoomRepoo chatRoomRepoo;
 //    ServerApi serverApi;
     String chat_id;
@@ -57,6 +66,8 @@ public class FirebaseMessageReceiver
 
 
     ClassSharedPreferences classSharedPreferences;
+    @Inject
+    ChatMessageRepoo chatMessageRepoo;
 
     private final int NOTIFICATION_ID = 237;
 //    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
@@ -77,7 +88,7 @@ public class FirebaseMessageReceiver
         Log.i(TAG, "onMessageReceived: " + remoteMessage.getData() + "getPriority" + remoteMessage.getPriority() + remoteMessage.getData());
         myBase = (BaseApp) getApplication();
 
-        chatRoomRepoo = myBase.getChatRoomRepoo();
+//        chatRoomRepoo = myBase.getChatRoomRepoo();
 //        myBase.getObserver().addObserver(this);
         String message = "";
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
@@ -283,7 +294,8 @@ public class FirebaseMessageReceiver
                             chatMessage.setFileName(remoteMessage.getData().get("orginalName"));
                         }
                         chatMessage.setUpdate("0");
-                        myBase.getChatMessageRepoo().addMessage(chatMessage);
+//                        myBase.getChatMessageRepoo().addMessage(chatMessage);
+                        chatMessageRepoo.addMessage(chatMessage);
 
                     } else {
 

@@ -3,11 +3,14 @@ package com.yawar.memo.ui.blockUserPage
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.yawar.memo.model.UserModel
+import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class BlockedActViewModel : ViewModel() {
+@HiltViewModel
+class BlockedActViewModel @Inject constructor(val blockUserRepo:BlockUserRepo) : ViewModel() {
     var baseApp = BaseApp.getInstance()
-    private val blockUserRepo = baseApp.blockUserRepo
 
     init {
         blockUserRepo.getUserBlock(baseApp.classSharedPreferences.user.userId.toString())

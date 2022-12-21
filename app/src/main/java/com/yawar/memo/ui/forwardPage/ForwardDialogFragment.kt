@@ -9,7 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +22,9 @@ import com.yawar.memo.model.ChatRoomModel
 import com.yawar.memo.model.SendContactNumberResponse
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
+import com.yawar.memo.ui.chatPage.ConversationModelView
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -30,11 +34,12 @@ import java.util.*
  * Use the [ForwardDialogFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class ForwardDialogFragment : DialogFragment(), java.util.Observer,
     GroupSelectorAdapter.CallbackInterface {
     // TODO: Rename and change types of parameters
-    private lateinit var mParam1: String
-    private lateinit var mParam2: String
+//    private lateinit var mParam1: String
+//    private lateinit var mParam2: String
     lateinit var myBase: BaseApp
     var forwordList = ArrayList<String?>()
     var sendContactNumberResponses = ArrayList<SendContactNumberResponse>()
@@ -47,7 +52,8 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
     var id = ""
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var my_id: String
-    lateinit var forwardDialogViewModel: ForwardDialogViewModel
+     private val forwardDialogViewModel by viewModels<ForwardDialogViewModel>()
+
     private lateinit var select_title2: TextView
     var textSize = 14.0f
     lateinit var sharedPreferences: SharedPreferences
@@ -67,13 +73,13 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
         requireActivity().startService(service)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            mParam1 = requireArguments().getString(ARG_PARAM1).toString()
-            mParam2 = requireArguments().getString(ARG_PARAM2).toString()
-        }
-    }
+//    override fun onCreate(savedInstanceState: Bundle?) {
+//        super.onCreate(savedInstanceState)
+//        if (arguments != null) {
+//            mParam1 = requireArguments().getString(ARG_PARAM1).toString()
+//            mParam2 = requireArguments().getString(ARG_PARAM2).toString()
+//        }
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,9 +96,9 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         my_id = classSharedPreferences.user.userId.toString()
         myBase = BaseApp.getInstance()
-        forwardDialogViewModel = ViewModelProvider(this).get(
-            ForwardDialogViewModel::class.java
-        )
+//        forwardDialogViewModel = ViewModelProvider(this).get(
+//            ForwardDialogViewModel::class.java
+//        )
 
         for ( ChatMessage in chatMessageArrayList) {
             if (ChatMessage != null) {

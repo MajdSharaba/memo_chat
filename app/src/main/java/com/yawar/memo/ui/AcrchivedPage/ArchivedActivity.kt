@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -18,11 +19,13 @@ import com.yawar.memo.model.ChatRoomModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
      var archived: MutableList<ChatRoomModel> = ArrayList()
     lateinit var itemAdapter: ArchivedAdapter
-    lateinit var archivedActViewModel: ArchivedActViewModel
+     val archivedActViewModel by viewModels <ArchivedActViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myId: String
     lateinit var myBase: BaseApp
@@ -33,8 +36,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_archived)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myId = classSharedPreferences.user.userId!!
-        archivedActViewModel = ViewModelProvider(this).get(
-            ArchivedActViewModel::class.java)
+//        archivedActViewModel = ViewModelProvider(this)[ArchivedActViewModel::class.java]
         myBase = application as BaseApp
         //        chatRoomRepo = myBase.getChatRoomRepo();
         binding.recyclerView.setHasFixedSize(true)

@@ -12,10 +12,12 @@ import android.util.Log
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.PopupMenu
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.rxjava2.RxDataStore
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,24 +37,27 @@ import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
 import com.yawar.memo.ui.chatPage.ConversationModelView
-import com.yawar.memo.ui.chatPage.ConversationViewModelFactory
+import com.yawar.memo.ui.introPage.IntroActModelView
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.TimeProperties
+import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class UserInformationActivity : AppCompatActivity() {
 //    var EXAMPLE_COUNTER: Key<Int>
     private val recyclerDataArrayList = ArrayList<MediaModel>()
-    lateinit  var userInformationViewModelFactory: UserInformationViewModelFactory
+//    lateinit  var userInformationViewModelFactory: UserInformationViewModelFactory
     lateinit var timeProperties: TimeProperties
     lateinit var dataStore: RxDataStore<Preferences>
     lateinit var binding : ActivityUserInformationBinding
 //    lateinit var sharedPreferenceLiveData: SharedPreferenceStringLiveData
     var muteList: ArrayList<String?>? = ArrayList()
+    @Inject
     lateinit var blockUserRepo: BlockUserRepo
-    lateinit var userInformationViewModel: UserInformationViewModel
+     val userInformationViewModel by viewModels<UserInformationViewModel>()
     lateinit var userName: String
     lateinit var sn: String
     lateinit var chatId: String
@@ -167,7 +172,7 @@ class UserInformationActivity : AppCompatActivity() {
         myBase = BaseApp.getInstance()
         classSharedPreferences = myBase.classSharedPreferences
         timeProperties = TimeProperties()
-        blockUserRepo = myBase.blockUserRepo
+//        blockUserRepo = myBase.blockUserRepo
         val bundle = intent.extras
         userName = bundle!!.getString("name", "Default")
         sn = bundle.getString("special", "Default")
@@ -177,8 +182,10 @@ class UserInformationActivity : AppCompatActivity() {
         imageUrl = bundle.getString("image", "Default")
         blockedFor = bundle.getString("blockedFor", "")
         my_id = classSharedPreferences.user.userId.toString()
-        userInformationViewModelFactory = UserInformationViewModelFactory(blockedFor)
-        userInformationViewModel = ViewModelProvider(this,userInformationViewModelFactory)[UserInformationViewModel::class.java]
+//        userInformationViewModelFactory = UserInformationViewModelFactory(blockedFor)
+//        userInformationViewModel = ViewModelProvider(this)[UserInformationViewModel::class.java]
+
+//        userInformationViewModel = ViewModelProvider(this,userInformationViewModelFactory)[UserInformationViewModel::class.java]
 //        serverApi = ServerApi(this)
         checkConnect()
 //        userInformationViewModel.setBlockedFor(blockedFor)

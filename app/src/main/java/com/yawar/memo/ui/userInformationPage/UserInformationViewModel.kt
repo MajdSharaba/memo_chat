@@ -3,15 +3,21 @@ package com.yawar.memo.ui.userInformationPage
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.yawar.memo.model.MediaModel
 import com.yawar.memo.model.UserModel
+import com.yawar.memo.repositry.BlockUserRepo
+import com.yawar.memo.repositry.UserInformationRepo
 import com.yawar.memo.utils.BaseApp
-
-class UserInformationViewModel(blockedForState: String): ViewModel() {
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+@HiltViewModel
+class UserInformationViewModel @Inject constructor (val repository:UserInformationRepo,
+                                                     val savedStateHandle: SavedStateHandle,
+                                                    val blockUserRepo: BlockUserRepo
+): ViewModel() {
     var baseApp = BaseApp.getInstance()
-    private val repository = baseApp.userInformationRepo
-    private val blockUserRepo = baseApp.blockUserRepo
     private val _mute =  MutableLiveData<Boolean>(false)
     val loadingMutableLiveData : LiveData<Boolean>
         get() = _mute
@@ -28,9 +34,8 @@ class UserInformationViewModel(blockedForState: String): ViewModel() {
 
 
     init {
-        if (blockedForState != null) {
-            blockUserRepo.setBlockedForRepo(blockedForState)
-        }
+            blockUserRepo.setBlockedForRepo(savedStateHandle.get<String>("blockedFor").toString())
+
 
     }
 

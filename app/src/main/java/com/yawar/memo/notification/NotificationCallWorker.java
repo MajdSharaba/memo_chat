@@ -136,6 +136,7 @@ public class NotificationCallWorker extends Worker {
                     = new Intent(applicationContext, ResponeCallActivity.class);
             intentAnsware.putExtra("callRequest", message);
             intentAnsware.putExtra("id", anthor_user_id);
+            intentAnsware.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //            intentAnsware.putExtra("title", title);
 //            intentAnsware.putExtra("name", name);
 //            intent.putExtra("imageUrl", imageUrl);

@@ -25,7 +25,6 @@ class BlockUserAdapter(var activity: Activity, arrayList: List<UserModel>) :
             //.. should log the error or throw and exception
         }
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         ///Initialize view
         return from( parent)
@@ -35,22 +34,15 @@ class BlockUserAdapter(var activity: Activity, arrayList: List<UserModel>) :
         val model = arrayList[position]
         holder.bind(model, position,mCallback,activity)
     }
-
-
-
     override fun getItemCount(): Int {
         return arrayList.size
     }
-
     @SuppressLint("NotifyDataSetChanged")
     fun updateList(updateList: ArrayList<UserModel>) {
         arrayList = updateList
         notifyDataSetChanged()
     }
-
      class ViewHolder private  constructor (val binding: ItemBlockUserBinding) : RecyclerView.ViewHolder(binding.root) {
-
-
 
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(

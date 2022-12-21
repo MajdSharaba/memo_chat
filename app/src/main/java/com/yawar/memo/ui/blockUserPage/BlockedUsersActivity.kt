@@ -10,24 +10,29 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityBlockedUsersBinding
 import com.yawar.memo.model.UserModel
+import com.yawar.memo.repositry.BlockUserRepo
+import com.yawar.memo.ui.userInformationPage.UserInformationViewModel
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.ArrayList
 
-
+@AndroidEntryPoint
 class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInterface {
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myBase: BaseApp
     lateinit var userModel: UserModel
     lateinit var binding: ActivityBlockedUsersBinding
-    lateinit var blockedActViewModel: BlockedActViewModel
+     val blockedActViewModel by viewModels<BlockedActViewModel>()
+
      var blockUserAdapter: BlockUserAdapter? = null
 //    lateinit var serverApi: ServerApi
     private lateinit var UserBlocked: UserModel
@@ -55,7 +60,7 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myBase = BaseApp.getInstance()
-        blockedActViewModel = ViewModelProvider(this).get(BlockedActViewModel::class.java)
+//        blockedActViewModel = ViewModelProvider(this).get(BlockedActViewModel::class.java)
 
 //        chatRoomRepo = myBase.getChatRoomRepo();
         userModel = classSharedPreferences.user

@@ -34,14 +34,13 @@ public class AuthApi implements Observer {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
     BaseApp myBase = BaseApp.getInstance();
     ProgressDialog progressDialog;
-    AuthRepo authApi= myBase.getAuthRepo();
+    AuthRepo authApi= myBase.authRepo;
     public MutableLiveData<Boolean> loading;
     public MutableLiveData<Boolean> showErrorMessage;
     public String errorMessage = "ERROR";
     public AuthApi(Activity context) {
         loading = new MutableLiveData<>(false);
         showErrorMessage = new MutableLiveData<>(false);
-
         this.context = context;
     }
 
@@ -83,7 +82,7 @@ public class AuthApi implements Observer {
 //                            System.out.println(" showErrorMessage.setValue(true)"+ showErrorMessage.getValue());
 
 
-                            BaseApp.getInstance().getAuthRepo().setLoading(false);
+                            BaseApp.getInstance().authRepo.setLoading(false);
 
 //                            Toast.makeText(context, Objects.requireNonNull(task.getException()).getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }

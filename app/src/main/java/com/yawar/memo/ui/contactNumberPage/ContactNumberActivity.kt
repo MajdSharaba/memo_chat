@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -25,18 +26,21 @@ import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.CallbackInterface {
     lateinit var binding: ActivityContactNumberBinding
     lateinit var myId: String
     lateinit var myBase: BaseApp
 //    lateinit var serverApi: ServerApi
-    lateinit var contactNumberViewModel: ContactNumberViewModel
+     val contactNumberViewModel by viewModels<ContactNumberViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
     var arrayList = ArrayList<ContactModel>()
     var sendContactNumberResponses = ArrayList<SendContactNumberResponse?>()
     var mainAdapter: ContactNumberAdapter? = null
     lateinit var permissions: Permissions
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +57,9 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
         mainAdapter = ContactNumberAdapter(this, sendContactNumberResponses)
         binding.recyclerView.adapter = mainAdapter
         permissions = Permissions()
-        contactNumberViewModel = ViewModelProvider(this).get(
-            ContactNumberViewModel::class.java
-        )
+//        contactNumberViewModel = ViewModelProvider(this).get(
+//            ContactNumberViewModel::class.java
+//        )
         checkContactpermission()
         binding.searchBySecretNumber.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {

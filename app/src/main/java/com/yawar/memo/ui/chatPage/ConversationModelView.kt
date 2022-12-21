@@ -1,17 +1,27 @@
 package com.yawar.memo.ui.chatPage
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.yawar.memo.model.ChatMessage
+import com.yawar.memo.repositry.BlockUserRepo
+import com.yawar.memo.repositry.ChatMessageRepoo
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.lifecycle.HiltViewModel
 import org.json.JSONArray
 import org.json.JSONException
 import java.util.*
+import javax.inject.Inject
 
-class ConversationModelView(anthorUesrId: String, blockedForState: String) : ViewModel() {
+@HiltViewModel
+//class ConversationModelView(anthorUesrId: String, blockedForState: String) : ViewModel() {
+class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMessageRepoo,
+                                                  val blockUserRepo :BlockUserRepo,
+                                                 val savedStateHandle: SavedStateHandle) : ViewModel() {
+
     var baseApp = BaseApp.getInstance()
-    private val chatMessageRepoo = baseApp.chatMessageRepoo
-    private val blockUserRepo = baseApp.blockUserRepo
+//    private val chatMessageRepoo = baseApp.chatMessageRepoo
     var lastSeen = "null"
 
 
@@ -31,10 +41,9 @@ class ConversationModelView(anthorUesrId: String, blockedForState: String) : Vie
     val isTyping : LiveData<String>
         get() = _isTyping
 init {
-    chatMessageRepoo?.loadChatRoom(BaseApp.getInstance().classSharedPreferences.user.userId, anthorUesrId)
-    if (blockedForState != null) {
-        blockUserRepo.setBlockedForRepo(blockedForState)
-    }
+    chatMessageRepoo?.loadChatRoom(BaseApp.getInstance().classSharedPreferences.user.userId, savedStateHandle.get<String>("reciver_id").toString())
+        blockUserRepo.setBlockedForRepo(savedStateHandle.get<String>("blockedFor").toString())
+
 
 
 }
@@ -91,6 +100,7 @@ init {
     }
 
     fun clearSelectedMessage() {
+
         chatMessageRepoo.clearSelectedMessage()
         //        repository.clearMessageChecked();
     }

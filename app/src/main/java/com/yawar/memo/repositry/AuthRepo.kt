@@ -14,20 +14,16 @@ import org.json.JSONObject
 import java.util.UUID
 
 class AuthRepo {
-
+//////////
     private val _jsonObjectMutableLiveData = MutableLiveData<JSONObject?>()
     val jsonObjectMutableLiveData: LiveData<JSONObject?>
         get() = _jsonObjectMutableLiveData
-
     private val _loadingMutableLiveData =  MutableLiveData<Boolean>()
     val loadingMutableLiveData : LiveData<Boolean>
         get() = _loadingMutableLiveData
-
-
     private val _showErrorMessage =  MutableLiveData<Boolean>(false)
     val showErrorMessage : LiveData<Boolean>
         get() = _showErrorMessage
-
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
 
@@ -37,8 +33,6 @@ class AuthRepo {
         coroutineScope.launch {
 //            val getChatRoomsDeferred = GdgApi(AllConstants.base_url).apiService.getSpecialNumbers(uuid)
             val getChatRoomsDeferred = GdgApi.apiService.getSpecialNumbers(uuid)
-
-
             try {
                 val listResult = getChatRoomsDeferred?.await()
                 val respObj = JSONObject(listResult)

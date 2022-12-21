@@ -45,13 +45,13 @@ class ChatAdapter(private val context: Activity) :
         fun onClickLocation(position: Int, chatMessage: ChatMessage?, myMessage: Boolean)
         fun onLongClick(position: Int, chatMessage: ChatMessage?, isChecked: Boolean)
         fun playVideo(path: Uri?)
+
     }
     init {
         try {
             mCallback = context as CallbackInterface
         }
         catch (ex: ClassCastException) {
-
         }
     }
     override fun getItemViewType(position: Int): Int {
@@ -380,7 +380,6 @@ class ChatAdapter(private val context: Activity) :
                      binding.imagePlayPause.visibility = View.GONE
                  } else {
                      binding.pgbProgress.visibility = View.GONE
-                     Log.d("bind:ddddddddddd", binding.pgbProgress.visibility.toString())
 
                      binding.imagePlayPause.visibility = View.VISIBLE
                  }

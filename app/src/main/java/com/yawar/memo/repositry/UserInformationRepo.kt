@@ -3,6 +3,7 @@ package com.yawar.memo.repositry
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.google.android.datatransport.runtime.dagger.Module
 import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.MediaModel
@@ -13,6 +14,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
+import javax.inject.Inject
 
 class UserInformationRepo {
     private val _mediaModelsMutableLiveData = MutableLiveData<ArrayList<MediaModel>>()

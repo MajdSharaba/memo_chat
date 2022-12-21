@@ -2,7 +2,6 @@ package com.yawar.memo.ui.responeCallPage;
 
 import static org.webrtc.SessionDescription.Type.ANSWER;
 import static org.webrtc.SessionDescription.Type.OFFER;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
@@ -11,7 +10,6 @@ import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.Manifest;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -40,7 +38,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.yawar.memo.constant.AllConstants;
@@ -52,7 +49,6 @@ import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.ui.requestCall.SimpleSdpObserver;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.CallProperty;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioSource;
@@ -81,17 +77,15 @@ import org.webrtc.VideoDecoderFactory;
 import org.webrtc.VideoEncoderFactory;
 import org.webrtc.VideoSource;
 import org.webrtc.VideoTrack;
-
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
+
 public class ResponeCallActivity extends AppCompatActivity {
     String username = "";
-
     String id ="0";
     String title = "";
     String onGoingTitle = "";
@@ -100,24 +94,17 @@ public class ResponeCallActivity extends AppCompatActivity {
     Timer callTimer = new Timer();
     String calltType;
     float dX, dY;
-
-
-
-
     public static final String ON_CALL_REQUEST = "CallMainActivity.ON_CALL_REQUEST";
     public static final String ON_STOP_CALLING_REQUEST = "RequestCallActivity.ON_CALL_REQUEST";
     public static final String ON_RECIVED_SETTINGS_CALL = "CallMainActivity.ON_RECIVED_SETTINGS_CALL";
     public static final String ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY = "ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY";
     public static final String ON_RECIVED_ASK_FOR_VIDEO = "on_recived_ask_for_video";
     public static final String ON_RECIVED_RESPONE_FOR_VIDEO = "on_recived_respone_for_video";
-
-
     Boolean isVideoForMe = false;
     Boolean isVideoForyou = false;
     VideoCapturer videoCapturer;
     String imageUrl;
     String callId;
-
     LinearLayout layoutCallProperties;
     ImageButton imgBtnStopCallLp;
     ImageButton imgBtnOpenCameraCallLp;
@@ -134,20 +121,14 @@ public class ResponeCallActivity extends AppCompatActivity {
     private static final int RC_CALL = 111;
     private static final int DO_CALL = 222;
     Animation animation;
-
-
-
     public static final String VIDEO_TRACK_ID = "ARDAMSv0";
     public static final int VIDEO_RESOLUTION_WIDTH = 480;
     public static final int VIDEO_RESOLUTION_HEIGHT = 360;
     public static final int FPS = 25;
-
     private boolean isInitiator = true;
     private boolean isChannelReady = true;
     private boolean isStarted = false;
     String anthor_user_id;
-
-
     MediaConstraints audioConstraints;
     MediaConstraints videoConstraints;
     MediaConstraints sdpConstraints;
@@ -157,8 +138,6 @@ public class ResponeCallActivity extends AppCompatActivity {
     AudioTrack localAudioTrack;
     SurfaceTextureHelper surfaceTextureHelper;
     public static final String ON_RECIVE_MESSAGE = "ON_RECIVE_MESSAGE";
-
-
     private ActivityCallMainBinding binding;
     private PeerConnection peerConnection;
     private EglBase rootEglBase;
@@ -177,9 +156,6 @@ public class ResponeCallActivity extends AppCompatActivity {
                 public void run() {
                     String unBlockString = intent.getExtras().getString("Call Sdp");
                     System.out.println("unBlockString"+unBlockString);
-
-
-
                     String id = "";
                     String type = "";
                     String sdp = "";
@@ -232,8 +208,6 @@ public class ResponeCallActivity extends AppCompatActivity {
             });
         }
     };
-
-
 
     private final BroadcastReceiver reciveStopCalling = new BroadcastReceiver() {
         @Override
@@ -306,10 +280,6 @@ public class ResponeCallActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    ///////////
-
-
                 }
             });
         }
@@ -1650,6 +1620,4 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
 //        binding.localVideoView.startAnimation(animation);
 
     }
-
-
 }

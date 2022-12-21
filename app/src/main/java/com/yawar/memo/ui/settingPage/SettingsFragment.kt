@@ -19,6 +19,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.android.volley.RequestQueue
@@ -38,18 +39,21 @@ import com.yawar.memo.model.UserModel
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
+//import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
+//import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.blockUserPage.BlockedUsersActivity
 import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity
 import com.yawar.memo.ui.splashPage.SplashScreen
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class SettingsFragment : Fragment() {
     lateinit var myBase: BaseApp
     private lateinit var rQueue: RequestQueue
@@ -60,23 +64,21 @@ class SettingsFragment : Fragment() {
     var seekValue = 2
     var progressDialog: ProgressDialog? = null
     var imageBytes = byteArrayOf()
-    lateinit var settingsFragmentViewModel: SettingsFragmentViewModel
+     val settingsFragmentViewModel by viewModels< SettingsFragmentViewModel>()
     var storage = FirebaseStorage.getInstance()
 
 //    lateinit var serverApi: ServerApi
     lateinit var imageUri: Uri
-
-
     var userModel: UserModel? = null
-
     lateinit var classSharedPreferences: ClassSharedPreferences
     var imageString = ""
     var firstName: String? = ""
     var lastName: String? = ""
+    @Inject
     lateinit var authRepo: AuthRepo
-
-
+    @Inject
     lateinit var blockUserRepo: BlockUserRepo
+    @Inject
     lateinit var chatRoomRepoo: ChatRoomRepoo
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,21 +93,17 @@ class SettingsFragment : Fragment() {
         progressDialog = ProgressDialog(requireActivity())
         progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
         myBase = BaseApp.getInstance()
-        chatRoomRepoo = myBase.chatRoomRepoo
-        blockUserRepo = myBase.blockUserRepo
-        authRepo = myBase.authRepo
-        settingsFragmentViewModel = ViewModelProvider(this)[SettingsFragmentViewModel::class.java]
-
-
+//        chatRoomRepoo = myBase.chatRoomRepoo
+//        blockUserRepo = myBase.blockUserRepo
+//        authRepo = myBase.authRepo
+//        settingsFragmentViewModel = ViewModelProvider(this)[SettingsFragmentViewModel::class.java]
         settingsFragmentViewModel.userModelRespone.observe(requireActivity(),
             Observer<UserModel?> { userModel ->
                 if (userModel != null) {
                     println(userModel.image + "userModel.getImage()")
                     classSharedPreferences.user = userModel
-
                 }
             })
-
         settingsFragmentViewModel.showErrorMessage.observe(requireActivity(),
             Observer<Boolean> { aBoolean ->
                 if (aBoolean) {
@@ -379,8 +377,6 @@ class SettingsFragment : Fragment() {
                 .into(binding.imageView)
         }
     }
-
-
 
      fun uploadImageToFireBase(imageName: String, pdfFile: Uri) {
         val message_id = System.currentTimeMillis().toString() + "_" + (userModel?.userId ?: "")

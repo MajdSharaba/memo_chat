@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -35,11 +36,13 @@ import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.registerPage.RegisterActivity
+import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener,
     Observer {
     private val mCallbackManager = CallbackManager.Factory.create()
@@ -48,7 +51,9 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     private val mAuth: FirebaseAuth? = null
     var name: String? = null
     var email: String? = null
-    lateinit var loginModelView : LoginModelView
+    @Inject
+    lateinit var authRepo: AuthRepo
+     val loginModelView by viewModels<LoginModelView>()
     var progressDialog: ProgressDialog? = null
     private val verificationId: String? = null
     private var firebaseAuth: FirebaseAuth? = null
@@ -65,9 +70,9 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         authApi = AuthApi(this)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         firebaseAuth = FirebaseAuth.getInstance()
-        loginModelView = ViewModelProvider(this).get(
-            LoginModelView::class.java
-        )
+//        loginModelView = ViewModelProvider(this).get(
+//            LoginModelView::class.java
+//        )
         authStateListener = AuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user != null) {
@@ -89,7 +94,6 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             startActivityForResult(intent, RC_SIGN_IN)
         })
         binding.btnFacebook.setReadPermissions(Arrays.asList(EMAIL));
-
         binding.btnFacebook.registerCallback(mCallbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(loginResult: LoginResult) {
                 Log.d(TAG, "facebook:onSuccess:$loginResult")
@@ -265,7 +269,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     }
 
     private fun handleFacebookAccessToken(token: AccessToken) {
-        val authApi: AuthRepo = BaseApp.getInstance().getAuthRepo()
+//        val authApi: AuthRepo = BaseApp.getInstance().getAuthRepo()
 
         val credential = FacebookAuthProvider.getCredential(token.token)
         firebaseAuth?.signInWithCredential(credential)
@@ -280,7 +284,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                     loginModelView.image = task.result.user!!.photoUrl.toString()+"?type=large&redirect=true&width=500&height=500"
 
 
-                    authApi?.getspecialNumbers(classSharedPreferences.verficationNumber)
+                    authRepo?.getspecialNumbers(classSharedPreferences.verficationNumber)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "signInWithCredential:failure", task.exception)
@@ -290,8 +294,6 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                 }
             }
     }
-
-
     private fun handleSignInResult(result: GoogleSignInResult?) {
         if (result!!.isSuccess) {
             val account = result.signInAccount
@@ -312,7 +314,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
     }
 
     private fun firebaseAuthWithGoogle(credential: AuthCredential) {
-        val authApi: AuthRepo = BaseApp.getInstance().getAuthRepo()
+//        val authApi: AuthRepo = BaseApp.getInstance().getAuthRepo()
 
         firebaseAuth!!.signInWithCredential(credential)
             .addOnCompleteListener(
@@ -330,7 +332,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                     Log.d(TAG, "firebaseAuthWithGoogle: ${task.result.user!!.photoUrl.toString().replace("=s96-c","=s1024-c")} ")
 
 
-                    authApi?.getspecialNumbers(classSharedPreferences.verficationNumber)
+                    authRepo?.getspecialNumbers(classSharedPreferences.verficationNumber)
 
 //                    gotoProfile()
                 } else {

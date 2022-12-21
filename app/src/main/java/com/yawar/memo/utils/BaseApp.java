@@ -26,11 +26,14 @@ import com.yawar.memo.observe.FireBaseTokenObserve;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.repositry.BlockUserRepo;
 import com.yawar.memo.repositry.ChatMessageRepoo;
-import com.yawar.memo.repositry.ChatRoomRepoo;
+//import com.yawar.memo.repositry.ChatRoomRepoo;
 //import com.yawar.memo.repositry.RequestCallRepo;
+import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.repositry.UserInformationRepo;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
+
+import javax.inject.Inject;
 
 import dagger.hilt.android.HiltAndroidApp;
 
@@ -38,23 +41,27 @@ import dagger.hilt.android.HiltAndroidApp;
 public class BaseApp extends Application implements LifecycleObserver {
 
     FireBaseTokenObserve fireBaseTokenObserve;
-//    ContactNumberObserve contactNumberObserve;
+    //    ContactNumberObserve contactNumberObserve;
     public static final String TAG = "BaseApp";
     private RequestQueue mRequestQueue;
     private static BaseApp sInstance;
-//    ChatRoomRepo chatRoomRepo;
+    //    ChatRoomRepo chatRoomRepo;
 //    RequestCallRepo requestCallRepo;
+    @Inject
     BlockUserRepo blockUserRepo;
-    AuthRepo authRepo;
+    @Inject
+   public AuthRepo authRepo;
+    @Inject
     ChatMessageRepoo chatMessageRepoo;
 
-    UserInformationRepo userInformationRepo;
-     String[] darkModeValues ;
-     ClassSharedPreferences classSharedPreferences;
-     Handler handler = new Handler();
+//    UserInformationRepo userInformationRepo;
+    String[] darkModeValues ;
+    ClassSharedPreferences classSharedPreferences;
+    Handler handler = new Handler();
     private Runnable myRunnable ;
     RxDataStore<Preferences> dataStore;
-    ChatRoomRepoo chatRoomRepoo;
+    @Inject
+   public ChatRoomRepoo chatRoomRepoo;
 
 
 
@@ -79,7 +86,7 @@ public class BaseApp extends Application implements LifecycleObserver {
 //            System.out.println("getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());");
 //            Log.d(TAG, "getChatRoomRepo().callAPI(classSharedPreferences.getUser()");
 //            getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
-            getChatRoomRepoo().loadChatRoom(classSharedPreferences.getUser().getUserId());
+           chatRoomRepoo.loadChatRoom(classSharedPreferences.getUser().getUserId());
             Log.d(TAG, "onCreate: ");
 
 
@@ -91,9 +98,9 @@ public class BaseApp extends Application implements LifecycleObserver {
     }
 
 
-     public  String isActivityVisible(){
-         return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().name();
-     }
+    public  String isActivityVisible(){
+        return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().name();
+    }
     @Override
     public void onTerminate() {
         super.onTerminate();
@@ -125,7 +132,7 @@ public class BaseApp extends Application implements LifecycleObserver {
         }
 
         return sInstance;
-        }
+    }
 
     public FireBaseTokenObserve getForceResendingToken() {
         if(fireBaseTokenObserve== null){
@@ -134,7 +141,7 @@ public class BaseApp extends Application implements LifecycleObserver {
         return fireBaseTokenObserve;
     }
 
-//    public ContactNumberObserve getContactNumberObserve() {
+    //    public ContactNumberObserve getContactNumberObserve() {
 //        if(contactNumberObserve== null){
 //            contactNumberObserve = new ContactNumberObserve();
 //        }
@@ -147,49 +154,49 @@ public class BaseApp extends Application implements LifecycleObserver {
 
         return mRequestQueue;
     }
-//    public ChatRoomRepo getChatRoomRepo() {
+    //    public ChatRoomRepo getChatRoomRepo() {
 //        if(chatRoomRepo== null){
 //            chatRoomRepo = new ChatRoomRepo(this);
 //        }
 //        return chatRoomRepo;
 //    }
-    public ChatRoomRepoo getChatRoomRepoo() {
-        if(chatRoomRepoo== null){
-            chatRoomRepoo = new ChatRoomRepoo();
-        }
-        return chatRoomRepoo;
-    }
-//    public RequestCallRepo getRequestCallRepo() {
+//    public ChatRoomRepoo getChatRoomRepoo() {
+//        if(chatRoomRepoo== null){
+//            chatRoomRepoo = new ChatRoomRepoo();
+//        }
+//        return chatRoomRepoo;
+//    }
+    //    public RequestCallRepo getRequestCallRepo() {
 //        if(requestCallRepo== null){
 //            requestCallRepo = new RequestCallRepo(this);
 //        }
 //        return requestCallRepo;
 //    }
-    public UserInformationRepo getUserInformationRepo() {
-        if(userInformationRepo== null){
-            userInformationRepo = new UserInformationRepo();
-        }
-        return userInformationRepo;
-    }
-    public BlockUserRepo getBlockUserRepo() {
-        if(blockUserRepo== null){
-            blockUserRepo = new BlockUserRepo();
-        }
-        return blockUserRepo;
-    }
-    public AuthRepo getAuthRepo() {
-        if(authRepo== null){
-            authRepo = new AuthRepo();
-        }
-        return authRepo;
-    }
+//    public UserInformationRepo getUserInformationRepo() {
+//        if(userInformationRepo== null){
+//            userInformationRepo = new UserInformationRepo();
+//        }
+//        return userInformationRepo;
+//    }
+//    public BlockUserRepo getBlockUserRepo() {
+//        if(blockUserRepo== null){
+//            blockUserRepo = new BlockUserRepo();
+//        }
+//        return blockUserRepo;
+//    }
+//    public AuthRepo getAuthRepo() {
+//        if(authRepo== null){
+//            authRepo = new AuthRepo();
+//        }
+//        return authRepo;
+//    }
 
-    public ChatMessageRepoo getChatMessageRepoo() {
-        if(chatMessageRepoo== null){
-            chatMessageRepoo = new ChatMessageRepoo();
-        }
-        return chatMessageRepoo;
-    }
+//    public ChatMessageRepoo getChatMessageRepoo() {
+//        if(chatMessageRepoo== null){
+//            chatMessageRepoo = new ChatMessageRepoo();
+//        }
+//        return chatMessageRepoo;
+//    }
 
     public ClassSharedPreferences getClassSharedPreferences() {
         if(classSharedPreferences== null){
@@ -210,7 +217,7 @@ public class BaseApp extends Application implements LifecycleObserver {
         }
     }
     public String getPeerId() {
-    return  peerId;
+        return  peerId;
     }
 
     public <T> void addToRequestQueue(Request<T> req, String tag) {
@@ -251,11 +258,11 @@ public class BaseApp extends Application implements LifecycleObserver {
 //                getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
 
 
-       getChatMessageRepoo().getUnRecivedMessages();
-
-        Intent service = new Intent(this, SocketIOService.class);
-        service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
-        this.startService(service);}
+//            getChatMessageRepoo().getUnRecivedMessages();
+            chatMessageRepoo.getUnRecivedMessages();
+            Intent service = new Intent(this, SocketIOService.class);
+            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
+            this.startService(service);}
 
 
 //        notifyAll();
@@ -303,3 +310,4 @@ public class BaseApp extends Application implements LifecycleObserver {
 
 
 }
+

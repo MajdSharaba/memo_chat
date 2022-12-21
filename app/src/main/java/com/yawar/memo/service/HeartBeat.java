@@ -36,9 +36,8 @@ public class HeartBeat implements Runnable {
             }
             handler.postDelayed(this, HEART_BEAT_RATE);
         }
-handler.removeCallbacks(this, HEART_BEAT_RATE);
+        handler.removeCallbacks(this, HEART_BEAT_RATE);
     }
-
 
     public interface HeartBeatListener {
         void onHeartBeat();

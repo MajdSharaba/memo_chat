@@ -7,6 +7,7 @@ import android.os.Environment
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
@@ -21,20 +22,23 @@ import com.yawar.memo.ui.loginPage.LoginActivity
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.introPage.IntroActivity
 import com.yawar.memo.ui.registerPage.RegisterActivity
+import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
-
+import javax.inject.Inject
+@AndroidEntryPoint
 class SplashScreen : AppCompatActivity() {
     lateinit var classSharedPreferences: ClassSharedPreferences
+    @Inject
     lateinit var authRepo: AuthRepo
     lateinit var myBase: BaseApp
     lateinit var binding: ActivitySplashScreenBinding
 
-    var splachActViewModel: SplachActViewModel? = null
+    val splachActViewModel by viewModels<SplachActViewModel>()
 //    var progressDialog: ProgressDialog? = null
 //    var progressBar: ProgressBar? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,9 +47,9 @@ class SplashScreen : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_screen)
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         myBase = BaseApp.getInstance()
-        authRepo = myBase.authRepo
+//        authRepo = myBase.authRepo
 
-        splachActViewModel = ViewModelProvider(this).get(SplachActViewModel::class.java)
+//        splachActViewModel = ViewModelProvider(this).get(SplachActViewModel::class.java)
         Handler().postDelayed({
             val intent: Intent
             if (classSharedPreferences.user != null && !classSharedPreferences.user.secretNumber.equals("") ) {

@@ -6,7 +6,10 @@ import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.UserModel
+//import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
 import com.yawar.memo.utils.BaseApp
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,8 +18,12 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import javax.inject.Inject
 
-  class BlockUserRepo {
+
+//  class BlockUserRepo @Inject constructor(private val chatRoomRepoo: ChatRoomRepoImp) {
+class BlockUserRepo  {
+
     var myBase = BaseApp.getInstance()
     var chatRoomRepoo = myBase.chatRoomRepoo
 

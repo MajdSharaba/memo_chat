@@ -22,8 +22,6 @@ class ChatMessageRepoo {
     val chatMessaheHistory: LiveData<ArrayList<ChatMessage?>?>
         get() = _chatMessageistMutableLiveData
 
-
-
     private val _selectedMessage = MutableLiveData<ArrayList<ChatMessage?>?>()
     val selectedMessage: LiveData<ArrayList<ChatMessage?>?>
         get() = _selectedMessage
@@ -241,6 +239,7 @@ class ChatMessageRepoo {
     fun clearSelectedMessage() {
 
         var chatMessageList = _selectedMessage.value
+        Log.d("clearSelectedMessage", "clearSelectedMessage: ${chatMessageList?.size}")
 
         if (chatMessageList != null) {
             for ( chatMessage in chatMessageList) {
@@ -251,6 +250,8 @@ class ChatMessageRepoo {
                 }
             }
             chatMessageList.clear()
+            Log.d("clearSelectedMessage", "clearSelectedMessage: ${chatMessageList.size}")
+
 
         }
 
@@ -319,6 +320,8 @@ class ChatMessageRepoo {
                         }
                     }
                 }
+                        clearSelectedMessage()
+
             } catch (e: Exception) {
 
 
@@ -326,6 +329,7 @@ class ChatMessageRepoo {
 
             }
         }
+//        clearSelectedMessage();
     }
         fun getUnRecivedMessages(
         ) {

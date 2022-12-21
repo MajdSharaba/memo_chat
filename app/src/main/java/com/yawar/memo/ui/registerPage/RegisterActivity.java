@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.ActionCodeResult;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
@@ -66,6 +67,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class RegisterActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
     List<String> spennerItems = new ArrayList<String>();
     String spennerItemChooser;
@@ -76,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private static final int PICK_IMAGE = 100;
     Uri imageUri = Uri.parse("n");
     Bitmap bitmap;
-    RegisterViewModel registerViewModel;
+    RegisterViewModel registerViewModel ;
     ProgressDialog progressDialog;
     String fName = "user";
     String lName = "";
@@ -87,6 +93,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private RequestQueue rQueue;
     BaseApp myBase;
     String displayNamee = "";
+    @Inject
     AuthRepo authRepo;
     FirebaseStorage storage = FirebaseStorage.getInstance();
     @Override
@@ -106,7 +113,7 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
     private void initView() {
         spennerItemChooser=getResources().getString(R.string.choose_special_number);
         myBase = BaseApp.getInstance();
-        authRepo = myBase.getAuthRepo();
+//        authRepo = myBase.getAuthRepo();
         classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
         if(classSharedPreferences.getUser()!=null) {
             binding.etFName.setText(classSharedPreferences.getUser().getUserName());

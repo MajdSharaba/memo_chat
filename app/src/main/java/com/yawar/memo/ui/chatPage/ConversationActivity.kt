@@ -28,6 +28,7 @@ import android.util.Log
 import android.view.*
 import android.view.View.OnLayoutChangeListener
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
@@ -69,12 +70,15 @@ import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatMessageRepoo
 import com.yawar.memo.repositry.ChatRoomRepoo
+//import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.*
 import com.yawar.memo.ui.dashBoard.DashBord
 import com.yawar.memo.ui.userInformationPage.UserInformationActivity
 import com.yawar.memo.ui.chatPage.video.VideoActivity
+import com.yawar.memo.ui.userInformationPage.UserInformationViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -82,6 +86,9 @@ import java.io.File
 import java.io.IOException
 import java.nio.file.Path
 import java.util.*
+import javax.inject.Inject
+
+@AndroidEntryPoint
 class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     PickiTCallbacks , CallbackListener {
     lateinit var  binding: ActivityConversationBinding
@@ -89,15 +96,20 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     private val requestcode = 1
     var first = true
     var timeProperties: TimeProperties? = null
-    var blockUserRepo: BlockUserRepo? = null
+    @Inject
+    lateinit var blockUserRepo: BlockUserRepo
 //    lateinit var textForBlock: TextView
     var blockedForMe = false
 //    lateinit var serverApi: ServerApi
-    lateinit var conversationModelView: ConversationModelView
-    lateinit var conversationViewModelFactory: ConversationViewModelFactory
+//    lateinit var conversationModelView: ConversationModelView
+    val conversationModelView by viewModels<ConversationModelView>()
+
+    //    lateinit var conversationViewModelFactory: ConversationViewModelFactory
     private var adapter: ChatAdapter? = null
     val myBase: BaseApp? = BaseApp.getInstance()
-    var chatRoomRepoo: ChatRoomRepoo? = null
+//    var chatRoomRepoo: ChatRoomRepoImp? = null
+        var chatRoomRepoo: ChatRoomRepoo? = null
+
     var chat_id = ""
     var fcmToken: String? = null
     var isAllMessgeMe = true
@@ -106,7 +118,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     var latLng: LatLng? = null
     lateinit var stringLatLng: String
     var locationLatLng: LatLng? = null
-    var chatMessageRepoo: ChatMessageRepoo? = null
+//    @Inject
+//    var chatMessageRepoo: ChatMessageRepoo
     var lat: String? = null
     var viewVisability = false
     private var userName: String? = null
@@ -143,8 +156,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 if (userId == anthor_user_id) {
 
                     checkConnect = checkObject.getString("is_connect")
-                    conversationModelView!!.lastSeen = checkObject.getString("last_seen")
-                    conversationModelView!!.set_state(checkConnect)
+                    conversationModelView.lastSeen = checkObject.getString("last_seen")
+                    conversationModelView.set_state(checkConnect)
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
@@ -606,7 +619,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         timeProperties = TimeProperties()
 //        serverApi = ServerApi(this)
         chatRoomRepoo = myBase?.chatRoomRepoo
-        blockUserRepo = myBase?.blockUserRepo
+//        blockUserRepo = myBase?.blockUserRepo
         val bundle = intent.extras
         user_id = bundle!!.getString("sender_id", "1")
         anthor_user_id = bundle.getString("reciver_id", "2")
@@ -626,11 +639,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 .into(binding.userImage)
         }
         val blockedFor = bundle.getString("blockedFor", "null")
-        conversationViewModelFactory = ConversationViewModelFactory(anthor_user_id,blockedFor)
-        conversationModelView = ViewModelProvider(this,conversationViewModelFactory).get(
-            ConversationModelView::class.java
-        )
-        chatMessageRepoo = myBase?.chatMessageRepoo
+//        conversationViewModelFactory = ConversationViewModelFactory(anthor_user_id,blockedFor)
+//        conversationModelView = ViewModelProvider(this,conversationViewModelFactory).get(
+//            ConversationModelView::class.java
+//        )
+//        chatMessageRepoo = myBase?.chatMessageRepoo
         binding.messagesContainer.setHasFixedSize(true)
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
@@ -750,10 +763,10 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             if (s != null) {
                 if (s == "true") {
                     binding.state.setText(R.string.writing_now)
-                } else if (conversationModelView!!.state.value == "true") {
+                } else if (conversationModelView.state.value == "true") {
                     binding.state.setText(R.string.connect_now)
                 } else {
-                    if (conversationModelView!!.lastSeen != "null") binding.state.text = resources.getString(
+                    if (conversationModelView.lastSeen != "null") binding.state.text = resources.getString(
                         R.string.last_seen
                     ) + " " + timeProperties!!.getDateForLastSeen(
                         this,
@@ -796,11 +809,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 }
             })
         //        scroll();
-        conversationModelView!!.selectedMessage.observe(
+        conversationModelView.selectedMessage.observe(
             this
         ) { chatMessages ->
             if (chatMessages != null) {
-                //                    selectedMessage = chatMessages;
+                Log.d(TAG, "initViews: ${chatMessages.size}")
+
                 if (chatMessages.isEmpty()) {
                     binding.toolsLinerLayout.visibility = View.GONE
                     binding.personInformationLiner.visibility = View.VISIBLE
@@ -2170,6 +2184,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         ) { dialog, which ->
             conversationModelView!!.deleteMessageForMe(deleteMessage, user_id)
             deleteMessage.clear()
+
         }
         dialog.setNegativeButton(
             R.string.cancel
