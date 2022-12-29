@@ -4,6 +4,11 @@ import com.android.volley.NetworkResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatRoomRespone
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ActivityRetainedComponent
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -185,11 +190,25 @@ interface ChatApi {
 //    return retrofit
 //}
 
+//////////
+// public  object  GdgApi {
+////   public class GdgApi(string: String) {
+//
+//   public val apiService: ChatApi = retrofit.create(ChatApi::class.java)
+////    val apiService: ChatApi = retrofit(string).create(ChatApi::class.java)
+//
+//
+//
+//
+//}
+///////////
 
- public  object  GdgApi {
-//   public class GdgApi(string: String) {
-
-   public val apiService: ChatApi = retrofit.create(ChatApi::class.java)
-//    val apiService: ChatApi = retrofit(string).create(ChatApi::class.java)
-
+@Module
+@InstallIn(SingletonComponent::class)
+object MovieModule {
+    @Provides
+    fun provideMovieService(): ChatApi
+            = retrofit.create(ChatApi::class.java)
 }
+
+

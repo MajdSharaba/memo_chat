@@ -1,5 +1,6 @@
 package com.yawar.memo.di
 
+import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.repositry.ChatMessageRepoo
 import com.yawar.memo.repositry.UserInformationRepo
 import dagger.Module
@@ -13,8 +14,8 @@ import javax.inject.Singleton
 object CharMessageRepositryModule {
     @Singleton
     @Provides
-    fun provideMessageRepository(): ChatMessageRepoo {
-        return  ChatMessageRepoo()
+    fun provideMessageRepository(chatApi: ChatApi): ChatMessageRepoo {
+        return  ChatMessageRepoo(chatApi)
     }
 
 }

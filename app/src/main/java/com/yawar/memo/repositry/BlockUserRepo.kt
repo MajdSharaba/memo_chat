@@ -3,7 +3,8 @@ package com.yawar.memo.repositry
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.UserModel
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 
 //  class BlockUserRepo @Inject constructor(private val chatRoomRepoo: ChatRoomRepoImp) {
-class BlockUserRepo  {
+class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi) {
 
     var myBase = BaseApp.getInstance()
     var chatRoomRepoo = myBase.chatRoomRepoo
@@ -59,7 +60,10 @@ class BlockUserRepo  {
 //             var getBlockDeferred = GdgApi(AllConstants.base_node_url).apiService
 //
 //                 .getBlockKist(user_id)
-             var getBlockDeferred = GdgApi.apiService
+//             var getBlockDeferred = GdgApi.apiService
+//
+//                 .getBlockKist(user_id)
+             var getBlockDeferred = chatApi
 
                  .getBlockKist(user_id)
 
@@ -137,7 +141,9 @@ class BlockUserRepo  {
 //
 //            val respone =   GdgApi(AllConstants.base_node_url).apiService.blockUser(my_id, anthor_user_id)
 
-            val respone =   GdgApi.apiService.blockUser(my_id, anthor_user_id)
+//            val respone =   GdgApi.apiService.blockUser(my_id, anthor_user_id)
+            val respone =   chatApi.blockUser(my_id, anthor_user_id)
+
 
 
 
@@ -173,7 +179,9 @@ class BlockUserRepo  {
 
 //            var respone = GdgApi(AllConstants.base_node_url).apiService
 //                .unBlockUser(my_id, anthor_user_id)
-            var respone = GdgApi.apiService
+//            var respone = GdgApi.apiService
+//                .unBlockUser(my_id, anthor_user_id)
+            var respone = chatApi
                 .unBlockUser(my_id, anthor_user_id)
             try {
                 val listResult = respone?.await()

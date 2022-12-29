@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.datatransport.runtime.dagger.Module
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.MediaModel
 import com.yawar.memo.model.UserModel
@@ -16,7 +17,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import javax.inject.Inject
 
-class UserInformationRepo {
+class UserInformationRepo  @Inject constructor(private val chatApi: ChatApi)  {
     private val _mediaModelsMutableLiveData = MutableLiveData<ArrayList<MediaModel>>()
     val mediaModelsMutableLiveData: LiveData<ArrayList<MediaModel>>
         get() = _mediaModelsMutableLiveData
@@ -43,9 +44,10 @@ class UserInformationRepo {
 
 //            val getMediaDeferred = GdgApi(AllConstants.base_node_url).apiService
 //                .getMedia(user_id,anthor_user_id)
-            val getMediaDeferred = GdgApi.apiService
+//            val getMediaDeferred = GdgApi.apiService
+//                .getMedia(user_id,anthor_user_id)
+            val getMediaDeferred = chatApi
                 .getMedia(user_id,anthor_user_id)
-
             try {
                 val listResult = getMediaDeferred?.await()
 
@@ -70,13 +72,15 @@ class UserInformationRepo {
 
     fun  getUserInformation( anthor_user_id :String) {
         var mediaModels = ArrayList<MediaModel>()
-        _userInformation.value = UserModel()
+//        _userInformation.value = UserModel()
 
         coroutineScope.launch {
 
 //            val getMediaDeferred =  GdgApi(AllConstants.base_node_url).apiService
 //                .getUserInformation(anthor_user_id)
-            val getMediaDeferred =  GdgApi.apiService
+//            val getMediaDeferred =  GdgApi.apiService
+//                .getUserInformation(anthor_user_id)
+            val getMediaDeferred =  chatApi
                 .getUserInformation(anthor_user_id)
             Log.d("getUserInformation", "getUserInformation: ")
 

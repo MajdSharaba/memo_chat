@@ -1,5 +1,6 @@
 package com.yawar.memo.di
 
+import com.yawar.memo.Api.ChatApi
 import dagger.Module
 import dagger.Provides
 import com.yawar.memo.repositry.UserInformationRepo
@@ -12,8 +13,8 @@ import javax.inject.Singleton
 object UserInfornationRepositryModule {
     @Singleton
     @Provides
-     fun providesUserInformationRepository(): UserInformationRepo{
-         return  UserInformationRepo()
+     fun providesUserInformationRepository(chatApi: ChatApi): UserInformationRepo{
+         return  UserInformationRepo(chatApi)
      }
 
 }

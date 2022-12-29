@@ -4,9 +4,12 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.CallModel
+import com.yawar.memo.repositry.BlockUserRepo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,8 +18,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-class CallHistoryModelView : ViewModel() {
+@HiltViewModel
+class CallHistoryModelView @Inject constructor(val chatApi: ChatApi): ViewModel() {
 
     var date: Date? = null
 
@@ -43,7 +48,9 @@ class CallHistoryModelView : ViewModel() {
 
 //            val getResponeDeferred =GdgApi(AllConstants.base_node_url).apiService
 //                .getMyCalls(my_id)
-            val getResponeDeferred =GdgApi.apiService
+//            val getResponeDeferred =GdgApi.apiService
+//                .getMyCalls(my_id)
+            val getResponeDeferred =chatApi
                 .getMyCalls(my_id)
             try {
                 val listResult = getResponeDeferred?.await()

@@ -39,6 +39,7 @@ public class CallNotificationActivity extends AppCompatActivity {
     CircleImageView imageView;
     JSONObject message = null;
     JSONObject data = new JSONObject();
+    String callId = "";
     JSONObject type = new JSONObject();
     CountDownTimer countDownTimer;
     String userName = "User Name ";
@@ -176,13 +177,14 @@ public class CallNotificationActivity extends AppCompatActivity {
 
         /////////
 
-
         try {
             message = new JSONObject(callParamters);
 //            data = message.getJSONObject("data");
             type = message.getJSONObject("type");
             System.out.println("the type is"+ type.toString());
             userObject = message.getJSONObject("user");
+             callId = message.getString("call_id");
+
 
             message.put("peerId", "null");
 
@@ -225,6 +227,7 @@ public class CallNotificationActivity extends AppCompatActivity {
                     params.put("type", type.toString());
                     params.put("message", "");
                     params.put("peerId", "null");
+                    params.put("call_id", callId);
                     params.put("snd_id",message.getString("snd_id") );
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -243,7 +246,7 @@ public class CallNotificationActivity extends AppCompatActivity {
 //        binding.callStatue.setText(R.string.calling);
 
         int i=0;
-        countDownTimer = new CountDownTimer(10000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
+        countDownTimer = new CountDownTimer(30000, 1000) { //40000 milli seconds is total time, 1000 milli seconds is time interval
 
             public void onTick(long millisUntilFinished) {
                 System.out.println(i+1);

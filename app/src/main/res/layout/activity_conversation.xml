@@ -319,70 +319,111 @@
             android:visibility="visible"
            />
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardview"
-                android:layout_width="300dp"
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/cardview"-->
+<!--                android:layout_width="300dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:elevation="60dp"-->
+<!--                android:visibility="gone"-->
+<!--                android:layout_marginRight="10dp"-->
+<!--                android:layout_gravity="center_horizontal"-->
+<!--                android:layout_marginLeft="10dp"-->
+<!--                android:background="@drawable/et_custom"-->
+<!--                app:cardCornerRadius="10dp"-->
+<!--                >-->
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:background="@drawable/et_custom"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="horizontal">-->
+<!--                        <TextView-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:textColor="@color/black"-->
+<!--                            android:text="UserName"-->
+<!--                            android:padding="10dp"-->
+<!--                            android:textStyle="bold"-->
+<!--                            android:visibility="gone"-->
+<!--                            android:layout_weight="2"-->
+<!--                            android:id="@+id/username"-->
+<!--                            android:textSize="20sp"-->
+<!--                            />-->
+<!--                        <ImageButton-->
+<!--                            android:id="@+id/close"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_gravity="center_vertical|right"-->
+<!--                            android:layout_marginRight="5dp"-->
+<!--                            android:layout_marginTop="5dp"-->
+<!--                            android:layout_weight="1"-->
+<!--                            android:visibility="gone"-->
+<!--                            android:background="?android:attr/actionBarItemBackground"-->
+
+<!--                            android:src="@drawable/ic_close"/>-->
+
+<!--                    </LinearLayout>-->
+
+
+<!--                    <TextView-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                         android:textColor="@color/gray"-->
+<!--                        android:text="Reply"-->
+<!--                        android:padding="5dp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        android:visibility="gone"-->
+<!--                        android:id="@+id/reply"-->
+<!--                          />-->
+
+<!--                </LinearLayout>-->
+
+<!--            </androidx.cardview.widget.CardView>-->
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/reply_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="60dp"
+                android:background="@color/background_bottom_navigation"
                 android:visibility="gone"
-                android:layout_marginRight="10dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="10dp"
-                android:background="@drawable/et_custom"
-                app:cardCornerRadius="10dp"
-                >
-                <LinearLayout
-                    android:layout_width="match_parent"
+                app:layout_constraintBottom_toTopOf="@+id/editor_layout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+
+                <TextView
+                    android:id="@+id/txtQuotedMsg"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/et_custom"
-                    android:orientation="vertical">
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:padding="8dp"
+                    android:textColor="@color/textColor"
+                    android:textSize="14sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/cancelButton"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text=" h ghgdhg fgd"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textColor="@color/black"
-                            android:text="UserName"
-                            android:padding="10dp"
-                            android:textStyle="bold"
-                            android:visibility="gone"
-                            android:layout_weight="2"
-                            android:id="@+id/username"
-                            android:textSize="20sp"
-                            />
-                        <ImageButton
-                            android:id="@+id/close"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical|right"
-                            android:layout_marginRight="5dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_weight="1"
-                            android:visibility="gone"
-                            android:background="?android:attr/actionBarItemBackground"
-
-                            android:src="@drawable/ic_close"/>
-
-                    </LinearLayout>
+                <ImageButton
+                    android:id="@+id/cancelButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/ic_close"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                         android:textColor="@color/gray"
-                        android:text="Reply"
-                        android:padding="5dp"
-                        android:textStyle="bold"
-                        android:visibility="gone"
-                        android:id="@+id/reply"
-                          />
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
             android:id="@+id/liner"

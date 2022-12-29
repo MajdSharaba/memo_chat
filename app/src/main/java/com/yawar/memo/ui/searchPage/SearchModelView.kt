@@ -4,17 +4,20 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.SearchRespone
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
-
-class SearchModelView : ViewModel() {
+import javax.inject.Inject
+@HiltViewModel
+class SearchModelView  @Inject constructor(val chatApi: ChatApi): ViewModel() {
     private val _searchResponeArrayList = MutableLiveData<ArrayList<SearchRespone?>?>()
     val searchResponeArrayList: LiveData<ArrayList<SearchRespone?>?>
         get() = _searchResponeArrayList
@@ -38,9 +41,10 @@ class SearchModelView : ViewModel() {
 
 //            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
 //                .search(searchParameter,page,myId)
-            val getResponeDeferred = GdgApi.apiService
+//            val getResponeDeferred = GdgApi.apiService
+//                .search(searchParameter,page,myId)
+            val getResponeDeferred = chatApi
                 .search(searchParameter,page,myId)
-
             try {
                 val listResult = getResponeDeferred?.await()
                 _loadingMutableLiveData.value = false

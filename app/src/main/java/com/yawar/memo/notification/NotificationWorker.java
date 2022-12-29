@@ -1,5 +1,4 @@
 package com.yawar.memo.notification;
-
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -18,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.notification.StatusBarNotification;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
@@ -26,7 +24,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -36,7 +33,6 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.ui.chatPage.ConversationActivity;
-
 import java.util.ArrayList;
 
 public class NotificationWorker extends Worker {
@@ -117,12 +113,14 @@ public class NotificationWorker extends Worker {
                     .setPriority(NotificationCompat.PRIORITY_MAX)
 //                            .setContentTitle(name)
                     .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                    .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                    .setCategory(NotificationCompat.CATEGORY_CALL)
                     .setContentText(message)
                     .setBadgeIconType(NotificationCompat.BADGE_ICON_SMALL)
                     .setSmallIcon(R.drawable.ic_memo_logo)
                     .setAutoCancel(false)
                     .setNumber(5)
+                    .setOnlyAlertOnce(true)
+
                     .setGroup(GROUP_KEY_WORK_EMAIL)
                     .setVibrate(new long[]{1000, 1000, 1000,
                             1000, 1000})
@@ -131,6 +129,7 @@ public class NotificationWorker extends Worker {
             NotificationManager notificationManager
                     = (NotificationManager) applicationContext.getSystemService(
                     Context.NOTIFICATION_SERVICE);
+
             // Check if the Android Version is greater than Oreo
             if (Build.VERSION.SDK_INT
                     >= Build.VERSION_CODES.O) {
@@ -160,6 +159,9 @@ public class NotificationWorker extends Worker {
                 notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
 //                notificationChannel.setAllowBubbles(true);
 
+
+// Set the interruption filter for the app
+//                notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE);
 
                 notificationManager.createNotificationChannel(
                         notificationChannel);

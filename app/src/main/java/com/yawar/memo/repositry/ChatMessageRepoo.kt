@@ -4,7 +4,8 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatMessage
 import com.yawar.memo.utils.BaseApp
@@ -15,8 +16,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
+import javax.inject.Inject
 
-class ChatMessageRepoo {
+class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
     private val _chatMessageistMutableLiveData = MutableLiveData<ArrayList<ChatMessage?>?>()
     //            return repository.chatMessageistMutableLiveData;
     val chatMessaheHistory: LiveData<ArrayList<ChatMessage?>?>
@@ -52,9 +54,9 @@ class ChatMessageRepoo {
 
 //            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
 //                .getChatMessgeHistory( my_id,  anthor_user_id)
-            val getChatRoomsDeferred = GdgApi.apiService
-                .getChatMessgeHistory( my_id,  anthor_user_id)
-
+//            val getChatRoomsDeferred = GdgApi.apiService
+//                .getChatMessgeHistory( my_id,  anthor_user_id)
+            val getChatRoomsDeferred = chatApi.getChatMessgeHistory( my_id,  anthor_user_id)
             try {
                 val listResult = getChatRoomsDeferred?.await()
                 _loadingMutableLiveData.value = false
@@ -298,10 +300,11 @@ class ChatMessageRepoo {
 
 //            var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService
 //                .deleteMessage(message_id, user_id)
-            var deleteDeferred =  GdgApi.apiService
+//            var deleteDeferred =  GdgApi.apiService
+//                .deleteMessage(message_id,user_id)
+
+            var deleteDeferred =  chatApi
                 .deleteMessage(message_id,user_id)
-
-
             try {
                 var listResult = deleteDeferred?.await()
                 if (chatMessages != null) {
@@ -340,9 +343,10 @@ class ChatMessageRepoo {
 
 //                var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService
 //                    .getUnRecivedMessages(BaseApp.getInstance().classSharedPreferences.user.userId)
-                val deleteDeferred = GdgApi.apiService
+//                val deleteDeferred = GdgApi.apiService
+//                    .getUnRecivedMessages( BaseApp.getInstance().classSharedPreferences.user.userId)
+                val deleteDeferred = chatApi
                     .getUnRecivedMessages( BaseApp.getInstance().classSharedPreferences.user.userId)
-
 
 
                 try {

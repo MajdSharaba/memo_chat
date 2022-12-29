@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.datatransport.runtime.dagger.Module
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatRoomModel
 import kotlinx.coroutines.CoroutineScope
@@ -15,7 +16,9 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.math.log
 
-class ChatRoomRepoo {
+class ChatRoomRepoo  @Inject constructor(
+    private val chatApi: ChatApi
+){
     private val TAG: String = "ChatRoomRepoo"
     private val _chatRoomListMutableLiveData = MutableLiveData<ArrayList<ChatRoomModel?>?>()
     val chatRoomListMutableLiveData: LiveData<ArrayList<ChatRoomModel?>?>
@@ -44,9 +47,10 @@ class ChatRoomRepoo {
 
 //            val getChatRoomsDeferred =   GdgApi(AllConstants.base_url).apiService
 //                .getChatRoom(user_id)
-            val getChatRoomsDeferred =   GdgApi.apiService
+//            val getChatRoomsDeferred =   GdgApi.apiService
+//                .getChatRoom(user_id)
+            val getChatRoomsDeferred =   chatApi
                 .getChatRoom(user_id)
-
 
             try {
                 val listResult = getChatRoomsDeferred.await()
@@ -70,7 +74,9 @@ class ChatRoomRepoo {
 //
 //            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
 //                .addToArchived(my_id , your_id)
-            var srchivedDeferred =  GdgApi.apiService
+//            var srchivedDeferred =  GdgApi.apiService
+//                .addToArchived(my_id , your_id)
+            var srchivedDeferred =  chatApi
                 .addToArchived(my_id , your_id)
 
 
@@ -91,9 +97,10 @@ class ChatRoomRepoo {
 
 //            var srchivedDeferred =  GdgApi(AllConstants.base_node_url).apiService
 //                .removeFromArchived(my_id , your_id)
-            var srchivedDeferred =  GdgApi.apiService
+//            var srchivedDeferred =  GdgApi.apiService
+//                .removeFromArchived(my_id , your_id)
+            var srchivedDeferred = chatApi
                 .removeFromArchived(my_id , your_id)
-
             try {
                 var listResult = srchivedDeferred.await()
                 setState(your_id, "null")
@@ -111,7 +118,8 @@ class ChatRoomRepoo {
          coroutineScope.launch  {
 
 //             var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService.deleteChatRoom(my_id , your_id)
-             var deleteDeferred = GdgApi.apiService.deleteChatRoom(my_id , your_id)
+//             var deleteDeferred = GdgApi.apiService.deleteChatRoom(my_id , your_id)
+             var deleteDeferred = chatApi.deleteChatRoom(my_id , your_id)
 
 
 
@@ -165,41 +173,44 @@ class ChatRoomRepoo {
         sender_id: String?,
     ) {
         var chatRoomsList = _chatRoomListMutableLiveData.value
-        Log.d(TAG, "setLastMessage: ${chatRoomsList?.size}")
         var inList = false
-        for (chatRoom in chatRoomsList!!) {
-            if (chatRoom != null) {
-                if (chatRoom.id == chatId) {
-                    chatRoom.last_message = message!!
-                    chatRoom.message_type = type
-                    chatRoom.mstate = state!!
-                    chatRoom.created_at = dateTime!!
-                    chatRoom.msg_sender = sender_id!!
-                    inList = true
-                    if (!chatRoom.inChat) {
-                        chatRoom.num_msg = (Integer.parseInt(chatRoom.num_msg)+1).toString()
-                    }
-                    Log.d(TAG, "setLastMessage:${ chatRoom.num_msg + message} ")
-
-                    chatRoomsList.remove(chatRoom)
-                    chatRoomsList.add(0, chatRoom)
-                    break
-                }
-            }
-        }
-        if (!inList) {
-            for (chatRoom in chatRoomsList) {
+        if(chatRoomsList!=null) {
+            for (chatRoom in chatRoomsList!!) {
                 if (chatRoom != null) {
-                    if (chatRoom.id == senderId + reciverId) {
-                        chatRoomsList.remove(chatRoom)
+                    if (chatRoom.id == chatId) {
+                        chatRoom.last_message = message!!
+                        chatRoom.message_type = type
+                        chatRoom.mstate = state!!
+                        chatRoom.created_at = dateTime!!
+                        chatRoom.msg_sender = sender_id!!
+                        inList = true
                         if (!chatRoom.inChat) {
-
-                            chatRoom.num_msg = (Integer.parseInt(chatRoom.num_msg)+1).toString()
+                            chatRoom.num_msg = (Integer.parseInt(chatRoom.num_msg) + 1).toString()
                         }
-                        chatRoom.id = chatId
+                        Log.d(TAG, "setLastMessage:${chatRoom.num_msg + message} ")
+
                         chatRoomsList.remove(chatRoom)
                         chatRoomsList.add(0, chatRoom)
                         break
+                    }
+                }
+            }
+
+            if (!inList) {
+                for (chatRoom in chatRoomsList) {
+                    if (chatRoom != null) {
+                        if (chatRoom.id == senderId + reciverId) {
+                            chatRoomsList.remove(chatRoom)
+                            if (!chatRoom.inChat) {
+
+                                chatRoom.num_msg =
+                                    (Integer.parseInt(chatRoom.num_msg) + 1).toString()
+                            }
+                            chatRoom.id = chatId
+                            chatRoomsList.remove(chatRoom)
+                            chatRoomsList.add(0, chatRoom)
+                            break
+                        }
                     }
                 }
             }

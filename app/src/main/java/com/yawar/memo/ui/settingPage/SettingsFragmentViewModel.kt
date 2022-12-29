@@ -4,17 +4,20 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.UserModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
-
-class SettingsFragmentViewModel : ViewModel() {
+import javax.inject.Inject
+@HiltViewModel
+class SettingsFragmentViewModel  @Inject constructor(val chatApi: ChatApi): ViewModel() {
 
     private val _userModelRespone = MutableLiveData<UserModel>()
     val userModelRespone: LiveData<UserModel>
@@ -44,9 +47,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
 //            val getResponeDeferred = GdgApi(AllConstants.base_node_url).apiService
 //                .updateImage(id,img)
-            val getResponeDeferred = GdgApi.apiService
+//            val getResponeDeferred = GdgApi.apiService
+//                .updateImage(id,img)
+            val getResponeDeferred = chatApi
                 .updateImage(id,img)
-
 
             try {
                 Log.d("updateImage", "reg")
@@ -88,9 +92,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
 //            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
 //                .updateProfile(firstNmae,lastName,id)
-            val getResponeDeferred = GdgApi.apiService
+//            val getResponeDeferred = GdgApi.apiService
+//                .updateProfile(firstNmae,lastName,id)
+            val getResponeDeferred = chatApi
                 .updateProfile(firstNmae,lastName,id)
-
             try {
                 Log.d("updateProfile", "reg")
 
@@ -150,9 +155,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
 //            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
 //                .deleteAccount(sn, id)
-            val getResponeDeferred = GdgApi.apiService
+//            val getResponeDeferred = GdgApi.apiService
+//                .deleteAccount(sn, id)
+            val getResponeDeferred = chatApi
                 .deleteAccount(sn, id)
-
             try {
                 Log.d("deleteAccount", "delete")
 

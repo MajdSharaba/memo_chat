@@ -3,7 +3,9 @@ package com.yawar.memo.ui.dashBoard
 import com.yawar.memo.ui.CallHistoryPage.CallHistoryFragment
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
+import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,9 +13,14 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.util.Log
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -58,11 +65,13 @@ import java.nio.file.Paths
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.log
 
 @AndroidEntryPoint
 class DashBord : AppCompatActivity() {
     lateinit var bottomNavigation: BottomNavigationView
     private lateinit var permissions: Permissions
+    private val REQUEST_CODE_NOTIFICATION_POLICY_ACCESS_SETTINGS = 1
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityDashBordBinding
     lateinit var chatRoomRepoo: ChatRoomRepoo
@@ -307,6 +316,10 @@ class DashBord : AppCompatActivity() {
             })
 
 ////////////////////////////////////
+        // Check if the ACCESS_NOTIFICATION_POLICY permission is granted
+//        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+//        startActivityForResult(intent, REQUEST_CODE_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+
 
 
         ///////////////////
@@ -495,6 +508,8 @@ class DashBord : AppCompatActivity() {
                     )
                 }
             }
+
+
         }
         super.onRequestPermissionsResult(
             requestCode,
@@ -502,6 +517,7 @@ class DashBord : AppCompatActivity() {
             grantResults
         )
     }
+
 
     fun createDirectory(dName: String) {
 //        File yourAppDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM) + File.separator + dName);
@@ -548,6 +564,16 @@ class DashBord : AppCompatActivity() {
                 createDirectory("memo/send/video")
                 createDirectory("memo/recive/video")
                 //                    chatRoomRepo.callAPI(myId);
+            }
+
+            REQUEST_CODE_NOTIFICATION_POLICY_ACCESS_SETTINGS -> {
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+                    // Permission was granted, proceed with the operation
+                    setInterruptionFilter()
+                } else {
+                    // Permission denied, show a message to the user
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -650,6 +676,37 @@ class DashBord : AppCompatActivity() {
         const val ON_UN_BLOCK_USER = "ConversationActivity.ON_UN_BLOCK_USER"
         private const val STORAGE_PERMISSION_CODE = 2000
         private const val Contact_PERMISSION_CODE = 1000
+    }
+
+    private fun setInterruptionFilter() {
+        // Get the notification manager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Set the interruption filter for the app
+        notificationManager.setInterruptionFilter(NotificationManager.INTERRUPTION_FILTER_NONE)
+    }
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val v = currentFocus
+        if (v != null && (ev.action == MotionEvent.ACTION_UP || ev.action == MotionEvent.ACTION_MOVE) &&
+            v is EditText &&
+            !v.javaClass.name.startsWith("android.webkit.")
+        ) {
+            val sourceCoordinates = IntArray(2)
+            v.getLocationOnScreen(sourceCoordinates)
+            val x = ev.rawX + v.getLeft() - sourceCoordinates[0]
+            val y = ev.rawY + v.getTop() - sourceCoordinates[1]
+            if (x < v.getLeft() || x > v.getRight() || y < v.getTop() || y > v.getBottom()) {
+                hideKeyboard(this)
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+    private fun hideKeyboard(activity: Activity?) {
+        if (activity != null && activity.window != null) {
+            activity.window.decorView
+            val imm = activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm?.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
+        }
     }
 }
 

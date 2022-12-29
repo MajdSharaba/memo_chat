@@ -192,6 +192,7 @@ public class NotificationCallWorker extends Worker {
                     .setCategory(NotificationCompat.CATEGORY_CALL)
 //                    .setSound(null)
                     .setOngoing(true)
+                    .setOnlyAlertOnce(true)
 
 
                     .setVibrate(new long[]{10000, 10000})
@@ -243,6 +244,8 @@ public class NotificationCallWorker extends Worker {
 
                     .setLegacyStreamType(AudioManager.STREAM_RING)
                     .build();
+            notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            notificationChannel.setImportance(NotificationManager.IMPORTANCE_HIGH);
 //                    notificationChannel.setSound(alarmSound, null);
             notificationChannel.setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE),null);
 //                notificationChannel.setSound(Uri.parse("android.resource://" + applicationContext.getPackageName() + "/" + R.raw.ring), audioAttributes);

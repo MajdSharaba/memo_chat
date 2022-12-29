@@ -2,6 +2,7 @@ package com.yawar.memo.ui.chatPage
 import android.Manifest
 import android.animation.Animator
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.app.NotificationManager
@@ -27,6 +28,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.View.OnLayoutChangeListener
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -37,6 +39,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -651,8 +654,23 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         permissions = Permissions()
         supportMapFragment = supportFragmentManager
             .findFragmentById(R.id.google_map) as SupportMapFragment?
+//////////
+//        val messageSwipeController = MessageSwipeController(this, object : SwipeControllerActions {
+//            override fun showReplyUI(position: Int) {
+//                showQuotedMessage(chatHistory!![position]!!)
+//            }
+//        })
+//
+//        val itemTouchHelper = ItemTouchHelper(messageSwipeController)
+//        itemTouchHelper.attachToRecyclerView(binding.messagesContainer)
+        /////////////
         client = LocationServices.getFusedLocationProviderClient(this)
         binding.recordButton.setRecordView(binding.recordView)
+        ////////
+        binding.cancelButton.setOnClickListener {
+            hideReplyLayout()
+        }
+        /////////////
         binding.recordButton.isListenForRecord = false
         classSharedPreferences = BaseApp.getInstance().classSharedPreferences
         chatRoomRepoo?.setInChat(anthor_user_id, true)
@@ -955,8 +973,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 } else {
                     binding.btnSendMessageText.isEnabled = false
                     binding.btnSendMessageText.visibility = View.GONE
-                    binding.cardview.visibility =
-                        View.GONE
+//                    binding.cardview.visibility =
+//                        View.GONE
                     binding.recordButton.visibility = View.VISIBLE
                 }
             }
@@ -1002,8 +1020,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             startActivity(intent)
         }
         binding.btnSendMessageText.setOnClickListener(View.OnClickListener {
-            binding.username.visibility = View.GONE
-            binding.reply.visibility = View.GONE
+//            binding.username.visibility = View.GONE
+//            binding.reply.visibility = View.GONE
             val message_id = System.currentTimeMillis().toString() + "_" + user_id
             val messageText = binding.messageEdit.text.toString()
             if (TextUtils.isEmpty(messageText)) {
@@ -1294,6 +1312,19 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             hideLayout()
             return true
         }
+//        val v = currentFocus
+//        if (v != null && (ev.action == MotionEvent.ACTION_UP || ev.action == MotionEvent.ACTION_MOVE) &&
+//            v is EditText &&
+//            !v.javaClass.name.startsWith("android.webkit.")
+//        ) {
+//            val sourceCoordinates = IntArray(2)
+//            v.getLocationOnScreen(sourceCoordinates)
+//            val x = ev.rawX + v.getLeft() - sourceCoordinates[0]
+//            val y = ev.rawY + v.getTop() - sourceCoordinates[1]
+//            if (x < v.getLeft() || x > v.getRight() || y < v.getTop() || y > v.getBottom()) {
+//                hideKeyboard(this)
+//            }
+//        }
         return super.dispatchTouchEvent(ev)
     }
 
@@ -2596,4 +2627,27 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
 
     }
+
+    private fun showQuotedMessage(message: ChatMessage) {
+//        binding.edit_message.requestFocus()
+//        val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+//        inputMethodManager?.showSoftInput(edit_message, InputMethodManager.SHOW_IMPLICIT)
+        binding.txtQuotedMsg.text = message.message
+        binding.replyLayout.visibility = View.VISIBLE
+
+    }
+
+    private fun hideReplyLayout() {
+        binding.replyLayout.visibility = View.GONE
+    }
+
+///////////////////////////////for hide keyboard
+
+//    private fun hideKeyboard(activity: Activity?) {
+//        if (activity != null && activity.window != null) {
+//            activity.window.decorView
+//            val imm = activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+//            imm?.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
+//        }
+//    }
 }

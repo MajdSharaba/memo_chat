@@ -1,16 +1,21 @@
 package com.yawar.memo.ui.loginPage
 
+import android.Manifest
+import android.app.Activity
 import android.app.ProgressDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
-import android.widget.*
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -29,22 +34,28 @@ import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.GoogleAuthProvider
 import com.yawar.memo.Api.AuthApi
 import com.yawar.memo.R
-import com.yawar.memo.utils.CallProperty
 import com.yawar.memo.databinding.ActivityLoginBinding
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.registerPage.RegisterActivity
+import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.utils.CallProperty
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedListener,
     Observer {
+    private val REQUEST_WIFI_PERMISSIONS = 1
+    private val WIFI_PERMISSIONS = arrayOf(
+        Manifest.permission.ACCESS_WIFI_STATE,
+        Manifest.permission.CHANGE_WIFI_STATE
+    )
     private val mCallbackManager = CallbackManager.Factory.create()
     lateinit var binding: ActivityLoginBinding
     private val EMAIL = "email"
@@ -73,6 +84,8 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
 //        loginModelView = ViewModelProvider(this).get(
 //            LoginModelView::class.java
 //        )
+        loginModelView.getCountry()
+
         authStateListener = AuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             if (user != null) {
@@ -113,6 +126,9 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
 
         })
         binding.ccp.showNameCode(false)
+//
+
+
         binding.btnSendCode.setOnClickListener(View.OnClickListener {
             if (TextUtils.isEmpty(binding.editTextPhone.text.toString())) {
 
@@ -127,6 +143,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             }
             //
         })
+
         authApi!!.loading.observe(this) { aBoolean ->
             if (aBoolean) {
                 progressDialog = ProgressDialog(this)
@@ -148,6 +165,12 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                 authApi!!.showErrorMessage.value = false
             }
         }
+        loginModelView.country.observe(this, androidx.lifecycle.Observer {
+            binding.ccp.setDefaultCountryUsingNameCode(it)
+            binding.ccp.resetToDefaultCountry()
+            Log.d(TAG, "onRequestPermissionsResult:${it} ")
+
+        })
         loginModelView.getSpecialNumber().observe(this, object :
             androidx.lifecycle.Observer<JSONObject?> {
             override fun onChanged(jsonObject: JSONObject?) {
@@ -254,9 +277,20 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
                 }
             }
         }
+
+
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+
+
+
+
+
+
+
+
+
+override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         mCallbackManager.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -380,6 +414,29 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
             progressDialog!!.dismiss()
         }
         super.onDestroy()
+    }
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val v = currentFocus
+        if (v != null && (ev.action == MotionEvent.ACTION_UP || ev.action == MotionEvent.ACTION_MOVE) &&
+            v is EditText &&
+            !v.javaClass.name.startsWith("android.webkit.")
+        ) {
+            val sourceCoordinates = IntArray(2)
+            v.getLocationOnScreen(sourceCoordinates)
+            val x = ev.rawX + v.getLeft() - sourceCoordinates[0]
+            val y = ev.rawY + v.getTop() - sourceCoordinates[1]
+            if (x < v.getLeft() || x > v.getRight() || y < v.getTop() || y > v.getBottom()) {
+                hideKeyboard(this)
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+    private fun hideKeyboard(activity: Activity?) {
+        if (activity != null && activity.window != null) {
+            activity.window.decorView
+            val imm = activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm?.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
+        }
     }
     override fun onConnectionFailed(connectionResult: ConnectionResult) {}
     override fun update(observable: Observable, o: Any) {}

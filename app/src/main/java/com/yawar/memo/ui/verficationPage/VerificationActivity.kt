@@ -1,9 +1,13 @@
 package com.yawar.memo.ui.verficationPage
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -204,6 +208,29 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
     override fun onDestroy() {
         progressDialog?.dismiss()
         super.onDestroy()
+    }
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val v = currentFocus
+        if (v != null && (ev.action == MotionEvent.ACTION_UP || ev.action == MotionEvent.ACTION_MOVE) &&
+            v is EditText &&
+            !v.javaClass.name.startsWith("android.webkit.")
+        ) {
+            val sourceCoordinates = IntArray(2)
+            v.getLocationOnScreen(sourceCoordinates)
+            val x = ev.rawX + v.getLeft() - sourceCoordinates[0]
+            val y = ev.rawY + v.getTop() - sourceCoordinates[1]
+            if (x < v.getLeft() || x > v.getRight() || y < v.getTop() || y > v.getBottom()) {
+                hideKeyboard(this)
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+    private fun hideKeyboard(activity: Activity?) {
+        if (activity != null && activity.window != null) {
+            activity.window.decorView
+            val imm = activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm?.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
+        }
     }
 
     override fun update(observable: Observable, o: Any) {

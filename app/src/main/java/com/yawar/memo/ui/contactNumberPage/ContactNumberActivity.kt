@@ -1,6 +1,7 @@
 package com.yawar.memo.ui.contactNumberPage
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,7 +11,10 @@ import android.provider.ContactsContract
 import android.provider.Settings
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -243,4 +247,27 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
             }
             contactNumberViewModel.loadData(arrayList, myId)
         }
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val v = currentFocus
+        if (v != null && (ev.action == MotionEvent.ACTION_UP || ev.action == MotionEvent.ACTION_MOVE) &&
+            v is EditText &&
+            !v.javaClass.name.startsWith("android.webkit.")
+        ) {
+            val sourceCoordinates = IntArray(2)
+            v.getLocationOnScreen(sourceCoordinates)
+            val x = ev.rawX + v.getLeft() - sourceCoordinates[0]
+            val y = ev.rawY + v.getTop() - sourceCoordinates[1]
+            if (x < v.getLeft() || x > v.getRight() || y < v.getTop() || y > v.getBottom()) {
+                hideKeyboard(this)
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+    private fun hideKeyboard(activity: Activity?) {
+        if (activity != null && activity.window != null) {
+            activity.window.decorView
+            val imm = activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm?.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
+        }
+    }
 }

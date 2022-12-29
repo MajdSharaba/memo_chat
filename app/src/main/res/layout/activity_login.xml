@@ -65,7 +65,7 @@
                 app:ccpDialog_textColor="@color/textColor"
                 app:ccp_arrowColor="@color/textColor"
                 app:ccp_contentColor="@color/textColor"
-                app:ccp_defaultNameCode="IQ"
+                app:ccp_defaultNameCode="US"
                 app:ccp_flagBorderColor="@color/textColor" />
 
             <EditText

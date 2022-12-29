@@ -4,10 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.gson.Gson
-import com.yawar.memo.Api.GdgApi
+import com.yawar.memo.Api.ChatApi
+//import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ContactModel
 import com.yawar.memo.model.SendContactNumberResponse
+import com.yawar.memo.repositry.BlockUserRepo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,8 +18,9 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
-
-class ContactNumberViewModel : ViewModel() {
+import javax.inject.Inject
+@HiltViewModel
+class ContactNumberViewModel @Inject constructor(val chatApi: ChatApi) : ViewModel() {
     var date: Date? = null
 
 
@@ -46,9 +50,10 @@ class ContactNumberViewModel : ViewModel() {
 
 //            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
 //                .sendContactNumber(data,my_id)
-            val getResponeDeferred = GdgApi.apiService
+//            val getResponeDeferred = GdgApi.apiService
+//                .sendContactNumber(data,my_id)
+            val getResponeDeferred = chatApi
                 .sendContactNumber(data,my_id)
-
             try {
                 val listResult = getResponeDeferred?.await()
                 _loadingMutableLiveData.value = false
