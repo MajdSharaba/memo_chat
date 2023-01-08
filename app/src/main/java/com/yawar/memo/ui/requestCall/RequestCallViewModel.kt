@@ -6,10 +6,13 @@ import androidx.lifecycle.ViewModel
 import java.util.*
 
 class RequestCallViewModel : ViewModel() {
-    //    RequestCallRepo  requestCallRepo = BaseApp.getInstance().getRequestCallRepo();
     private val _peerIdRecived =  MutableLiveData<String>("no connect")
     val peerIdRecived : LiveData<String>
         get() = _peerIdRecived
+
+    private val _backPressClicked =  MutableLiveData<Boolean>(false)
+    val backPressClicked : LiveData<Boolean>
+        get() = _backPressClicked
 
     private val _rining =  MutableLiveData<String>("connect")
     val rining : LiveData<String>
@@ -111,6 +114,9 @@ class RequestCallViewModel : ViewModel() {
         val minutes = time / 60
         val hour = minutes / 60
         return String.format("%02d:%02d:%02d", hour, minutes, seconds)
+    }
+    fun setBackPressClicked(backPressClicked: Boolean) {
+        _backPressClicked.value = backPressClicked
     }
 
 

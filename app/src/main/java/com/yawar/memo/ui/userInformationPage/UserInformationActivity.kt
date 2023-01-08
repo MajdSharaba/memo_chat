@@ -40,6 +40,7 @@ import com.yawar.memo.ui.chatPage.ConversationModelView
 import com.yawar.memo.ui.introPage.IntroActModelView
 import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.TimeProperties
+import com.yawar.memo.utils.checkThereIsOngoingCall
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
@@ -374,24 +375,30 @@ class UserInformationActivity : AppCompatActivity() {
         binding.imgMore.setOnClickListener { //                block();
             popupMenuExample()
         }
-        binding.imgAudioCall.setOnClickListener { //                block();
-            val intent = Intent(this@UserInformationActivity, RequestCallActivity::class.java)
-            intent.putExtra("anthor_user_id", another_user_id)
-            intent.putExtra("user_name", userName)
-            intent.putExtra("isVideo", false)
-            intent.putExtra("fcm_token", fcm_token)
-            intent.putExtra("image_profile", imageUrl)
-            startActivity(intent)
+        binding.imgAudioCall.setOnClickListener { //
+            if(!checkThereIsOngoingCall()) {
+
+                val intent = Intent(this@UserInformationActivity, RequestCallActivity::class.java)
+                intent.putExtra("anthor_user_id", another_user_id)
+                intent.putExtra("user_name", userName)
+                intent.putExtra("isVideo", false)
+                intent.putExtra("fcm_token", fcm_token)
+                intent.putExtra("image_profile", imageUrl)
+                startActivity(intent)
+            }
         }
-        binding.imgVideoCall.setOnClickListener { //                block();
-            val intent = Intent(this@UserInformationActivity, RequestCallActivity::class.java)
-            //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
-            intent.putExtra("anthor_user_id", another_user_id)
-            intent.putExtra("user_name", userName)
-            intent.putExtra("isVideo", true)
-            intent.putExtra("fcm_token", fcm_token)
-            intent.putExtra("image_profile", imageUrl)
-            startActivity(intent)
+        binding.imgVideoCall.setOnClickListener {
+            if(!checkThereIsOngoingCall()) {
+
+                val intent = Intent(this@UserInformationActivity, RequestCallActivity::class.java)
+                //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
+                intent.putExtra("anthor_user_id", another_user_id)
+                intent.putExtra("user_name", userName)
+                intent.putExtra("isVideo", true)
+                intent.putExtra("fcm_token", fcm_token)
+                intent.putExtra("image_profile", imageUrl)
+                startActivity(intent)
+            }
         }
         binding.imgMute.setOnClickListener { //                System.out.println("muteeeeeeeeeeeee");
             //                JSONObject jsonObject = new JSONObject();

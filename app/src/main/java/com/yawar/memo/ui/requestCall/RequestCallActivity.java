@@ -21,17 +21,24 @@ import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.PictureInPictureParams;
+import android.app.RemoteAction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Point;
+import android.graphics.drawable.Icon;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.Rational;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -99,6 +106,9 @@ public class RequestCallActivity extends AppCompatActivity {
     public static final String VIDEO_TRACK_ID = "ARDAMSv0";
     //    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
     public static final int VIDEO_RESOLUTION_WIDTH = 480;
+    private static final String ACTION_PLAY = "play";
+    private static final String ACTION_PAUSE = "pause";
+
     float dX, dY;
     //    public static final int VIDEO_RESOLUTION_HEIGHT = 720;
 
@@ -697,7 +707,10 @@ public class RequestCallActivity extends AppCompatActivity {
                         imgBtnSwitchMic.setVisibility(View.GONE);
                         imgBtnOpenCameraCallLp.setBackground(null);
                         imgBtnSwitchCamera.setVisibility(View.VISIBLE);
-                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+                        if(!requestCallViewModel.getBackPressClicked().getValue()) {
+
+                            binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+                        }
                         if(videoCapturer!=null) {
                             videoCapturer.startCapture(VIDEO_RESOLUTION_WIDTH, VIDEO_RESOLUTION_HEIGHT, FPS);
 
@@ -737,8 +750,10 @@ public class RequestCallActivity extends AppCompatActivity {
 //                        binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
 //                        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
                         binding.audioOnlyLayout.setVisibility(View.GONE);
-                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+                        if(!requestCallViewModel.getBackPressClicked().getValue()) {
 
+                            binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+                        }
 
                     }
 
@@ -782,7 +797,10 @@ public class RequestCallActivity extends AppCompatActivity {
                     }
                     else{
                         binding.audioOnlyLayout.setVisibility(View.GONE);
-                        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+                        if(!requestCallViewModel.getBackPressClicked().getValue()) {
+
+                            binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
+                        }
 
                     }
 
@@ -887,8 +905,17 @@ public class RequestCallActivity extends AppCompatActivity {
 
                         //////////
                         if(isVideoForMe) {
+                            if(requestCallViewModel.getBackPressClicked().getValue()){
+                                Display display = getWindowManager().getDefaultDisplay();
+                                Point size = new Point();
+                                display.getSize(size);
+                                binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams((int) (size.x / 7), (int) (size.y / 8)));
 
-                            setScreenSizes();
+                            }
+                            else {
+
+                                setScreenSizes();
+                            }
                         }
                         /////////////
 
@@ -918,6 +945,20 @@ public class RequestCallActivity extends AppCompatActivity {
                 } else {
                     binding.callStatue.setText(R.string.key_exchange);
 
+
+                }
+            }
+        });
+
+        requestCallViewModel.getBackPressClicked().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean aBoolean) {
+                if(aBoolean){
+                    binding.callBottomCheet.bottomSheetLayout.setVisibility(View.GONE);
+
+                }
+                else if(requestCallViewModel.isVideoForYou().getValue()||requestCallViewModel.isVideoForMe().getValue()){
+                    binding.callBottomCheet.bottomSheetLayout.setVisibility(View.VISIBLE);
 
                 }
             }
@@ -1180,11 +1221,30 @@ public class RequestCallActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        finish();
-        closeCall();
+    protected void onResume() {
+        System.out.println("onEwsumeeeeee");
+        requestCallViewModel.setIsVideoForMe(requestCallViewModel.isVideoForMe().getValue());
+        requestCallViewModel.setBackPressClicked(false);
+        if(requestCallViewModel.getConnected().getValue()){
+            System.out.println("setScreenSizes");
+        setScreenSizes();}
+        super.onResume();
+    }
+    @Override
+    protected void onPause() {
+        showFloatingWindow();
+        requestCallViewModel.setBackPressClicked(true);
+        super.onPause();
+    }
 
-        super.onBackPressed();
+    @Override
+    public void onBackPressed() {
+//        finish();
+//        closeCall();
+        showFloatingWindow();
+        requestCallViewModel.setBackPressClicked(true);
+
+//        super.onBackPressed();
     }
     public void closeOpenVideo() {
         requestCallViewModel.setIsVideoForMe(!requestCallViewModel.isVideoForMe().getValue());
@@ -1778,44 +1838,69 @@ public class RequestCallActivity extends AppCompatActivity {
         notificationManager.notify(AllConstants.onGoingCallChannelId,note);
     }
 
+
     private void setScreenSizes(){
+        System.out.println("setScreenSize");
         binding.remoteVideoView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT));
-
-        final float scale = getResources().getDisplayMetrics().density;
-        System.out.println(scale+"scale");
-        int pixelsWidth = (int) (130 * scale + 0.5f);
-        int pixelsHeight= (int) (190 * scale + 0.5f);
-        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams(pixelsWidth,pixelsHeight));
-//
-//        ObjectAnimator scaleDownX = ObjectAnimator.ofFloat(binding.localVideoView, "scaleX", 0.4f);
-//        ObjectAnimator scaleDownY = ObjectAnimator.ofFloat(binding.localVideoView, "scaleY", 0.28f);
-//        scaleDownX.setDuration(1500);
-//        scaleDownY.setDuration(1500);
-//
-//        ObjectAnimator moveUpY = ObjectAnimator.ofFloat(binding.localVideoView, "translationY", pixelsWidth);
-//        moveUpY.setDuration(1500);
-//        ObjectAnimator moveUpx = ObjectAnimator.ofFloat(binding.localVideoView, "translationX", pixelsHeight);
-//        moveUpx.setDuration(1500);
-//
-//
-//        AnimatorSet scaleDown = new AnimatorSet();
-//        AnimatorSet moveUp = new AnimatorSet();
-//        AnimatorSet moveEnd = new AnimatorSet();
-//
-//
-//        scaleDown.play(scaleDownX).with(scaleDownY);
-//        moveUp.play(moveUpY);
-//        moveEnd.play(moveUpx);
-//
-//        scaleDown.start();
-//        moveUp.start();
-//        moveEnd.start();
-
-//        binding.localVideoView.setTranslationX(120 *scale+ 0.5f);
-//        binding.localVideoView.setTranslationY(-290 *scale+ 0.5f);
-//        animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.zoom_out);
-//        binding.localVideoView.startAnimation(animation);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
+        binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams((int) (screenWidth / 3.5),(int)(screenHeight / 4.5)));
 
     }
+
+    private void showFloatingWindow() {
+        binding.callBottomCheet.bottomSheetLayout.setVisibility(View.GONE);
+
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        Rational aspectRatio = new Rational(size.x, size.y);
+        if(requestCallViewModel.getConnected().getValue()) {
+
+            binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams((int) (size.x / 7), (int) (size.y / 8)));
+        }
+
+
+        // Set the actions that can be performed in PiP mode
+        ArrayList<RemoteAction> actions = new ArrayList<>();
+        actions.add(new RemoteAction(
+                Icon.createWithResource(this, R.drawable.ic_baseline_mic_off_24),
+                "Play", "Play video", PendingIntent.getBroadcast(this, 0,
+                new Intent(ACTION_PLAY), 0)));
+        actions.add(new RemoteAction(
+                Icon.createWithResource(this, R.drawable.ic_baseline_call_end_24),
+                "Pause", "Pause video", PendingIntent.getBroadcast(this, 0,
+                new Intent(ACTION_PAUSE), 0)));
+
+        // Create a Picture-in-Picture params builder
+        PictureInPictureParams.Builder pipBuilder =
+                new PictureInPictureParams.Builder();
+
+        // Set the aspect ratio and actions for PiP mode
+        pipBuilder.setAspectRatio(aspectRatio).setActions(actions);
+
+        // Enter PiP mode
+        enterPictureInPictureMode(pipBuilder.build());
+
+    }
+
+    @Override
+    public void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        // Check for the actions that you defined in the PictureInPictureParams object
+        System.out.println("onNewIntenttt");
+        if (intent.getAction() != null) {
+            if (intent.getAction().equals(ACTION_PLAY)) {
+                System.out.println("ACTION_PLAYYYYYYYYYYY");
+            } else if (intent.getAction().equals(ACTION_PAUSE)) {
+                System.out.println("ACTION_PAUSEEEEEEEE");
+
+                // Perform the pause action
+            }
+        }
+    }
+
 
 }

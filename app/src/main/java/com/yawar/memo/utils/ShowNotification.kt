@@ -1,13 +1,17 @@
 package com.yawar.memo.utils
 
+import android.app.NotificationManager
+import android.content.Context
+import android.service.notification.StatusBarNotification
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.yawar.memo.R
+import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.notification.NotificationWorker
 import com.yawar.memo.service.FirebaseMessageReceiver
 
-    fun showNotification(name : String?, image : String?, body : String?,
+fun showNotification(name : String?, image : String?, body : String?,
                          channel :String, blockedFor :String?, special: String, fcmToken: String, type: String)
     {
         //        myBase.getObserver().addObserver(this);
@@ -66,5 +70,19 @@ import com.yawar.memo.service.FirebaseMessageReceiver
         WorkManager.getInstance().enqueue(notificationWork1)
 
     }
+fun checkThereIsOngoingCall(): Boolean{
+val notificationManager =
+    BaseApp.getInstance().baseContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+for (  statusBarNotification: StatusBarNotification? in notificationManager.getActiveNotifications()) {
+    if (statusBarNotification != null) {
+        if (statusBarNotification.getId() == AllConstants.onGoingCallChannelId) {
+            return true
+
+        }
+    }
+}
+    return false
+}
 
 

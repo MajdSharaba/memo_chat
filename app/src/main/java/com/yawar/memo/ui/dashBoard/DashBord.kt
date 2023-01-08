@@ -1,6 +1,7 @@
 package com.yawar.memo.ui.dashBoard
 
-import com.yawar.memo.ui.CallHistoryPage.CallHistoryFragment
+//import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
+//import com.yawar.memo.repositry.ChatRoomRepoo
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -19,11 +20,8 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
@@ -35,27 +33,22 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityDashBordBinding
-import com.yawar.memo.ui.ChatRoomsPage.ChatRoomFragment
-import com.yawar.memo.ui.searchPage.SearchFragment
-import com.yawar.memo.ui.settingPage.SettingsFragment
 import com.yawar.memo.language.helper.LocaleHelper
 import com.yawar.memo.model.ChatRoomModel
 import com.yawar.memo.notification.NotificationWorker
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
-//import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
-//import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.FirebaseMessageReceiver
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.sessionManager.SharedPreferenceStringLiveData
-import com.yawar.memo.utils.AutoStartHelper
+import com.yawar.memo.ui.CallHistoryPage.CallHistoryFragment
+import com.yawar.memo.ui.ChatRoomsPage.ChatRoomFragment
+import com.yawar.memo.ui.searchPage.SearchFragment
+import com.yawar.memo.ui.settingPage.SettingsFragment
 import com.yawar.memo.utils.BaseApp
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.components.SingletonComponent
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
@@ -64,19 +57,17 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.math.log
-
+////0993486823
 @AndroidEntryPoint
 class DashBord : AppCompatActivity() {
     lateinit var bottomNavigation: BottomNavigationView
     private lateinit var permissions: Permissions
-    private val REQUEST_CODE_NOTIFICATION_POLICY_ACCESS_SETTINGS = 1
+    private val REQUEST_CODE_OVERLAY_PERMISSION = 1
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityDashBordBinding
     lateinit var chatRoomRepoo: ChatRoomRepoo
     lateinit var fragment : Fragment
-     val dashbordViewModel by viewModels<DashbordViewModel>()
+    val dashbordViewModel by viewModels<DashbordViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var badgeDrawableMissingCall: BadgeDrawable
     lateinit var myId: String
@@ -317,10 +308,17 @@ class DashBord : AppCompatActivity() {
 
 ////////////////////////////////////
         // Check if the ACCESS_NOTIFICATION_POLICY permission is granted
-//        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-//        startActivityForResult(intent, REQUEST_CODE_NOTIFICATION_POLICY_ACCESS_SETTINGS)
 
+//        if (!Settings.canDrawOverlays(this)) {
+//            val intent = Intent(
+//                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+//                Uri.parse("package:$packageName")
+//            )
+//            startActivityForResult(intent, REQUEST_CODE_OVERLAY_PERMISSION)
+//
+//}
 
+//        showFloatingViewPermissionDialog()
 
         ///////////////////
 
@@ -566,10 +564,10 @@ class DashBord : AppCompatActivity() {
                 //                    chatRoomRepo.callAPI(myId);
             }
 
-            REQUEST_CODE_NOTIFICATION_POLICY_ACCESS_SETTINGS -> {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED) {
+            REQUEST_CODE_OVERLAY_PERMISSION -> {
+                if (Settings.canDrawOverlays(this)) {
                     // Permission was granted, proceed with the operation
-                    setInterruptionFilter()
+                        Toast.makeText(this, "Permission granted", Toast.LENGTH_SHORT).show()
                 } else {
                     // Permission denied, show a message to the user
                     Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
@@ -592,6 +590,27 @@ class DashBord : AppCompatActivity() {
             val uri = Uri.fromParts("package", packageName, null)
             intent.data = uri
             startActivityForResult(intent, RequestCode)
+        }
+        val alert = alertBuilder.create()
+        alert.show()
+    }
+
+    fun showFloatingViewPermissionDialog() {
+        val alertBuilder = AlertDialog.Builder(this)
+        alertBuilder.setCancelable(true)
+        alertBuilder.setTitle(resources.getString(R.string.permission_necessary))
+        alertBuilder.setMessage(resources.getString(R.string.permission_floating))
+        alertBuilder.setPositiveButton(
+            R.string.settings
+        ) { dialog, which ->
+//            if (!Settings.canDrawOverlays(this)) {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+                startActivityForResult(intent, REQUEST_CODE_OVERLAY_PERMISSION)
+
+//            }
         }
         val alert = alertBuilder.create()
         alert.show()

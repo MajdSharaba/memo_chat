@@ -272,6 +272,8 @@
     <string name="allow_auto_start">تفعيل التشغيل التلقائي</string>
     <string name="aloow_auto_start_message">قم بتفعيل التشغيل التلقائي لكي تتمكن من استقبال الأشعارات في الخلفية</string>
     <string name="allow">سماح</string>
+    <string name="permission_floating">"مرحبا! نحتاج إلى الإذن لعرض معلومات فوق التطبيقات الأخرى. هل يمكنك السماح لنا بذلك من خلال الذهاب إلى الإعدادات و تفعيل Memo App".</string>
+
 
 
 </resources>

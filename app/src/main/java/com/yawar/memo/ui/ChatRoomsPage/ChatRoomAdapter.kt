@@ -22,6 +22,7 @@ import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.MyDiffUtilCallBack
 import com.yawar.memo.ui.chatPage.ConversationActivity
 import com.yawar.memo.ui.userInformationPage.UserInformationActivity
+import com.yawar.memo.utils.checkThereIsOngoingCall
 import java.util.*
 
 class ChatRoomAdapter(
@@ -163,14 +164,17 @@ class ChatRoomAdapter(
                 }
                 val imgBtnCall = mView.findViewById<ImageButton>(R.id.btimg_call)
                 imgBtnCall.setOnClickListener { view ->
-                    val intent = Intent(context.activity, RequestCallActivity::class.java)
-                    intent.putExtra("anthor_user_id", chatRoomModel.other_id)
-                    intent.putExtra("user_name", chatRoomModel.username)
-                    intent.putExtra("isVideo", false)
-                    intent.putExtra("fcm_token", chatRoomModel.user_token)
-                    intent.putExtra("image_profile", chatRoomModel.image)
-                    view.context.startActivity(intent)
-                    mDialog.dismiss()
+                    if (!checkThereIsOngoingCall()) {
+
+                        val intent = Intent(context.activity, RequestCallActivity::class.java)
+                        intent.putExtra("anthor_user_id", chatRoomModel.other_id)
+                        intent.putExtra("user_name", chatRoomModel.username)
+                        intent.putExtra("isVideo", false)
+                        intent.putExtra("fcm_token", chatRoomModel.user_token)
+                        intent.putExtra("image_profile", chatRoomModel.image)
+                        view.context.startActivity(intent)
+                        mDialog.dismiss()
+                    }
                 }
                 if(chatRoomModel.blocked_for.toString().equals(classSharedPreferences.getUser().userId)||chatRoomModel.blocked_for.toString().equals(chatRoomModel.other_id)||chatRoomModel.blocked_for.toString().equals("0")) {
 //                imgBtnCall.isEnabled = chatRoomModel.blocked_for === "null"

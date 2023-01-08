@@ -999,25 +999,29 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         } ///////////////////
 
         /////////////////////////send btn
-        binding.videoCall.setOnClickListener { //                System.out.println("clickeddddddd");
-            //                startCall();
-            val intent = Intent(this, RequestCallActivity::class.java)
-            //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
-            intent.putExtra("anthor_user_id", anthor_user_id)
-            intent.putExtra("user_name", userName)
-            intent.putExtra("isVideo", true)
-            intent.putExtra("fcm_token", fcmToken)
-            intent.putExtra("image_profile", imageUrl)
-            startActivity(intent)
+        binding.videoCall.setOnClickListener { //
+            if(!checkThereIsOngoingCall()) {
+                val intent = Intent(this, RequestCallActivity::class.java)
+                //                Intent intent = new Intent(ConversationActivity.this, CompleteActivity.class);
+                intent.putExtra("anthor_user_id", anthor_user_id)
+                intent.putExtra("user_name", userName)
+                intent.putExtra("isVideo", true)
+                intent.putExtra("fcm_token", fcmToken)
+                intent.putExtra("image_profile", imageUrl)
+                startActivity(intent)
+            }
         }
         binding.audioCall.setOnClickListener {
-            val intent = Intent(this, RequestCallActivity::class.java)
-            intent.putExtra("anthor_user_id", anthor_user_id)
-            intent.putExtra("user_name", userName)
-            intent.putExtra("isVideo", false)
-            intent.putExtra("fcm_token", fcmToken)
-            intent.putExtra("image_profile", imageUrl)
-            startActivity(intent)
+            if(!checkThereIsOngoingCall()) {
+
+                val intent = Intent(this, RequestCallActivity::class.java)
+                intent.putExtra("anthor_user_id", anthor_user_id)
+                intent.putExtra("user_name", userName)
+                intent.putExtra("isVideo", false)
+                intent.putExtra("fcm_token", fcmToken)
+                intent.putExtra("image_profile", imageUrl)
+                startActivity(intent)
+            }
         }
         binding.btnSendMessageText.setOnClickListener(View.OnClickListener {
 //            binding.username.visibility = View.GONE

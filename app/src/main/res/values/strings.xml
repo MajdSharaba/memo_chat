@@ -227,6 +227,9 @@
     <string name="allow_auto_start">Allow AutoStart</string>
     <string name="aloow_auto_start_message">Please enable auto start in settings to receive push notification.</string>
     <string name="allow">Allow</string>
+    <string name="permission_floating">"Hi! We need permission to show you some important information on top of other apps. Can you please grant us this permission by click on settings and enable Memo App ".</string>
+
+    permission_floating
 
 
 </resources>

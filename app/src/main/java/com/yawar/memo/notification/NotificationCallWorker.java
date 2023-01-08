@@ -91,8 +91,7 @@ public class NotificationCallWorker extends Worker {
         }
 
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        {
 
             NotificationManager notificationManager = (NotificationManager) applicationContext.getSystemService(applicationContext.NOTIFICATION_SERVICE);
 
