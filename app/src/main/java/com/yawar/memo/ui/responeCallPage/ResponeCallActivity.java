@@ -109,8 +109,9 @@ public class ResponeCallActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_OVERLAY_PERMISSION = 122;
     ///// set floating page
 
-    private String ACTION_PLAY = "";
-    private String ACTION_PAUSE = "";
+    private static final String ACTION_MUTE = "com.yawar.memo.action.mute";
+    private static final String ACTION_CLOSE_CALL = "com.yawar.memo.action.closeCall";
+
 
 
 
@@ -541,6 +542,11 @@ public class ResponeCallActivity extends AppCompatActivity {
         layoutCallProperties = findViewById(R.id.video_rl);
         layoutCallProperties.setVisibility(View.VISIBLE);
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_MUTE);
+        filter.addAction(ACTION_CLOSE_CALL);
+        registerReceiver(mReceiver, filter);
+
 
 
 
@@ -884,7 +890,7 @@ public class ResponeCallActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        showFloatingWindow();
+//        showFloatingWindow();
         responeCallViewModel.setBackPressClicked(true);
         super.onPause();
     }
@@ -1577,6 +1583,11 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
 
         // Set the actions that can be performed in PiP mode
         ArrayList<RemoteAction> actions = new ArrayList<>();
+
+        actions.add(new RemoteAction(
+                Icon.createWithResource(this, R.drawable.ic_baseline_call_end_24),
+                "Pause", "Pause video", PendingIntent.getBroadcast(this, 0,
+                new Intent(ACTION_CLOSE_CALL), PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_MUTABLE)));
 //        actions.add(new RemoteAction(
 //                Icon.createWithResource(this, R.drawable.),
 //                "Play", "Play video", PendingIntent.getBroadcast(this, 0,
@@ -1597,6 +1608,26 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
         enterPictureInPictureMode(pipBuilder.build());
 
         }
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_MUTE)) {
+
+                closeOpenAudio();
+
+            } else if (intent.getAction().equals(ACTION_CLOSE_CALL)) {
+                closeCall();
+                finish();
+            }
+        }
+    };
+    @Override
+    public void onUserLeaveHint () {
+        if (responeCallViewModel.getBackPressClicked().getValue()) {
+            showFloatingWindow();
+        }
+    }
 
 
 

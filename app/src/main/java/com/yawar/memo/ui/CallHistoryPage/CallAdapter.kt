@@ -12,6 +12,7 @@ import com.yawar.memo.databinding.ItemCallsBinding
 import com.yawar.memo.model.CallModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.utils.checkThereIsOngoingCall
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -97,7 +98,10 @@ class CallAdapter(var context: CallHistoryFragment) :
             binding.callModel = callModel
             binding.executePendingBindings()
             binding.imageCallType.setOnClickListener {
-                mCallback?.onHandleSelection(position, callModel)
+                if (!checkThereIsOngoingCall()) {
+
+                    mCallback?.onHandleSelection(position, callModel)
+                }
             }
         }
         companion object {

@@ -1,4 +1,5 @@
 package com.yawar.memo.ui.requestCall;
+import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static org.webrtc.SessionDescription.Type.ANSWER;
 import static org.webrtc.SessionDescription.Type.OFFER;
 
@@ -106,8 +107,8 @@ public class RequestCallActivity extends AppCompatActivity {
     public static final String VIDEO_TRACK_ID = "ARDAMSv0";
     //    public static final int VIDEO_RESOLUTION_WIDTH = 1280;
     public static final int VIDEO_RESOLUTION_WIDTH = 480;
-    private static final String ACTION_PLAY = "play";
-    private static final String ACTION_PAUSE = "pause";
+    private static final String ACTION_MUTE = "com.yawar.memo.action.mute";
+    private static final String ACTION_CLOSE_CALL = "com.yawar.memo.action.closeCall";
 
     float dX, dY;
     //    public static final int VIDEO_RESOLUTION_HEIGHT = 720;
@@ -121,6 +122,7 @@ public class RequestCallActivity extends AppCompatActivity {
     String imageUrl;
     String typeCall;
     int time = 0;
+
     Timer callTimer = new Timer();
     ObjectAnimator objectanimator1, objectanimator2;
     Animation animation;
@@ -657,6 +659,11 @@ public class RequestCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAskForCall, new IntentFilter(ON_RECIVED_ASK_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveMessageCall, new IntentFilter(ON_RECIVE_MESSAGE_VIDEO_CALL));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveCloseCallFromNotification, new IntentFilter(ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY));
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ACTION_MUTE);
+        filter.addAction(ACTION_CLOSE_CALL);
+        registerReceiver(mReceiver, filter);
+
         Bundle bundle = getIntent().getExtras();
 //        serverApi = new ServerApi(this);
         anthor_user_id = bundle.getString("anthor_user_id", null);
@@ -1232,7 +1239,7 @@ public class RequestCallActivity extends AppCompatActivity {
     }
     @Override
     protected void onPause() {
-        showFloatingWindow();
+//        showFloatingWindow();
         requestCallViewModel.setBackPressClicked(true);
         super.onPause();
     }
@@ -1789,7 +1796,7 @@ public class RequestCallActivity extends AppCompatActivity {
         PendingIntent pendingIntent
                 = PendingIntent.getActivity(this
                 , 0, intent,
-                PendingIntent.FLAG_CANCEL_CURRENT|PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_CANCEL_CURRENT| FLAG_IMMUTABLE);
         /////////intent for reject
         Intent intentCancel
                 = new Intent(this, CancelCallFromCallOngoingNotification.class);
@@ -1862,17 +1869,17 @@ public class RequestCallActivity extends AppCompatActivity {
             binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams((int) (size.x / 7), (int) (size.y / 8)));
         }
 
+        ArrayList<RemoteAction> actions = new ArrayList<>();
 
         // Set the actions that can be performed in PiP mode
-        ArrayList<RemoteAction> actions = new ArrayList<>();
-        actions.add(new RemoteAction(
-                Icon.createWithResource(this, R.drawable.ic_baseline_mic_off_24),
-                "Play", "Play video", PendingIntent.getBroadcast(this, 0,
-                new Intent(ACTION_PLAY), 0)));
+//        actions.add(new RemoteAction(
+//                Icon.createWithResource(this, R.drawable.recv_ic_mic_white),
+//                "Play", "Play video", PendingIntent.getBroadcast(this, 0,
+//                new Intent(ACTION_MUTE), PendingIntent.FLAG_UPDATE_CURRENT)));
         actions.add(new RemoteAction(
                 Icon.createWithResource(this, R.drawable.ic_baseline_call_end_24),
                 "Pause", "Pause video", PendingIntent.getBroadcast(this, 0,
-                new Intent(ACTION_PAUSE), 0)));
+                new Intent(ACTION_CLOSE_CALL), PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_MUTABLE)));
 
         // Create a Picture-in-Picture params builder
         PictureInPictureParams.Builder pipBuilder =
@@ -1888,19 +1895,40 @@ public class RequestCallActivity extends AppCompatActivity {
 
     @Override
     public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
         // Check for the actions that you defined in the PictureInPictureParams object
         System.out.println("onNewIntenttt");
-        if (intent.getAction() != null) {
-            if (intent.getAction().equals(ACTION_PLAY)) {
-                System.out.println("ACTION_PLAYYYYYYYYYYY");
-            } else if (intent.getAction().equals(ACTION_PAUSE)) {
-                System.out.println("ACTION_PAUSEEEEEEEE");
+//        if (intent.getAction() != null) {
+//            if (intent.getAction().equals(ACTION_PLAY)) {
+//                System.out.println("ACTION_PLAYYYYYYYYYYY");
+//            } else if (intent.getAction().equals(ACTION_PAUSE)) {
+//                System.out.println("ACTION_PAUSEEEEEEEE");
+//            }
+//        }
+        super.onNewIntent(intent);
 
-                // Perform the pause action
-            }
+    }
+
+    @Override
+    public void onUserLeaveHint () {
+        if (requestCallViewModel.getBackPressClicked().getValue()) {
+            showFloatingWindow();
         }
     }
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(ACTION_MUTE)) {
 
+                closeOpenAudio();
+
+            } else if (intent.getAction().equals(ACTION_CLOSE_CALL)) {
+                requestCallViewModel.setEndCalll(true);
+
+            }
+        }
+    };
 }
+
+
+
