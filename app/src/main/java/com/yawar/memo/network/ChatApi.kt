@@ -1,13 +1,11 @@
 package com.yawar.memo.Api
 
-import com.android.volley.NetworkResponse
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.model.ChatRoomRespone
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
@@ -205,9 +203,9 @@ interface ChatApi {
 
 @Module
 @InstallIn(SingletonComponent::class)
-object MovieModule {
+object RetrofitModule {
     @Provides
-    fun provideMovieService(): ChatApi
+    fun provideRetrofitService(): ChatApi
             = retrofit.create(ChatApi::class.java)
 }
 

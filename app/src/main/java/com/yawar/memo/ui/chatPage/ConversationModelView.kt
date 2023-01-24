@@ -18,7 +18,7 @@ import javax.inject.Inject
 //class ConversationModelView(anthorUesrId: String, blockedForState: String) : ViewModel() {
 class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMessageRepoo,
                                                   val blockUserRepo :BlockUserRepo,
-                                                 val savedStateHandle: SavedStateHandle) : ViewModel() {
+                                                   val savedStateHandle: SavedStateHandle) : ViewModel() {
 
     var baseApp = BaseApp.getInstance()
 //    private val chatMessageRepoo = baseApp.chatMessageRepoo
@@ -43,6 +43,7 @@ class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMess
 init {
     chatMessageRepoo?.loadChatRoom(BaseApp.getInstance().classSharedPreferences.user.userId, savedStateHandle.get<String>("reciver_id").toString())
         blockUserRepo.setBlockedForRepo(savedStateHandle.get<String>("blockedFor").toString())
+    Log.d("ConversationModelView", BaseApp.getInstance().classSharedPreferences.user.userId.toString()+"   "+savedStateHandle.get<String>("reciver_id").toString())
 
 
 

@@ -74,7 +74,7 @@ class ChatRoomAdapter(
             } else {
                 val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
                 for (item in listsearch) {
-                    if (item.username.lowercase(Locale.getDefault()).contains(filterPattern)) {
+                    if (item.username?.lowercase(Locale.getDefault())?.contains(filterPattern)!!) {
                         filteredList.add(item)
                     }
                 }
@@ -123,7 +123,7 @@ class ChatRoomAdapter(
                 val mView =
                     LayoutInflater.from(view.context).inflate(R.layout.dialog_user_image_layout, null)
                 val photoView: PhotoView = mView.findViewById(R.id.imageView)
-                if (chatRoomModel.image.isNotEmpty()) {
+                if (chatRoomModel.image?.isNotEmpty()!!) {
                     Glide.with(photoView.context).load(AllConstants.imageUrl + chatRoomModel.image)
                         .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
                         .into(photoView)

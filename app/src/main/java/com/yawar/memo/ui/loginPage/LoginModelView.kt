@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yawar.memo.Api.IpGeolocationService
+import com.yawar.memo.network.IpGeolocationService
 import com.yawar.memo.model.Locationn
 import com.yawar.memo.utils.BaseApp
 import kotlinx.coroutines.Dispatchers

@@ -1,4 +1,6 @@
 package com.yawar.memo.notification;
+import static com.yawar.memo.utils.ShowNotificationKt.checkThereIsOngoingCall;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationChannelGroup;
@@ -95,12 +97,16 @@ public class NotificationWorker extends Worker {
             intent.putExtra("special", specialNumber);
             intent.putExtra("blockedFor",blockedFor);
 //            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  |Intent.FLAG_ACTIVITY_CLEAR_TOP );
+
+
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(applicationContext);
             stackBuilder.addNextIntentWithParentStack(intent);
             PendingIntent pendingIntent
                     = stackBuilder.getPendingIntent(
                      0,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE );
+                    PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_ONE_SHOT );
+//                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_CANCEL_CURRENT  );
 
             String channel_id = "notification_channelllllll";
             NotificationCompat.Builder builder
@@ -124,7 +130,7 @@ public class NotificationWorker extends Worker {
                     .setGroup(GROUP_KEY_WORK_EMAIL)
                     .setVibrate(new long[]{1000, 1000, 1000,
                             1000, 1000})
-                    .setContentIntent(pendingIntent)
+                    .setContentIntent(!checkThereIsOngoingCall()?pendingIntent:null)
                     .setGroupSummary(true);
             NotificationManager notificationManager
                     = (NotificationManager) applicationContext.getSystemService(
@@ -205,8 +211,6 @@ public class NotificationWorker extends Worker {
                             builder.setLargeIcon(ImageProperties.getCircleBitmap(BitmapFactory.decodeResource(applicationContext.getResources(),
                                     R.drawable.th)));
                             notificationManager.notify(Integer.parseInt(channel), builder.build());
-
-
                         }
                     });
             // If there were no errors, return SUCCESS

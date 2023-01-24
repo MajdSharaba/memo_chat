@@ -23,7 +23,7 @@ class ChatRoomViewModel @Inject constructor(private val chatRoomRepoo: ChatRoomR
 //    private val chatRoomRepoo = baseApp.chatRoomRepoo
 
     fun loadData(): LiveData<ArrayList<ChatRoomModel?>?> {
-       return chatRoomRepoo.chatRoomListMutableLiveData
+       return chatRoomRepoo.chatRoomListMutableLiveData as  LiveData<ArrayList<ChatRoomModel?>?>
     }
 
     fun addToArchived(my_id: String, anthor_user_id: String) {

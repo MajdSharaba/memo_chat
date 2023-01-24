@@ -2,7 +2,6 @@ package com.yawar.memo.ui.chatPage
 import android.Manifest
 import android.animation.Animator
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.app.NotificationManager
@@ -28,7 +27,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.View.OnLayoutChangeListener
-import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -37,9 +35,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
@@ -71,7 +67,6 @@ import com.yawar.memo.model.ChatRoomModel
 import com.yawar.memo.model.UserModel
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.BlockUserRepo
-import com.yawar.memo.repositry.ChatMessageRepoo
 import com.yawar.memo.repositry.ChatRoomRepoo
 //import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.SocketIOService
@@ -80,7 +75,6 @@ import com.yawar.memo.utils.*
 import com.yawar.memo.ui.dashBoard.DashBord
 import com.yawar.memo.ui.userInformationPage.UserInformationActivity
 import com.yawar.memo.ui.chatPage.video.VideoActivity
-import com.yawar.memo.ui.userInformationPage.UserInformationViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
 import org.json.JSONException
@@ -90,6 +84,7 @@ import java.io.IOException
 import java.nio.file.Path
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.log
 
 @AndroidEntryPoint
 class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
@@ -205,7 +200,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     name = jsonObject.getString("userDoBlockName")
                     special_number = jsonObject.getString("userDoBlockSpecialNumber")
                     image = jsonObject.getString("userDoBlockImage")
-                    println(blockString + "from here")
+                    Log.d(TAG, blockString + "from here")
                     if (userDoBlock == anthor_user_id) {
                         conversationModelView!!.setBlockedFor(blockedFor)
                     }
@@ -515,6 +510,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     private fun sendBlockFor(blocked: Boolean) {
         //                    item.put("blocked_for",conversationModelView.blockedFor().getValue());
 //                    item.put("Block",blocked);
+        Log.d(TAG, "sendBlockFor: ")
         val userBlocked = JSONObject()
         val item = JSONObject()
         val userModel = classSharedPreferences!!.user

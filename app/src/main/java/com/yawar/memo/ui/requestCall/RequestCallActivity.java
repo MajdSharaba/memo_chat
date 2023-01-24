@@ -675,6 +675,7 @@ public class RequestCallActivity extends AppCompatActivity {
         my_id = classSharedPreferences.getUser().getUserId();
         userModel = classSharedPreferences.getUser();
         requestCallViewModel = new ViewModelProvider(this).get(RequestCallViewModel.class);
+        closeAllNotification();
         initalCallProperties();
 
         start();
@@ -824,6 +825,8 @@ public class RequestCallActivity extends AppCompatActivity {
                         mMediaPlayer.release();
                         mMediaPlayer = MediaPlayer.create(RequestCallActivity.this, R.raw.ring);
                         binding.callStatue.setText(R.string.rining);
+                        showInCallNotification(getResources().getString(R.string.rining));
+
                         mMediaPlayer.setLooping(true);
 
                         mMediaPlayer.start();
@@ -833,6 +836,8 @@ public class RequestCallActivity extends AppCompatActivity {
                 }
                 else if (s.equals("connect")){
                     binding.callStatue.setText(R.string.calling);
+                    showInCallNotification(getResources().getString(R.string.calling));
+
                     starCallVoice();
 
 
@@ -871,7 +876,6 @@ public class RequestCallActivity extends AppCompatActivity {
                 }
                 if(localVideoTrack!=null)
                 localAudioTrack.setEnabled(s);
-
             }
         });
         requestCallViewModel.isSpeaker().observe(this, new Observer<Boolean>() {
@@ -917,7 +921,6 @@ public class RequestCallActivity extends AppCompatActivity {
                                 Point size = new Point();
                                 display.getSize(size);
                                 binding.localVideoView.setLayoutParams(new RelativeLayout.LayoutParams((int) (size.x / 7), (int) (size.y / 8)));
-
                             }
                             else {
 
@@ -926,7 +929,7 @@ public class RequestCallActivity extends AppCompatActivity {
                         }
                         /////////////
 
-                        showInCallNotification();
+                        showInCallNotification(onGoingTitle);
 
                     }
 
@@ -1229,7 +1232,8 @@ public class RequestCallActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        System.out.println("onEwsumeeeeee");
+        Log.d(TAG, "onResume ");
+
         requestCallViewModel.setIsVideoForMe(requestCallViewModel.isVideoForMe().getValue());
         requestCallViewModel.setBackPressClicked(false);
         if(requestCallViewModel.getConnected().getValue()){
@@ -1240,7 +1244,8 @@ public class RequestCallActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 //        showFloatingWindow();
-        requestCallViewModel.setBackPressClicked(true);
+        Log.d(TAG, "onPause: ");
+//        requestCallViewModel.setBackPressClicked(true);
         super.onPause();
     }
 
@@ -1789,7 +1794,7 @@ public class RequestCallActivity extends AppCompatActivity {
 
         }
     }
-    private void showInCallNotification() {
+    private void showInCallNotification(String title) {
         Intent intent
                 = new Intent(this, RequestCallActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -1824,10 +1829,10 @@ public class RequestCallActivity extends AppCompatActivity {
                 .setUsesChronometer(true)
                 .setVibrate(new long[]{10000, 10000})
                 .setTicker("Call_STATUS")
-                .addAction(R.drawable.btx_custom, getResources().getString(R.string.cancel), pendingIntentCancell)
+//                .addAction(R.drawable.btx_custom, getResources().getString(R.string.cancel), pendingIntentCancell)
                 .setSmallIcon(R.drawable.ic_memo_logo)
                 .setContentTitle(userName)
-                .setContentText(onGoingTitle);
+                .setContentText(title);
         NotificationManager notificationManager
                 = (NotificationManager) getSystemService(
                 Context.NOTIFICATION_SERVICE);
@@ -1910,7 +1915,10 @@ public class RequestCallActivity extends AppCompatActivity {
 
     @Override
     public void onUserLeaveHint () {
+        Log.d(TAG, "onUserLeaveHint: ");
+        requestCallViewModel.setBackPressClicked(true);
         if (requestCallViewModel.getBackPressClicked().getValue()) {
+            Log.d(TAG, "onUserLeaveHint++ ");
             showFloatingWindow();
         }
     }
@@ -1928,6 +1936,12 @@ public class RequestCallActivity extends AppCompatActivity {
             }
         }
     };
+    public void closeAllNotification () {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String packageName = getApplicationContext().getPackageName();
+        notificationManager.cancelAll();
+    }
+
 }
 
 

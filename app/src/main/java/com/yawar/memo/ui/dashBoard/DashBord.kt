@@ -225,6 +225,7 @@ class DashBord : AppCompatActivity() {
                     name = jsonObject.getString("userDoBlockName")
                     special_number = jsonObject.getString("userDoBlockSpecialNumber")
                     image = jsonObject.getString("userDoBlockImage")
+                    Log.d("reciveBlockUser", "onReceive: ")
                     chatRoomRepoo.setBlockedState(userDoBlock, blockedFor)
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -356,7 +357,7 @@ class DashBord : AppCompatActivity() {
 
                         for (chatRoom in chatRoomModels) {
                             if (chatRoom != null) {
-                                number += chatRoom.num_msg.toInt()
+                                number += chatRoom.num_msg?.toInt() ?: 0
                             }
 
                         }
@@ -444,7 +445,7 @@ class DashBord : AppCompatActivity() {
                 .replace(R.id.dashboardContainer, ChatRoomFragment()).commit()
             binding.navigationChip.selectedItemId = R.id.chat
         } else {
-            finish()
+            super.onBackPressed()
         }
     }
 

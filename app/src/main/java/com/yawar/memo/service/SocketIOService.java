@@ -929,7 +929,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
     @Override
     public void onEventCall(String event, Object... args) {
         JSONObject data;
-        System.out.println("deletttttttttttttttt");
+
         Intent intent;
         switch (event) {
             case Socket.EVENT_CONNECT:
@@ -1126,6 +1126,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
                 break;
             case EVENT_RECIVE_STOP_CALLING:
                 System.out.println("EVENT_RECIVE_STOP_CALLING");
+                Log.d(TAG, "EVENT_RECIVE_STOP_CALLING: "+args[0].toString());
                 intent = new Intent(ResponeCallActivity.ON_STOP_CALLING_REQUEST);
                 intent.putExtra("get stopCalling", args[0].toString());
                 LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);

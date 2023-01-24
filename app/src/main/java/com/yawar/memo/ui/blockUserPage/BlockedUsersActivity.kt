@@ -12,6 +12,7 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import com.facebook.internal.Utility.logd
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.R
@@ -32,7 +33,6 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
     lateinit var userModel: UserModel
     lateinit var binding: ActivityBlockedUsersBinding
      val blockedActViewModel by viewModels<BlockedActViewModel>()
-
      var blockUserAdapter: BlockUserAdapter? = null
 //    lateinit var serverApi: ServerApi
     private lateinit var UserBlocked: UserModel
@@ -112,9 +112,7 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
 
     }
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.home -> finish()
-        }
+        finish()
         return true
     }
 
@@ -135,4 +133,12 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
         val alertDialog = dialog.create()
         alertDialog.show()
     }
+
+    override fun onBackPressed() {
+        Log.d("onBackPressed", "onBackPressed: ")
+        super.onBackPressed()
+    }
+
+
+
 }

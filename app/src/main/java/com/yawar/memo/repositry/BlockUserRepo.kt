@@ -23,10 +23,11 @@ import javax.inject.Inject
 
 
 //  class BlockUserRepo @Inject constructor(private val chatRoomRepoo: ChatRoomRepoImp) {
-class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi) {
+class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi,
+                                         private val chatRoomRepoo: ChatRoomRepoo) {
 
     var myBase = BaseApp.getInstance()
-    var chatRoomRepoo = myBase.chatRoomRepoo
+//    var chatRoomRepoo = myBase.chatRoomRepoo
 
     private val _userBlockListMutableLiveData = MutableLiveData<ArrayList<UserModel?>?>()
     val userBlockListMutableLiveData: LiveData<ArrayList<UserModel?>?>
@@ -137,7 +138,7 @@ class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi) {
 
     fun sendBlockRequest( my_id: String,  anthor_user_id:String) {
         coroutineScope.launch {
-
+            Log.d("sendBlockRequest", "sendBlockRequest: ")
 //
 //            val respone =   GdgApi(AllConstants.base_node_url).apiService.blockUser(my_id, anthor_user_id)
 
@@ -157,6 +158,8 @@ class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi) {
                 blokedForRespone = jsonObject.getString("blocked_for")
                 blockedRespone = jsonObject.getBoolean("blocked")
                 _blockedForRepo.value = blokedForRespone
+                Log.d("sendBlockUser", blokedForRespone)
+
 
                 chatRoomRepoo.setBlockedState(anthor_user_id, blokedForRespone)
                 _blockedRepo.value = true
@@ -176,6 +179,7 @@ class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi) {
     fun sendUnbBlockUser( my_id: String,  anthor_user_id:String) {
         coroutineScope.launch {
 
+            Log.d("sendUnbBlockUser", "sendUnbBlockUser: ")
 
 //            var respone = GdgApi(AllConstants.base_node_url).apiService
 //                .unBlockUser(my_id, anthor_user_id)
@@ -196,8 +200,12 @@ class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi) {
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
+
                 _blockedForRepo.value = blokedForRespone
                 _unBlockedRepo.value = true
+                Log.d("sendUnbBlockUser", blokedForRespone)
+
+
                 chatRoomRepoo.setBlockedState(anthor_user_id, blokedForRespone)
                 deleteBlockUser(anthor_user_id)
 

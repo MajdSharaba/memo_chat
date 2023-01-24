@@ -21,7 +21,7 @@ class ForwardDialogViewModel@Inject constructor(private val chatMessageRepo:Chat
 
 
     fun loadData(): LiveData<ArrayList<ChatRoomModel?>?> {
-        return repository.chatRoomListMutableLiveData
+        return repository.chatRoomListMutableLiveData as LiveData<ArrayList<ChatRoomModel?>?>
     }
     fun clearSelectedMessage() {
         chatMessageRepo.clearSelectedMessage()

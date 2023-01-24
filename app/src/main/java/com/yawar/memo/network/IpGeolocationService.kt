@@ -1,4 +1,4 @@
-package com.yawar.memo.Api
+package com.yawar.memo.network
 
 import android.location.Location
 import com.yawar.memo.model.Locationn

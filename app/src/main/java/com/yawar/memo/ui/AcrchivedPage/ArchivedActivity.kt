@@ -75,7 +75,11 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
             }
 
             override fun onSwipedRight(position: Int) {
-                archivedActViewModel.removeFromArchived(myId, archived[position].other_id)
+                archived[position].other_id?.let {
+                    archivedActViewModel.removeFromArchived(myId,
+                        it
+                    )
+                }
             }
         })
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

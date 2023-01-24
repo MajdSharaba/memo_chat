@@ -13,9 +13,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
-import com.yawar.memo.Api.AuthApi
+import com.yawar.memo.network.AuthApi
 import com.yawar.memo.R
 import com.yawar.memo.utils.CallProperty
 import com.yawar.memo.databinding.ActivityVerificationBinding

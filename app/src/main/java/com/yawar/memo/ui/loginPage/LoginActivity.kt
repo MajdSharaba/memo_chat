@@ -3,7 +3,6 @@ package com.yawar.memo.ui.loginPage
 import android.Manifest
 import android.app.Activity
 import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
@@ -32,7 +31,7 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.GoogleAuthProvider
-import com.yawar.memo.Api.AuthApi
+import com.yawar.memo.network.AuthApi
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityLoginBinding
 import com.yawar.memo.model.UserModel

@@ -72,7 +72,10 @@ public class NotificationMessingCallWorker extends Worker {
 
             Intent intent = new Intent(applicationContext, DashBord.class);
             intent.setAction("calls");
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  |Intent.FLAG_ACTIVITY_CLEAR_TOP );
+
+//            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             TaskStackBuilder stackBuilder = TaskStackBuilder.create(applicationContext);
             stackBuilder.addNextIntentWithParentStack(intent);

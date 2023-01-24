@@ -1,67 +1,47 @@
 package com.yawar.memo.model
 
-import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
- data class ChatRoomModel (
+ data class ChatRoomModel(
 
-    @Json(name = "username")
-    var  username:String = "",
+    var username:String = "",
 
-    @Json(name = "other_id")
-    var  other_id:String = "",
+    var other_id:String = "",
 
-    @Json(name = "last_message")
-    var  last_message:String = "",
+    var last_message:String = "",
 
-    @Json(name = "image")
-    var  image:String = "",
+    var image:String = "",
 
-    @Json(name = "isChecked")
     var isChecked:Boolean = false,
 
-    @Json(name = "numberMessage")
-    var  numberMessage:String = "",
+    var numberMessage: String? = "",
 
-    @Json(name = "id")
-    var  id:String = "",
+    var id:String = "",
 
-    @Json(name = "state")
-    var  state:String = "",
+    var state:String? = "",
 
-    @Json(name = "num_msg")
-    var  num_msg:String = "",
+    var num_msg:String = "",
 
-    @Json(name = "inChat")
     var inChat:Boolean = false,
 
-    @Json(name = "user_token")
-    var  user_token:String = "",
+    var user_token:String = "",
 
-    @Json(name = "sn")
-    var  sn:String = "",
+    var sn:String = "",
 
-    @Json(name = "message_type")
-    var  message_type:String = "",
+    var message_type:String? = "",
 
-    @Json(name = "mstate")
-    var  mstate:String = "",
+    var mstate:String? = "",
 
-    @Json(name = "created_at")
-    var  created_at:String = "",
+    var created_at:String? = "",
 
-    @Json(name = "isTyping")
     var isTyping:Boolean = false,
 
-    @Json(name = "blocked_for")
-    var  blocked_for:String? ,
+    var blocked_for:String?,
 
-    @Json(name = "msg_sender")
-    var  msg_sender:String = "",
+    var msg_sender:String? = "",
 
-    @Json(name = "phone")
-    var  phone:String = "",
+    var phone:String? = "",
         ): Cloneable {
 
     public override fun  clone() :ChatRoomModel {

@@ -24,7 +24,7 @@ fun TextView.setName(item : ChatRoomModel?){
 fun TextView.setTime(item : ChatRoomModel?) {
     item?.let {
         val timeProperties = TimeProperties()
-        text = timeProperties.getFormattedDate(item.created_at.toLong())
+        text = item.created_at?.toLong()?.let { it1 -> timeProperties.getFormattedDate(it1) }
     }
 }
 
@@ -71,6 +71,7 @@ fun TextView.setTime(item : ChatRoomModel?) {
     fun ImageView.setImageType(item : ChatRoomModel?) {
         item?.let {
             if (!item.isTyping) {
+                if(item.message_type!=null)
                 when (item.message_type) {
                     "imageWeb" -> {
                         visibility = View.VISIBLE

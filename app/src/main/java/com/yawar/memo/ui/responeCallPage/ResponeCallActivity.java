@@ -108,13 +108,8 @@ import pub.devrel.easypermissions.EasyPermissions;
 public class ResponeCallActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_OVERLAY_PERMISSION = 122;
     ///// set floating page
-
     private static final String ACTION_MUTE = "com.yawar.memo.action.mute";
     private static final String ACTION_CLOSE_CALL = "com.yawar.memo.action.closeCall";
-
-
-
-
     String id ="0";
     String title = "";
     String onGoingTitle = "";
@@ -129,7 +124,6 @@ public class ResponeCallActivity extends AppCompatActivity {
     public static final String ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY = "ON_CLOSE_CALL_FROM_NOTIFICATION_CALL_ACTIVITY";
     public static final String ON_RECIVED_ASK_FOR_VIDEO = "on_recived_ask_for_video";
     public static final String ON_RECIVED_RESPONE_FOR_VIDEO = "on_recived_respone_for_video";
-
     VideoCapturer videoCapturer;
     String callId;
     LinearLayout layoutCallProperties;
@@ -891,7 +885,7 @@ public class ResponeCallActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 //        showFloatingWindow();
-        responeCallViewModel.setBackPressClicked(true);
+//        responeCallViewModel.setBackPressClicked(true);
         super.onPause();
     }
 
@@ -911,6 +905,7 @@ public class ResponeCallActivity extends AppCompatActivity {
     }
     @AfterPermissionGranted(RC_CALL)
     private void start() {
+        closeAllNotification();
         String[] perms = {Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
         if (EasyPermissions.hasPermissions(this, perms)) {
 
@@ -1408,7 +1403,7 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
                 .setUsesChronometer(true)
                 .setVibrate(new long[]{10000, 10000})
                 .setTicker("Call_STATUS")
-                .addAction(R.drawable.btx_custom,  getResources().getString(R.string.cancel), pendingIntentCancell)
+//                .addAction(R.drawable.btx_custom,  getResources().getString(R.string.cancel), pendingIntentCancell)
 
 
                 .setSmallIcon(R.drawable.ic_memo_logo)
@@ -1624,12 +1619,16 @@ private PeerConnection createPeerConnection(PeerConnectionFactory factory) {
     };
     @Override
     public void onUserLeaveHint () {
+        responeCallViewModel.setBackPressClicked(true);
         if (responeCallViewModel.getBackPressClicked().getValue()) {
             showFloatingWindow();
         }
     }
-
-
+    public void closeAllNotification () {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String packageName = getApplicationContext().getPackageName();
+        notificationManager.cancelAll();
+    }
 
     }
 

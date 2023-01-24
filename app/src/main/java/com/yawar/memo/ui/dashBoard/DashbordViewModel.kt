@@ -18,7 +18,7 @@ class DashbordViewModel : ViewModel() {
     private val chatRoomRepoo = baseApp.chatRoomRepoo
 
     fun loadData(): LiveData<ArrayList<ChatRoomModel?>?> {
-        return chatRoomRepoo.chatRoomListMutableLiveData
+        return chatRoomRepoo.chatRoomListMutableLiveData as LiveData<ArrayList<ChatRoomModel?>?>
     }
 
 

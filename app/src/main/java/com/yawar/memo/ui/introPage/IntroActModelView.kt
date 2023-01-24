@@ -22,13 +22,12 @@ import javax.inject.Inject
         Log.d("IntroActModelView", chatRoomRepoo.chatRoomListMutableLiveData.toString())
             if(chatRoomRepoo.chatRoomListMutableLiveData.value == null) {
                 Log.d("IntroActModelView2", chatRoomRepoo.chatRoomListMutableLiveData.toString())
-
                     chatRoomRepoo.loadChatRoom(baseApp.classSharedPreferences.user.userId!!)
 
             }
     }
     fun loadData(): LiveData<ArrayList<ChatRoomModel?>?> {
-        return chatRoomRepoo.chatRoomListMutableLiveData
+        return chatRoomRepoo.chatRoomListMutableLiveData as  LiveData<ArrayList<ChatRoomModel?>?>
     }
 
 

@@ -74,7 +74,7 @@ class ArchivedAdapter(var context: Activity) :
             } else {
                 val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
                 for (item in listsearch) {
-                    if (item!!.username.lowercase(Locale.getDefault()).contains(filterPattern)) {
+                    if (item!!.username?.lowercase(Locale.getDefault())?.contains(filterPattern)!!) {
                         filteredList.add(item)
                     }
                 }

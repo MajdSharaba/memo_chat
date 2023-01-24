@@ -107,7 +107,9 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
                 dialog.setPositiveButton(
                     R.string.delete
                 ) { _, _ -> //
-                                    chatRoomViewModel.deleteChatRoom(myId, postList[position].other_id)
+                                    chatRoomViewModel.deleteChatRoom(myId,
+                                        postList[position].other_id!!
+                                    )
 
                 }
                 dialog.setNegativeButton(
@@ -120,7 +122,7 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
             }
 
             override fun onSwipedRight(position: Int) {
-                chatRoomViewModel.addToArchived(myId, postList[position].other_id)
+                chatRoomViewModel.addToArchived(myId, postList[position].other_id!!)
             }
         })
 
