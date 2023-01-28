@@ -21,15 +21,15 @@ import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityContactNumberBinding
-import com.yawar.memo.model.ContactModel
-import com.yawar.memo.model.SendContactNumberResponse
+import com.yawar.memo.domain.model.ContactModel
+import com.yawar.memo.domain.model.SendContactNumberResponse
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -53,8 +53,8 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
 //        serverApi = ServerApi(this)
         permissions = Permissions()
 
-        myBase = BaseApp.getInstance()
-        classSharedPreferences = myBase.classSharedPreferences
+        myBase = BaseApp.instance!!
+        classSharedPreferences = myBase.classSharedPreferences!!
         myId = classSharedPreferences.user.userId.toString()
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
 //        sendContactNumberResponses = myBase.contactNumberObserve.contactNumberResponseList

@@ -1,9 +1,9 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
- data class CallModel (
+ data class CallHistoryModel (
      var id: String = "",
      var username: String = "",
      var caller_id: String? = "",
@@ -15,11 +15,11 @@ import kotlinx.android.parcel.Parcelize
      var createdAt: String = "",
 ): Cloneable {
 
-    public override fun clone(): CallModel {
+    public override fun clone(): CallHistoryModel {
 
-        var clone: CallModel
+        var clone: CallHistoryModel
         try {
-            clone = super.clone() as CallModel
+            clone = super.clone() as CallHistoryModel
         } catch (e: CloneNotSupportedException) {
             throw  RuntimeException(e); //should not happen
         }

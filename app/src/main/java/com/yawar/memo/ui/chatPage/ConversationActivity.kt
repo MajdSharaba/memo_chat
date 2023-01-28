@@ -56,15 +56,16 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
+import com.yawar.memo.BaseApp
 import com.yawar.memo.BuildConfig
 import com.yawar.memo.R
 import com.yawar.memo.ui.requestCall.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityConversationBinding
 import com.yawar.memo.ui.forwardPage.ForwardDialogFragment
-import com.yawar.memo.model.ChatMessage
-import com.yawar.memo.model.ChatRoomModel
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.ChatMessage
+import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
@@ -104,7 +105,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
     //    lateinit var conversationViewModelFactory: ConversationViewModelFactory
     private var adapter: ChatAdapter? = null
-    val myBase: BaseApp? = BaseApp.getInstance()
+    val myBase: BaseApp? = BaseApp.instance!!
 //    var chatRoomRepoo: ChatRoomRepoImp? = null
         var chatRoomRepoo: ChatRoomRepoo? = null
 
@@ -626,6 +627,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         imageUrl = bundle.getString("image")
         specialNumber = bundle.getString("special", "")
         chat_id = bundle.getString("chat_id", "")
+        Log.d(TAG, "initViews:${chat_id} ")
         if (chat_id.isEmpty()) {
             if (chatRoomRepoo != null) {
                 chat_id = chatRoomRepoo!!.getChatId(anthor_user_id)
@@ -668,7 +670,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         }
         /////////////
         binding.recordButton.isListenForRecord = false
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences
         chatRoomRepoo?.setInChat(anthor_user_id, true)
         conversationModelView!!.blockedFor().observe(
             this

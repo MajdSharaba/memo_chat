@@ -24,21 +24,21 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.github.chrisbanes.photoview.PhotoView
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.ui.userInformationPage.media.MediaAdapter
 import com.yawar.memo.utils.CallProperty
 import com.yawar.memo.ui.requestCall.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityUserInformationBinding
-import com.yawar.memo.model.MediaModel
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.MediaModel
+import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
 import com.yawar.memo.ui.chatPage.ConversationModelView
 import com.yawar.memo.ui.introPage.IntroActModelView
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.TimeProperties
 import com.yawar.memo.utils.checkThereIsOngoingCall
 import dagger.hilt.android.AndroidEntryPoint
@@ -158,7 +158,7 @@ class UserInformationActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this).registerReceiver(check, IntentFilter(CHEK))
         adapter = MediaAdapter(recyclerDataArrayList, this)
 //        EXAMPLE_COUNTER = intPreferencesKey("key")
-        dataStore = BaseApp.getInstance().dataStore
+//        dataStore = BaseApp.instance!!.dataStore!!
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         // at last set adapter to recycler view.
@@ -170,8 +170,8 @@ class UserInformationActivity : AppCompatActivity() {
 
     @SuppressLint("SetTextI18n")
     private fun initViews() {
-        myBase = BaseApp.getInstance()
-        classSharedPreferences = myBase.classSharedPreferences
+        myBase = BaseApp.instance!!
+        classSharedPreferences = myBase?.classSharedPreferences!!
         timeProperties = TimeProperties()
 //        blockUserRepo = myBase.blockUserRepo
         val bundle = intent.extras

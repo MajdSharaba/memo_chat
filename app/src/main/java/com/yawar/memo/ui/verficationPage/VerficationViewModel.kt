@@ -2,12 +2,12 @@ package com.yawar.memo.ui.verficationPage
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.BaseApp
 import org.json.JSONObject
 
 class VerficationViewModel : ViewModel() {
-    var baseApp = BaseApp.getInstance()
-    var authRepo = baseApp.authRepo
+    var baseApp = BaseApp.instance
+    var authRepo = baseApp?.authRepo!!
 
     fun getSpecialNumber(): LiveData<JSONObject?> {
         return authRepo.jsonObjectMutableLiveData

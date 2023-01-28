@@ -13,13 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.github.chrisbanes.photoview.PhotoView
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.ui.requestCall.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ChatRoomRowBinding
-import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.MyDiffUtilCallBack
 import com.yawar.memo.utils.TimeProperties
 import com.yawar.memo.ui.chatPage.ConversationActivity
@@ -43,7 +43,7 @@ class ArchivedAdapter(var context: Activity) :
         } catch (_: ClassCastException) {
         }
         listsearch.addAll(currentList)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
     }
 
     override fun onCreateViewHolder(
@@ -98,11 +98,11 @@ class ArchivedAdapter(var context: Activity) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(
-             chatRoomModel: ChatRoomModel?,
-             position: Int,
-             context: Activity,
-             classSharedPreferences: ClassSharedPreferences?,
-             mCallback: CallbackInterfac?
+            chatRoomModel: ChatRoomModel?,
+            position: Int,
+            context: Activity,
+            classSharedPreferences: ClassSharedPreferences?,
+            mCallback: CallbackInterfac?
         ) {
 
             binding.chatRoom = chatRoomModel

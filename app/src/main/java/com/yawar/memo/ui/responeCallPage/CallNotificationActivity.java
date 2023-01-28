@@ -18,10 +18,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.CallProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -173,7 +173,7 @@ public class CallNotificationActivity extends AppCompatActivity {
     }
     public void reject(String callParamters) {
         BaseApp myBase;
-        myBase = BaseApp.getInstance();
+        myBase = BaseApp.Companion.getInstance();
 
         /////////
 

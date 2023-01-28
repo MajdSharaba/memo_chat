@@ -3,6 +3,7 @@ package com.yawar.memo.utils;
 import android.content.Context;
 import android.text.format.DateFormat;
 
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.R;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class TimeProperties {
             return DateFormat.format(timeFormatString, smsTime).toString();
         } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
 //            return "Yesterday " + DateFormat.format(timeFormatString, smsTime);
-            return BaseApp.getInstance().getResources().getString(R.string.yesterday);
+            return BaseApp.Companion.getInstance().getResources().getString(R.string.yesterday);
         } else if (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR)) {
             return DateFormat.format(dateTimeFormatString, smsTime).toString();
         } else {

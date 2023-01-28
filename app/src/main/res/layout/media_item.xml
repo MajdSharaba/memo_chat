@@ -4,7 +4,7 @@
         <data>
                 <variable
                     name="mediaModel"
-                    type="com.yawar.memo.model.MediaModel" />
+                    type="com.yawar.memo.domain.model.MediaModel" />
         </data>
 
         <androidx.cardview.widget.CardView

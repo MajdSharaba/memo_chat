@@ -11,9 +11,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.ui.responeCallPage.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +50,7 @@ public class CancelCallFromCallNotification extends BroadcastReceiver {
     }
     public void reject(String callParamters) {
         BaseApp myBase;
-        myBase = BaseApp.getInstance();
+        myBase = BaseApp.Companion.getInstance();
 
         /////////
 

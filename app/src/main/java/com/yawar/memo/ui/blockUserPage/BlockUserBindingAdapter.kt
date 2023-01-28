@@ -4,11 +4,10 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.CallModel
-import com.yawar.memo.model.UserModel
-import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.domain.model.UserModel
 import de.hdodenhof.circleimageview.CircleImageView
 
 @BindingAdapter("userImage")
@@ -19,7 +18,7 @@ fun CircleImageView.setUserImage(item: UserModel?) {
                 .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
                 .into(this)
         } else {
-            setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.th))
+            setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.th))
         }
     }
 }

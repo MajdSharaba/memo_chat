@@ -5,9 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yawar.memo.BaseApp
 import com.yawar.memo.network.IpGeolocationService
-import com.yawar.memo.model.Locationn
-import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.domain.model.Locationn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -17,7 +17,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class LoginModelView : ViewModel() {
-    var baseApp = BaseApp.getInstance()
+    var baseApp = BaseApp.instance!!
     var authRepo = baseApp.authRepo
     var name: String = ""
     var image : String  = ""

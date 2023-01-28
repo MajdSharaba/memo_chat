@@ -8,11 +8,11 @@ import android.os.Bundle;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,7 +38,7 @@ public class CancelCallFromCallOngoingNotification  extends BroadcastReceiver {
 //        closeCall(context,id);
     }
     private void closeCall(Context context,String id) {
-        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        ClassSharedPreferences classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
 
         Intent service = new Intent(context, SocketIOService.class);
         JSONObject data = new JSONObject();

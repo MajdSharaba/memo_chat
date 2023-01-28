@@ -16,14 +16,14 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
-import com.yawar.memo.model.ChatMessage
-import com.yawar.memo.model.ChatRoomModel
-import com.yawar.memo.model.SendContactNumberResponse
+import com.yawar.memo.domain.model.ChatMessage
+import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.domain.model.SendContactNumberResponse
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationModelView
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
@@ -93,9 +93,9 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
 
 
 //        view.setBackground(getActivity().getResources().getDrawable(R.drawable.dialog_bg));
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         my_id = classSharedPreferences.user.userId.toString()
-        myBase = BaseApp.getInstance()
+        myBase = BaseApp.instance!!
 //        forwardDialogViewModel = ViewModelProvider(this).get(
 //            ForwardDialogViewModel::class.java
 //        )

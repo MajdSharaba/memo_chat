@@ -1,7 +1,7 @@
 package com.yawar.memo.network
 
 import android.location.Location
-import com.yawar.memo.model.Locationn
+import com.yawar.memo.domain.model.Locationn
 import retrofit2.http.GET
 import retrofit2.http.Query
 

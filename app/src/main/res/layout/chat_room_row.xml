@@ -5,7 +5,7 @@
     <data>
       <variable
           name="chatRoom"
-          type="com.yawar.memo.model.ChatRoomModel" />
+          type="com.yawar.memo.domain.model.ChatRoomModel" />
     </data>
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"

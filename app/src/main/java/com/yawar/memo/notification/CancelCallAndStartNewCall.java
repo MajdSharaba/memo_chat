@@ -7,10 +7,10 @@ import android.os.Bundle;
 
 import androidx.core.app.NotificationManagerCompat;
 
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
-import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,10 +35,10 @@ public class CancelCallAndStartNewCall extends BroadcastReceiver {
 //        /////for close current call in anthor user
 //        closeCall(context,id);
         ////////////
-        Intent intent1 = new Intent(BaseApp.getInstance(), ResponeCallActivity.class);
+        Intent intent1 = new Intent(BaseApp.Companion.getInstance(), ResponeCallActivity.class);
         intent1.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        BaseApp.getInstance().startActivity(intent1);
+        BaseApp.Companion.getInstance().startActivity(intent1);
     }
     private void closeCall(Context context,String id) {
         Intent service = new Intent(context, SocketIOService.class);

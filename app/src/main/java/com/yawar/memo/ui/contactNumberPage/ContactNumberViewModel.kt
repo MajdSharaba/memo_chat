@@ -7,8 +7,8 @@ import com.google.gson.Gson
 import com.yawar.memo.Api.ChatApi
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.ContactModel
-import com.yawar.memo.model.SendContactNumberResponse
+import com.yawar.memo.domain.model.ContactModel
+import com.yawar.memo.domain.model.SendContactNumberResponse
 import com.yawar.memo.repositry.BlockUserRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -37,7 +37,7 @@ class ContactNumberViewModel @Inject constructor(val chatApi: ChatApi) : ViewMod
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
 
 
-    fun loadData( arrayList : ArrayList<ContactModel>, my_id : String): MutableLiveData<ArrayList<SendContactNumberResponse?>?> {
+    fun loadData(arrayList : ArrayList<ContactModel>, my_id : String): MutableLiveData<ArrayList<SendContactNumberResponse?>?> {
         _loadingMutableLiveData.value = true
         val callModelsList =  ArrayList<SendContactNumberResponse?>()
 

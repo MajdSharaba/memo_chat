@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.ChatApi
+import com.yawar.memo.BaseApp
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.utils.BaseApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -69,7 +69,7 @@ class AuthRepo @Inject constructor(
 
             try {
                 val listResult = getChatRoomsDeferred?.await()
-                BaseApp.getInstance().classSharedPreferences.fcmToken = token
+                BaseApp.instance?.classSharedPreferences!!.fcmToken = token
 
 
             } catch (e: Exception) {

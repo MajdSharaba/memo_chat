@@ -2,9 +2,9 @@ package com.yawar.memo.ui.dashBoard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.BaseApp
+import com.yawar.memo.domain.model.ChatRoomModel
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.ArrayList
 import javax.inject.Inject
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class DashbordViewModel : ViewModel() {
 
 
-    var baseApp: BaseApp = BaseApp.getInstance()
+    var baseApp: BaseApp = BaseApp.instance!!
     private val chatRoomRepoo = baseApp.chatRoomRepoo
 
     fun loadData(): LiveData<ArrayList<ChatRoomModel?>?> {

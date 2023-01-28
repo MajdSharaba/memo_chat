@@ -1,4 +1,4 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 class UserModel(
     var userId: String? = null,

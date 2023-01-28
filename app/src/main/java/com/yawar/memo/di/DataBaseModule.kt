@@ -1,7 +1,6 @@
 package com.yawar.memo.di
 
-import com.yawar.memo.database.entity.ChatRoomEntityMapper
-import com.yawar.memo.network.networkModel.ChatRoomDtoMapper
+import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntityMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

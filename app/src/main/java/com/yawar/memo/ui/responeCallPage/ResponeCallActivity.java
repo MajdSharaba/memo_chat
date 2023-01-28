@@ -57,6 +57,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.databinding.ActivityCallMainBinding;
 import com.yawar.memo.notification.CancelCallFromCallOngoingNotification;
@@ -65,7 +66,6 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.ui.requestCall.SimpleSdpObserver;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.CallProperty;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -525,7 +525,7 @@ public class ResponeCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveAcceptChangeToVideoCall, new IntentFilter(ON_RECIVED_RESPONE_FOR_VIDEO));
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveMessageCall, new IntentFilter(ON_RECIVE_MESSAGE));
 
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
         imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);

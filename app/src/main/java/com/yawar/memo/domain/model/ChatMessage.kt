@@ -1,4 +1,4 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 import kotlinx.android.parcel.Parcelize
 
@@ -19,9 +19,9 @@ data class ChatMessage(
       var  isChecked:Boolean = false,
 ):  Cloneable {
 
-     public override fun  clone() :ChatMessage {
+     public override fun  clone() : ChatMessage {
 
-            var clone :ChatMessage
+            var clone : ChatMessage
             try {
                   clone = super.clone() as ChatMessage
             } catch ( e : CloneNotSupportedException) {

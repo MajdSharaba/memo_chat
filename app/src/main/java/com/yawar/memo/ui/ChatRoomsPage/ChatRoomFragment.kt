@@ -14,13 +14,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tsuryo.swipeablerv.SwipeLeftRightCallback
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.databinding.FragmentChatRoomBinding
-import com.yawar.memo.model.ChatRoomModel
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.modelView.ChatRoomViewModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.AcrchivedPage.ArchivedActivity
 import com.yawar.memo.ui.contactNumberPage.ContactNumberActivity
 import com.yawar.memo.ui.chatPage.ConversationActivity
@@ -47,8 +47,8 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
 //        val view = inflater.inflate(R.layout.fragment_chat_room, container, false)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_chat_room,container,false)
         val view = binding.root;
-        myBase = BaseApp.getInstance()
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        myBase = BaseApp.instance!!
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         myId = classSharedPreferences.user.userId.toString()
 
         binding.content.linerArchived.setOnClickListener(View.OnClickListener {

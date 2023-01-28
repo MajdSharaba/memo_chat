@@ -3,8 +3,8 @@ package com.yawar.memo.dataBindingAdapter
 import android.os.Environment
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.yawar.memo.model.ChatMessage
-import com.yawar.memo.model.SendContactNumberResponse
+import com.yawar.memo.domain.model.ChatMessage
+import com.yawar.memo.domain.model.SendContactNumberResponse
 import java.io.File
 
 //////Voice Adapter Binding

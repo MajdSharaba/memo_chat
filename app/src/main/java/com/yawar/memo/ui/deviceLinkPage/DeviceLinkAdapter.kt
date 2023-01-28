@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.DeviceLinkModel
+import com.yawar.memo.domain.model.DeviceLinkModel
 
 
 class DeviceLinkAdapter(

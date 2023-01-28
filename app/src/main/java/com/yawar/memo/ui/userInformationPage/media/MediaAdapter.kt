@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.databinding.MediaItemBinding
-import com.yawar.memo.model.MediaModel
+import com.yawar.memo.domain.model.MediaModel
 
 class MediaAdapter(
     private val courseDataArrayList: ArrayList<MediaModel>,
@@ -27,7 +27,7 @@ class MediaAdapter(
 
     // View Holder Class to handle Recycler View.
      class ViewHolder(val binding: MediaItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(position: Int,model :MediaModel , mcontext: Context ) {
+        fun bind(position: Int, model : MediaModel, mcontext: Context ) {
             binding.mediaModel = model
             binding.executePendingBindings()
 

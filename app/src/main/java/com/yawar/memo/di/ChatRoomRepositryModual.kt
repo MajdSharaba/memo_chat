@@ -2,9 +2,8 @@ package com.yawar.memo.di
 
 import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.database.dao.ChatRoomDatabase
-import com.yawar.memo.database.entity.ChatRoomEntityMapper
-import com.yawar.memo.network.networkModel.ChatRoomDtoMapper
-import com.yawar.memo.repositry.ChatMessageRepoo
+import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntityMapper
+import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomDtoMapper
 import com.yawar.memo.repositry.ChatRoomRepoo
 import dagger.Module
 import dagger.Provides

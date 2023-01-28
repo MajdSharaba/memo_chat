@@ -5,7 +5,7 @@
     <data>
         <variable
             name="blockUser"
-            type="com.yawar.memo.model.UserModel" />
+            type="com.yawar.memo.domain.model.UserModel" />
     </data>
 
     <androidx.cardview.widget.CardView

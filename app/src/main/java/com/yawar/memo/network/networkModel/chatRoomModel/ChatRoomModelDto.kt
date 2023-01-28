@@ -1,4 +1,4 @@
-package com.yawar.memo.network.networkModel
+package com.yawar.memo.network.networkModel.chatRoomModel
 
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
@@ -48,7 +48,7 @@ data class ChatRoomModelDto(
     var  mstate:String  = "",
 
     @Json(name = "created_at")
-    var  created_at:String  = "",
+    var  created_at:String? ,
 
     @Json(name = "isTyping")
     var isTyping:Boolean  = false,

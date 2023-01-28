@@ -24,7 +24,7 @@ import com.github.chrisbanes.photoview.PhotoView
 import com.yawar.memo.BuildConfig
 import com.yawar.memo.R
 import com.yawar.memo.databinding.*
-import com.yawar.memo.model.ChatMessage
+import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.utils.ImageProperties
 import com.yawar.memo.utils.TimeProperties
 import java.io.File
@@ -532,11 +532,11 @@ class ChatAdapter(private val context: Activity) :
          var l = 0
 
          fun bind(
-            myMsg: Boolean,
-            chatMessage: ChatMessage,
-            position: Int,
-            context: Activity,
-            mCallback: CallbackInterface?
+             myMsg: Boolean,
+             chatMessage: ChatMessage,
+             position: Int,
+             context: Activity,
+             mCallback: CallbackInterface?
         ) {
             setAlignment(myMsg, chatMessage.state, context)
             binding.tvDate.text = TimeProperties.getDate(

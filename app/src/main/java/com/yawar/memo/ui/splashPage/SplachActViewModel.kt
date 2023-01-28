@@ -2,12 +2,12 @@ package com.yawar.memo.ui.splashPage
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.BaseApp
 import org.json.JSONObject
 
 class SplachActViewModel : ViewModel() {
 
-    var baseApp = BaseApp.getInstance()
+    var baseApp = BaseApp.instance!!
     var authRepo = baseApp.authRepo
 
 

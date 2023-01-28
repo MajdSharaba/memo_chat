@@ -1,4 +1,4 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 public data class Locationn(
      val country_code2: String

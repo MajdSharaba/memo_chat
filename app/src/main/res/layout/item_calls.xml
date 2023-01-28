@@ -6,7 +6,7 @@
     <data>
         <variable
             name="callModel"
-            type="com.yawar.memo.model.CallModel" />
+            type="com.yawar.memo.domain.model.CallHistoryModel" />
     </data>
 
     <androidx.cardview.widget.CardView

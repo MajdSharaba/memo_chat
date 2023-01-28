@@ -7,8 +7,8 @@ import com.google.android.datatransport.runtime.dagger.Module
 import com.yawar.memo.Api.ChatApi
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.MediaModel
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.MediaModel
+import com.yawar.memo.domain.model.UserModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

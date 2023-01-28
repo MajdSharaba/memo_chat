@@ -29,10 +29,10 @@ import androidx.work.WorkerParameters;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.ui.chatPage.ConversationActivity;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class NotificationWorker extends Worker {
     @NonNull
     @Override
     public Worker.Result doWork() {
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
         ArrayList<String> arrayList = new ArrayList<String>();
@@ -76,6 +76,8 @@ public class NotificationWorker extends Worker {
         final String channel = getInputData().getString("channel" );
         final String fcmToken = getInputData().getString("fcm_token" );
         final String specialNumber = getInputData().getString("special" );
+        final String chatId = getInputData().getString("chat_id" );
+
         final String blockedFor = getInputData().getString("blockedFor" );
         int id =1;
         String GROUP_KEY_WORK_EMAIL = "com.android.example.WORK_EMAIL";
@@ -93,7 +95,7 @@ public class NotificationWorker extends Worker {
             intent.putExtra("fcm_token",fcmToken);
             intent.putExtra("name",name);
             intent.putExtra("image",imageUrl);
-            intent.putExtra("chat_id","");
+            intent.putExtra("chat_id",chatId);
             intent.putExtra("special", specialNumber);
             intent.putExtra("blockedFor",blockedFor);
 //            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);

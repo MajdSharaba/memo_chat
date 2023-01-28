@@ -18,9 +18,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.repositry.AuthRepo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.ui.verficationPage.VerificationActivity;
 
 import java.util.Observable;
@@ -32,7 +32,7 @@ import static android.content.Context.MODE_PRIVATE;
 /////this class for Api with firebase
 public class AuthApi implements Observer {
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    BaseApp myBase = BaseApp.getInstance();
+    BaseApp myBase = BaseApp.Companion.getInstance();
     ProgressDialog progressDialog;
     AuthRepo authApi= myBase.authRepo;
     public MutableLiveData<Boolean> loading;
@@ -53,7 +53,7 @@ public class AuthApi implements Observer {
     private void signInWithCredential(PhoneAuthCredential credential) {
 //        serverApi = new  ServerApi(context);
 
-        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        ClassSharedPreferences classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
 
         // inside this method we are checking if
         // the code entered is correct or not.
@@ -82,7 +82,7 @@ public class AuthApi implements Observer {
 //                            System.out.println(" showErrorMessage.setValue(true)"+ showErrorMessage.getValue());
 
 
-                            BaseApp.getInstance().authRepo.setLoading(false);
+                            BaseApp.Companion.getInstance().authRepo.setLoading(false);
 
 //                            Toast.makeText(context, Objects.requireNonNull(task.getException()).getLocalizedMessage(), Toast.LENGTH_LONG).show();
                         }
@@ -156,7 +156,7 @@ public class AuthApi implements Observer {
             // which we have alread y created.
             Log.d("nnmn", "onCodeSent:" + verificationid);
 //            AllConstants.forceResendingToken=forceResendingToken;
-            myBase = BaseApp.getInstance();
+            myBase = BaseApp.Companion.getInstance();
             myBase.getForceResendingToken().addObserver(AuthApi.this);
             myBase.getForceResendingToken().setForceResendingToken(forceResendingToken);
             System.out.println(forceResendingToken);

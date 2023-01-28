@@ -35,12 +35,12 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.R;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
 import com.yawar.memo.ui.responeCallPage.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
 
 import java.util.HashMap;
@@ -312,8 +312,8 @@ public class NotificationCallWorker extends Worker {
 
     }
     public void isRining(String yout_id,Context context, String callId) {
-        BaseApp myBase = BaseApp.getInstance();
-        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        BaseApp myBase = BaseApp.Companion.getInstance();
+        ClassSharedPreferences classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
 
         // creating a new variable for our request queue
         RequestQueue queue = Volley.newRequestQueue(context);

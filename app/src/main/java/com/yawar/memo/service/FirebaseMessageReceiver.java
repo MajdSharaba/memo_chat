@@ -20,20 +20,20 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.R;
 import com.yawar.memo.repositry.ChatMessageRepoo;
 import com.yawar.memo.repositry.ChatRoomRepoo;
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp;
 import com.yawar.memo.ui.responeCallPage.CallNotificationActivity;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.model.ChatMessage;
-import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.domain.model.ChatMessage;
+import com.yawar.memo.domain.model.ChatRoomModel;
 import com.yawar.memo.notification.NotificationCallWorker;
 import com.yawar.memo.notification.NotificationMessingCallWorker;
 import com.yawar.memo.notification.NotificationWorker;
 //import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -91,7 +91,7 @@ public class FirebaseMessageReceiver
 //        chatRoomRepoo = myBase.getChatRoomRepoo();
 //        myBase.getObserver().addObserver(this);
         String message = "";
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
         Map<String, String> data = remoteMessage.getData();
         String myCustomKey = data.get("body");
 
@@ -232,6 +232,7 @@ public class FirebaseMessageReceiver
                     Data inputDataNotification = new Data.Builder().putString("name", remoteMessage.getData().get("title")).putString("image", remoteMessage.getData().get("image"))
                             .putString("body", message).putString("channel", remoteMessage.getData().get("sender_id"))
                             .putString("blockedFor", remoteMessage.getData().get("blockedFor")).putString("special", remoteMessage.getData().get("special"))
+                            .putString("chat_id",remoteMessage.getData().get("chat_id"))
                             .putString("fcm_token", remoteMessage.getData().get("fcm_token")).build();
 
 
@@ -328,8 +329,8 @@ void wackLock(){
 
     public void sendMessageStateTwo ( String anthorUserId, String message, String typeMessage,
     String messageId , String dateTime, String chatId ) {
-        BaseApp myBase = BaseApp.getInstance();
-        ClassSharedPreferences classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        BaseApp myBase = BaseApp.Companion.getInstance();
+        ClassSharedPreferences classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
 
         // creating a new variable for our request queue
         RequestQueue queue = Volley.newRequestQueue(FirebaseMessageReceiver.this);

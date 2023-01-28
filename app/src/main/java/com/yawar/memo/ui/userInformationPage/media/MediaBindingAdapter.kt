@@ -9,9 +9,8 @@ import com.bumptech.glide.request.RequestOptions
 import com.github.chrisbanes.photoview.PhotoView
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.MediaModel
-import com.yawar.memo.model.SendContactNumberResponse
-import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.domain.model.MediaModel
+import com.yawar.memo.domain.model.SendContactNumberResponse
 import de.hdodenhof.circleimageview.CircleImageView
 
 @BindingAdapter("image")

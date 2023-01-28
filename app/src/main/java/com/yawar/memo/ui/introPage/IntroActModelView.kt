@@ -4,9 +4,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.BaseApp
+import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.repositry.ChatRoomRepoo
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -14,7 +14,7 @@ import javax.inject.Inject
  class IntroActModelView @Inject  constructor( val chatRoomRepoo: ChatRoomRepoo) : ViewModel() {
 //class IntroActModelView : ViewModel() {
 
-    var baseApp = BaseApp.getInstance()
+    var baseApp = BaseApp.instance!!
 //    private val repository = baseApp.chatRoomRepo
 //    var chatRoomRepoo = baseApp.chatRoomRepoo
     var chatRoomListMutableLiveData = MutableLiveData<ArrayList<ChatRoomModel>>()
@@ -22,7 +22,7 @@ import javax.inject.Inject
         Log.d("IntroActModelView", chatRoomRepoo.chatRoomListMutableLiveData.toString())
             if(chatRoomRepoo.chatRoomListMutableLiveData.value == null) {
                 Log.d("IntroActModelView2", chatRoomRepoo.chatRoomListMutableLiveData.toString())
-                    chatRoomRepoo.loadChatRoom(baseApp.classSharedPreferences.user.userId!!)
+                    chatRoomRepoo.loadChatRoom(baseApp.classSharedPreferences?.user?.userId!!)
 
             }
     }

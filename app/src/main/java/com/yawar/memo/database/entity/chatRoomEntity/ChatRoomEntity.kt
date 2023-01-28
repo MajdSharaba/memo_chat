@@ -1,4 +1,4 @@
-package com.yawar.memo.database.entity
+package com.yawar.memo.database.entity.chatRoomEntity
 
 import androidx.room.Entity
 import androidx.room.Ignore
@@ -36,7 +36,7 @@ data class ChatRoomEntity   (
 
     var mstate:String? = "",
 
-    var created_at:Long ? = 0,
+    var created_at:Long? = 0,
 
     var isTyping:Boolean,
 

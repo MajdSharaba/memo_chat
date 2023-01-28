@@ -36,278 +36,158 @@ import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import javax.inject.Inject;
 
 import dagger.hilt.android.HiltAndroidApp;
-
-@HiltAndroidApp
-public class BaseApp extends Application implements LifecycleObserver {
-
-    FireBaseTokenObserve fireBaseTokenObserve;
-    //    ContactNumberObserve contactNumberObserve;
-    public static final String TAG = "BaseApp";
-    private RequestQueue mRequestQueue;
-    private static BaseApp sInstance;
-    //    ChatRoomRepo chatRoomRepo;
-//    RequestCallRepo requestCallRepo;
-    @Inject
-    BlockUserRepo blockUserRepo;
-    @Inject
-   public AuthRepo authRepo;
-    @Inject
-    ChatMessageRepoo chatMessageRepoo;
-
-//    UserInformationRepo userInformationRepo;
-    String[] darkModeValues ;
-    ClassSharedPreferences classSharedPreferences;
-    Handler handler = new Handler();
-    private Runnable myRunnable ;
-    RxDataStore<Preferences> dataStore;
-    @Inject
-   public ChatRoomRepoo chatRoomRepoo;
-
-
-
-    String peerId = null;
-
-
-
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        setMode();
-
-
-
-
-        sInstance = this;
-
-        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
-        System.out.println("getInstance()");
-        if(getClassSharedPreferences().getUser()!=null) {
-//            System.out.println("getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());");
-//            Log.d(TAG, "getChatRoomRepo().callAPI(classSharedPreferences.getUser()");
-//            getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
-           chatRoomRepoo.loadChatRoom(classSharedPreferences.getUser().getUserId());
-            Log.d(TAG, "onCreate: ");
-
-
-        }
-
-
-
-
-    }
-
-
-    public  String isActivityVisible(){
-        return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().name();
-    }
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-        System.out.println("on Tirminal");
-        Log.d(TAG, "onTerminate: ");
-
-    }
-
-    @Override
-    public void onLowMemory() {
-        Log.d(TAG, "onLowMemory: ");
-        System.out.println("on low memoryyyyyyyyyyyyyy");
-        super.onLowMemory();
-    }
-
-    @Override
-    public void onTrimMemory(int level) {
-        Log.d(TAG, "onTrimMemory: "+isActivityVisible()
-        );
-        System.out.println("onTrimMemory BaseApp");
-
-        super.onTrimMemory(level);
-    }
-
-    public static synchronized BaseApp getInstance() {
-        if(sInstance==null){
-            Log.d(TAG, "get Instance");
-            sInstance = new BaseApp();
-        }
-
-        return sInstance;
-    }
-
-    public FireBaseTokenObserve getForceResendingToken() {
-        if(fireBaseTokenObserve== null){
-            fireBaseTokenObserve = new FireBaseTokenObserve();
-        }
-        return fireBaseTokenObserve;
-    }
-
-    //    public ContactNumberObserve getContactNumberObserve() {
-//        if(contactNumberObserve== null){
-//            contactNumberObserve = new ContactNumberObserve();
+import kotlinx.coroutines.CoroutineScope;
+import kotlinx.coroutines.Dispatchers;
+//
+//@HiltAndroidApp
+//public class BaseApp extends Application implements LifecycleObserver {
+//    FireBaseTokenObserve fireBaseTokenObserve;
+//    public static final String TAG = "BaseApp";
+//    private RequestQueue mRequestQueue;
+//    private static BaseApp sInstance;
+//    @Inject
+//    BlockUserRepo blockUserRepo;
+//    @Inject
+//    public AuthRepo authRepo;
+//    @Inject
+//    ChatMessageRepoo chatMessageRepoo;
+//    String[] darkModeValues;
+//    ClassSharedPreferences classSharedPreferences;
+//    Handler handler = new Handler();
+//    private Runnable myRunnable ;
+//    RxDataStore<Preferences> dataStore;
+//    @Inject
+//    public ChatRoomRepoo chatRoomRepoo;
+//    String peerId = null;
+//    @Override
+//    public void onCreate() {
+//        super.onCreate();
+//        setMode();
+//        sInstance = this;
+//        ProcessLifecycleOwner.get().getLifecycle().addObserver(this);
+//        if(getClassSharedPreferences().getUser()!=null) {
+//           chatRoomRepoo.loadChatRoom(classSharedPreferences.getUser().getUserId());
+//            Log.d(TAG, "onCreate: ");
 //        }
-//        return contactNumberObserve;
 //    }
-    public RequestQueue getRequestQueue() {
-        if (mRequestQueue == null) {
-            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
-        }
-
-        return mRequestQueue;
-    }
-    //    public ChatRoomRepo getChatRoomRepo() {
-//        if(chatRoomRepo== null){
-//            chatRoomRepo = new ChatRoomRepo(this);
+//    public  String isActivityVisible(){
+//        return ProcessLifecycleOwner.get().getLifecycle().getCurrentState().name();
+//    }
+//    @Override
+//    public void onTerminate() {
+//        super.onTerminate();
+//
+//    }
+//
+//    @Override
+//    public void onLowMemory() {
+//        super.onLowMemory();
+//    }
+//
+//    @Override
+//    public void onTrimMemory(int level) {
+//        super.onTrimMemory(level);
+//    }
+//
+//    public static synchronized BaseApp getInstance() {
+//        if(sInstance==null){
+//            sInstance = new BaseApp();
 //        }
-//        return chatRoomRepo;
+//
+//        return sInstance;
 //    }
-//    public ChatRoomRepoo getChatRoomRepoo() {
-//        if(chatRoomRepoo== null){
-//            chatRoomRepoo = new ChatRoomRepoo();
+//
+//    public FireBaseTokenObserve getForceResendingToken() {
+//        if(fireBaseTokenObserve== null){
+//            fireBaseTokenObserve = new FireBaseTokenObserve();
 //        }
-//        return chatRoomRepoo;
+//        return fireBaseTokenObserve;
 //    }
-    //    public RequestCallRepo getRequestCallRepo() {
-//        if(requestCallRepo== null){
-//            requestCallRepo = new RequestCallRepo(this);
+//
+//    public RequestQueue getRequestQueue() {
+//        if (mRequestQueue == null) {
+//            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
 //        }
-//        return requestCallRepo;
+//
+//        return mRequestQueue;
 //    }
-//    public UserInformationRepo getUserInformationRepo() {
-//        if(userInformationRepo== null){
-//            userInformationRepo = new UserInformationRepo();
+//
+//    public ClassSharedPreferences getClassSharedPreferences() {
+//        if(classSharedPreferences== null){
+//            classSharedPreferences = new ClassSharedPreferences(this);
 //        }
-//        return userInformationRepo;
+//        return classSharedPreferences;
 //    }
-//    public BlockUserRepo getBlockUserRepo() {
-//        if(blockUserRepo== null){
-//            blockUserRepo = new BlockUserRepo();
+//    public RxDataStore<Preferences> getDataStore() {
+//        if(dataStore== null){
+//            dataStore =
+//                    new RxPreferenceDataStoreBuilder(this, /*name=*/ "settings").build();
 //        }
-//        return blockUserRepo;
+//        return dataStore;
 //    }
-//    public AuthRepo getAuthRepo() {
-//        if(authRepo== null){
-//            authRepo = new AuthRepo();
+//    public void setPeerId(String peer_id) {
+//        if(peerId== null){
+//            this.peerId = peer_id;
 //        }
-//        return authRepo;
 //    }
-
-//    public ChatMessageRepoo getChatMessageRepoo() {
-//        if(chatMessageRepoo== null){
-//            chatMessageRepoo = new ChatMessageRepoo();
+//
+//    public <T> void addToRequestQueue(Request<T> req, String tag) {
+//        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+//        getRequestQueue().add(req);
+//    }
+//
+//    public <T> void addToRequestQueue(Request<T> req) {
+//        req.setTag(TAG);
+//        getRequestQueue().add(req);
+//    }
+//    public  void setMode(){
+//        darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
+//        String pref = PreferenceManager.getDefaultSharedPreferences(this)
+//                .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
+//        // Comparing to see which preference is selected and applying those theme settings
+//        if (pref.equals(darkModeValues[0])){
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
+//        else if (pref.equals(darkModeValues[1])){
+//
+//            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
+//
+//    }
+//
+//    public void cancelPendingRequests(Object tag) {
+//        if (mRequestQueue != null) {
+//            mRequestQueue.cancelAll(tag);
 //        }
-//        return chatMessageRepoo;
 //    }
-
-    public ClassSharedPreferences getClassSharedPreferences() {
-        if(classSharedPreferences== null){
-            classSharedPreferences = new ClassSharedPreferences(this);
-        }
-        return classSharedPreferences;
-    }
-    public RxDataStore<Preferences> getDataStore() {
-        if(dataStore== null){
-            dataStore =
-                    new RxPreferenceDataStoreBuilder(this, /*name=*/ "settings").build();
-        }
-        return dataStore;
-    }
-    public void setPeerId(String peer_id) {
-        if(peerId== null){
-            this.peerId = peer_id;
-        }
-    }
-    public String getPeerId() {
-        return  peerId;
-    }
-
-    public <T> void addToRequestQueue(Request<T> req, String tag) {
-        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-        getRequestQueue().add(req);
-    }
-
-    public <T> void addToRequestQueue(Request<T> req) {
-        req.setTag(TAG);
-        getRequestQueue().add(req);
-    }
-    public  void setMode(){
-        darkModeValues = getResources().getStringArray(R.array.dark_mode_values);
-        String pref = PreferenceManager.getDefaultSharedPreferences(this)
-                .getString(getString(R.string.dark_mode), getString(R.string.dark_mode_def_value));
-        // Comparing to see which preference is selected and applying those theme settings
-        if (pref.equals(darkModeValues[0])){
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);}
-        else if (pref.equals(darkModeValues[1])){
-
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);}
-
-    }
-
-    public void cancelPendingRequests(Object tag) {
-        if (mRequestQueue != null) {
-            mRequestQueue.cancelAll(tag);
-        }
-    }
-    @SuppressLint("CheckResult")
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    public void onMoveToForeground() {
-        Log.d(TAG, "onMoveToForeground: ");
-
-
-        if(classSharedPreferences.getUser()!=null){
-//            if(chatR) {
-//                getChatRoomRepo().callAPI(classSharedPreferences.getUser().getUserId());
-
-
-//            getChatMessageRepoo().getUnRecivedMessages();
-            chatMessageRepoo.getUnRecivedMessages();
-            Intent service = new Intent(this, SocketIOService.class);
-            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
-            this.startService(service);}
-
-
-//        notifyAll();
-
-
-    }
-
-    @SuppressLint("CheckResult")
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    public void onMoveToBackground() {
-        Log.d(TAG, "onMoveToBackground: ");
-        if (classSharedPreferences.getUser() != null) {
-
-
-            Intent service = new Intent(this, SocketIOService.class);
-            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
-            startService(service);
-//            myRunnable = new Runnable() {
-//                @Override
-//                public void run() {
-//                    System.out.println("on Move to bacground");
-//                    service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
-//                    startService(service);
-//                }
-//            };
-//            handler.postDelayed(myRunnable, 30000);
-        }
-    }
-
-
-
-
-    @SuppressLint("CheckResult")
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy: ");
-        System.out.println("on ON_DESTROY my App");
+//    @SuppressLint("CheckResult")
+//    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+//    public void onMoveToForeground() {
+//        if(classSharedPreferences.getUser()!=null){
+//            chatMessageRepoo.getUnRecivedMessages();
+//            Intent service = new Intent(this, SocketIOService.class);
+//            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN);
+//            this.startService(service);}
+//    }
+//
+//    @SuppressLint("CheckResult")
+//    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+//    public void onMoveToBackground() {
+//        if (classSharedPreferences.getUser() != null) {
 //            Intent service = new Intent(this, SocketIOService.class);
 //            service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_DISCONNECT);
-//            this.startService(service);
-
-
-
-    }
-
-
-}
+//            startService(service);
+//
+//        }
+//    }
+//
+//
+//
+//
+//    @SuppressLint("CheckResult")
+//    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+//    public void onDestroy() {
+//        Log.d(TAG, "onDestroy: ");
+//    }
+//
+//
+//}
 

@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.yawar.memo.model.UserModel;
+import com.yawar.memo.domain.model.UserModel;
 
 import org.json.JSONException;
 import org.json.JSONObject;

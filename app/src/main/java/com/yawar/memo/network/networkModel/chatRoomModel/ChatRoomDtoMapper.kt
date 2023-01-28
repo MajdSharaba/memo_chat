@@ -1,11 +1,12 @@
-package com.yawar.memo.network.networkModel
+package com.yawar.memo.network.networkModel.chatRoomModel
 
-import com.yawar.memo.database.entity.ChatRoomEntity
-import com.yawar.memo.model.ChatRoomModel
-import com.yawar.memo.model.util.DomainMapper
-import com.yawar.memo.model.util.EntityMapper
+import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntity
+import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.domain.model.util.chatRoomUtil.DomainMapper
+import com.yawar.memo.domain.model.util.chatRoomUtil.EntityMapper
 
-class ChatRoomDtoMapper : DomainMapper<ChatRoomModelDto,ChatRoomModel> ,EntityMapper<ChatRoomModelDto, ChatRoomEntity> {
+class ChatRoomDtoMapper : DomainMapper<ChatRoomModelDto, ChatRoomModel>,
+    EntityMapper<ChatRoomModelDto, ChatRoomEntity> {
 
     override fun mapToDominModel(model: ChatRoomModelDto): ChatRoomModel {
         return ChatRoomModel(
@@ -135,7 +136,7 @@ class ChatRoomDtoMapper : DomainMapper<ChatRoomModelDto,ChatRoomModel> ,EntityMa
 
         mstate = model.mstate,
 
-        created_at = model.created_at.toLong(),
+        created_at = model.created_at?.toLong(),
 
         isTyping = model.isTyping,
 

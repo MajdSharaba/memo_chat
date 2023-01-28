@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.model.ChatMessage
+import com.yawar.memo.BaseApp
+import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatMessageRepoo
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.json.JSONArray
 import org.json.JSONException
@@ -20,7 +20,7 @@ class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMess
                                                   val blockUserRepo :BlockUserRepo,
                                                    val savedStateHandle: SavedStateHandle) : ViewModel() {
 
-    var baseApp = BaseApp.getInstance()
+    var baseApp = BaseApp.instance
 //    private val chatMessageRepoo = baseApp.chatMessageRepoo
     var lastSeen = "null"
 
@@ -41,9 +41,9 @@ class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMess
     val isTyping : LiveData<String>
         get() = _isTyping
 init {
-    chatMessageRepoo?.loadChatRoom(BaseApp.getInstance().classSharedPreferences.user.userId, savedStateHandle.get<String>("reciver_id").toString())
+    chatMessageRepoo?.loadChatRoom(BaseApp.instance?.classSharedPreferences?.user?.userId, savedStateHandle.get<String>("reciver_id").toString())
         blockUserRepo.setBlockedForRepo(savedStateHandle.get<String>("blockedFor").toString())
-    Log.d("ConversationModelView", BaseApp.getInstance().classSharedPreferences.user.userId.toString()+"   "+savedStateHandle.get<String>("reciver_id").toString())
+    Log.d("ConversationModelView", BaseApp.instance?.classSharedPreferences?.user?.userId.toString()+"   "+savedStateHandle.get<String>("reciver_id").toString())
 
 
 

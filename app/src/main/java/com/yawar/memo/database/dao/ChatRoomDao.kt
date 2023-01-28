@@ -3,7 +3,8 @@ package com.yawar.memo.database.dao
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.yawar.memo.database.entity.ChatRoomEntity
+import com.yawar.memo.database.entity.callHistoryEntity.CallHistoryEntity
+import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,7 +17,6 @@ interface ChatRoomDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg chatRoomEntity: ChatRoomEntity)
-
 
     @Query("DELETE FROM chatRoomEntity WHERE other_id = :userId")
     fun deleteChatRoom(userId: String)
@@ -42,10 +42,17 @@ interface ChatRoomDao {
     @Query("UPDATE  chatRoomEntity SET blocked_for = :blockedFor  WHERE other_id = :userId")
     fun setBlockState(userId: String, blockedFor: String )
 
+    ////for Call History
+
+    @Query("SELECT * FROM CallHistoryEntity  ORDER BY createdAt DESC ")
+    fun  getCallHistory():LiveData<List<CallHistoryEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAllCalls(vararg callHistoryEntity: CallHistoryEntity)
 
 
 }
-@Database(entities = [ChatRoomEntity::class], version = 1)
+@Database(entities = [ChatRoomEntity::class, CallHistoryEntity::class], version = 1)
 abstract class ChatRoomDatabase : RoomDatabase() {
     abstract val chatRoomDao: ChatRoomDao
 

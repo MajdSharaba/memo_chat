@@ -8,27 +8,27 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.yawar.memo.BaseApp
 import com.yawar.memo.databinding.ItemCallsBinding
-import com.yawar.memo.model.CallModel
+import com.yawar.memo.domain.model.CallHistoryModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.checkThereIsOngoingCall
 import java.util.*
 import kotlin.collections.ArrayList
 
 class CallAdapter(var context: CallHistoryFragment) :
-    ListAdapter<CallModel, CallAdapter.ViewHolder?>(MyDiffUtilCall()), Filterable {
-    var listsearch: MutableList<CallModel?> = ArrayList()
+    ListAdapter<CallHistoryModel, CallAdapter.ViewHolder?>(MyDiffUtilCall()), Filterable {
+    var listsearch: MutableList<CallHistoryModel?> = ArrayList()
     var classSharedPreferences: ClassSharedPreferences?
     var mCallback: CallbackInterface? = null
 
     interface CallbackInterface {
         fun onHandleSelection(position: Int, callModel:
-        CallModel?)
+        CallHistoryModel?)
     }
     init {
         listsearch.addAll(currentList)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences
         try {
             mCallback = context as CallbackInterface
         } catch (ex: ClassCastException) {
@@ -55,7 +55,7 @@ class CallAdapter(var context: CallHistoryFragment) :
 
     private val exampleFilter: Filter = object : Filter() {
         override fun performFiltering(constraint: CharSequence): FilterResults {
-            val filteredList: MutableList<CallModel?> = ArrayList()
+            val filteredList: MutableList<CallHistoryModel?> = ArrayList()
             println(listsearch.size.toString() + "listsearch.size()")
             if (constraint == null || constraint.length == 0) {
                 filteredList.addAll(listsearch)
@@ -73,11 +73,11 @@ class CallAdapter(var context: CallHistoryFragment) :
         }
 
         override fun publishResults(constraint: CharSequence, results: FilterResults) {
-            submitList(results.values as List<CallModel?>)
+            submitList(results.values as List<CallHistoryModel?>)
         }
     }
 
-    fun setData(newData: ArrayList<CallModel?>) {
+    fun setData(newData: ArrayList<CallHistoryModel?>) {
         listsearch = newData
         submitList(newData)
     }
@@ -87,7 +87,7 @@ class CallAdapter(var context: CallHistoryFragment) :
         RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(
-            callModel: CallModel,
+            callModel: CallHistoryModel,
             context: CallHistoryFragment,
             classSharedPreferences : ClassSharedPreferences?,
             mCallback: CallbackInterface?
@@ -114,12 +114,12 @@ class CallAdapter(var context: CallHistoryFragment) :
 
     }
 
-    class MyDiffUtilCall : DiffUtil.ItemCallback<CallModel>() {
-        override fun areItemsTheSame(oldItem: CallModel, newItem: CallModel): Boolean {
+    class MyDiffUtilCall : DiffUtil.ItemCallback<CallHistoryModel>() {
+        override fun areItemsTheSame(oldItem: CallHistoryModel, newItem: CallHistoryModel): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: CallModel, newItem: CallModel): Boolean {
+        override fun areContentsTheSame(oldItem: CallHistoryModel, newItem: CallHistoryModel): Boolean {
             return oldItem == newItem
         }
     }

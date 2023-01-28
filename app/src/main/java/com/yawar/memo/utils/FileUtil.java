@@ -21,8 +21,9 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.constant.AllConstants;
-import com.yawar.memo.model.ChatMessage;
+import com.yawar.memo.domain.model.ChatMessage;
 import com.yawar.memo.repositry.ChatMessageRepoo;
 import com.yawar.memo.ui.chatPage.ConversationActivity;
 
@@ -503,8 +504,8 @@ public class FileUtil {
     public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id
     , String blockrdFor, String token) {
         System.out.println("imageNameeeeeeeeeeeeeeee"+imageName);
-        ChatMessageRepoo chatMessageRepo = BaseApp.getInstance().chatMessageRepoo;
-        BaseApp myBase = BaseApp.getInstance();
+        ChatMessageRepoo chatMessageRepo = BaseApp.Companion.getInstance().chatMessageRepoo;
+        BaseApp myBase = BaseApp.Companion.getInstance();
         Bitmap bitmap = null;
         byte[] imageBytes = new byte[]{};
 
@@ -653,7 +654,7 @@ public class FileUtil {
     ///////////////////
     public static ChatMessage uploadVideo(String pdfname, Uri pdffile, ConversationActivity activity,
                                           String user_id, String anthor_user_id, String blockedFor, String token) {
-        BaseApp myBase = BaseApp.getInstance();
+        BaseApp myBase = BaseApp.Companion.getInstance();
 //        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
         ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
 
@@ -790,7 +791,7 @@ public class FileUtil {
     ////////////////
     public static ChatMessage uploadVoice(String voiceName, Uri voicedPath, ConversationActivity activity,
                                           String user_id, String anthor_user_id, String blockedFor, String token) {
-        BaseApp myBase = BaseApp.getInstance();
+        BaseApp myBase = BaseApp.Companion.getInstance();
 //        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
         ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
 
@@ -927,7 +928,7 @@ public class FileUtil {
     public static ChatMessage uploadPDF(String pdfname, Uri pdffile, ConversationActivity activity, String user_id,
                                         String anthor_user_id , String blockedFor, String token) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
-        BaseApp myBase = BaseApp.getInstance();
+        BaseApp myBase = BaseApp.Companion.getInstance();
 //        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
         ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
 

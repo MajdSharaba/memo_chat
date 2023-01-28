@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.databinding.ItemContactNumberBinding
-import com.yawar.memo.model.SendContactNumberResponse
+import com.yawar.memo.domain.model.SendContactNumberResponse
 import java.util.*
 
 class ContactNumberAdapter(
@@ -39,7 +39,7 @@ class ContactNumberAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val model :  SendContactNumberResponse = arrayList[position]
+        val model : SendContactNumberResponse = arrayList[position]
         holder.bind(model, position,activity,mCallback)
     }
 

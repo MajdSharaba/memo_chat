@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.ui.searchPage.SearchAdapter.ViewHolders
 import com.yawar.memo.databinding.ItemSearchBinding
-import com.yawar.memo.model.SearchRespone
+import com.yawar.memo.domain.model.SearchRespone
 
 class SearchAdapter(
 ///Initialize variable

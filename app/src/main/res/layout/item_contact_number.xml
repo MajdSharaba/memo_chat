@@ -6,7 +6,7 @@
     <data>
         <variable
             name="contactNumber"
-            type="com.yawar.memo.model.SendContactNumberResponse" />
+            type="com.yawar.memo.domain.model.SendContactNumberResponse" />
     </data>
 
     <androidx.cardview.widget.CardView

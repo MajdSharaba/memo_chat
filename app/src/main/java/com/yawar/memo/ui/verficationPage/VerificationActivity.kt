@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
+import com.yawar.memo.BaseApp
 import com.yawar.memo.network.AuthApi
 import com.yawar.memo.R
 import com.yawar.memo.utils.CallProperty
@@ -21,7 +22,6 @@ import com.yawar.memo.databinding.ActivityVerificationBinding
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.registerPage.RegisterActivity
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
@@ -137,9 +137,9 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
         }
         timer()
         binding.btnResendCode.isEnabled = false
-        myBase = BaseApp.getInstance()
-        forceResendingToken = myBase.forceResendingToken.getForceResendingToken()
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        myBase = BaseApp.instance!!
+        forceResendingToken = myBase.fireBaseTokenObserve!!.getForceResendingToken()
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         binding.btnVerification.setOnClickListener(View.OnClickListener {
             if (TextUtils.isEmpty(binding.etVerifiction.text.toString())) {
                 Toast.makeText(
@@ -233,6 +233,6 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
     }
 
     override fun update(observable: Observable, o: Any) {
-        forceResendingToken = myBase.forceResendingToken.getForceResendingToken()
+        forceResendingToken = myBase.fireBaseTokenObserve!!.getForceResendingToken()
     }
 }

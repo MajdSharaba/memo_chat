@@ -13,14 +13,14 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import com.facebook.internal.Utility.logd
+import com.yawar.memo.BaseApp
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityBlockedUsersBinding
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.ui.userInformationPage.UserInformationViewModel
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
@@ -58,8 +58,8 @@ class BlockedUsersActivity : AppCompatActivity(), BlockUserAdapter.CallbackInter
         supportActionBar?.setTitle(R.string.contact_number_blocked)
         val supportActionBar = supportActionBar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
-        myBase = BaseApp.getInstance()
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
+        myBase = BaseApp.instance!!
 //        blockedActViewModel = ViewModelProvider(this).get(BlockedActViewModel::class.java)
 
 //        chatRoomRepo = myBase.getChatRoomRepo();

@@ -14,12 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.journeyapps.barcodescanner.ScanContract
 import com.journeyapps.barcodescanner.ScanIntentResult
 import com.journeyapps.barcodescanner.ScanOptions
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityDevicesLinkBinding
-import com.yawar.memo.model.DeviceLinkModel
+import com.yawar.memo.domain.model.DeviceLinkModel
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import org.json.JSONException
 import org.json.JSONObject
 import java.text.DateFormat
@@ -121,7 +121,7 @@ class DevicesLinkActivity : AppCompatActivity() {
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(recivecheckQr, IntentFilter(SCAN_QR))
         LocalBroadcastManager.getInstance(this).registerReceiver(reciveGetQr, IntentFilter(GET_QR))
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         myId = classSharedPreferences.getUser().userId.toString()
         //        deviceLinkModels.add(new DeviceLinkModel("chrome",""));
         binding.recyclerView.setLayoutManager(LinearLayoutManager(this))

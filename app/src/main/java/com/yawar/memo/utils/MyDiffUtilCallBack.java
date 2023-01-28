@@ -3,7 +3,7 @@ package com.yawar.memo.utils;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.yawar.memo.model.ChatRoomModel;
+import com.yawar.memo.domain.model.ChatRoomModel;
 
   public class MyDiffUtilCallBack extends DiffUtil.ItemCallback<ChatRoomModel> {
 

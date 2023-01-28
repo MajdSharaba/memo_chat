@@ -1,4 +1,4 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 import kotlinx.android.parcel.Parcelize
 
@@ -44,9 +44,9 @@ import kotlinx.android.parcel.Parcelize
     var phone:String? = "",
         ): Cloneable {
 
-    public override fun  clone() :ChatRoomModel {
+    public override fun  clone() : ChatRoomModel {
 
-        var clone :ChatRoomModel
+        var clone : ChatRoomModel
         try {
             clone = super.clone() as ChatRoomModel
         } catch ( e : CloneNotSupportedException) {

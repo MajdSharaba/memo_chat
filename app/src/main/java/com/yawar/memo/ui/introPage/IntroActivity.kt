@@ -9,13 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityIntroBinding
-import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.dashBoard.DashBord
 import com.yawar.memo.ui.userInformationPage.UserInformationViewModel
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,11 +35,11 @@ class IntroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_intro)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
     println("some class ${clazz.doAthing()}")
 
     myId = classSharedPreferences.user.userId.toString()
-        myBase = BaseApp.getInstance()
+        myBase = BaseApp.instance!!
 
 //    introActModelView = ViewModelProvider(this)[IntroActModelView::class.java]
         introActModelView!!.loadData().observe(this, object : Observer<ArrayList<ChatRoomModel?>?> {

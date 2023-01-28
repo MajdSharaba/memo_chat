@@ -5,11 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.model.MediaModel
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.BaseApp
+import com.yawar.memo.domain.model.MediaModel
+import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.UserInformationRepo
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 @HiltViewModel
@@ -17,7 +17,7 @@ class UserInformationViewModel @Inject constructor (val repository:UserInformati
                                                      val savedStateHandle: SavedStateHandle,
                                                     val blockUserRepo: BlockUserRepo
 ): ViewModel() {
-    var baseApp = BaseApp.getInstance()
+    var baseApp = BaseApp.instance
     private val _mute =  MutableLiveData<Boolean>(false)
     val loadingMutableLiveData : LiveData<Boolean>
         get() = _mute

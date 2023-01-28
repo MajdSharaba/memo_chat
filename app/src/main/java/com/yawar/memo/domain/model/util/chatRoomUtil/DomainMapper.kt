@@ -1,4 +1,4 @@
-package com.yawar.memo.model.util
+package com.yawar.memo.domain.model.util.chatRoomUtil
 
 interface DomainMapper<T,DomainModel> {
     fun mapToDominModel(model: T):DomainModel

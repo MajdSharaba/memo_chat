@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.ChatApi
+import com.yawar.memo.BaseApp
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.UserModel
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi,
                                          private val chatRoomRepoo: ChatRoomRepoo) {
 
-    var myBase = BaseApp.getInstance()
+    var myBase = BaseApp.instance
 //    var chatRoomRepoo = myBase.chatRoomRepoo
 
     private val _userBlockListMutableLiveData = MutableLiveData<ArrayList<UserModel?>?>()
@@ -86,14 +86,16 @@ class BlockUserRepo  @Inject constructor(private val chatApi: ChatApi,
                      val userId = jsonObject.getString("id")
                      val email = jsonObject.getString("email")
 
-                     userBlockList.add(UserModel(userId,
+                     userBlockList.add(
+                         UserModel(userId,
                          fName,
                          lName,
                          email,
                          phone,
                          special_number,
                          image,
-                         "null"))
+                         "null")
+                     )
 
 
                  }

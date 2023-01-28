@@ -4,23 +4,19 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.map
 import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.database.dao.ChatRoomDatabase
-import com.yawar.memo.database.entity.ChatRoomEntity
-import com.yawar.memo.database.entity.ChatRoomEntityMapper
-import com.yawar.memo.model.ChatRoomModel
-import com.yawar.memo.network.networkModel.ChatRoomDtoMapper
+import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntityMapper
+import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomDtoMapper
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
-import kotlin.reflect.typeOf
 
 class ChatRoomRepoo  @Inject constructor(
     private val chatApi: ChatApi,
     private val mapper: ChatRoomDtoMapper,
     private val chatRoomEntityMapper: ChatRoomEntityMapper,
-
     private val database : ChatRoomDatabase
 
 ){
@@ -50,8 +46,9 @@ class ChatRoomRepoo  @Inject constructor(
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
      fun loadChatRoom(user_id : String) {
-         _loadingMutableLiveData.value = true
         coroutineScope.launch {
+            _loadingMutableLiveData.value = true
+
 
 //            val getChatRoomsDeferred =   GdgApi(AllConstants.base_url).apiService
 //                .getChatRoom(user_id)
@@ -66,6 +63,7 @@ class ChatRoomRepoo  @Inject constructor(
                     Log.d(TAG, "loadChatRoom: "+listResult.data)
                     database.chatRoomDao.insertAll(*(mapper.toEntityList(listResult.data)))
 
+
                 }
 
                 _loadingMutableLiveData.value = false
@@ -79,7 +77,7 @@ class ChatRoomRepoo  @Inject constructor(
                 _showErrorMessage.value = true
 
 
-                Log.d("chatRoomTag: ","Failure: ${e.message}")
+                Log.d("chatRoomTag: ","Failure: ${e}")
 
             }
         }
@@ -211,7 +209,7 @@ class ChatRoomRepoo  @Inject constructor(
 //        var chatRoomsList = _chatRoomListMutableLiveData.value
         coroutineScope.launch {
 
-
+              if(chatRoomListMutableLiveData.value!=null){
             var chatRoomsList = chatRoomListMutableLiveData.value as ArrayList
 
             var inList = false
@@ -263,7 +261,7 @@ class ChatRoomRepoo  @Inject constructor(
                     }
                 }
             }
-        }
+        }}
 //        _chatRoomListMutableLiveData.postValue( chatRoomsList)
     }
 
@@ -279,39 +277,41 @@ class ChatRoomRepoo  @Inject constructor(
         sender_id: String?,
     ) {
         coroutineScope.launch {
-
-            var chatRoomsList = chatRoomListMutableLiveData.value as ArrayList
-            var inList = false
-            for (chatRoom in chatRoomsList!!) {
-                if (chatRoom != null) {
-                    Log.d(TAG, "setLastMessage: ${chatRoom.other_id + senderId}")
-                    if (chatRoom.other_id == senderId) {
-                        chatRoom.last_message = message!!
-                        chatRoom.message_type = type
-                        chatRoom.mstate = state!!
-                        chatRoom.created_at = dateTime!!
-                        chatRoom.msg_sender = sender_id!!
-                        inList = true
-                        if (!chatRoom.inChat!!) {
-                            chatRoom.num_msg = (Integer.parseInt(chatRoom.num_msg) + 1).toString()
-                        }
-                        Log.d(TAG, "setLastMessage:${chatRoom.num_msg + message} ")
-                        withContext(Dispatchers.IO) {
-                            database.chatRoomDao.updateChatRoom(
-                                chatRoom.other_id,
-                                chatRoom.last_message,
-                                chatRoom.message_type.toString(),
-                                chatRoom.mstate.toString(),
-                                chatRoom.created_at!!.toLong(),
-                                chatRoom.msg_sender.toString(),
-                                chatRoom.num_msg
-                            )
-                        }
+            if (chatRoomListMutableLiveData.value != null) {
+                var chatRoomsList = chatRoomListMutableLiveData.value as ArrayList
+                var inList = false
+                for (chatRoom in chatRoomsList!!) {
+                    if (chatRoom != null) {
+                        Log.d(TAG, "setLastMessage: ${chatRoom.other_id + senderId}")
+                        if (chatRoom.other_id == senderId) {
+                            chatRoom.last_message = message!!
+                            chatRoom.message_type = type
+                            chatRoom.mstate = state!!
+                            chatRoom.created_at = dateTime!!
+                            chatRoom.msg_sender = sender_id!!
+                            inList = true
+                            if (!chatRoom.inChat!!) {
+                                chatRoom.num_msg =
+                                    (Integer.parseInt(chatRoom.num_msg) + 1).toString()
+                            }
+                            Log.d(TAG, "setLastMessage:${chatRoom.num_msg + message} ")
+                            withContext(Dispatchers.IO) {
+                                database.chatRoomDao.updateChatRoom(
+                                    chatRoom.other_id,
+                                    chatRoom.last_message,
+                                    chatRoom.message_type.toString(),
+                                    chatRoom.mstate.toString(),
+                                    chatRoom.created_at!!.toLong(),
+                                    chatRoom.msg_sender.toString(),
+                                    chatRoom.num_msg
+                                )
+                            }
 //                    chatRoomsList.remove(chatRoom)
 //                    chatRoomsList.add(0, chatRoom)
 
 
-                        break
+                            break
+                        }
                     }
                 }
             }
@@ -343,19 +343,22 @@ class ChatRoomRepoo  @Inject constructor(
 //        _chatRoomListMutableLiveData.postValue(chatRoomsList)
     }
     fun checkISNewChat( chatId: String) : Boolean {
-        var chatRoomsList = chatRoomListMutableLiveData.value
+        if(chatRoomListMutableLiveData.value!=null) {
+            var chatRoomsList = chatRoomListMutableLiveData.value
 
-        if (chatRoomsList != null) {
-            for (chatRoom in chatRoomsList) {
-                if (chatRoom != null) {
-                    if (chatRoom.id ==  chatId) {
-                      return false
-                        break
+            if (chatRoomsList != null) {
+                for (chatRoom in chatRoomsList) {
+                    if (chatRoom != null) {
+                        if (chatRoom.id == chatId) {
+                            return false
+                            break
+                        }
                     }
                 }
             }
+            return true
         }
-        return true
+        else return  false
     }
 
     fun setTyping(chat_id: String, isTyping: Boolean) {

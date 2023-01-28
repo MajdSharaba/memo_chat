@@ -28,13 +28,14 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import com.google.firebase.storage.StorageReference
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.DialogImageChtBinding
 import com.yawar.memo.databinding.FragmentSettingsBinding
 import com.yawar.memo.databinding.InputNameDialogBinding
 import com.yawar.memo.language.BottomSheetFragment
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
@@ -42,7 +43,6 @@ import com.yawar.memo.repositry.ChatRoomRepoo
 //import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.blockUserPage.BlockedUsersActivity
 import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity
 import com.yawar.memo.ui.splashPage.SplashScreen
@@ -86,12 +86,12 @@ class SettingsFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_settings,container,false)
         val view = binding.root
         currentLanguage = requireActivity().intent.getStringExtra(currentLang)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         userModel = classSharedPreferences.user
 //        serverApi = ServerApi(activity)
         progressDialog = ProgressDialog(requireActivity())
         progressDialog!!.setMessage(resources.getString(R.string.prograss_message))
-        myBase = BaseApp.getInstance()
+        myBase = BaseApp.instance!!
 //        chatRoomRepoo = myBase.chatRoomRepoo
 //        blockUserRepo = myBase.blockUserRepo
 //        authRepo = myBase.authRepo

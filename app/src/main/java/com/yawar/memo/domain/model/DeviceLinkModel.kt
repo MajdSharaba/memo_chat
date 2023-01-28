@@ -1,4 +1,4 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 class DeviceLinkModel (
     var name: String? = null,

@@ -13,12 +13,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tsuryo.swipeablerv.SwipeLeftRightCallback
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityArchivedBinding
-import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -34,7 +34,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_archived)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         myId = classSharedPreferences.user.userId!!
 //        archivedActViewModel = ViewModelProvider(this)[ArchivedActViewModel::class.java]
         myBase = application as BaseApp

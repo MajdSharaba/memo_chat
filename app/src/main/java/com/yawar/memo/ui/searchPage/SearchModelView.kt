@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.yawar.memo.Api.ChatApi
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.SearchRespone
+import com.yawar.memo.domain.model.SearchRespone
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

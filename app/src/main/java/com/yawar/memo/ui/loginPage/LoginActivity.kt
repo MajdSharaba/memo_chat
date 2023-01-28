@@ -31,14 +31,14 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuth.AuthStateListener
 import com.google.firebase.auth.GoogleAuthProvider
+import com.yawar.memo.BaseApp
 import com.yawar.memo.network.AuthApi
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityLoginBinding
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.registerPage.RegisterActivity
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.utils.CallProperty
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
@@ -78,7 +78,7 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
         CallProperty.setStatusBarOrScreenStatus(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         authApi = AuthApi(this)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         firebaseAuth = FirebaseAuth.getInstance()
 //        loginModelView = ViewModelProvider(this).get(
 //            LoginModelView::class.java

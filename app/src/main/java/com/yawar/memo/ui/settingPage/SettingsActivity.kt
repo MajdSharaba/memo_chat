@@ -12,10 +12,10 @@ import androidx.databinding.DataBindingUtil
 import androidx.preference.ListPreference
 import androidx.preference.Preference.SummaryProvider
 import androidx.preference.PreferenceFragmentCompat
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.databinding.SettingsActivityBinding
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import java.util.*
 
 class SettingsActivity : AppCompatActivity(), OnSharedPreferenceChangeListener,
@@ -26,7 +26,7 @@ class SettingsActivity : AppCompatActivity(), OnSharedPreferenceChangeListener,
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.settings_activity)
         supportActionBar!!.setTitle(R.string.appearance)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences
         supportFragmentManager
             .beginTransaction()
             .replace(binding.block.id, SettingsFragment())

@@ -51,14 +51,14 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.utils.AutoStartHelper;
 import com.yawar.memo.utils.CallProperty;
 import com.yawar.memo.databinding.ActivityRegisterBinding;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
-import com.yawar.memo.model.UserModel;
+import com.yawar.memo.domain.model.UserModel;
 import com.yawar.memo.repositry.AuthRepo;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.ui.introPage.IntroActivity;
 
 import org.json.JSONArray;
@@ -116,9 +116,9 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
 
     private void initView() {
         spennerItemChooser=getResources().getString(R.string.choose_special_number);
-        myBase = BaseApp.getInstance();
+        myBase = BaseApp.Companion.getInstance();
 //        authRepo = myBase.getAuthRepo();
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
         if(classSharedPreferences.getUser()!=null) {
             binding.etFName.setText(classSharedPreferences.getUser().getUserName());
             Glide.with(binding.imageProfile).load(classSharedPreferences.getUser().getImage()).apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th)).into(binding.imageProfile);

@@ -30,10 +30,10 @@ import androidx.work.WorkerParameters;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.ui.dashBoard.DashBord;
 
@@ -52,7 +52,7 @@ public class NotificationMessingCallWorker extends Worker {
     @NonNull
     @Override
     public Worker.Result doWork() {
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
         ArrayList<String> arrayList = new ArrayList<String>();

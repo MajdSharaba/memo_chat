@@ -25,13 +25,13 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.FragmentSearchBinding
-import com.yawar.memo.model.SearchRespone
+import com.yawar.memo.domain.model.SearchRespone
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.chatPage.ConversationActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -66,7 +66,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
         val view = binding.root
         timer = Timer()
         permissions = Permissions()
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         my_id = classSharedPreferences.user.userId.toString()
         binding.recyclerView.setHasFixedSize(true)
         linearLayoutManager = LinearLayoutManager(context)

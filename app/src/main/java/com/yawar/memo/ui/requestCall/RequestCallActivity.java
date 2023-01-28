@@ -53,15 +53,15 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.utils.CallProperty;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.databinding.ActivityRequestCallBinding;
 import com.yawar.memo.notification.CancelCallFromCallOngoingNotification;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.R;
-import com.yawar.memo.model.UserModel;
+import com.yawar.memo.domain.model.UserModel;
 import com.yawar.memo.service.SocketIOService;
-import com.yawar.memo.utils.BaseApp;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -671,7 +671,7 @@ public class RequestCallActivity extends AppCompatActivity {
 //        fcm_token = bundle.getString("fcm_token", null);
         isVideoForMe = bundle.getBoolean("isVideo", true);
         imageUrl = bundle.getString("image_profile", " mm");
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
         my_id = classSharedPreferences.getUser().getUserId();
         userModel = classSharedPreferences.getUser();
         requestCallViewModel = new ViewModelProvider(this).get(RequestCallViewModel.class);

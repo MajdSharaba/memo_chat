@@ -4,7 +4,7 @@
     <data>
         <variable
             name="chatMessage"
-            type="com.yawar.memo.model.ChatMessage" />
+            type="com.yawar.memo.domain.model.ChatMessage" />
     </data>
 
 

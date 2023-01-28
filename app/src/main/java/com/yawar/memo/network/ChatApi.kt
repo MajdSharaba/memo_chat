@@ -2,7 +2,8 @@ package com.yawar.memo.Api
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.ChatRoomRespone
+import com.yawar.memo.network.networkModel.callHistoryModel.CallHistoryDto
+import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomRespone
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -102,7 +103,7 @@ interface ChatApi {
 
     @FormUrlEncoded
     @POST("mycalls")
-    fun getMyCalls(@Field("my_id") my_id: String?): Deferred<String?>?
+    fun getMyCalls(@Field("my_id") my_id: String?): Deferred<List<CallHistoryDto>>
 
     @FormUrlEncoded
     @POST("APIS/search_for_user.php")

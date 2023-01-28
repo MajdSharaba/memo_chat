@@ -5,10 +5,10 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.yawar.memo.Api.ChatApi
+import com.yawar.memo.BaseApp
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.ChatMessage
-import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.domain.model.ChatMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -346,7 +346,7 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
 //                val deleteDeferred = GdgApi.apiService
 //                    .getUnRecivedMessages( BaseApp.getInstance().classSharedPreferences.user.userId)
                 val deleteDeferred = chatApi
-                    .getUnRecivedMessages( BaseApp.getInstance().classSharedPreferences.user.userId)
+                    .getUnRecivedMessages( BaseApp.instance?.classSharedPreferences!!.user.userId)
 
 
                 try {
@@ -361,7 +361,7 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
                         val chatMessage = ChatMessage()
                         chatMessage.userId = jsonObject.getString("sender_id")
                         chatMessage.state = jsonObject.getString("state")
-                        chatMessage.isMe = jsonObject.getString("sender_id") == BaseApp.getInstance().classSharedPreferences.user.userId
+                        chatMessage.isMe = jsonObject.getString("sender_id") == BaseApp.instance?.classSharedPreferences!!.user.userId
                         if (jsonObject.getString("message_type") == "file" || jsonObject.getString("message_type") == "voice" || jsonObject.getString(
                                 "message_type") == "video" || jsonObject.getString("message_type") == "contact" || jsonObject.getString(
                                 "message_type") == "imageWeb"
@@ -379,14 +379,14 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
                         chatMessage.type = jsonObject.getString("message_type")
                         chatMessage.dateTime = jsonObject.getString("created_at")
                         chatMessage.isUpdate = jsonObject.getString("edited")
-                       if( BaseApp.getInstance().chatRoomRepoo.checkInChat(chatMessage.userId)){
+                       if( BaseApp.instance?.chatRoomRepoo!!.checkInChat(chatMessage.userId)){
                            addMessage(chatMessage)
                            Log.d("getMarsRealEstateProperties: ", "addddddddddddd")
                        }
                         else{
                            Log.d("elseeeeeeeeeee: ", "addddddddddddd")
 
-                           BaseApp.getInstance().chatRoomRepoo.setLastMessageBySenderId(
+                           BaseApp.instance?.chatRoomRepoo!!.setLastMessageBySenderId(
                                chatMessage.message,chatMessage.id, chatMessage.userId,
                                chatMessage.id, chatMessage.type, chatMessage.state, chatMessage.dateTime, chatMessage.userId
                            )

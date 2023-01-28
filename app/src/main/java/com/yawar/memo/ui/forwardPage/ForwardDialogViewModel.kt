@@ -2,11 +2,11 @@ package com.yawar.memo.ui.forwardPage
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.BaseApp
+import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.repositry.ChatMessageRepoo
 import com.yawar.memo.repositry.ChatRoomRepoo
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ForwardDialogViewModel@Inject constructor(private val chatMessageRepo:ChatMessageRepoo, private val repository: ChatRoomRepoo) : ViewModel() {
 
-    var baseApp = BaseApp.getInstance()
+    var baseApp = BaseApp.instance!!
 //    private val repository = baseApp.chatRoomRepoo
 //    private val chatMessageRepo = baseApp.chatMessageRepoo
 

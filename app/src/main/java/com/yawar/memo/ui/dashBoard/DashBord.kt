@@ -30,11 +30,12 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.messaging.FirebaseMessaging
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityDashBordBinding
 import com.yawar.memo.language.helper.LocaleHelper
-import com.yawar.memo.model.ChatRoomModel
+import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.notification.NotificationWorker
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.AuthRepo
@@ -47,7 +48,6 @@ import com.yawar.memo.ui.CallHistoryPage.CallHistoryFragment
 import com.yawar.memo.ui.ChatRoomsPage.ChatRoomFragment
 import com.yawar.memo.ui.searchPage.SearchFragment
 import com.yawar.memo.ui.settingPage.SettingsFragment
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
@@ -291,9 +291,9 @@ class DashBord : AppCompatActivity() {
         )
 
 ////// send Fcm Token
-        myBase = BaseApp.getInstance()
+        myBase = BaseApp.instance!!
 //        authRepo = myBase.authRepo
-        Log.d( "onCreatebaseApp",myBase.isActivityVisible)
+//        Log.d( "onCreatebaseApp",myBase.isActivityVisible)
 
         FirebaseMessaging.getInstance().token
             .addOnCompleteListener(OnCompleteListener { task ->
@@ -325,7 +325,7 @@ class DashBord : AppCompatActivity() {
 
 /////////////////////
 
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         Log.d("onCreate:", classSharedPreferences.number)
         permissions = Permissions()
         checkPermission()

@@ -1,4 +1,4 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 class GroupSelectorRespone(
     var id: String? = null,

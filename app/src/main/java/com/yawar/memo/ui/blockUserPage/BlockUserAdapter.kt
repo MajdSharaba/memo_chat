@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.ui.blockUserPage.BlockUserAdapter.ViewHolder.Companion.from
 import com.yawar.memo.databinding.ItemBlockUserBinding
-import com.yawar.memo.model.UserModel
+import com.yawar.memo.domain.model.UserModel
 
 class BlockUserAdapter(var activity: Activity, arrayList: List<UserModel>) :
     RecyclerView.Adapter<BlockUserAdapter.ViewHolder>() {

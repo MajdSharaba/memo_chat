@@ -1,8 +1,6 @@
 package com.yawar.memo.di
 
-import com.yawar.memo.Api.ChatApi
-import com.yawar.memo.network.networkModel.ChatRoomDtoMapper
-import com.yawar.memo.repositry.AuthRepo
+import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomDtoMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

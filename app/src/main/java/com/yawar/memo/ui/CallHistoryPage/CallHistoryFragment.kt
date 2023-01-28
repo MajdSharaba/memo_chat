@@ -12,16 +12,14 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.ui.requestCall.RequestCallActivity
 import com.yawar.memo.databinding.FragmentCallHistoryBinding
-import com.yawar.memo.model.CallModel
+import com.yawar.memo.domain.model.CallHistoryModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.BaseApp
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
@@ -40,16 +38,16 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
         val linearLayoutManager = LinearLayoutManager(context)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.recyclerView.layoutManager = linearLayoutManager
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         itemAdapter = CallAdapter(this)
 //        callHistoryModelView = ViewModelProvider(this)[CallHistoryModelView::class.java]
-        callHistoryModelView.loadData(classSharedPreferences.user.userId!!)
+        callHistoryModelView.loadData()
             .observe(
                 requireActivity(),
-                Observer<ArrayList<CallModel?>?> { callModels ->
-                    val list = ArrayList<CallModel?>()
+                Observer<List<CallHistoryModel?>?> { callModels ->
+                    val list = ArrayList<CallHistoryModel?>()
                     if (callModels != null) {
-                        println("no call")
+                        println("no call"+callModels)
                         if (callModels.isEmpty()) {
                             binding.linerNoCallHistory.visibility = View.VISIBLE
                             binding.recyclerView.visibility = View.GONE
@@ -94,7 +92,7 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
         return view
     }
 
-    override fun onHandleSelection(position: Int, callModel: CallModel?) {
+    override fun onHandleSelection(position: Int, callModel: CallHistoryModel?) {
         if (callModel != null) {
             val id : String
             if(callModel.answer_id == classSharedPreferences.user.userId){

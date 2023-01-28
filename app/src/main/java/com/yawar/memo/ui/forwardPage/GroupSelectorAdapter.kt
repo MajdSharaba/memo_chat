@@ -14,7 +14,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.SendContactNumberResponse
+import com.yawar.memo.domain.model.SendContactNumberResponse
 
 class GroupSelectorAdapter : RecyclerView.Adapter<GroupSelectorAdapter.ViewHolder> {
     var fragment: Fragment? = null
@@ -59,7 +59,7 @@ class GroupSelectorAdapter : RecyclerView.Adapter<GroupSelectorAdapter.ViewHolde
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val  model :SendContactNumberResponse = arrayList[position]
+        val  model : SendContactNumberResponse = arrayList[position]
         holder.bind(model, position,mCallback)
     }
 

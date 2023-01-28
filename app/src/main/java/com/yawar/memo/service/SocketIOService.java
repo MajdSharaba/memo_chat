@@ -16,6 +16,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 //import com.yawar.memo.call.CompleteActivity;
 //import com.yawar.memo.repositry.ChatRoomRepoo;
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp;
+import com.yawar.memo.BaseApp;
 import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
@@ -38,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import dagger.hilt.android.AndroidEntryPoint;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import com.yawar.memo.utils.BaseApp;
 import com.yawar.memo.ui.dashBoard.DashBord;
 import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity;
 
@@ -171,7 +171,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
         IOOption = new IO.Options();
 //        IOOption.query = "public_key=" + new SessionManager(getApplicationContext()).getPublicKey();
         chatQueue = new LinkedList<>();
-        classSharedPreferences = BaseApp.getInstance().getClassSharedPreferences();
+        classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
 //        if(!(classSharedPreferences.getUser() ==null)){
 //        my_id = classSharedPreferences.getUser().getUserId();}
         listenersMap = new ConcurrentHashMap<>();

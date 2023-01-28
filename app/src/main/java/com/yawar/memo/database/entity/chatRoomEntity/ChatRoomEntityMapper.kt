@@ -1,7 +1,7 @@
-package com.yawar.memo.database.entity
+package com.yawar.memo.database.entity.chatRoomEntity
 
-import com.yawar.memo.model.ChatRoomModel
-import com.yawar.memo.model.util.DomainMapper
+import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.domain.model.util.chatRoomUtil.DomainMapper
 
 class ChatRoomEntityMapper : DomainMapper<ChatRoomEntity, ChatRoomModel> {
     override fun mapToDominModel(model: ChatRoomEntity): ChatRoomModel {

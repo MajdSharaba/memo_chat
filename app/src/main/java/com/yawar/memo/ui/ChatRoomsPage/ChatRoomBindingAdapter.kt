@@ -7,10 +7,10 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.model.ChatRoomModel
-import com.yawar.memo.utils.BaseApp
+import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.utils.TimeProperties
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -32,7 +32,7 @@ fun TextView.setTime(item : ChatRoomModel?) {
     fun TextView.setLastMessage(item : ChatRoomModel?) {
         item?.let {
             if (!item.isTyping) {
-                setTextColor(BaseApp.getInstance().getColor(R.color.gray))
+                setTextColor(BaseApp.instance!!.getColor(R.color.gray))
                 when (item.message_type) {
                     "imageWeb" -> text = context.resources.getString(R.string.photo)
                     "voice" -> text = context.resources.getString(R.string.voice)
@@ -44,7 +44,7 @@ fun TextView.setTime(item : ChatRoomModel?) {
                 }
             }
             else{
-                setTextColor(BaseApp.getInstance().getColor(R.color.green))
+                setTextColor(BaseApp.instance!!.getColor(R.color.green))
                 text = context.resources.getString(R.string.writing_now)
             }
         }}
@@ -75,27 +75,27 @@ fun TextView.setTime(item : ChatRoomModel?) {
                 when (item.message_type) {
                     "imageWeb" -> {
                         visibility = View.VISIBLE
-                        setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_select_image))
+                        setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_select_image))
                     }
                     "voice" ->{
                         visibility = View.VISIBLE
-                        setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_voice))
+                        setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_voice))
                     }
                     "video" -> {
                         visibility = View.VISIBLE
-                        setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_video))
+                        setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_video))
                     }
                     "file" -> {
                         visibility = View.VISIBLE
-                        setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_file))
+                        setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_file))
                     }
                     "contact" ->{
                         visibility = View.VISIBLE
-                        setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_person))
+                        setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_person))
                     }
                     "location" -> {
                         visibility = View.VISIBLE
-                        setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_location))
+                        setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_location))
                     }
                     else -> {
                         visibility = View.GONE
@@ -113,32 +113,32 @@ fun TextView.setTime(item : ChatRoomModel?) {
     fun ImageView.setImageState(item : ChatRoomModel?) {
         item?.let {
             if (!item.isTyping) {
-                if (item.msg_sender == BaseApp.getInstance().classSharedPreferences.user.userId) {
+                if (item.msg_sender == BaseApp.instance!!.classSharedPreferences!!.user.userId) {
                     visibility = View.VISIBLE
 
                     when (item.mstate) {
                         "1" -> {
-                            setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_send_done))
+                            setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_send_done))
                             imageTintList =
-                                ColorStateList.valueOf(BaseApp.getInstance().resources.getColor(R.color.gray))
+                                ColorStateList.valueOf(BaseApp.instance!!.resources.getColor(R.color.gray))
 
                         }
                         "2" -> {
-                            setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_recive_done))
+                            setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_recive_done))
                             imageTintList =
-                                ColorStateList.valueOf(BaseApp.getInstance().resources.getColor(R.color.gray))
+                                ColorStateList.valueOf(BaseApp.instance!!.resources.getColor(R.color.gray))
 
                         }
                         "3" -> {
-                            setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_recive_done_green))
+                            setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_recive_done_green))
                             imageTintList = null
 
                         }
 
                         else -> {
-                            setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.ic_not_send))
+                            setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.ic_not_send))
                             imageTintList =
-                                ColorStateList.valueOf(BaseApp.getInstance().resources.getColor(R.color.gray))
+                                ColorStateList.valueOf(BaseApp.instance!!.resources.getColor(R.color.gray))
 
                         }
                     }
@@ -162,7 +162,7 @@ fun TextView.setTime(item : ChatRoomModel?) {
                     .apply(RequestOptions.placeholderOf(R.drawable.th).error(R.drawable.th))
                     .into(this)
             } else {
-                setImageDrawable(BaseApp.getInstance().resources.getDrawable(R.drawable.th))
+                setImageDrawable(BaseApp.instance!!.resources.getDrawable(R.drawable.th))
             }
         }
     }

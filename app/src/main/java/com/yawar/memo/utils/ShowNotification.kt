@@ -6,6 +6,7 @@ import android.service.notification.StatusBarNotification
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.notification.NotificationWorker
@@ -19,27 +20,27 @@ fun showNotification(name : String?, image : String?, body : String?,
 
         when (type) {
             "imageWeb" -> {
-                message = BaseApp.getInstance().baseContext.resources.getString(R.string.n_photo)
+                message = BaseApp.instance?.baseContext?.resources!!.getString(R.string.n_photo)
 
             }
             "voice" -> {
-                message = BaseApp.getInstance().baseContext.getString(R.string.n_voice)
+                message = BaseApp.instance?.baseContext!!.getString(R.string.n_voice)
 
             }
             "video" -> {
-                message = BaseApp.getInstance().baseContext.getString(R.string.n_video)
+                message = BaseApp.instance?.baseContext!!.getString(R.string.n_video)
 
             }
             "file" -> {
-                message = BaseApp.getInstance().baseContext.getString(R.string.n_file)
+                message = BaseApp.instance?.baseContext!!.getString(R.string.n_file)
 
             }
             "contact" -> {
-                message = BaseApp.getInstance().baseContext.getString(R.string.n_contact)
+                message = BaseApp.instance?.baseContext!!.getString(R.string.n_contact)
 
             }
             "location" -> {
-                message = BaseApp.getInstance().baseContext.getString(R.string.n_location)
+                message = BaseApp.instance?.baseContext!!.getString(R.string.n_location)
 
             }
             else -> {
@@ -72,7 +73,7 @@ fun showNotification(name : String?, image : String?, body : String?,
     }
 fun checkThereIsOngoingCall(): Boolean{
 val notificationManager =
-    BaseApp.getInstance().baseContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    BaseApp.instance?.baseContext!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
 for (  statusBarNotification: StatusBarNotification? in notificationManager.getActiveNotifications()) {
     if (statusBarNotification != null) {

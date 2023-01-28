@@ -1,4 +1,4 @@
-package com.yawar.memo.model
+package com.yawar.memo.domain.model
 
 import kotlinx.android.parcel.Parcelize
 
@@ -14,8 +14,8 @@ import kotlinx.android.parcel.Parcelize
      var blockedFor: String? = null,
      var isAdded: Boolean = false,
  ) : Cloneable  {
-     public override fun  clone() :SearchRespone {
-         var clone :SearchRespone
+     public override fun  clone() : SearchRespone {
+         var clone : SearchRespone
          try {
              clone = super.clone() as SearchRespone
          } catch ( e : CloneNotSupportedException) {

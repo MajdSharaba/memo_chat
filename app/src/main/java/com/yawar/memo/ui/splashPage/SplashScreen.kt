@@ -13,13 +13,13 @@ import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.utils.CallProperty
 import com.yawar.memo.databinding.ActivitySplashScreenBinding
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.loginPage.LoginActivity
-import com.yawar.memo.utils.BaseApp
 import com.yawar.memo.ui.introPage.IntroActivity
 import com.yawar.memo.ui.registerPage.RegisterActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,8 +45,8 @@ class SplashScreen : AppCompatActivity() {
         CallProperty.setStatusBarOrScreenStatus(this)
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_screen)
-        classSharedPreferences = BaseApp.getInstance().classSharedPreferences
-        myBase = BaseApp.getInstance()
+        classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
+        myBase = BaseApp.instance!!
 //        authRepo = myBase.authRepo
 
 //        splachActViewModel = ViewModelProvider(this).get(SplachActViewModel::class.java)
