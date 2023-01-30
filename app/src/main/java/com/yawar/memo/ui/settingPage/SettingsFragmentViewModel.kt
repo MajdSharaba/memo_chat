@@ -7,17 +7,15 @@ import androidx.lifecycle.ViewModel
 import com.yawar.memo.Api.ChatApi
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.database.dao.ChatRoomDatabase
 import com.yawar.memo.domain.model.UserModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import javax.inject.Inject
 @HiltViewModel
-class SettingsFragmentViewModel  @Inject constructor(val chatApi: ChatApi): ViewModel() {
+class SettingsFragmentViewModel  @Inject constructor(val chatApi: ChatApi, val database: ChatRoomDatabase): ViewModel() {
 
     private val _userModelRespone = MutableLiveData<UserModel>()
     val userModelRespone: LiveData<UserModel>
@@ -198,5 +196,15 @@ class SettingsFragmentViewModel  @Inject constructor(val chatApi: ChatApi): View
     override fun onCleared() {
         viewModelJob.cancel()
         super.onCleared()
+    }
+    fun clearDatabase(){
+        coroutineScope.launch {
+
+
+            withContext(Dispatchers.IO) {
+            database.chatRoomDao.deleteChatRoomTable()
+            database.chatRoomDao.deleteCallHistoryTable()
+            }
+        }
     }
 }

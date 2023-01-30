@@ -3,6 +3,7 @@ package com.yawar.memo.ui.AcrchivedPage
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -47,6 +48,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
             Observer<ArrayList<ChatRoomModel?>?> { chatRoomModels ->
                 if (chatRoomModels != null) {
                     val list = ArrayList<ChatRoomModel?>()
+                    Log.d("Archivedddddddddd", chatRoomModels.toString())
                     archived.clear()
                     for (chatRoomModel in chatRoomModels) {
                         if (chatRoomModel != null) {

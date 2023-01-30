@@ -20,9 +20,13 @@ import javax.inject.Inject
     var chatRoomListMutableLiveData = MutableLiveData<ArrayList<ChatRoomModel>>()
     init {
         Log.d("IntroActModelView", chatRoomRepoo.chatRoomListMutableLiveData.toString())
-            if(chatRoomRepoo.chatRoomListMutableLiveData.value == null) {
+            if(chatRoomRepoo.chatRoomListMutableLiveData.value == null  ) {
                 Log.d("IntroActModelView2", chatRoomRepoo.chatRoomListMutableLiveData.toString())
                     chatRoomRepoo.loadChatRoom(baseApp.classSharedPreferences?.user?.userId!!)
+
+            }
+        else if(chatRoomRepoo.chatRoomListMutableLiveData.value!!.isEmpty()){
+                chatRoomRepoo.loadChatRoom(baseApp.classSharedPreferences?.user?.userId!!)
 
             }
     }

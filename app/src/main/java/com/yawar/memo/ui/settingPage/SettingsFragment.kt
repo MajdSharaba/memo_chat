@@ -1,5 +1,4 @@
 package com.yawar.memo.ui.settingPage
-
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.Dialog
@@ -31,6 +30,7 @@ import com.google.firebase.storage.StorageReference
 import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.database.dao.ChatRoomDatabase
 import com.yawar.memo.databinding.DialogImageChtBinding
 import com.yawar.memo.databinding.FragmentSettingsBinding
 import com.yawar.memo.databinding.InputNameDialogBinding
@@ -47,6 +47,8 @@ import com.yawar.memo.ui.blockUserPage.BlockedUsersActivity
 import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity
 import com.yawar.memo.ui.splashPage.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -61,6 +63,7 @@ class SettingsFragment : Fragment() {
     var currentLang: String? = null
     lateinit var bitmap: Bitmap
     var seekValue = 2
+
     var progressDialog: ProgressDialog? = null
     var imageBytes = byteArrayOf()
      val settingsFragmentViewModel by viewModels< SettingsFragmentViewModel>()
@@ -132,7 +135,7 @@ class SettingsFragment : Fragment() {
                     classSharedPreferences.user = null
                     classSharedPreferences.verficationNumber = null
                     classSharedPreferences.number = null
-
+                    settingsFragmentViewModel.clearDatabase()
                     authRepo.setjsonObjectMutableLiveData(null)
                     chatRoomRepoo.setChatRoomListMutableLiveData(null)
                     blockUserRepo.setUserBlockListMutableLiveData(null)
@@ -311,6 +314,7 @@ class SettingsFragment : Fragment() {
             ) { dialog, which ->
                 classSharedPreferences.user = null
                 classSharedPreferences.verficationNumber = null
+                settingsFragmentViewModel.clearDatabase()
                 classSharedPreferences.number = null
                 authRepo.setjsonObjectMutableLiveData(null)
                 chatRoomRepoo.setChatRoomListMutableLiveData(null)

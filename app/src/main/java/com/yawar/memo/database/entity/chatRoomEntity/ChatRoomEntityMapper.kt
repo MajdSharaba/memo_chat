@@ -80,7 +80,7 @@ class ChatRoomEntityMapper : DomainMapper<ChatRoomEntity, ChatRoomModel> {
 
             created_at = domainModel.created_at!!.toLong(),
 
-            isTyping = domainModel.isTyping!!,
+            isTyping = domainModel.isTyping,
 
             blocked_for = domainModel.blocked_for.toString(),
 

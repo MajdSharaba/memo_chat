@@ -42,6 +42,10 @@ interface ChatRoomDao {
     @Query("UPDATE  chatRoomEntity SET blocked_for = :blockedFor  WHERE other_id = :userId")
     fun setBlockState(userId: String, blockedFor: String )
 
+
+    @Query("DELETE FROM chatRoomEntity")
+    fun deleteChatRoomTable()
+
     ////for Call History
 
     @Query("SELECT * FROM CallHistoryEntity  ORDER BY createdAt DESC ")
@@ -49,6 +53,9 @@ interface ChatRoomDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAllCalls(vararg callHistoryEntity: CallHistoryEntity)
+
+    @Query("DELETE FROM CallHistoryEntity")
+    fun deleteCallHistoryTable()
 
 
 }

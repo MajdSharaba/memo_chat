@@ -252,7 +252,6 @@ public class FirebaseMessageReceiver
                     Log.d(TAG, "baseApp" + remoteMessage.getData().get("chat_id"));
 
                     if (chatRoomRepoo.checkISNewChat( remoteMessage.getData().get("chat_id"))) {
-                        System.out.println("not new chattt");
                         chatRoomRepoo.addChatRoom(
                                 new ChatRoomModel(
                                         remoteMessage.getData().get("title"),
@@ -277,6 +276,7 @@ public class FirebaseMessageReceiver
                                 )
                         );
                     } else if (chatRoomRepoo.checkInChat(remoteMessage.getData().get("sender_id"))) {
+
                         ChatMessage chatMessage = new ChatMessage();
                         chatMessage.setId(remoteMessage.getData().get("message_id"));
 

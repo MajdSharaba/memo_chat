@@ -1,5 +1,6 @@
 package com.yawar.memo.repositry
 
+
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -18,15 +19,13 @@ class ChatRoomRepoo  @Inject constructor(
     private val mapper: ChatRoomDtoMapper,
     private val chatRoomEntityMapper: ChatRoomEntityMapper,
     private val database : ChatRoomDatabase
-
-){
+     ){
 
     private val TAG: String = "ChatRoomRepoo"
     private val _chatRoomListMutableLiveData = MutableLiveData<ArrayList<ChatRoomModel?>?>()
     val chatRoomListMutableLiveData: LiveData<List<ChatRoomModel>> = Transformations.map(database.chatRoomDao.getChatRooms()) {
         chatRoomEntityMapper.toDomainList(it) as List<ChatRoomModel>?
     }
-
 
     private val _isArchivedMutableLiveData = MutableLiveData<Boolean>(false)
     val isArchivedMutableLiveData: LiveData<Boolean>
@@ -62,8 +61,6 @@ class ChatRoomRepoo  @Inject constructor(
                     val listResult = getChatRoomsDeferred.await()
                     Log.d(TAG, "loadChatRoom: "+listResult.data)
                     database.chatRoomDao.insertAll(*(mapper.toEntityList(listResult.data)))
-
-
                 }
 
                 _loadingMutableLiveData.value = false
@@ -389,14 +386,19 @@ class ChatRoomRepoo  @Inject constructor(
 //        chatRoomListMutableLiveData. = chatRoomsList!!
     }
     fun setInChat(user_id: String, state: Boolean) {
+        Log.d(TAG, "setInChat: ${user_id+state}")
         coroutineScope.launch {
 
             var chatRoomsList = chatRoomListMutableLiveData.value
+            Log.d(TAG, "chatRoomsList: ${chatRoomsList}")
+
+
             if (chatRoomsList != null) {
                 for (chatRoom in chatRoomsList) {
                     if (chatRoom != null) {
                         if (chatRoom.other_id == user_id) {
-//                            chatRoom.inChat = state
+                            Log.d(TAG, "withContext: ${chatRoomsList}")
+                            chatRoom.inChat = state
                             if (state) {
                                 chatRoom.num_msg = "0"
                             }
@@ -426,9 +428,9 @@ class ChatRoomRepoo  @Inject constructor(
         if (chatRoomsList != null) {
             for (chatRoom in chatRoomsList) {
                 if (chatRoom != null) {
-                    Log.d(TAG, "checkInChat: ")
+                    Log.d(TAG, "checkInChat: ${chatRoom.inChat}")
                     if (chatRoom.other_id == anthor_user_id) {
-                        Log.d(TAG, "checkInChat: ${chatRoom.inChat}")
+                        Log.d(TAG, "checkInChatsss: ${chatRoom.inChat}")
                         return chatRoom.inChat!!
                     }
                 }

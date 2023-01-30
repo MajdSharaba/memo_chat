@@ -24,6 +24,7 @@ fun TextView.setName(item : ChatRoomModel?){
 fun TextView.setTime(item : ChatRoomModel?) {
     item?.let {
         val timeProperties = TimeProperties()
+        if(!item.created_at.equals("null"))
         text = item.created_at?.toLong()?.let { it1 -> timeProperties.getFormattedDate(it1) }
     }
 }

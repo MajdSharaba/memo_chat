@@ -1394,7 +1394,7 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     chatId, classSharedPreferences.getUser().getUserId(), anthor_id, type, state, dateTime, senderId
             );
             if (!senderId.equals(classSharedPreferences.getUser().getUserId()) && !chatRoomRepoo.checkInChat(anthor_id) && !checkIsMute(anthor_id)) {
-                Log.d(";g: ", "onReceive:${senderId+myId + chatRoomRepoo.checkInChat(anthor_id)+checkIsMute(anthor_id) } ");
+                Log.d(";g: ", "onReceive:${senderId+myId "+ chatRoomRepoo.checkInChat(anthor_id)+"checkIsMute(anthor_id) } ");
                 try {
                     showNotification(message.getString("title"), message.getString("image"),
                             text, senderId, null, "", "", type);
