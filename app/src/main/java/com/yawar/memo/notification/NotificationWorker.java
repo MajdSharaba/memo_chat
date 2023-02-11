@@ -32,6 +32,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.yawar.memo.BaseApp;
 import com.yawar.memo.R;
 import com.yawar.memo.constant.AllConstants;
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.utils.ImageProperties;
 import com.yawar.memo.ui.chatPage.ConversationActivity;
@@ -64,6 +65,8 @@ public class NotificationWorker extends Worker {
     @Override
     public Worker.Result doWork() {
         classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
+        AnthorUserInChatRoomId anthorUserInChatRoomId = AnthorUserInChatRoomId.Companion.getInstance("");
+
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
         ArrayList<String> arrayList = new ArrayList<String>();
@@ -98,6 +101,9 @@ public class NotificationWorker extends Worker {
             intent.putExtra("chat_id",chatId);
             intent.putExtra("special", specialNumber);
             intent.putExtra("blockedFor",blockedFor);
+            anthorUserInChatRoomId.setId(channel);
+
+
 //            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK  |Intent.FLAG_ACTIVITY_CLEAR_TOP );
 

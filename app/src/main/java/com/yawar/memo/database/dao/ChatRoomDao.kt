@@ -3,6 +3,7 @@ package com.yawar.memo.database.dao
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import com.yawar.memo.database.entity.ChatMessageEntity.ChatMessageEntity
 import com.yawar.memo.database.entity.callHistoryEntity.CallHistoryEntity
 import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntity
 import dagger.Module
@@ -58,8 +59,35 @@ interface ChatRoomDao {
     fun deleteCallHistoryTable()
 
 
+    /////for Chat Message
+    @Query("SELECT * FROM ChatMessageEntity  WHERE recivedId = :userId OR senderId = :userId  ORDER BY dateTime ")
+    fun  getChatMessage(userId: String):LiveData<List<ChatMessageEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertChatMessage(vararg chatMessageEntity: ChatMessageEntity)
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertOneChatMessage( chatMessageEntity: ChatMessageEntity)
+
+    @Query("UPDATE  ChatMessageEntity SET upload = :isUpload  WHERE id = :messageId")
+    fun setIsMessageUpload(messageId: String, isUpload : Boolean )
+
+    @Query("UPDATE  ChatMessageEntity SET isDownload = :isDownload  WHERE id = :messageId")
+    fun setIsMessageDownload(messageId: String, isDownload : Boolean )
+
+    @Query("UPDATE  ChatMessageEntity SET isChecked = :isChecked  WHERE id = :messageId")
+    fun setIsMessageChecked(messageId: String, isChecked : Boolean )
+
+    @Query("DELETE FROM ChatMessageEntity WHERE id = :messageId")
+    fun deleteMessage(messageId: String)
+
+    @Query("UPDATE  ChatMessageEntity SET isUpdate = :isUpdate , message = :message  WHERE id = :messageId")
+    fun updateMessage(messageId: String, message:String, isUpdate: String  )
+
+
 }
-@Database(entities = [ChatRoomEntity::class, CallHistoryEntity::class], version = 1)
+@Database(entities = [ChatRoomEntity::class, CallHistoryEntity::class, ChatMessageEntity::class], version = 1)
 abstract class ChatRoomDatabase : RoomDatabase() {
     abstract val chatRoomDao: ChatRoomDao
 

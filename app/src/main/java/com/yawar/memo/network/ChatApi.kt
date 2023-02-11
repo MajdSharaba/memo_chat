@@ -3,6 +3,7 @@ package com.yawar.memo.Api
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.network.networkModel.callHistoryModel.CallHistoryDto
+import com.yawar.memo.network.networkModel.chatMessageModel.ChatMessageDto
 import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomRespone
 import dagger.Module
 import dagger.Provides
@@ -47,7 +48,7 @@ interface ChatApi {
     fun getChatMessgeHistory(
         @Field("sender_id") my_id: String?,
         @Field("reciver_id") anthor_user_id: String?,
-    ): Deferred<String?>?
+    ): Deferred<List<ChatMessageDto>>
 
     @FormUrlEncoded
     @POST("deletemessage2")

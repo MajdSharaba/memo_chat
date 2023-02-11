@@ -31,6 +31,7 @@ import com.yawar.memo.utils.CallProperty
 import com.yawar.memo.ui.requestCall.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityUserInformationBinding
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.MediaModel
 import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.repositry.BlockUserRepo
@@ -50,7 +51,9 @@ import javax.inject.Inject
 class UserInformationActivity : AppCompatActivity() {
 //    var EXAMPLE_COUNTER: Key<Int>
     private val recyclerDataArrayList = ArrayList<MediaModel>()
-//    lateinit  var userInformationViewModelFactory: UserInformationViewModelFactory
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+
+    //    lateinit  var userInformationViewModelFactory: UserInformationViewModelFactory
     lateinit var timeProperties: TimeProperties
     lateinit var dataStore: RxDataStore<Preferences>
     lateinit var binding : ActivityUserInformationBinding
@@ -367,6 +370,7 @@ class UserInformationActivity : AppCompatActivity() {
             bundle.putString("image", imageUrl)
             bundle.putString("chat_id", chatId)
             bundle.putString("blockedFor", userInformationViewModel.blockedFor().value)
+            anthorUserInChatRoomId.id = another_user_id
             val intent = Intent(this@UserInformationActivity, ConversationActivity::class.java)
             intent.putExtras(bundle)
             startActivity(intent)

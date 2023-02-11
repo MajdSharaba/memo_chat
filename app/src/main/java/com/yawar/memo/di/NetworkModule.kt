@@ -1,5 +1,7 @@
 package com.yawar.memo.di
 
+import com.yawar.memo.database.entity.ChatMessageEntity.ChatMessageEntityMapper
+import com.yawar.memo.network.networkModel.chatMessageModel.ChatMessageDtoMapper
 import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomDtoMapper
 import dagger.Module
 import dagger.Provides
@@ -16,4 +18,17 @@ object NetworkModule {
     fun provideChatRoomMapper(): ChatRoomDtoMapper {
         return  ChatRoomDtoMapper()
     }
+
+    @Provides
+    fun provideChatMessageDtoMapper(): ChatMessageDtoMapper {
+        return ChatMessageDtoMapper()
+    }
+
+    @Provides
+    fun provideChatMessageEntityMapper(): ChatMessageEntityMapper {
+        return  ChatMessageEntityMapper()
+    }
+
+
+
 }

@@ -17,6 +17,7 @@ import com.tsuryo.swipeablerv.SwipeLeftRightCallback
 import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.databinding.FragmentChatRoomBinding
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.modelView.ChatRoomViewModel
@@ -31,7 +32,9 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
     var postList: MutableList<ChatRoomModel> = ArrayList()
     lateinit var myId: String
     lateinit var myBase: BaseApp
-//    lateinit var chatRoomViewModel: ChatRoomViewModel
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+
+    //    lateinit var chatRoomViewModel: ChatRoomViewModel
     val chatRoomViewModel by viewModels<ChatRoomViewModel>()
 
     lateinit var itemAdapter: ChatRoomAdapter
@@ -189,6 +192,7 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
         bundle.putString("chat_id", chatRoomModel.id)
         bundle.putString("special", chatRoomModel.sn)
         bundle.putString("blockedFor", chatRoomModel.blocked_for)
+        anthorUserInChatRoomId.id = chatRoomModel!!.other_id
 
 
         ///////////////////////

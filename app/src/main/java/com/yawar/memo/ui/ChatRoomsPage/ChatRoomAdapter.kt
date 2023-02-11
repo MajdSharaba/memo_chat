@@ -17,6 +17,7 @@ import com.yawar.memo.R
 import com.yawar.memo.ui.requestCall.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ChatRoomRowBinding
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.utils.MyDiffUtilCallBack
@@ -100,6 +101,8 @@ class ChatRoomAdapter(
 
     class ViewHolder private  constructor(val binding: ChatRoomRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("UseCompatLoadingForDrawables")
+        val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+
         fun bind(
             chatRoomModel: ChatRoomModel,
             position: Int,
@@ -156,6 +159,7 @@ class ChatRoomAdapter(
                     bundle.putString("image", chatRoomModel.image)
                     bundle.putString("chat_id", chatRoomModel.id)
                     bundle.putString("blockedFor", chatRoomModel.blocked_for)
+                    anthorUserInChatRoomId.id = chatRoomModel.other_id
 //                    Log.d("blockedForrrrrrrrr",chatRoomModel.blocked_for!!)
                     val intent = Intent(context.activity, ConversationActivity::class.java)
                     intent.putExtras(bundle)

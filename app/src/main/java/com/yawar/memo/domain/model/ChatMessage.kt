@@ -4,19 +4,20 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ChatMessage(
-      var  id:String = "",
-      var  isMe:Boolean = false,
-      var  message:String = "",
-      var  image:String = "",
-      var  type:String= "",
-      var  userId:String= "",
-      var  dateTime:String= "",
-      var  state:String = "",
-      var  fileName:String= "",
-      var  isUpdate:String="",
-      var  isDownload:Boolean = false,
-      var  upload:Boolean = false,
-      var  isChecked:Boolean = false,
+    var  id:String = "",
+    var  isMe:Boolean = false,
+    var  message:String = "",
+    var  image:String = "",
+    var  type:String= "",
+    var  senderId:String= "",
+    var  recivedId:String = "",
+    var  dateTime:String= "",
+    var  state:String = "",
+    var  fileName:String= "",
+    var  isUpdate:String="",
+    var  isDownload:Boolean = false,
+    var  upload:Boolean = false,
+    var  isChecked:Boolean = false,
 ):  Cloneable {
 
      public override fun  clone() : ChatMessage {

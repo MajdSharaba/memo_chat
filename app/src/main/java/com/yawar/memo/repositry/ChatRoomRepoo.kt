@@ -53,8 +53,7 @@ class ChatRoomRepoo  @Inject constructor(
 //                .getChatRoom(user_id)
 //            val getChatRoomsDeferred =   GdgApi.apiService
 //                .getChatRoom(user_id)
-            val getChatRoomsDeferred =   chatApi
-                .getChatRoom(user_id)
+            val getChatRoomsDeferred = chatApi.getChatRoom(user_id)
 
             try {
                 withContext(Dispatchers.IO) {
@@ -203,6 +202,7 @@ class ChatRoomRepoo  @Inject constructor(
         dateTime: String?,
         sender_id: String?,
     ) {
+        Log.d(TAG, "setLastMessage: ${chatId}")
 //        var chatRoomsList = _chatRoomListMutableLiveData.value
         coroutineScope.launch {
 
@@ -234,12 +234,12 @@ class ChatRoomRepoo  @Inject constructor(
                         }
                     }
                 }
-
+                Log.d(TAG, "inChattttttttt${inList}: ")
                 if (!inList) {
                     for (chatRoom in chatRoomsList) {
                         if (chatRoom != null) {
                             if (chatRoom.id == senderId + reciverId) {
-                                chatRoomsList.remove(chatRoom)
+//                                chatRoomsList.remove(chatRoom)
                                 if (!chatRoom.inChat!!) {
 
                                     chatRoom.num_msg =

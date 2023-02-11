@@ -17,6 +17,7 @@ import com.tsuryo.swipeablerv.SwipeLeftRightCallback
 import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.databinding.ActivityArchivedBinding
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
@@ -28,6 +29,8 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
     lateinit var itemAdapter: ArchivedAdapter
      val archivedActViewModel by viewModels <ArchivedActViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+
     lateinit var myId: String
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityArchivedBinding
@@ -107,6 +110,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
         bundle.putString("chat_id", chatRoomModel.id)
         bundle.putString("special", chatRoomModel.sn)
         bundle.putString("blockedFor", chatRoomModel.blocked_for)
+        anthorUserInChatRoomId.id =  chatRoomModel.other_id
         val intent = Intent(this, ConversationActivity::class.java)
         intent.putExtras(bundle)
         startActivity(intent)

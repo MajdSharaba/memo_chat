@@ -4,8 +4,9 @@ import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.database.dao.ChatRoomDatabase
 import com.yawar.memo.database.entity.callHistoryEntity.CallHistoryEntity
 import com.yawar.memo.domain.model.CallHistoryModel
-import com.yawar.memo.domain.model.util.callHistoryUtil.DomainMapper
-import com.yawar.memo.domain.model.util.callHistoryUtil.EntityMapper
+import com.yawar.memo.domain.model.util.DomainMapper
+import com.yawar.memo.domain.model.util.EntityMapper
+
 import com.yawar.memo.repositry.CallHistoryRepo
 import dagger.Module
 import dagger.Provides

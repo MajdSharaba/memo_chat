@@ -25,6 +25,7 @@ import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityContactNumberBinding
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.ContactModel
 import com.yawar.memo.domain.model.SendContactNumberResponse
 import com.yawar.memo.permissions.Permissions
@@ -38,7 +39,9 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
     lateinit var myId: String
     lateinit var myBase: BaseApp
 //    lateinit var serverApi: ServerApi
-     val contactNumberViewModel by viewModels<ContactNumberViewModel>()
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+
+    val contactNumberViewModel by viewModels<ContactNumberViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
     var arrayList = ArrayList<ContactModel>()
     var sendContactNumberResponses = ArrayList<SendContactNumberResponse?>()
@@ -205,6 +208,7 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
         bundle.putString("image", sendContactNumberResponse.image)
         bundle.putString("chat_id", "")
         bundle.putString("blockedFor", sendContactNumberResponse.blockedFor)
+        anthorUserInChatRoomId.id = sendContactNumberResponse!!.id!!
         val intent = Intent(this, ConversationActivity::class.java)
         intent.putExtras(bundle)
         startActivity(intent)

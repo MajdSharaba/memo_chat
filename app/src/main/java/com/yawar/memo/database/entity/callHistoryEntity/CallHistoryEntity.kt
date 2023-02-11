@@ -20,7 +20,7 @@ data class CallHistoryEntity (
     var call_status: String = "",
 
     var duration: String = "",
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = false)
     var createdAt: Long = 0,
         ){
 }

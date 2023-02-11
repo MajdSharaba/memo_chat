@@ -4,25 +4,43 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import com.facebook.internal.Utility
+import com.facebook.internal.Utility.logd
 import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.BaseApp
+import com.yawar.memo.database.dao.ChatRoomDatabase
+import com.yawar.memo.database.entity.ChatMessageEntity.ChatMessageEntityMapper
+import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntityMapper
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 //import com.yawar.memo.Api.GdgApi
-import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.domain.model.ChatMessage
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.network.networkModel.chatMessageModel.ChatMessageDtoMapper
+import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomDtoMapper
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
-class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
+class ChatMessageRepoo
+   @Inject constructor(
+    private val chatApi: ChatApi,
+    private val database: ChatRoomDatabase,
+    private val chatMessageDtoMapper: ChatMessageDtoMapper,
+    private val chatMessageEntityMapper: ChatMessageEntityMapper,
+        ) {
+
+    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("2")
     private val _chatMessageistMutableLiveData = MutableLiveData<ArrayList<ChatMessage?>?>()
     //            return repository.chatMessageistMutableLiveData;
-    val chatMessaheHistory: LiveData<ArrayList<ChatMessage?>?>
-        get() = _chatMessageistMutableLiveData
+//    val chatMessaheHistory: LiveData<ArrayList<ChatMessage?>?>
+//        get() = _chatMessageistMutableLiveData
+    val chatMessaheHistory: LiveData<List<ChatMessage>> = Transformations.map(database.chatRoomDao.getChatMessage(anthorUserInChatRoomId.id)) {
+        chatMessageEntityMapper.toDomainList(it) as List<ChatMessage>?
+    }
 
     private val _selectedMessage = MutableLiveData<ArrayList<ChatMessage?>?>()
     val selectedMessage: LiveData<ArrayList<ChatMessage?>?>
@@ -49,7 +67,7 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
         _loadingMutableLiveData.value = true
         _chatMessageistMutableLiveData.value = null
         coroutineScope.launch {
-            val chatMessageList = ArrayList<ChatMessage?>()
+//            val chatMessageList = ArrayList<ChatMessage?>()
 
 
 //            val getChatRoomsDeferred = GdgApi(AllConstants.base_node_url).apiService
@@ -60,41 +78,42 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
             try {
                 val listResult = getChatRoomsDeferred?.await()
                 _loadingMutableLiveData.value = false
+                Log.d("loadChatMessage", listResult.toString())
+                withContext(Dispatchers.IO) {
 
-                val jsonArray = JSONArray(listResult)
+                    database.chatRoomDao.insertChatMessage(*(chatMessageDtoMapper.toEntityList(listResult)))
 
-
-                for (i in 0 until jsonArray.length()) {
-                    val jsonObject: JSONObject = jsonArray.getJSONObject(i)
-                    val chatMessage = ChatMessage()
-                    chatMessage.userId = jsonObject.getString("sender_id")
-                    chatMessage.state = jsonObject.getString("state")
-                    chatMessage.isMe = jsonObject.getString("sender_id") == my_id
-                    if (jsonObject.getString("message_type") == "file" || jsonObject.getString("message_type") == "voice" || jsonObject.getString(
-                            "message_type") == "video" || jsonObject.getString("message_type") == "contact" || jsonObject.getString(
-                            "message_type") == "imageWeb"
-                    ) {
-                        chatMessage.fileName = jsonObject.getString("orginalName")
-                    }
-                    //                            chatMessage.setFileName("orginalName");}
-                    chatMessage.id = jsonObject.getString("message_id")
-                    chatMessage.isChecked = false
-                    if (jsonObject.getString("message_type") != "imageWeb") {
-                        chatMessage.message = jsonObject.getString("message")
-                    } else {
-                        chatMessage.image = jsonObject.getString("message")
-                    }
-                    chatMessage.type = jsonObject.getString("message_type")
-                    chatMessage.dateTime = jsonObject.getString("created_at")
-                    chatMessage.isUpdate = jsonObject.getString("edited")
-                    chatMessageList.add(chatMessage)
                 }
-
-
-                _chatMessageistMutableLiveData.value = chatMessageList
-
-
-
+//                val jsonArray = JSONArray(listResult)
+//
+//
+//                for (i in 0 until jsonArray.length()) {
+//                    val jsonObject: JSONObject = jsonArray.getJSONObject(i)
+//                    val chatMessage = ChatMessage()
+//                    chatMessage.senderId = jsonObject.getString("sender_id")
+//                    chatMessage.state = jsonObject.getString("state")
+//                    chatMessage.isMe = jsonObject.getString("sender_id") == my_id
+//                    if (jsonObject.getString("message_type") == "file" || jsonObject.getString("message_type") == "voice" || jsonObject.getString(
+//                            "message_type") == "video" || jsonObject.getString("message_type") == "contact" || jsonObject.getString(
+//                            "message_type") == "imageWeb"
+//                    ) {
+//                        chatMessage.fileName = jsonObject.getString("orginalName")
+//                    }
+//                    //                            chatMessage.setFileName("orginalName");}
+//                    chatMessage.id = jsonObject.getString("message_id")
+//                    chatMessage.recivedId = jsonObject.getString("reciver_id")
+//                    chatMessage.isChecked = false
+//                    if (jsonObject.getString("message_type") != "imageWeb") {
+//                        chatMessage.message = jsonObject.getString("message")
+//                    } else {
+//                        chatMessage.image = jsonObject.getString("message")
+//                    }
+//                    chatMessage.type = jsonObject.getString("message_type")
+//                    chatMessage.dateTime = jsonObject.getString("created_at")
+//                    chatMessage.isUpdate = jsonObject.getString("edited")
+//                    chatMessageList.add(chatMessage)
+//                }
+//                _chatMessageistMutableLiveData.value = chatMessageList
 
         } catch (e: Exception) {
 
@@ -111,96 +130,137 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
 
     @SuppressLint("SuspiciousIndentation")
     fun addMessage(chatMessage: ChatMessage) {
+        coroutineScope.launch {
 
-     var chatMessageList = _chatMessageistMutableLiveData.value
-        chatMessageList?.add(chatMessage)
-        Log.d("addMessage: ", chatMessage.message)
-        _chatMessageistMutableLiveData.postValue(chatMessageList)
+
+            var chatMessageList = chatMessaheHistory.value as ArrayList
+            chatMessageList?.add(chatMessage)
+            Log.d("addMessage: ", chatMessage.message)
+            withContext(Dispatchers.IO) {
+                database.chatRoomDao.insertOneChatMessage(chatMessageEntityMapper.mapFromDominModel(chatMessage))
+            }
+        }
     }
 
     fun setMessageState(message_id: String, state: String) {
-        var chatMessageList = _chatMessageistMutableLiveData.value
+        coroutineScope.launch {
 
-        if (chatMessageList != null) {
-            System.out.println("chatMessageList.size ${chatMessageList.size}")
+            var chatMessageList = chatMessaheHistory.value as ArrayList
 
-            for (i in chatMessageList.size -1 downTo 0) {
-                System.out.println("chatMessageList.sizzzzz ${chatMessageList.size}")
+            if (chatMessageList != null) {
+                System.out.println("chatMessageList.size ${chatMessageList.size}")
 
-                if (state == "3") {
-                    if (chatMessageList != null) {
+                for (i in chatMessageList.size - 1 downTo 0) {
+                    System.out.println("chatMessageList.sizzzzz ${chatMessageList.size}")
+
+                    if (state == "3") {
+                        if (chatMessageList != null) {
 //                        if (chatMessageList.get(i)!!.state == "3" || chatMessageList.get(i)!!.state == "0") {
-                        if (chatMessageList.get(i)!!.state == "3" ) {
+                            if (chatMessageList.get(i)!!.state == "3") {
 
-                            break
-                        } else chatMessageList.get(i)!!.state = state
-                    }
-                } else if (state == "2") {
-                    if (chatMessageList != null) {
-                        if (chatMessageList.get(i)!!.state == "2" || chatMessageList.get(i)!!.state == "3") {
-                            break
-                        } else {
-                            chatMessageList.get(i)!!.state = state
+                                break
+                            } else chatMessageList.get(i)!!.state = state
                         }
-                    }
-                } else if (state == "1") {
-                    if (chatMessageList != null) {
-                        if (chatMessageList.get(i)!!.id == message_id) {
-                            chatMessageList.get(i)!!.state = state
-                            break
+                    } else if (state == "2") {
+                        if (chatMessageList != null) {
+                            if (chatMessageList.get(i)!!.state == "2" || chatMessageList.get(i)!!.state == "3") {
+                                break
+                            } else {
+                                chatMessageList.get(i)!!.state = state
+                            }
+                        }
+                    } else if (state == "1") {
+                        if (chatMessageList != null) {
+                            if (chatMessageList.get(i)!!.id == message_id) {
+                                chatMessageList.get(i)!!.state = state
+                                break
+                            }
                         }
                     }
                 }
             }
+            withContext(Dispatchers.IO) {
+                database.chatRoomDao.insertChatMessage(*(chatMessageEntityMapper.fromDomainList(chatMessageList)))
+
+            }
         }
-        _chatMessageistMutableLiveData.value = chatMessageList
     }
 
-    fun setMessageUpload(message_id: String, isDownload: Boolean) {
-        var chatMessageList = _chatMessageistMutableLiveData.value
-        if (chatMessageList != null) {
-            for (chatMessage in chatMessageList) {
-                if (chatMessage != null) {
-                    if (chatMessage.id == message_id) {
-                        chatMessage.upload = isDownload
-                        break
-                    }
-                }
+    fun setMessageUpload(message_id: String, isUpload: Boolean) {
+//        var chatMessageList = _chatMessageistMutableLiveData.value
+        coroutineScope.launch {
+
+            withContext(Dispatchers.IO) {
+                database.chatRoomDao.setIsMessageUpload(
+                    message_id,isUpload
+                    )
+
             }
         }
-        _chatMessageistMutableLiveData.value = chatMessageList
+//        if (chatMessageList != null) {
+//            for (chatMessage in chatMessageList) {
+//                if (chatMessage != null) {
+//                    if (chatMessage.id == message_id) {
+//                        chatMessage.upload = isUpload
+//                        break
+//                    }
+//                }
+//            }
+//        }
+//        _chatMessageistMutableLiveData.value = chatMessageList
     }
 
     fun setMessageDownload(message_id: String, isDownload: Boolean) {
         Log.d("setMessageDownload", "setMessageDownload: ")
-        var chatMessageList = _chatMessageistMutableLiveData.value
-        if (chatMessageList != null) {
-            for (chatMessage in chatMessageList) {
-                if (chatMessage != null) {
-                    if (chatMessage.id == message_id) {
-                        chatMessage.isDownload = isDownload
-                        Log.d("setMessageDownload",  chatMessage.isDownload.toString())
+        coroutineScope.launch {
 
-                        break
-                    }
-                }
+            withContext(Dispatchers.IO) {
+                database.chatRoomDao.setIsMessageDownload(
+                    message_id,isDownload
+                )
+
             }
         }
-        _chatMessageistMutableLiveData.value = chatMessageList
+//        var chatMessageList = _chatMessageistMutableLiveData.value
+//        if (chatMessageList != null) {
+//            for (chatMessage in chatMessageList) {
+//                if (chatMessage != null) {
+//                    if (chatMessage.id == message_id) {
+//                        chatMessage.isDownload = isDownload
+//                        Log.d("setMessageDownload",  chatMessage.isDownload.toString())
+//
+//                        break
+//                    }
+//                }
+//            }
+//        }
+//        _chatMessageistMutableLiveData.value = chatMessageList
     }
+
+
     fun setMessageChecked(message_id: String, isChecked: Boolean) {
-        var chatMessageList = _chatMessageistMutableLiveData.value
-        if (chatMessageList != null) {
-            for (chatMessage in chatMessageList) {
-                if (chatMessage != null) {
-                    if (chatMessage.id == message_id) {
-                        chatMessage.isChecked = isChecked
-                        break
-                    }
-                }
+        coroutineScope.launch {
+
+            withContext(Dispatchers.IO) {
+                database.chatRoomDao.setIsMessageChecked(
+                    message_id, isChecked
+                )
+
             }
+//        var chatMessageList = _chatMessageistMutableLiveData.value
+//        if (chatMessageList != null) {
+//            for (chatMessage in chatMessageList) {
+//                if (chatMessage != null) {
+//                    if (chatMessage.id == message_id) {
+//                        chatMessage.isChecked = isChecked
+//                        break
+//                    }
+//                }
+//            }
+//        }
+//        _chatMessageistMutableLiveData.value = chatMessageList
+
         }
-        _chatMessageistMutableLiveData.value = chatMessageList
     }
 
     fun addSelectedMessage(message: ChatMessage?) {
@@ -264,29 +324,52 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
 
 
     fun deleteMessage(chatMessagee: ChatMessage?) {
-        var chatMessageList = _chatMessageistMutableLiveData.value
-        if (chatMessageList != null) {
-            chatMessageList.remove(chatMessagee)
+
+        coroutineScope.launch {
+
+            withContext(Dispatchers.IO) {
+                if (chatMessagee != null) {
+                    database.chatRoomDao.deleteMessage(
+                        chatMessagee.id
+                    )
+                }
+
+            }
+//        var chatMessageList = _chatMessageistMutableLiveData.value
+//        if (chatMessageList != null) {
+//            chatMessageList.remove(chatMessagee)
+//        }
+//        _chatMessageistMutableLiveData.value = chatMessageList
         }
-        _chatMessageistMutableLiveData.value = chatMessageList
     }
 
 
     fun UpdateMessage(message_id: String, message: String?) {
-        var chatMessageList = _chatMessageistMutableLiveData.value
-        if (chatMessageList != null) {
-            for (chatMessage in chatMessageList) {
-                if (chatMessage != null) {
-                    if (chatMessage.id == message_id) {
-                        chatMessage.message = message!!
-                        chatMessage.isUpdate = "1"
-                        break
-                    }
+        coroutineScope.launch {
+
+            withContext(Dispatchers.IO) {
+                    database.chatRoomDao.updateMessage(
+                        message_id,message!!, "1"
+                    )
                 }
+
             }
         }
-        _chatMessageistMutableLiveData.value = chatMessageList
-    }
+//        var chatMessageList = _chatMessageistMutableLiveData.value
+//        if (chatMessageList != null) {
+//            for (chatMessage in chatMessageList) {
+//                if (chatMessage != null) {
+//                    if (chatMessage.id == message_id) {
+//                        chatMessage.message = message!!
+//                        chatMessage.isUpdate = "1"
+//                        break
+//                    }
+//                }
+//            }
+//        }
+//        _chatMessageistMutableLiveData.value = chatMessageList
+
+
 
 
     fun deleteMessageForMe(
@@ -295,7 +378,7 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
         chatMessages: ArrayList<ChatMessage?>?,
     ) {
         coroutineScope.launch {
-            var chatMessageList = _chatMessageistMutableLiveData.value
+            var chatMessageList = chatMessaheHistory.value as ArrayList
 
 
 //            var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService
@@ -359,7 +442,7 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
                     for (i in 0 until jsonArray.length()) {
                         val jsonObject: JSONObject = jsonArray.getJSONObject(i)
                         val chatMessage = ChatMessage()
-                        chatMessage.userId = jsonObject.getString("sender_id")
+                        chatMessage.senderId = jsonObject.getString("sender_id")
                         chatMessage.state = jsonObject.getString("state")
                         chatMessage.isMe = jsonObject.getString("sender_id") == BaseApp.instance?.classSharedPreferences!!.user.userId
                         if (jsonObject.getString("message_type") == "file" || jsonObject.getString("message_type") == "voice" || jsonObject.getString(
@@ -379,7 +462,7 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
                         chatMessage.type = jsonObject.getString("message_type")
                         chatMessage.dateTime = jsonObject.getString("created_at")
                         chatMessage.isUpdate = jsonObject.getString("edited")
-                       if( BaseApp.instance?.chatRoomRepoo!!.checkInChat(chatMessage.userId)){
+                       if( BaseApp.instance?.chatRoomRepoo!!.checkInChat(chatMessage.senderId)){
                            addMessage(chatMessage)
                            Log.d("getMarsRealEstateProperties: ", "addddddddddddd")
                        }
@@ -387,8 +470,8 @@ class ChatMessageRepoo   @Inject constructor(private val chatApi: ChatApi) {
                            Log.d("elseeeeeeeeeee: ", "addddddddddddd")
 
                            BaseApp.instance?.chatRoomRepoo!!.setLastMessageBySenderId(
-                               chatMessage.message,chatMessage.id, chatMessage.userId,
-                               chatMessage.id, chatMessage.type, chatMessage.state, chatMessage.dateTime, chatMessage.userId
+                               chatMessage.message,chatMessage.id, chatMessage.senderId,
+                               chatMessage.id, chatMessage.type, chatMessage.state, chatMessage.dateTime, chatMessage.senderId
                            )
                         }
 

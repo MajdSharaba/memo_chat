@@ -21,6 +21,7 @@ public class AutoStartHelper {
     /***
      * Xiaomi
      */
+
     private final String BRAND_XIAOMI = "xiaomi";
     private String PACKAGE_XIAOMI_MAIN = "com.miui.securitycenter";
     private String PACKAGE_XIAOMI_COMPONENT = "com.miui.permcenter.autostart.AutoStartManagementActivity";

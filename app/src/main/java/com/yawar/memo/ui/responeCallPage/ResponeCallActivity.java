@@ -22,6 +22,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.PictureInPictureParams;
 import android.app.RemoteAction;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothHeadset;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -103,13 +105,20 @@ import java.util.TimerTask;
 import dagger.hilt.android.AndroidEntryPoint;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
-
 @AndroidEntryPoint
 public class ResponeCallActivity extends AppCompatActivity {
     private static final int REQUEST_CODE_OVERLAY_PERMISSION = 122;
     ///// set floating page
     private static final String ACTION_MUTE = "com.yawar.memo.action.mute";
     private static final String ACTION_CLOSE_CALL = "com.yawar.memo.action.closeCall";
+    ////////////////////
+    private AudioManager localAudioManager;
+    private static final int STATE_DISCONNECTED  = 0x00000000;
+    private static final String EXTRA_STATE = "android.bluetooth.headset.extra.STATE";
+    private static final String ACTION_BT_HEADSET_STATE_CHANGED  = "android.bluetooth.headset.action.STATE_CHANGED";
+    private static final String ACTION_BT_HEADSET_FORCE_ON = "android.bluetooth.headset.action.FORCE_ON";
+    private static final String ACTION_BT_HEADSET_FORCE_OFF = "android.bluetooth.headset.action.FORCE_OFF";
+    ///////////////////
     String id ="0";
     String title = "";
     String onGoingTitle = "";
@@ -194,8 +203,6 @@ public class ResponeCallActivity extends AppCompatActivity {
                                 doAnswer(anthor_id);
                             }
                         }
-
-
                         else if (type.equals("answer") ) {
                             sdp = jsonObject.getString("sdp");
                             if (id.equals(classSharedPreferences.getUser().getUserId())) {
@@ -250,6 +257,7 @@ public class ResponeCallActivity extends AppCompatActivity {
             });
         }
     };
+
     private final BroadcastReceiver reciveCloseCallFromNotification = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -263,7 +271,6 @@ public class ResponeCallActivity extends AppCompatActivity {
                         closeCall();
                         finish();
                     }
-
 
                     ///////////
 
@@ -375,6 +382,72 @@ public class ResponeCallActivity extends AppCompatActivity {
             });
         }
     };
+    /////
+    private final BroadcastReceiver headsetReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+                int state = intent.getIntExtra("state", -1);
+                switch (state) {
+                    case 0:
+                        Log.d(TAG, "Headset unplugged");
+                        toggleSpeaker(responeCallViewModel.isSpeaker().getValue());
+//                        audioManager.setSpeakerphoneOn(true);
+//                        audioManager.setMode(AudioManager.MODE_NORMAL);
+
+                        break;
+                    case 1:
+                        Log.d(TAG, "Headset plugged");
+                        toggleSpeaker(false);
+//                        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+//                        audioManager.setSpeakerphoneOn(false);
+
+                        break;
+                }
+            }
+        }
+    };
+
+
+    /////////////////////
+
+    private final BroadcastReceiver mBluetoothReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive:mBluetoothReceiver ");
+            String action = intent.getAction();
+            if (BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED.equals(action)) {
+                BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (mBluetoothAdapter == null) {
+                    return;
+                }
+
+//                BluetoothHeadset mBluetoothHeadset = BluetoothHeadset.getProfileProxy(context, null, BluetoothProfile.HEADSET);
+//                if (mBluetoothHeadset == null) {
+//                    return;
+//                }
+
+                int state = intent.getIntExtra(BluetoothHeadset.EXTRA_STATE, BluetoothHeadset.STATE_DISCONNECTED);
+                if (state == BluetoothHeadset.STATE_CONNECTED) {
+                    // The headset is now connected
+                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    if (audioManager != null) {
+                        // Change audio properties here
+                        audioManager.setSpeakerphoneOn(false);
+                    }
+                } else if (state == BluetoothHeadset.STATE_DISCONNECTED) {
+                    // The headset is now disconnected
+                    AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+                    if (audioManager != null) {
+                        // Change audio properties here
+                        audioManager.setSpeakerphoneOn(true);
+                    }
+                }
+//                mBluetoothHeadset.close();
+            }
+        }
+    };
+    //////////////////
 
     private void sendPeerId(String object,String peer_id) {
         System.out.println(object + "this is object ");
@@ -527,6 +600,14 @@ public class ResponeCallActivity extends AppCompatActivity {
 
         classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        IntentFilter filte = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(headsetReceiver, filte);
+
+        ////
+        IntentFilter filer = new IntentFilter();
+        filer.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+        registerReceiver(mBluetoothReceiver, filer);
+        ////
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
         imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);
         imgBtnOpenAudioCallLp = findViewById(R.id.image_audio_call_layout);
@@ -862,7 +943,12 @@ public class ResponeCallActivity extends AppCompatActivity {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAskForCall);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveMessageCall);
             callDisconnect();
-            callTimer.cancel();
+        unregisterReceiver(headsetReceiver);
+        unregisterReceiver(mBluetoothReceiver);
+
+
+
+        callTimer.cancel();
             super.onDestroy();
 //        }
     }

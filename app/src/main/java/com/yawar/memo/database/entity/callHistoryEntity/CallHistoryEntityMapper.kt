@@ -1,7 +1,7 @@
 package com.yawar.memo.database.entity.callHistoryEntity
 
 import com.yawar.memo.domain.model.CallHistoryModel
-import com.yawar.memo.domain.model.util.callHistoryUtil.DomainMapper
+import com.yawar.memo.domain.model.util.DomainMapper
 
 class CallHistoryEntityMapper : DomainMapper<CallHistoryEntity, CallHistoryModel> {
     override fun mapToDominModel(model: CallHistoryEntity): CallHistoryModel {

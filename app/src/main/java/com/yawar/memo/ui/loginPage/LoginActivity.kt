@@ -292,13 +292,11 @@ class LoginActivity : AppCompatActivity(), GoogleApiClient.OnConnectionFailedLis
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         mCallbackManager.onActivityResult(requestCode, resultCode, data)
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == RC_SIGN_IN) {
             val result = Auth.GoogleSignInApi.getSignInResultFromIntent(data!!)
             Log.d("onActivityResult","resulttttttttttt${result?.signInAccount?.displayName}")
             handleSignInResult(result)
         }
-
     }
 
     private fun handleFacebookAccessToken(token: AccessToken) {
@@ -315,8 +313,6 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
                     classSharedPreferences.verficationNumber = task.result.user!!.uid
                     loginModelView.name = task.result.user!!.displayName.toString()
                     loginModelView.image = task.result.user!!.photoUrl.toString()+"?type=large&redirect=true&width=500&height=500"
-
-
                     authRepo?.getspecialNumbers(classSharedPreferences.verficationNumber)
                 } else {
                     // If sign in fails, display a message to the user.

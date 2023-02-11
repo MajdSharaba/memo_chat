@@ -2,8 +2,8 @@ package com.yawar.memo.network.networkModel.chatRoomModel
 
 import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntity
 import com.yawar.memo.domain.model.ChatRoomModel
-import com.yawar.memo.domain.model.util.chatRoomUtil.DomainMapper
-import com.yawar.memo.domain.model.util.chatRoomUtil.EntityMapper
+import com.yawar.memo.domain.model.util.DomainMapper
+import com.yawar.memo.domain.model.util.EntityMapper
 
 class ChatRoomDtoMapper : DomainMapper<ChatRoomModelDto, ChatRoomModel>,
     EntityMapper<ChatRoomModelDto, ChatRoomEntity> {

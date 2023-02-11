@@ -1,18 +1,17 @@
 package com.yawar.memo.ui.chatPage
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.yawar.memo.BaseApp
 import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatMessageRepoo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther
 import org.json.JSONArray
 import org.json.JSONException
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 //class ConversationModelView(anthorUesrId: String, blockedForState: String) : ViewModel() {
@@ -23,6 +22,7 @@ class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMess
     var baseApp = BaseApp.instance
 //    private val chatMessageRepoo = baseApp.chatMessageRepoo
     var lastSeen = "null"
+    lateinit var user_id : String
 
 
 
@@ -41,6 +41,7 @@ class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMess
     val isTyping : LiveData<String>
         get() = _isTyping
 init {
+    user_id = savedStateHandle.get<String>("reciver_id").toString()
     chatMessageRepoo?.loadChatRoom(BaseApp.instance?.classSharedPreferences?.user?.userId, savedStateHandle.get<String>("reciver_id").toString())
         blockUserRepo.setBlockedForRepo(savedStateHandle.get<String>("blockedFor").toString())
     Log.d("ConversationModelView", BaseApp.instance?.classSharedPreferences?.user?.userId.toString()+"   "+savedStateHandle.get<String>("reciver_id").toString())
@@ -85,7 +86,10 @@ init {
     }
     fun getChatMessaheHistory(): LiveData<ArrayList<ChatMessage?>?> {
 //            return repository.chatMessageistMutableLiveData;
-        return chatMessageRepoo.chatMessaheHistory
+//        return Transformations.map(chatMessageRepoo.chatMessaheHistory) {
+//           it.filter { it.recivedId == user_id }
+//        } as  LiveData<ArrayList<ChatMessage?>?>
+        return  chatMessageRepoo.chatMessaheHistory as  LiveData<ArrayList<ChatMessage?>?>
     }
 
     fun addSelectedMessage(message: ChatMessage?) {

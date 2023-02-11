@@ -2,6 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yawar.memo">
+
+
+    //////
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+    /////
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove"/>
+
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -44,10 +54,9 @@
         tools:ignore="DataExtractionRules"
         tools:replace="android:theme">
 
-
-
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
+            tools:replace="android:value"
             android:value="@string/facebook_app_id" />
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
@@ -86,7 +95,6 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-
             android:theme="@style/ThemeOverlay.ChatMemo.CallReq">
         <intent-filter>
             <action android:name="com.yawar.memo.action.mute" />
@@ -163,8 +171,13 @@
             </intent-filter>
         </service>
 
+        <meta-data
+            android:name="android.accounts.AccountAuthenticator"
+            android:resource="@xml/authenticator" />
+
         <receiver android:name=".notification.CancelCallFromCallNotification" />
         <receiver android:name=".notification.CancelCallFromCallNotification" />
+
         <!-- <service -->
         <!-- android:name=".videocalltest.ConnService" -->
         <!-- android:exported="true" -->

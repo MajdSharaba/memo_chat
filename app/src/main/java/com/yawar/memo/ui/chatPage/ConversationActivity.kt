@@ -1,4 +1,5 @@
 package com.yawar.memo.ui.chatPage
+//import com.yawar.memo.repositry.ChatRoomRepoo
 import android.Manifest
 import android.animation.Animator
 import android.annotation.SuppressLint
@@ -27,7 +28,10 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.View.OnLayoutChangeListener
-import android.widget.*
+import android.widget.EditText
+import android.widget.MediaController
+import android.widget.Toast
+import android.widget.VideoView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -59,23 +63,22 @@ import com.hbisoft.pickit.PickiTCallbacks
 import com.yawar.memo.BaseApp
 import com.yawar.memo.BuildConfig
 import com.yawar.memo.R
-import com.yawar.memo.ui.requestCall.RequestCallActivity
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityConversationBinding
-import com.yawar.memo.ui.forwardPage.ForwardDialogFragment
 import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
-//import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.utils.*
-import com.yawar.memo.ui.dashBoard.DashBord
-import com.yawar.memo.ui.userInformationPage.UserInformationActivity
 import com.yawar.memo.ui.chatPage.video.VideoActivity
+import com.yawar.memo.ui.dashBoard.DashBord
+import com.yawar.memo.ui.forwardPage.ForwardDialogFragment
+import com.yawar.memo.ui.requestCall.RequestCallActivity
+import com.yawar.memo.ui.userInformationPage.UserInformationActivity
+import com.yawar.memo.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONArray
 import org.json.JSONException
@@ -85,7 +88,6 @@ import java.io.IOException
 import java.nio.file.Path
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.log
 
 @AndroidEntryPoint
 class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
@@ -325,6 +327,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                             )
                             chat_id = recive_chat_id
                         }
+
                     } else {
                         if (id != "0000") {
                             chatRoomRepoo!!.setLastMessage(
@@ -388,6 +391,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     chatMessage.dateTime = MessageDate!!
                     chatMessage.isUpdate = "0"
                     chatMessage.isMe = false
+                    chatMessage.senderId = senderId
+                    chatMessage.recivedId = reciverId
                     if (type == "text" || type == "location" || type == "contact" || type == "video") displayMessage(
                         chatMessage
                     ) else processSocketFile(chatMessage)
@@ -811,7 +816,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
                         if (conversationModelView!!.isFirst.value!!) {
                         conversationModelView!!.setIsFirst(false)
-                            if (conversationModelView!!.getChatMessaheHistory().value!!.size > 0) {
+                            Log.d(TAG, "initViews: ${conversationModelView?.getChatMessaheHistory()?.value?.size }")
+                            if (conversationModelView?.getChatMessaheHistory()?.value?.size!! > 0) {
                                 binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
                             }
                     }
@@ -838,21 +844,21 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 }
             }
         }
-        conversationModelView!!.getLoading().observe(
-            this
-        ) { aBoolean ->
-            if (aBoolean != null) {
-                if (aBoolean) {
-                    binding.progressCircular.visibility = View.VISIBLE
-                    binding.messagesContainer.visibility = View.GONE
-                    binding.linerNoMesssage.visibility = View.GONE
-                } else {
-                    binding.progressCircular.visibility = View.GONE
-                    binding.messagesContainer.visibility = View.VISIBLE
-                    binding.linerNoMesssage.visibility = View.VISIBLE
-                }
-            }
-        }
+//        conversationModelView!!.getLoading().observe(
+//            this
+//        ) { aBoolean ->
+//            if (aBoolean != null) {
+//                if (aBoolean) {
+//                    binding.progressCircular.visibility = View.VISIBLE
+//                    binding.messagesContainer.visibility = View.GONE
+//                    binding.linerNoMesssage.visibility = View.GONE
+//                } else {
+//                    binding.progressCircular.visibility = View.GONE
+//                    binding.messagesContainer.visibility = View.VISIBLE
+//                    binding.linerNoMesssage.visibility = View.VISIBLE
+//                }
+//            }
+//        }
         conversationModelView!!.getErrorMessage().observe(
             this
         ) { aBoolean ->
@@ -913,7 +919,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 notification.put("image", classSharedPreferences?.user!!.image)
                 notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
                 notification.put("chat_id", chat_id)
-                notification.put("blockedFor",conversationModelView!!.blockedFor().value,
+                notification.put(
+                    "blockedFor", conversationModelView!!.blockedFor().value,
                 )
                 jsonObject.put("notification",notification)
             } catch (e: JSONException) {
@@ -930,6 +937,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             chatMessage.isMe = true
             chatMessage.type = "location"
             chatMessage.state = "0"
+            chatMessage.senderId = user_id
+            chatMessage.recivedId = anthor_user_id
             chatMessage.isChecked = false
             displayMessage(chatMessage)
             newMeesage(jsonObject)
@@ -1049,7 +1058,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 notification.put("image", classSharedPreferences?.user!!.image)
                 notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
                 notification.put("chat_id", chat_id)
-                notification.put("blockedFor",conversationModelView!!.blockedFor().value,
+                notification.put(
+                    "blockedFor", conversationModelView!!.blockedFor().value,
                 )
                 jsonObject.put("notification",notification)
                 
@@ -1062,12 +1072,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             chatMessage.dateTime =
             Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
             chatMessage.isMe = true
-            chatMessage.userId = user_id
+            chatMessage.senderId = user_id
             chatMessage.type = "text"
             chatMessage.state = "0"
             chatMessage.isChecked = false
             chatMessage.id = message_id
             chatMessage.isUpdate = "0"
+            chatMessage.senderId = user_id
+            chatMessage.recivedId = anthor_user_id
             binding.messageEdit.setText("")
             displayMessage(chatMessage)
             newMeesage(jsonObject)
@@ -1221,7 +1233,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 if (conversationModelView!!.selectedMessage.value!![0]!!.type == "text") {
                     copyItem.isVisible = true
                     updateItem.isVisible =
-                        conversationModelView!!.selectedMessage.value!![0]!!.userId == user_id
+                        conversationModelView!!.selectedMessage.value!![0]!!.senderId == user_id
                 } else {
                     updateItem.isVisible = false
                     copyItem.isVisible = false
@@ -1704,6 +1716,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             chatMessage.isMe = true
             chatMessage.type = "contact"
             chatMessage.state = "0"
+            chatMessage.senderId = user_id
+            chatMessage.recivedId = anthor_user_id
             binding.messageEdit.setText("")
             chatMessage.isChecked = false
             displayMessage(chatMessage)
@@ -1732,7 +1746,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             notification.put("image", classSharedPreferences?.user!!.image)
             notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
             notification.put("chat_id", chat_id)
-            notification.put("blockedFor",conversationModelView!!.blockedFor().value,
+            notification.put(
+                "blockedFor", conversationModelView!!.blockedFor().value,
             )
             sendObject.put("notification",notification)
 

@@ -1,4 +1,4 @@
-package com.yawar.memo.domain.model.util.chatRoomUtil
+package com.yawar.memo.domain.model.util
 
 interface EntityMapper <T,EntityModel> {
     fun mapToEntityModel(model: T):EntityModel

@@ -286,7 +286,7 @@ public class FirebaseMessageReceiver
                         }
                         chatMessage.setDateTime(remoteMessage.getData().get("dateTime"));
                         chatMessage.setMe(false);
-                        chatMessage.setUserId(remoteMessage.getData().get("sender_id"));
+                        chatMessage.setSenderId(remoteMessage.getData().get("sender_id"));
                         chatMessage.setType(remoteMessage.getData().get("type"));
                         chatMessage.setState(remoteMessage.getData().get("state"));
                         chatMessage.setChecked(false);

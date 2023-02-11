@@ -2,7 +2,10 @@ package com.yawar.memo.ui.dashBoard
 
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp
 //import com.yawar.memo.repositry.ChatRoomRepoo
+
 import android.Manifest
+import android.accounts.Account
+import android.accounts.AccountManager
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
@@ -34,8 +37,9 @@ import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityDashBordBinding
-import com.yawar.memo.language.helper.LocaleHelper
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.ChatRoomModel
+import com.yawar.memo.language.helper.LocaleHelper
 import com.yawar.memo.notification.NotificationWorker
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.AuthRepo
@@ -57,12 +61,16 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 import javax.inject.Inject
+
+
 ////0993486823
 @AndroidEntryPoint
 class DashBord : AppCompatActivity() {
     lateinit var bottomNavigation: BottomNavigationView
     private lateinit var permissions: Permissions
     private val REQUEST_CODE_OVERLAY_PERMISSION = 1
+    private val REQUEST_CODE_AUTHENTICATE_ACCOUNTS = 2
+
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityDashBordBinding
     lateinit var chatRoomRepoo: ChatRoomRepoo
@@ -269,10 +277,15 @@ class DashBord : AppCompatActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_dash_bord)
 
+
+
 //        dashbordViewModel = ViewModelProvider(this).get(DashbordViewModel::class.java)
 
 
         connectSocket()
+//        val intent = Intent(this, MyAuthenticatorService::class.java)
+//        startService(intent)
+
 //        LocalBroadcastManager.getInstance(this).registerReceiver(
 //            reciveNwMessage, IntentFilter(
 //                ON_MESSAGE_RECEIVED
@@ -322,7 +335,17 @@ class DashBord : AppCompatActivity() {
 //        showFloatingViewPermissionDialog()
 
         ///////////////////
-
+//        if (ContextCompat.checkSelfPermission(this,
+//                Manifest.permission.AUTHENTICATE_ACCOUNTS)
+//            != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this,
+//                arrayOf(Manifest.permission.AUTHENTICATE_ACCOUNTS),
+//                REQUEST_CODE_AUTHENTICATE_ACCOUNTS)
+//        } else {
+//            // Permission has already been granted, you can start using the feature
+//            authenticateAccounts()
+//        }
+    
 /////////////////////
 
         classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
@@ -726,6 +749,17 @@ class DashBord : AppCompatActivity() {
             activity.window.decorView
             val imm = activity.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
             imm?.hideSoftInputFromWindow(activity.window.decorView.windowToken, 0)
+        }
+    }
+    private fun authenticateAccounts() {
+        val accountManager = AccountManager.get(this) //this is Activity
+
+        val account = Account("MyAccount", "com.yawar.memo")
+        val success = accountManager.addAccountExplicitly(account, "password", null)
+        if (success) {
+            Log.d("Account created", "Account created")
+        } else {
+            Log.d("Account created", "Account creation failed. Look at previous logs to investigate")
         }
     }
 }

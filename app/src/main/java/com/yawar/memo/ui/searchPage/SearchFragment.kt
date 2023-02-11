@@ -29,6 +29,7 @@ import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.FragmentSearchBinding
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.SearchRespone
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.sessionManager.ClassSharedPreferences
@@ -52,6 +53,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
     private lateinit var loadingPB: ProgressBar
     private lateinit var nestedSV: NestedScrollView
     val handler = Handler()
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
     private var FIRST_PAGE = 1
     var limit = 2
     var end = false
@@ -212,6 +214,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
         bundle.putString("fcm_token", searchRespone.token)
         bundle.putString("special", searchRespone.SecretNumber)
         bundle.putString("blockedFor", searchRespone.blockedFor)
+        anthorUserInChatRoomId.id = searchRespone!!.id!!
         val intent = Intent(context, ConversationActivity::class.java)
         intent.putExtras(bundle)
         startActivity(intent)

@@ -228,6 +228,30 @@ public class RequestCallActivity extends AppCompatActivity {
             });
         }
     };
+    private final BroadcastReceiver headsetReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(Intent.ACTION_HEADSET_PLUG)) {
+                int state = intent.getIntExtra("state", -1);
+                switch (state) {
+                    case 0:
+                        Log.d(TAG, "Headset unplugged");
+                        toggleSpeaker(requestCallViewModel.isSpeaker().getValue());
+//                        audioManager.setSpeakerphoneOn(true);
+//                        audioManager.setMode(AudioManager.MODE_NORMAL);
+
+                        break;
+                    case 1:
+                        Log.d(TAG, "Headset plugged");
+                        toggleSpeaker(false);
+//                        audioManager.setMode(AudioManager.MODE_IN_COMMUNICATION);
+//                        audioManager.setSpeakerphoneOn(false);
+
+                        break;
+                }
+            }
+        }
+    };
     private final BroadcastReceiver reciveAcceptChangeToVideoCall = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -620,6 +644,7 @@ public class RequestCallActivity extends AppCompatActivity {
         System.out.println("call");
         service.putExtra(SocketIOService.EXTRA_MISSING_CALL_PARAMTERS, data.toString());
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_MISSING_CALL);
+
         startService(service);
 
     }
@@ -680,12 +705,6 @@ public class RequestCallActivity extends AppCompatActivity {
 
         start();
 
-
-
-
-
-
-
         layoutCallProperties = findViewById(R.id.video_rl);
         imgBtnStopCallLp = findViewById(R.id.close_call_layout);
         imgBtnOpenCameraCallLp = findViewById(R.id.image_video_call_layout);
@@ -697,8 +716,8 @@ public class RequestCallActivity extends AppCompatActivity {
 //        start();
 //        startCall();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-
-
+        IntentFilter filte = new IntentFilter(Intent.ACTION_HEADSET_PLUG);
+        registerReceiver(headsetReceiver, filte);
 
 
         requestCallViewModel.isVideoForMe().observe(this, new Observer<Boolean>() {
@@ -1206,6 +1225,8 @@ public class RequestCallActivity extends AppCompatActivity {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAcceptChangeToVideoCall);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveAskForCall);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(reciveCloseCallFromNotification);
+        unregisterReceiver(headsetReceiver);
+
 
 
 

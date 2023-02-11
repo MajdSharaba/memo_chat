@@ -523,6 +523,8 @@ public class FileUtil {
         chatMessage.setMe(true);
         chatMessage.setType("imageWeb");
         chatMessage.setState("0");
+        chatMessage.setSenderId(user_id);
+        chatMessage.setRecivedId(anthor_user_id);
         chatMessage.setUpload(true);
 //        messageET.setText("");
 //        chatMessage.setDate(String.valueOf(cal.getTimeInMillis()));
@@ -667,8 +669,8 @@ public class FileUtil {
         chatMessage.setMessage(pdffile.toString());
         chatMessage.setFileName(pdfname);
         chatMessage.setUpload(true);
-
-
+        chatMessage.setSenderId(user_id);
+        chatMessage.setRecivedId(anthor_user_id);
         chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
         chatMessage.setMe(true);
         chatMessage.setType("video");
@@ -810,6 +812,8 @@ public class FileUtil {
         chatMessage.setState("0");
         chatMessage.setUpload(true);
         chatMessage.setChecked(false);
+        chatMessage.setSenderId(user_id);
+        chatMessage.setRecivedId(anthor_user_id);
 
 
 
@@ -936,6 +940,8 @@ public class FileUtil {
         chatMessage.setId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());
         chatMessage.setFileName(pdfname);
+        chatMessage.setSenderId(user_id);
+        chatMessage.setRecivedId(anthor_user_id);
         chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
 
 
