@@ -27,7 +27,7 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.view.View.OnLayoutChangeListener
+import android.view.View.*
 import android.widget.EditText
 import android.widget.MediaController
 import android.widget.Toast
@@ -41,6 +41,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.devlomi.record_view.OnRecordListener
@@ -97,6 +98,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     private val requestcode = 1
     var first = true
     var timeProperties: TimeProperties? = null
+    lateinit  var linearLayoutManager : LinearLayoutManager
     @Inject
     lateinit var blockUserRepo: BlockUserRepo
 //    lateinit var textForBlock: TextView
@@ -296,7 +298,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 var id = ""
                 var recive_chat_id = ""
                 val fileName = ""
-                var MessageDate: String? = ""
+                var messageDate: String? = ""
                 try {
                     text = message!!.getString("message")
                     type = message.getString("message_type")
@@ -305,7 +307,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     id = message.getString("message_id")
                     reciverId = message.getString("reciver_id")
                     if(!text.equals("welcome to memo"))
-                    MessageDate = message.getString("dateTime")
+                    messageDate = message.getString("dateTime")
                     recive_chat_id = message.getString("chat_id")
                     //                        fileName = message.getString("orginalName");
                 } catch (e: JSONException) {
@@ -322,7 +324,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                                 anthor_user_id,
                                 type,
                                 state,
-                                MessageDate,
+                                messageDate,
                                 user_id
                             )
                             chat_id = recive_chat_id
@@ -337,7 +339,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                                 anthor_user_id,
                                 type,
                                 state,
-                                MessageDate,
+                                messageDate,
                                 senderId
                             )
                         } else {
@@ -357,14 +359,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         jsonObject.put("chat_id", recive_chat_id.toInt())
                         jsonObject.put(
                             "dateTime",
-                            Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+                            messageDate
                         )
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
                     onSeen(jsonObject)
                     val chatMessage = ChatMessage()
-                    chatMessage.id = id
+                    chatMessage.messageId = id
                     when (type) {
                         "text", "location" -> {
                             chatMessage.message = text!!
@@ -388,7 +390,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     }
                     chatMessage.type = type
                     chatMessage.state = state
-                    chatMessage.dateTime = MessageDate!!
+                    chatMessage.dateTime = messageDate!!
                     chatMessage.isUpdate = "0"
                     chatMessage.isMe = false
                     chatMessage.senderId = senderId
@@ -610,7 +612,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         super.onResume()
         checkConnect()
         EnterRoom()
-        scroll()
+        scroll(200)
         closeCurrentNotification()
     }
 
@@ -651,7 +653,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 //        )
 //        chatMessageRepoo = myBase?.chatMessageRepoo
         binding.messagesContainer.setHasFixedSize(true)
-        val linearLayoutManager = LinearLayoutManager(this)
+         linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
         binding.messagesContainer.layoutManager = linearLayoutManager
         permissions = Permissions()
@@ -815,22 +817,47 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         adapter!!.setData(list)
 
                         if (conversationModelView!!.isFirst.value!!) {
-                        conversationModelView!!.setIsFirst(false)
-                            Log.d(TAG, "initViews: ${conversationModelView?.getChatMessaheHistory()?.value?.size }")
-                            if (conversationModelView?.getChatMessaheHistory()?.value?.size!! > 0) {
-                                binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
+                            if (conversationModelView?.getChatMessaheHistory()?.value?.size!! > 0 ) {
+                                conversationModelView!!.setIsFirst(false)
+
+                                binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size)
+
                             }
+
                     }
                         binding.linerNoMesssage!!.visibility = View.GONE
                         binding.messagesContainer.visibility = View.VISIBLE
+//
+                        if(conversationModelView?.getChatMessaheHistory()?.value?.size!! > binding.messagesContainer.layoutManager?.itemCount!!){
+//                            val count = binding.messagesContainer.layoutManager?.itemCount!!
+//                                                        binding.messagesContainer.smoothScrollToPosition(count)
+                            scroll(10)
+                            Log.d(TAG, "initViewssbbb: ${conversationModelView?.getChatMessaheHistory()?.value?.size.toString()+","+binding.messagesContainer.layoutManager?.itemCount }")
+
+
+                        }
+//                            conversationModelView!!.setIsFirst(false)
+////                            binding.fab.visibility = VISIBLE
+//                            val count = conversationModelView?.getChatMessaheHistory()?.value?.size!! - binding.messagesContainer.layoutManager?.itemCount!!
+//                            binding.messagesContainer.scrollToPosition(binding.messagesContainer.layoutManager?.itemCount!!+count)
+//
+//
+//                        }
+//                        else{
+////                            binding.fab.visibility = GONE
+//
+//                        }
+
+
                     }
 //                    if (!chatMessages.isEmpty() && conversationModelView!!.isFirst.value!!) {
 //                        conversationModelView!!.setIsFirst(false)
-//                        scroll()
+//                        scroll()0
 //                    }
                 }
             })
         //        scroll();
+
         conversationModelView.selectedMessage.observe(
             this
         ) { chatMessages ->
@@ -894,6 +921,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             //
         })
         binding.sendLocation.setOnClickListener(View.OnClickListener {
+            val dataTime =  Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+
             if (stringLatLng == null) {
                 return@OnClickListener
             }
@@ -912,7 +941,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 jsonObject.put("message_id", message_id)
                 jsonObject.put(
                     "dateTime",
-                    Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+                    dataTime
                 )
                 notification.put("token", fcmToken)
                 notification.put("my_token", classSharedPreferences?.fcmToken)
@@ -930,10 +959,10 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             binding.relativeMaps.visibility = View.GONE
             binding.container.visibility = View.VISIBLE
             val chatMessage = ChatMessage()
-            chatMessage.id = message_id //dummy
+            chatMessage.messageId = message_id //dummy
             chatMessage.message = stringLatLng
             chatMessage.dateTime =
-                Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+                dataTime
             chatMessage.isMe = true
             chatMessage.type = "location"
             chatMessage.state = "0"
@@ -964,6 +993,36 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             intent.putExtras(bundle)
             startActivity(intent)
         }
+
+        ///////////start listener for recycleView scroll
+
+        binding.messagesContainer.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val lastVisibleItemPosition = linearLayoutManager.findLastVisibleItemPosition()
+                val totalItemCount = binding.messagesContainer.layoutManager?.itemCount
+
+                if(lastVisibleItemPosition < totalItemCount!! -1 ){
+                    binding.fab.visibility = VISIBLE
+                    binding.fab.count = 0
+
+                }
+                else{
+                    binding.fab.visibility = GONE
+
+                }
+                Log.d(TAG, "onScrolled:${lastVisibleItemPosition.toString() +","+totalItemCount} ")
+
+            }
+})
+
+
+
+
+
+        /////////////end listener for recycleView scroll
+        binding.fab.setOnClickListener { scroll(500) }
         binding.imageButtonBack.setOnClickListener { finish() }
         binding.messageEdit.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
@@ -1033,7 +1092,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         binding.btnSendMessageText.setOnClickListener(View.OnClickListener {
 //            binding.username.visibility = View.GONE
 //            binding.reply.visibility = View.GONE
+            val dataTime =  Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
             val message_id = System.currentTimeMillis().toString() + "_" + user_id
+            println("Timemillesec," + dataTime + ","+message_id )
             val messageText = binding.messageEdit.text.toString()
             if (TextUtils.isEmpty(messageText)) {
                 return@OnClickListener
@@ -1051,7 +1112,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 jsonObject.put("message_id", message_id)
                 jsonObject.put(
                     "dateTime",
-                    Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+                    dataTime
                 )
                 notification.put("token", fcmToken)
                 notification.put("my_token", classSharedPreferences?.fcmToken)
@@ -1067,16 +1128,16 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 e.printStackTrace()
             }
             val chatMessage = ChatMessage()
-            chatMessage.id = message_id //dummy
+            chatMessage.messageId = message_id //dummy
             chatMessage.message = messageText
-            chatMessage.dateTime =
-            Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+            chatMessage.dateTime = dataTime
+
             chatMessage.isMe = true
             chatMessage.senderId = user_id
             chatMessage.type = "text"
             chatMessage.state = "0"
             chatMessage.isChecked = false
-            chatMessage.id = message_id
+            chatMessage.messageId = message_id
             chatMessage.isUpdate = "0"
             chatMessage.senderId = user_id
             chatMessage.recivedId = anthor_user_id
@@ -1269,14 +1330,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 )
                 clipboardManager.setPrimaryClip(clipData)
                 conversationModelView!!.setMessageChecked(
-                    conversationModelView!!.selectedMessage.value!![0]!!.id, false
+                    conversationModelView!!.selectedMessage.value!![0]!!.messageId, false
                 )
                 conversationModelView!!.clearSelectedMessage()
                 deleteMessage.clear()
                 return true
             }
             R.id.item_update -> {
-                showUpdateMessageDialog(conversationModelView!!.selectedMessage.value!![0]!!)
+                showUpdateMessageDialog(conversationModelView.selectedMessage.value!![0]!!)
                 return true
             }
             R.id.item_block -> {
@@ -1285,7 +1346,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 dialog.setPositiveButton(
                     R.string.block
                 ) { _, _ ->
-                    conversationModelView!!.sendBlockRequest(
+                    conversationModelView.sendBlockRequest(
                         user_id,
                         anthor_user_id
                     )
@@ -1302,7 +1363,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 dialogUnBlock.setPositiveButton(
                     R.string.Unblock
                 ) { _, _ -> //                                serverApi.unbBlockUser(user_id, userModel);
-                    conversationModelView!!.sendUnBlockRequest(user_id, anthor_user_id)
+                    conversationModelView.sendUnBlockRequest(user_id, anthor_user_id)
                 }
                 dialogUnBlock.setNegativeButton(
                     R.string.cancel
@@ -1372,7 +1433,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
     fun displayMessage(message: ChatMessage?) {
         conversationModelView!!.addMessage(message)
-        scroll()
+        scroll(200)
     }
 
     /////for browse file from device
@@ -1510,13 +1571,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         })
     }
 
-    private fun scroll() {
+    private fun scroll(dealay : Long) {
         binding.messagesContainer.postDelayed({
             if(conversationModelView?.getChatMessaheHistory()?.value?.size!=null)
             if (conversationModelView?.getChatMessaheHistory()?.value?.size!! > 0) {
                 binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
             }
-        }, 500)
+        }, dealay)
     }
 
 
@@ -1695,7 +1756,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
     @SuppressLint("Range")
     private fun contactPicked(data: Intent?) {
+        val dataTime =  Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
         val message_id = System.currentTimeMillis().toString() + "_" + user_id
+
         var cursor: Cursor? = null
         var name: String? = ""
         var phoneIndex: String? = ""
@@ -1708,11 +1771,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             phoneIndex =
                 cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
             val chatMessage = ChatMessage()
-            chatMessage.id = message_id //dummy
+            chatMessage.messageId = message_id //dummy
             chatMessage.message = phoneIndex
             chatMessage.fileName = name
             chatMessage.dateTime =
-                Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+                dataTime
             chatMessage.isMe = true
             chatMessage.type = "contact"
             chatMessage.state = "0"
@@ -1738,7 +1801,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             sendObject.put("orginalName", name)
             sendObject.put(
                 "dateTime",
-                Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+                dataTime
 
             )
             notification.put("token", fcmToken)
@@ -2072,17 +2135,17 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         println(isChecked)
         binding.personInformationLiner.visibility = View.GONE
         binding.toolbar.setBackgroundColor(resources.getColor(R.color.memo_background_color))
-        conversationModelView?.setMessageChecked(chatMessage!!.id, isChecked)
+        conversationModelView?.setMessageChecked(chatMessage!!.messageId, isChecked)
         binding.toolsLinerLayout.visibility = View.VISIBLE
         if (isChecked) {
             conversationModelView!!.addSelectedMessage(chatMessage)
             if (chatMessage != null) {
-                deleteMessage.add("\"" + chatMessage.id + "\"")
+                deleteMessage.add("\"" + chatMessage.messageId + "\"")
             }
         } else {
             conversationModelView!!.removeSelectedMessage(chatMessage)
             if (chatMessage != null) {
-                deleteMessage.remove("\"" + chatMessage.id + "\"")
+                deleteMessage.remove("\"" + chatMessage.messageId + "\"")
             }
 
         }
@@ -2135,14 +2198,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             if (chatMessage.message != edt.text.toString()) {
                 val data = JSONObject()
                 try {
-                    data.put("message_id", chatMessage.id)
+                    data.put("message_id", chatMessage.messageId)
                     data.put("message", edt.text.toString())
                 } catch (e: JSONException) {
                     e.printStackTrace()
                 }
                 updateMessage(data)
                 conversationModelView!!.setMessageChecked(
-                    conversationModelView!!.selectedMessage.value!![0]!!.id, false
+                    conversationModelView!!.selectedMessage.value!![0]!!.messageId, false
                 )
                 conversationModelView!!.clearSelectedMessage()
                 deleteMessage.clear()
@@ -2305,7 +2368,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         alert.show()
     }
     fun download(chatMessage: ChatMessage?, d: File?, downloadUrl: String?, fileName: String?) {
-        conversationModelView!!.setMessageDownload(chatMessage!!.id, true)
+        conversationModelView!!.setMessageDownload(chatMessage!!.messageId, true)
         val downloadID = PRDownloader.download(downloadUrl, d!!.path, fileName)
             .build().setOnStartOrResumeListener {
 
@@ -2313,11 +2376,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         val id = downloadID.start(object : OnDownloadListener {
             override fun onDownloadComplete() {
                 println("completed")
-                conversationModelView!!.setMessageDownload(chatMessage.id, false)
+                conversationModelView!!.setMessageDownload(chatMessage.messageId, false)
             }
 
             override fun onError(error: Error) {
-                conversationModelView!!.setMessageDownload(chatMessage.id, false)
+                conversationModelView!!.setMessageDownload(chatMessage.messageId, false)
                 println("errror")
             }
         })
@@ -2417,17 +2480,17 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         downloadUrl: String?,
         fileName: String?
     ) {
-        conversationModelView!!.setMessageDownload(chatMessage.id, true)
+        conversationModelView!!.setMessageDownload(chatMessage.messageId, true)
         val downloadID = PRDownloader.download(downloadUrl, d!!.path, fileName)
             .build().setOnStartOrResumeListener {
             }
         val id = downloadID.start(object : OnDownloadListener {
             override fun onDownloadComplete() {
-                conversationModelView!!.setMessageDownload(chatMessage.id, false)
+                conversationModelView!!.setMessageDownload(chatMessage.messageId, false)
             }
 
             override fun onError(error: Error) {
-                conversationModelView!!.setMessageDownload(chatMessage.id, false)
+                conversationModelView!!.setMessageDownload(chatMessage.messageId, false)
             }
         })
     }

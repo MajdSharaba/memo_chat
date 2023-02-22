@@ -122,7 +122,6 @@ public class RequestCallActivity extends AppCompatActivity {
     String imageUrl;
     String typeCall;
     int time = 0;
-
     Timer callTimer = new Timer();
     ObjectAnimator objectanimator1, objectanimator2;
     Animation animation;

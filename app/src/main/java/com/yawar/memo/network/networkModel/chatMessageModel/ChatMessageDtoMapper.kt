@@ -2,22 +2,18 @@ package com.yawar.memo.network.networkModel.chatMessageModel
 
 import com.yawar.memo.BaseApp
 import com.yawar.memo.database.entity.ChatMessageEntity.ChatMessageEntity
-import com.yawar.memo.database.entity.callHistoryEntity.CallHistoryEntity
-import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntity
-import com.yawar.memo.domain.model.CallHistoryModel
 import com.yawar.memo.domain.model.ChatMessage
-import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.domain.model.util.DomainMapper
 import com.yawar.memo.domain.model.util.EntityMapper
-import com.yawar.memo.network.networkModel.callHistoryModel.CallHistoryDto
-import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomModelDto
 
 class ChatMessageDtoMapper : DomainMapper<ChatMessageDto, ChatMessage>,
     EntityMapper<ChatMessageDto, ChatMessageEntity> {
     override fun mapToDominModel(model: ChatMessageDto): ChatMessage {
 
         return ChatMessage(
-            id  = model.message_id,
+            messageId  = model.message_id,
+
+//            id = model.id,
 
             isMe  =  model.sender_id== BaseApp.instance?.classSharedPreferences?.user?.userId,
 
@@ -59,7 +55,9 @@ class ChatMessageDtoMapper : DomainMapper<ChatMessageDto, ChatMessage>,
 
     override fun mapToEntityModel(model: ChatMessageDto): ChatMessageEntity {
         return ChatMessageEntity(
-            id  = model.message_id,
+            messageId  = model.message_id,
+
+//            id = model.id.toInt(),
 
             isMe  =  model.sender_id== BaseApp.instance?.classSharedPreferences?.user?.userId,
 

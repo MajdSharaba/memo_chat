@@ -1087,7 +1087,7 @@ class ChatAdapter(private val context: Activity) :
     }
     class MyDiffUtilChatMessage : DiffUtil.ItemCallback<ChatMessage>() {
         override fun areItemsTheSame(oldItem: ChatMessage, newItem: ChatMessage): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.messageId == newItem.messageId
         }
 
         @SuppressLint("DiffUtilEquals")

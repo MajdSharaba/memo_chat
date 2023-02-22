@@ -1,27 +1,32 @@
 package com.yawar.memo.ui.searchPage
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.yawar.memo.Api.ChatApi
 //import com.yawar.memo.Api.GdgApi
-import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.domain.model.SearchRespone
+import androidx.lifecycle.*
+import androidx.paging.*
+import com.yawar.memo.domain.model.SearchModel
+import com.yawar.memo.repositry.SearchRepoo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import org.json.JSONArray
-import org.json.JSONObject
+import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
-@HiltViewModel
-class SearchModelView  @Inject constructor(val chatApi: ChatApi): ViewModel() {
-    private val _searchResponeArrayList = MutableLiveData<ArrayList<SearchRespone?>?>()
-    val searchResponeArrayList: LiveData<ArrayList<SearchRespone?>?>
-        get() = _searchResponeArrayList
 
+
+@HiltViewModel
+class SearchModelView  @Inject constructor(val searchRepoo: SearchRepoo): ViewModel() {
+
+    private val _searchModelArrayList = MutableLiveData<ArrayList<SearchModel?>?>()
+    val searchResponeArrayList: LiveData<ArrayList<SearchModel?>?>
+        get() = _searchModelArrayList
+    ////////////
+    private val currentQuery = MutableLiveData(DEFAULT_QUERY)
+
+    val items = currentQuery.switchMap { queryString ->
+        searchRepoo.search(queryString).asLiveData()
+    }.asFlow()
+        .cachedIn(viewModelScope)
+    //////////////
 
     private val _loadingMutableLiveData =  MutableLiveData<Boolean>(false)
     val loadingMutableLiveData : LiveData<Boolean>
@@ -30,77 +35,22 @@ class SearchModelView  @Inject constructor(val chatApi: ChatApi): ViewModel() {
 
     private var viewModelJob = Job()
     private val coroutineScope = CoroutineScope(viewModelJob + Dispatchers.Main )
-
-    fun search( searchParameter : String,  page :String,  myId :String ): MutableLiveData<ArrayList<SearchRespone?>?>  {
-        if (searchParameter.isEmpty()) {
-            _loadingMutableLiveData.postValue(true)
-        }
-        val searchResponeArrayList =  ArrayList<SearchRespone?>()
-
-        coroutineScope.launch {
-
-//            val getResponeDeferred = GdgApi(AllConstants.base_url).apiService
-//                .search(searchParameter,page,myId)
-//            val getResponeDeferred = GdgApi.apiService
-//                .search(searchParameter,page,myId)
-            val getResponeDeferred = chatApi
-                .search(searchParameter,page,myId)
-            try {
-                val listResult = getResponeDeferred?.await()
-                _loadingMutableLiveData.value = false
-
-                var respObj: JSONObject? = null
-
-                println("search$searchParameter")
-
-                    searchResponeArrayList.clear()
-
-                    respObj = JSONObject(listResult)
-                    val jsonArray = respObj["data"] as JSONArray
-                    println(jsonArray.length().toString() + "jsonArray.length()")
-
-                    for (i in 0 until jsonArray.length()) {
-                        val jsonObject = jsonArray.getJSONObject(i)
-                        val id = jsonObject.getString("id")
-                        val phone = jsonObject.getString("phone")
-                        val name =
-                            jsonObject.getString("first_name") + " " + jsonObject.getString("last_name")
-                        val secretNumber = jsonObject.getString("sn")
-                        val image = jsonObject.getString("image")
-                        val token = jsonObject.getString("token")
-                        val blockedFor = jsonObject.getString("blocked_for")
-                        searchResponeArrayList.add(
-                            SearchRespone(
-                                id,
-                                name,
-                                secretNumber,
-                                image,
-                                phone,
-                                token,
-                                blockedFor,
-                                true
-                            )
-                        )
-                    }
-
-                    _searchResponeArrayList.value = searchResponeArrayList
-
-
-            } catch (e: Exception) {
-                _loadingMutableLiveData.value = false
-
-
-                Log.d("getMarsRealEstateProperties: ","Failure: ${e.message}")
-
-            }
-        }
-        return _searchResponeArrayList
-
+    init {
+//        search("","","")
     }
+
+
 
     override fun onCleared() {
         viewModelJob.cancel()
         super.onCleared()
+    }
+    fun searchQuery(query: String){
+        currentQuery.postValue(query)
+    }
+
+    companion object{
+        private const val DEFAULT_QUERY = ""
     }
 
 

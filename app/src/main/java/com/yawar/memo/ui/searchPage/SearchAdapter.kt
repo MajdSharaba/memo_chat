@@ -8,25 +8,28 @@ import android.provider.ContactsContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingData
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.ui.searchPage.SearchAdapter.ViewHolders
 import com.yawar.memo.databinding.ItemSearchBinding
-import com.yawar.memo.domain.model.SearchRespone
+import com.yawar.memo.domain.model.SearchModel
+
 
 class SearchAdapter(
 ///Initialize variable
     var searchFragment: SearchFragment, var activity: Activity,
 ) :
-    ListAdapter<SearchRespone, ViewHolders?>(SearchDiffUtilCallBack()) {
+    PagingDataAdapter<SearchModel, ViewHolders>(SearchDiffUtilCallBack()) {
 
     private var mCallback: CallbackInterface? = null
 
     interface CallbackInterface {
 
-        fun onHandleSelection(position: Int, searchRespone: SearchRespone?)
-        fun onClickItem(position: Int, searchRespone: SearchRespone?)
+        fun onHandleSelection(position: Int, searchRespone: SearchModel?)
+        fun onClickItem(position: Int, searchRespone: SearchModel?)
     }
     init {
         try {
@@ -46,7 +49,7 @@ class SearchAdapter(
         try {
 //                if (arrayList.size() > 0) {
             val model = getItem(position)
-            holder.bind(model,activity,mCallback)
+            holder.bind(model!!,activity,mCallback)
 
 
         } catch (e: Exception) {
@@ -56,10 +59,10 @@ class SearchAdapter(
 
 
 
-    fun setData(newData: ArrayList<SearchRespone?>) {
+    fun setData(newData: ArrayList<SearchModel?>) {
         println("set data $newData")
-        submitList(newData)
-    }
+    }//        submitList(newData)
+
 
 
     fun addToContact(name: String?, number: String?) {
@@ -106,7 +109,7 @@ class SearchAdapter(
 
         @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(
-            model: SearchRespone,
+            model: SearchModel,
             activity: Activity,
             mCallback: CallbackInterface?
 
@@ -155,12 +158,12 @@ class SearchAdapter(
 
      }
 
-    class SearchDiffUtilCallBack : DiffUtil.ItemCallback<SearchRespone>() {
-        override fun areItemsTheSame(oldItem: SearchRespone, newItem: SearchRespone): Boolean {
+    class SearchDiffUtilCallBack : DiffUtil.ItemCallback<SearchModel>() {
+        override fun areItemsTheSame(oldItem: SearchModel, newItem: SearchModel): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: SearchRespone, newItem: SearchRespone): Boolean {
+        override fun areContentsTheSame(oldItem: SearchModel, newItem: SearchModel): Boolean {
             return oldItem == newItem
         }
     }

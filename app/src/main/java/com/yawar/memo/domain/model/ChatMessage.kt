@@ -4,7 +4,8 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ChatMessage(
-    var  id:String = "",
+    var  messageId:String = "",
+//    var  id:String = "",
     var  isMe:Boolean = false,
     var  message:String = "",
     var  image:String = "",

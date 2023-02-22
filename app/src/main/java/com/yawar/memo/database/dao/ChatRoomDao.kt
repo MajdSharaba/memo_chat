@@ -60,7 +60,9 @@ interface ChatRoomDao {
 
 
     /////for Chat Message
-    @Query("SELECT * FROM ChatMessageEntity  WHERE recivedId = :userId OR senderId = :userId  ORDER BY dateTime ")
+//    @Query("SELECT * FROM ChatMessageEntity  WHERE recivedId = :userId OR senderId = :userId  ORDER BY id ")
+//    fun  getChatMessage(userId: String):LiveData<List<ChatMessageEntity>>
+    @Query("SELECT * FROM ChatMessageEntity  WHERE recivedId = :userId OR senderId = :userId")
     fun  getChatMessage(userId: String):LiveData<List<ChatMessageEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -70,22 +72,27 @@ interface ChatRoomDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertOneChatMessage( chatMessageEntity: ChatMessageEntity)
 
-    @Query("UPDATE  ChatMessageEntity SET upload = :isUpload  WHERE id = :messageId")
+    @Query("UPDATE  ChatMessageEntity SET upload = :isUpload  WHERE messageId = :messageId")
     fun setIsMessageUpload(messageId: String, isUpload : Boolean )
 
-    @Query("UPDATE  ChatMessageEntity SET isDownload = :isDownload  WHERE id = :messageId")
+    @Query("UPDATE  ChatMessageEntity SET isDownload = :isDownload  WHERE messageId = :messageId")
     fun setIsMessageDownload(messageId: String, isDownload : Boolean )
 
-    @Query("UPDATE  ChatMessageEntity SET isChecked = :isChecked  WHERE id = :messageId")
+    @Query("UPDATE  ChatMessageEntity SET isChecked = :isChecked  WHERE messageId = :messageId")
     fun setIsMessageChecked(messageId: String, isChecked : Boolean )
 
-    @Query("DELETE FROM ChatMessageEntity WHERE id = :messageId")
+    @Query("DELETE FROM ChatMessageEntity WHERE messageId = :messageId")
     fun deleteMessage(messageId: String)
 
-    @Query("UPDATE  ChatMessageEntity SET isUpdate = :isUpdate , message = :message  WHERE id = :messageId")
+    @Query("UPDATE  ChatMessageEntity SET isUpdate = :isUpdate , message = :message  WHERE messageId = :messageId")
     fun updateMessage(messageId: String, message:String, isUpdate: String  )
 
+    @Query("DELETE FROM ChatMessageEntity WHERE recivedId = :userId OR senderId = :userId")
+    fun deleteChatMessages(userId: String)
 
+
+    @Query("DELETE FROM ChatMessageEntity")
+    fun deleteChatMessageTable()
 }
 @Database(entities = [ChatRoomEntity::class, CallHistoryEntity::class, ChatMessageEntity::class], version = 1)
 abstract class ChatRoomDatabase : RoomDatabase() {

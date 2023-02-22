@@ -9,11 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.yawar.memo.BaseApp
@@ -23,7 +21,6 @@ import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.domain.model.SendContactNumberResponse
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
-import com.yawar.memo.ui.chatPage.ConversationModelView
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
@@ -102,9 +99,9 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
 
         for ( ChatMessage in chatMessageArrayList) {
             if (ChatMessage != null) {
-                chatMessageListId.add("\"" + ChatMessage.id + "\"")
+                chatMessageListId.add("\"" + ChatMessage.messageId + "\"")
 
-                id = id+ChatMessage.id+","
+                id = id+ChatMessage.messageId+","
             }
         }
         recyclerView = view.findViewById(R.id.recycler_view)

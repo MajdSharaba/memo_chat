@@ -10,6 +10,9 @@ class ChatMessageDto(
     @Json(name = "message_id")
     var  message_id:String = "",
 
+//    @Json(name = "id")
+//    var  id:String = "",
+
     @Json(name = "message")
     var  message:String = "",
 

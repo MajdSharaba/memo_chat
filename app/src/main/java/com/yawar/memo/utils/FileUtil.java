@@ -503,7 +503,7 @@ public class FileUtil {
     ////////////////////
     public static ChatMessage uploadImage(String imageName, Uri pdfFile, ConversationActivity activity, String user_id, String anthor_user_id
     , String blockrdFor, String token) {
-        System.out.println("imageNameeeeeeeeeeeeeeee"+imageName);
+        String dataTime =  String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
         ChatMessageRepoo chatMessageRepo = BaseApp.Companion.getInstance().chatMessageRepoo;
         BaseApp myBase = BaseApp.Companion.getInstance();
         Bitmap bitmap = null;
@@ -515,11 +515,11 @@ public class FileUtil {
 
 
         ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
+        chatMessage.setMessageId(message_id);//dummy
         chatMessage.setImage(pdfFile.toString());
         chatMessage.setFileName(imageName);
 
-        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(dataTime);
         chatMessage.setMe(true);
         chatMessage.setType("imageWeb");
         chatMessage.setState("0");
@@ -582,7 +582,7 @@ public class FileUtil {
                             }
 
                             sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                            sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                            sendObject.put("dateTime",dataTime);
                             notification.put("token", token);
                             notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
 
@@ -623,7 +623,7 @@ public class FileUtil {
                 params.put("message_type", "imageWeb");
                 params.put("state", "0");
                 params.put("orginalName", imageName);
-                params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                params.put("dateTime", dataTime);
                 return params;
             }
 
@@ -657,6 +657,8 @@ public class FileUtil {
     public static ChatMessage uploadVideo(String pdfname, Uri pdffile, ConversationActivity activity,
                                           String user_id, String anthor_user_id, String blockedFor, String token) {
         BaseApp myBase = BaseApp.Companion.getInstance();
+        String dataTime =  String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
+
 //        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
         ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
 
@@ -665,13 +667,13 @@ public class FileUtil {
         String message_id = System.currentTimeMillis() + "_" + user_id;
 
         ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
+        chatMessage.setMessageId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());
         chatMessage.setFileName(pdfname);
         chatMessage.setUpload(true);
         chatMessage.setSenderId(user_id);
         chatMessage.setRecivedId(anthor_user_id);
-        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(dataTime);
         chatMessage.setMe(true);
         chatMessage.setType("video");
         chatMessage.setState("0");
@@ -715,7 +717,7 @@ public class FileUtil {
                                 }
 
                                 sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                                sendObject.put("dateTime", String.valueOf(dataTime));
 
                                 notification.put("token",token );
                                 notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
@@ -755,7 +757,7 @@ public class FileUtil {
                     params.put("message_type", "video");
                     params.put("state", "0");
                     params.put("orginalName", pdfname);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                    params.put("dateTime", dataTime);
                     return params;
                 }
 
@@ -794,6 +796,8 @@ public class FileUtil {
     public static ChatMessage uploadVoice(String voiceName, Uri voicedPath, ConversationActivity activity,
                                           String user_id, String anthor_user_id, String blockedFor, String token) {
         BaseApp myBase = BaseApp.Companion.getInstance();
+        String dataTime =  String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
+
 //        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
         ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
 
@@ -802,11 +806,11 @@ public class FileUtil {
 
 
         ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
+        chatMessage.setMessageId(message_id);//dummy
         chatMessage.setMessage(voicedPath.toString());
         chatMessage.setFileName(voiceName);
 
-        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(dataTime);
         chatMessage.setMe(true);
         chatMessage.setType("voice");
         chatMessage.setState("0");
@@ -848,7 +852,7 @@ public class FileUtil {
                                     sendObject.put("newchat", jsonObject.getBoolean("newchat"));
                                 }
 
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                                sendObject.put("dateTime",dataTime);
                                 notification.put("token", token);
                                 notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
                                 notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
@@ -889,7 +893,7 @@ public class FileUtil {
                     params.put("message_type", "voice");
                     params.put("state", "0");
                     params.put("orginalName", voiceName);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                    params.put("dateTime", dataTime);
                     return params;
                 }
 
@@ -932,17 +936,18 @@ public class FileUtil {
     public static ChatMessage uploadPDF(String pdfname, Uri pdffile, ConversationActivity activity, String user_id,
                                         String anthor_user_id , String blockedFor, String token) {
         String message_id = System.currentTimeMillis() + "_" + user_id;
+        String dataTime =  String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
         BaseApp myBase = BaseApp.Companion.getInstance();
 //        ChatMessageRepoo chatMessageRepo = myBase.getChatMessageRepoo();
         ChatMessageRepoo chatMessageRepo = myBase.chatMessageRepoo;
 
         ChatMessage chatMessage = new ChatMessage();
-        chatMessage.setId(message_id);//dummy
+        chatMessage.setMessageId(message_id);//dummy
         chatMessage.setMessage(pdffile.toString());
         chatMessage.setFileName(pdfname);
         chatMessage.setSenderId(user_id);
         chatMessage.setRecivedId(anthor_user_id);
-        chatMessage.setDateTime(String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+        chatMessage.setDateTime(dataTime);
 
 
 //        chatMessage.setDate(DateFormat.getDateTimeInstance().format(new Date()));
@@ -992,7 +997,7 @@ public class FileUtil {
 
 
                                 sendObject.put("orginalName", jsonObject.getString("orginalName"));
-                                sendObject.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                                sendObject.put("dateTime", dataTime);
                                 notification.put("token", token);
                                 notification.put("my_token",  myBase.getClassSharedPreferences().getFcmToken());
                                 notification.put("image", myBase.getClassSharedPreferences().getUser().getImage());
@@ -1032,7 +1037,7 @@ public class FileUtil {
                     params.put("message_type", "file");
                     params.put("state", "0");
                     params.put("orginalName", pdfname);
-                    params.put("dateTime", String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis()));
+                    params.put("dateTime", dataTime);
                     return params;
                 }
 

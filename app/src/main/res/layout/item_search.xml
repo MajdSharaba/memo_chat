@@ -6,7 +6,7 @@
     <data>
         <variable
             name="searchRespone"
-            type="com.yawar.memo.domain.model.SearchRespone" />
+            type="com.yawar.memo.domain.model.SearchModel" />
     </data>
 
     <androidx.cardview.widget.CardView

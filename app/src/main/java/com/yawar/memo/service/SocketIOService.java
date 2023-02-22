@@ -17,6 +17,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 //import com.yawar.memo.repositry.ChatRoomRepoo;
 //import com.yawar.memo.repositry.chatRoomRepo.ChatRoomRepoImp;
 import com.yawar.memo.BaseApp;
+import com.yawar.memo.domain.model.ChatMessage;
+import com.yawar.memo.repositry.ChatMessageRepoo;
 import com.yawar.memo.repositry.ChatRoomRepoo;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
@@ -126,6 +128,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
     BaseApp myBase;
     @Inject
     ChatRoomRepoo chatRoomRepoo;
+    @Inject
+    ChatMessageRepoo chatMessageRepoo;
     private ConcurrentHashMap<String, SocketEventListener> listenersMap;
     //-------------------------------------------------------------------------------------------
     private IO.Options IOOption;
@@ -1377,6 +1381,8 @@ public class SocketIOService extends Service implements SocketEventListener.List
             chatId = message.getString("chat_id");
             if (!text.equals("welcome to memo"))
                 dateTime = message.getString("dateTime");
+            fileName = message.getString("orginalName");
+
             //                        fileName = message.getString("orginalName");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -1393,15 +1399,43 @@ public class SocketIOService extends Service implements SocketEventListener.List
                     text,
                     chatId, classSharedPreferences.getUser().getUserId(), anthor_id, type, state, dateTime, senderId
             );
-            if (!senderId.equals(classSharedPreferences.getUser().getUserId()) && !chatRoomRepoo.checkInChat(anthor_id) && !checkIsMute(anthor_id)) {
-                Log.d(";g: ", "onReceive:${senderId+myId "+ chatRoomRepoo.checkInChat(anthor_id)+"checkIsMute(anthor_id) } ");
-                try {
-                    showNotification(message.getString("title"), message.getString("image"),
-                            text, senderId, null, "", "", type);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            if (!senderId.equals(classSharedPreferences.getUser().getUserId()) && !chatRoomRepoo.checkInChat(anthor_id) ) {
+                if(!checkIsMute(anthor_id)) {
+                    Log.d(";g: ", "onReceive:${senderId+myId " + chatRoomRepoo.checkInChat(anthor_id) + "checkIsMute(anthor_id) } ");
+                    try {
+                        showNotification(message.getString("title"), message.getString("image"),
+                                text, senderId, null, "", "", type);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
+                ChatMessage chatMessage = new ChatMessage();
+                chatMessage.setMessageId(id);
+
+                chatMessage.setMessage(text);
+                if (type.equals("imageWeb")) {
+                    chatMessage.setImage(text);
+                }
+                chatMessage.setDateTime(dateTime);
+                chatMessage.setMe(false);
+                chatMessage.setSenderId(senderId);
+                chatMessage.setType(type);
+                chatMessage.setState(state);
+                chatMessage.setChecked(false);
+                if (!type.equals("text") && !type.equals("location")) {
+                    System.out.println("(remoteMessage.getData().get(\"type\")" + type);
+                    chatMessage.setFileName(fileName);
+                }
+                chatMessage.setUpdate("0");
+//                        myBase.getChatMessageRepoo().addMessage(chatMessage);
+                chatMessageRepoo.addMessage(chatMessage);
+
+
+
+
+
             }
+
 
         } else {
             chatRoomRepoo.updateLastMessageState(state, chatId);

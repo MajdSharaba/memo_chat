@@ -1,14 +1,14 @@
 package com.yawar.memo.database.entity.ChatMessageEntity
 
-import com.yawar.memo.database.entity.callHistoryEntity.CallHistoryEntity
-import com.yawar.memo.domain.model.CallHistoryModel
 import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.domain.model.util.DomainMapper
 
 class ChatMessageEntityMapper : DomainMapper<ChatMessageEntity, ChatMessage> {
     override fun mapToDominModel(model: ChatMessageEntity): ChatMessage {
         return  ChatMessage(
-           id  = model.id,
+           messageId  = model.messageId,
+
+//            id = model.id.toString(),
 
           isMe  = model.isMe,
 
@@ -41,7 +41,9 @@ class ChatMessageEntityMapper : DomainMapper<ChatMessageEntity, ChatMessage> {
     override fun mapFromDominModel(domainModel: ChatMessage): ChatMessageEntity {
         return  ChatMessageEntity(
 
-            id  = domainModel.id,
+            messageId  = domainModel.messageId,
+
+//            id = domainModel.id.toLong(),
 
             isMe  = domainModel.isMe,
 

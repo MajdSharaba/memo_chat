@@ -5,23 +5,17 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.facebook.internal.Utility
-import com.facebook.internal.Utility.logd
 import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.BaseApp
 import com.yawar.memo.database.dao.ChatRoomDatabase
 import com.yawar.memo.database.entity.ChatMessageEntity.ChatMessageEntityMapper
-import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntityMapper
 import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 //import com.yawar.memo.Api.GdgApi
 import com.yawar.memo.domain.model.ChatMessage
-import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.network.networkModel.chatMessageModel.ChatMessageDtoMapper
-import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomDtoMapper
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -131,14 +125,20 @@ class ChatMessageRepoo
     @SuppressLint("SuspiciousIndentation")
     fun addMessage(chatMessage: ChatMessage) {
         coroutineScope.launch {
+            Log.d("addMessageeeeeee", "addMessage: ")
 
-
-            var chatMessageList = chatMessaheHistory.value as ArrayList
-            chatMessageList?.add(chatMessage)
-            Log.d("addMessage: ", chatMessage.message)
-            withContext(Dispatchers.IO) {
-                database.chatRoomDao.insertOneChatMessage(chatMessageEntityMapper.mapFromDominModel(chatMessage))
-            }
+//          if(chatMessaheHistory.value!=null) {
+//
+//              var chatMessageList = chatMessaheHistory.value as ArrayList
+//              chatMessageList?.add(chatMessage)
+//              Log.d("addMessage: ", chatMessage.message)
+              withContext(Dispatchers.IO) {
+                  database.chatRoomDao.insertOneChatMessage(
+                      chatMessageEntityMapper.mapFromDominModel(
+                          chatMessage
+                      )
+                  )
+          }
         }
     }
 
@@ -171,7 +171,7 @@ class ChatMessageRepoo
                         }
                     } else if (state == "1") {
                         if (chatMessageList != null) {
-                            if (chatMessageList.get(i)!!.id == message_id) {
+                            if (chatMessageList.get(i)!!.messageId == message_id) {
                                 chatMessageList.get(i)!!.state = state
                                 break
                             }
@@ -288,7 +288,7 @@ class ChatMessageRepoo
             for ( i in 0 until chatMessageList.size) {
 
                 if (chatMessageList[i] != null) {
-                    if (message.id == chatMessageList[i]!!.id) {
+                    if (message.messageId == chatMessageList[i]!!.messageId) {
                         chatMessageList.remove(chatMessageList[i])
                         break
                     }
@@ -306,7 +306,7 @@ class ChatMessageRepoo
         if (chatMessageList != null) {
             for ( chatMessage in chatMessageList) {
                 if (chatMessage != null) {
-                    setMessageChecked(chatMessage.id, false)
+                    setMessageChecked(chatMessage.messageId, false)
 
 
                 }
@@ -330,7 +330,7 @@ class ChatMessageRepoo
             withContext(Dispatchers.IO) {
                 if (chatMessagee != null) {
                     database.chatRoomDao.deleteMessage(
-                        chatMessagee.id
+                        chatMessagee.messageId
                     )
                 }
 
@@ -393,11 +393,11 @@ class ChatMessageRepoo
                 if (chatMessages != null) {
                     for (i in 0 until chatMessages.size) {
 
-                        val id = chatMessages?.get(i)?.id
+                        val id = chatMessages?.get(i)?.messageId
                         if (chatMessageList != null) {
                             for (chatMessage in chatMessageList) {
                                 if (chatMessage != null) {
-                                    if (chatMessage.id == id) {
+                                    if (chatMessage.messageId == id) {
                                         deleteMessage(chatMessage)
                                         break
                                     }
@@ -452,7 +452,7 @@ class ChatMessageRepoo
                             chatMessage.fileName = jsonObject.getString("orginalName")
                         }
                         //                            chatMessage.setFileName("orginalName");}
-                        chatMessage.id = jsonObject.getString("message_id")
+                        chatMessage.messageId = jsonObject.getString("message_id")
                         chatMessage.isChecked = false
                         if (jsonObject.getString("message_type") != "imageWeb") {
                             chatMessage.message = jsonObject.getString("message")
@@ -470,8 +470,8 @@ class ChatMessageRepoo
                            Log.d("elseeeeeeeeeee: ", "addddddddddddd")
 
                            BaseApp.instance?.chatRoomRepoo!!.setLastMessageBySenderId(
-                               chatMessage.message,chatMessage.id, chatMessage.senderId,
-                               chatMessage.id, chatMessage.type, chatMessage.state, chatMessage.dateTime, chatMessage.senderId
+                               chatMessage.message,chatMessage.messageId, chatMessage.senderId,
+                               chatMessage.messageId, chatMessage.type, chatMessage.state, chatMessage.dateTime, chatMessage.senderId
                            )
                         }
 
@@ -490,6 +490,8 @@ class ChatMessageRepoo
                 }
             }
         }
+
+
 
 
 

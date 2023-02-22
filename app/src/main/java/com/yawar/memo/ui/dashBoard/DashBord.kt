@@ -37,12 +37,13 @@ import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityDashBordBinding
-import com.yawar.memo.domain.model.AnthorUserInChatRoomId
+import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.language.helper.LocaleHelper
 import com.yawar.memo.notification.NotificationWorker
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.repositry.AuthRepo
+import com.yawar.memo.repositry.ChatMessageRepoo
 import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.FirebaseMessageReceiver
 import com.yawar.memo.service.SocketIOService
@@ -70,6 +71,7 @@ class DashBord : AppCompatActivity() {
     private lateinit var permissions: Permissions
     private val REQUEST_CODE_OVERLAY_PERMISSION = 1
     private val REQUEST_CODE_AUTHENTICATE_ACCOUNTS = 2
+    @Inject lateinit var chatMessageRepoo : ChatMessageRepoo
 
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityDashBordBinding
@@ -151,25 +153,21 @@ class DashBord : AppCompatActivity() {
             var senderId = ""
             var reciverId: String? = ""
             var id = ""
-            val fileName = ""
+            var fileName = ""
             var chatId: String? = ""
             var dateTime: String? = ""
-            var id_user: String? = ""
             try {
 
-                /// JSONObject jsonObject= (JSONObject) messageJson.get("data");
                 id = message!!.getString("message_id")
-//                id_user = message.getString("id")
                 text = message.getString("message")
                 type = message.getString("message_type")
                 state = message.getString("state")
                 senderId = message.getString("sender_id")
-                //                        id = message.getString("message_id");
                 reciverId = message.getString("reciver_id")
                 chatId = message.getString("chat_id")
                 if(!text.equals("welcome to memo"))
                 dateTime = message.getString("dateTime")
-                //                        fileName = message.getString("orginalName");
+                fileName = message.getString("orginalName");
             } catch (e: JSONException) {
                 e.printStackTrace()
             }
@@ -186,10 +184,52 @@ class DashBord : AppCompatActivity() {
                     text,
                     chatId!!, myId, anthor_id!!, type!!, state, dateTime, senderId
                 )
-                if(senderId!=myId && !chatRoomRepoo.checkInChat(anthor_id)&& !checkIsMute(anthor_id)) {
-                    Log.d(";g: ", "onReceive:${senderId+myId + chatRoomRepoo.checkInChat(anthor_id)+checkIsMute(anthor_id) } ")
-                   showNotification(message?.getString("title"), message?.getString("image"),
-                        text, senderId, null, "", "", type)
+//                if(senderId!=myId && !chatRoomRepoo.checkInChat(anthor_id)&& !checkIsMute(anthor_id)) {
+                if(senderId!=myId ) {
+                    ////
+
+                    val chatMessage = ChatMessage()
+                    chatMessage.messageId = id
+
+                    chatMessage.message = text!!
+                    if (type == "imageWeb") {
+                        chatMessage.image = text!!
+                    }
+                    chatMessage.dateTime = dateTime!!
+                    chatMessage.isMe = false
+                    chatMessage.senderId = senderId
+                    chatMessage.type = type
+                    chatMessage.state = state!!
+                    chatMessage.isChecked = false
+                    if (type != "text" && type != "location"
+                    ) {
+
+                        chatMessage.fileName = fileName
+                    }
+                    chatMessage.isUpdate = "0"
+//                        myBase.getChatMessageRepoo().addMessage(chatMessage);
+                    //                        myBase.getChatMessageRepoo().addMessage(chatMessage);
+                    chatMessageRepoo.addMessage(chatMessage)
+
+                    ////
+                    if (!chatRoomRepoo.checkInChat(anthor_id) && !checkIsMute(anthor_id)) {
+
+                        Log.d(
+                            ";g: ",
+                            "onReceive:${
+                                senderId + myId + chatRoomRepoo.checkInChat(anthor_id) + checkIsMute(
+                                    anthor_id
+                                )
+                            } "
+                        )
+                        showNotification(
+                            message?.getString("title"), message?.getString("image"),
+                            text, senderId, null, "", "", type
+                        )
+                    }
+                    else{
+
+                    }
                 }
 
             } else {

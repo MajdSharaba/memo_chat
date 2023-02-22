@@ -18,7 +18,7 @@ class ChatRoomRepoo  @Inject constructor(
     private val chatApi: ChatApi,
     private val mapper: ChatRoomDtoMapper,
     private val chatRoomEntityMapper: ChatRoomEntityMapper,
-    private val database : ChatRoomDatabase
+    private val database : ChatRoomDatabase,
      ){
 
     private val TAG: String = "ChatRoomRepoo"
@@ -147,6 +147,8 @@ class ChatRoomRepoo  @Inject constructor(
                                      database.chatRoomDao.deleteChatRoom(
                                          chatRoom.other_id
                                          )
+
+                                     database.chatRoomDao.deleteChatMessages( chatRoom.other_id)
 
 
                                  }

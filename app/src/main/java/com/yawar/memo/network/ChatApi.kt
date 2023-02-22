@@ -2,6 +2,7 @@ package com.yawar.memo.Api
 
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.yawar.memo.constant.AllConstants
+import com.yawar.memo.domain.model.SearchRespone
 import com.yawar.memo.network.networkModel.callHistoryModel.CallHistoryDto
 import com.yawar.memo.network.networkModel.chatMessageModel.ChatMessageDto
 import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomRespone
@@ -108,11 +109,11 @@ interface ChatApi {
 
     @FormUrlEncoded
     @POST("APIS/search_for_user.php")
-    fun search(
+    suspend fun search(
         @Field("sn") search_parameters: String?,
         @Field("page") page: String?,
         @Field("my_id") my_id: String?
-    ): Deferred<String?>?
+    ): SearchRespone?
 
 
     @FormUrlEncoded

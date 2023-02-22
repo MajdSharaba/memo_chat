@@ -22,61 +22,58 @@ import androidx.core.widget.NestedScrollView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
+import androidx.paging.CombinedLoadStates
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.FragmentSearchBinding
 import com.yawar.memo.domain.model.AnthorUserInChatRoomId
-import com.yawar.memo.domain.model.SearchRespone
+import com.yawar.memo.domain.model.SearchModel
 import com.yawar.memo.permissions.Permissions
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.chatPage.ConversationActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.count
+import kotlinx.coroutines.launch
 import java.util.*
+
 @AndroidEntryPoint
 class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
-
-    var list = ArrayList<SearchRespone?>()
+    var list = ArrayList<SearchModel?>()
     lateinit var binding: FragmentSearchBinding
     lateinit var searchAdapter: SearchAdapter
-    var res = ArrayList<SearchRespone>()
+    var res = ArrayList<SearchModel>()
     private lateinit var permissions: Permissions
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var my_id: String
     var searchParamters = ""
-    lateinit var  linearLayoutManager : LinearLayoutManager
+    lateinit var linearLayoutManager: LinearLayoutManager
     private var timer: Timer? = Timer()
     private val DELAY: Long = 1000
     private lateinit var loadingPB: ProgressBar
     private lateinit var nestedSV: NestedScrollView
     val handler = Handler()
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
-    private var FIRST_PAGE = 1
-    var limit = 2
-    var end = false
-     val searchModelView by viewModels<SearchModelView>()
+    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+    val searchModelView by viewModels<SearchModelView>()
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search,container,false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false)
         val view = binding.root
         timer = Timer()
         permissions = Permissions()
         classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         my_id = classSharedPreferences.user.userId.toString()
-        binding.recyclerView.setHasFixedSize(true)
-        linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-//        toolbar = view.findViewById(R.id.toolbar)
-//        searchModelView = ViewModelProvider(this)[SearchModelView::class.java]
         checkpermission()
-        binding.searchBySecretNumber.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        binding.searchBySecretNumber.setOnQueryTextListener(object :
+            SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 if (timer != null) {
                     timer!!.cancel()
@@ -93,8 +90,6 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
                         timer = Timer()
                         val t: TimerTask = object : TimerTask() {
                             override fun run() {
-                                FIRST_PAGE = 1
-                                end = false
                                 searchParamters = newText
                                 checkpermission()
                             }
@@ -108,47 +103,34 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
                 return false
             }
         })
-        binding.recyclerView.layoutManager = linearLayoutManager
         searchAdapter = SearchAdapter(this, requireActivity())
-        searchModelView.searchResponeArrayList.observe(
-            requireActivity(),
-            Observer<ArrayList<SearchRespone?>?> { searchResponeArrayList ->
-                //                list.clear();
-                list = ArrayList()
-                if (searchResponeArrayList != null) {
-                    if (searchResponeArrayList.isEmpty()) {
-                        binding.linerNoSearchResult.visibility = View.VISIBLE
-                        binding.recyclerView.visibility = View.GONE
-                    } else {
-                        binding.linerNoSearchResult.visibility = View.GONE
-                        binding.recyclerView.visibility = View.VISIBLE
-                        for (searchRespone in searchResponeArrayList) {
-                            if (searchRespone != null) {
-                                list.add(searchRespone.clone())
-                            }
-                        }
-                        println("list$list")
-                        searchAdapter.setData(list)
-                        //                 searchAdapter.notifyDataSetChanged();
-                    }
-                }
-            })
-        binding.recyclerView.adapter = searchAdapter
-        searchModelView.loadingMutableLiveData.observe(
-            requireActivity()
-        ) { aBoolean ->
-            if (aBoolean != null) {
-                if (aBoolean) {
-                    binding.recyclerView.visibility = View.GONE
-                    binding.progressCircular.visibility = View.VISIBLE
-                    binding.linerNoSearchResult.visibility = View.GONE
-                } else {
-                    binding.recyclerView.visibility = View.VISIBLE
-                    binding.progressCircular.visibility = View.GONE
-                    binding.linerNoSearchResult.visibility = View.VISIBLE
+        binding.bindAdapter(articleAdapter = searchAdapter)
+//            searchAdapter.submitData(viewLifecycleOwner.lifecycle,it)
+        val items = searchModelView.items
+        lifecycleScope.launch {
+            // We repeat on the STARTED lifecycle because an Activity may be PAUSED
+            // but still visible on the screen, for example in a multi window app
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                items.collectLatest {
+                    Log.d("lifecycleScope", "")
+                    searchAdapter.submitData(it)
+
+
+
                 }
             }
         }
+
+        val listener: (CombinedLoadStates) -> Unit = { combinedLoadStates ->
+            if (searchAdapter.itemCount == 0) {
+                binding.linerNoSearchResult.visibility = View.VISIBLE
+                binding.recyclerView.visibility = View.GONE
+            } else {
+                binding.linerNoSearchResult.visibility = View.GONE
+                binding.recyclerView.visibility = View.VISIBLE
+            }
+        }
+        searchAdapter.addLoadStateListener(listener)
         return view
     }
 
@@ -161,8 +143,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
 
     private fun checkpermission() {
         if (permissions.isContactOk(context)) {
-
-            searchModelView.search(searchParamters, FIRST_PAGE.toString(), my_id)
+            searchModelView.searchQuery(searchParamters)
         } else {
             requestPermissions(
                 arrayOf(Manifest.permission.READ_CONTACTS),
@@ -179,8 +160,6 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
 
         when (requestCode) {
             AllConstants.CONTACTS_REQUEST_CODE -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                searchModelView.search(searchParamters, FIRST_PAGE.toString(), my_id)
             } else {
                 println("no permission")
                 if (!shouldShowRequestPermissionRationale(
@@ -195,25 +174,25 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun onHandleSelection(position: Int, searchRespone: SearchRespone?) {
+    override fun onHandleSelection(position: Int, searchRespone: SearchModel?) {
         val contactIntent = Intent(ContactsContract.Intents.Insert.ACTION)
         contactIntent.type = ContactsContract.RawContacts.CONTENT_TYPE
-        contactIntent.putExtra(ContactsContract.Intents.Insert.NAME, searchRespone!!.name)
+        contactIntent.putExtra(ContactsContract.Intents.Insert.NAME, searchRespone!!.first_name)
             .putExtra(ContactsContract.Intents.Insert.PHONE, searchRespone.phone)
         startActivityForResult(contactIntent, 1)
     }
 
-    override fun onClickItem(position: Int, searchRespone: SearchRespone?) {
+    override fun onClickItem(position: Int, searchRespone: SearchModel?) {
         val bundle = Bundle()
         Log.d("searchFragment", "onClickItem: ")
         bundle.putString("sender_id", my_id)
         bundle.putString("reciver_id", searchRespone!!.id)
-        bundle.putString("name", searchRespone.name)
+        bundle.putString("name", searchRespone.first_name)
         bundle.putString("image", searchRespone.image)
         bundle.putString("chatId", "")
         bundle.putString("fcm_token", searchRespone.token)
-        bundle.putString("special", searchRespone.SecretNumber)
-        bundle.putString("blockedFor", searchRespone.blockedFor)
+        bundle.putString("special", searchRespone.sn)
+        bundle.putString("blockedFor", searchRespone.blocked_for)
         anthorUserInChatRoomId.id = searchRespone!!.id!!
         val intent = Intent(context, ConversationActivity::class.java)
         intent.putExtras(bundle)
@@ -232,10 +211,8 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
                     showPermissionDialog(resources.getString(R.string.contact_permission), 1000)
                 } else {
 
-//                    searchResponeArrayList.clear();
-//                    res.clear();
-//                    recyclerView.getRecycledViewPool().clear();
-                    searchModelView.search(searchParamters, FIRST_PAGE.toString(), my_id)
+               searchModelView.searchQuery(searchParamters)
+
                 }
             }
             1 -> {
@@ -272,3 +249,9 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
         alert.show()
     }
 }
+
+    private fun FragmentSearchBinding.bindAdapter(articleAdapter: SearchAdapter) {
+        recyclerView.adapter = articleAdapter
+        recyclerView.layoutManager = LinearLayoutManager(recyclerView.context)
+
+    }

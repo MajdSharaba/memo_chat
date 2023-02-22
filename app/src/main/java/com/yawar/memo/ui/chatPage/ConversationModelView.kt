@@ -6,10 +6,8 @@ import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatMessageRepoo
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.internal.operators.flowable.FlowableDelaySubscriptionOther
 import org.json.JSONArray
 import org.json.JSONException
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -127,7 +125,7 @@ init {
                 if (chatMessageList != null) {
                     for (chatMessage in chatMessageList) {
                         if (chatMessage != null) {
-                            if (chatMessage.id == message_id) {
+                            if (chatMessage.messageId == message_id) {
                                 chatMessageRepoo.deleteMessage(chatMessage)
                                 break
                             }
@@ -205,6 +203,11 @@ init {
     }
     fun  getErrorMessage() :LiveData<Boolean>{
         return chatMessageRepoo.errorMessage;
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Log.d("onCleared", "onCleared: ")
     }
 
 

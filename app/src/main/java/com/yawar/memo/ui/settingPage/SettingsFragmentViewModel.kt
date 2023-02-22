@@ -204,6 +204,7 @@ class SettingsFragmentViewModel  @Inject constructor(val chatApi: ChatApi, val d
             withContext(Dispatchers.IO) {
             database.chatRoomDao.deleteChatRoomTable()
             database.chatRoomDao.deleteCallHistoryTable()
+            database.chatRoomDao.deleteChatMessageTable()
             }
         }
     }

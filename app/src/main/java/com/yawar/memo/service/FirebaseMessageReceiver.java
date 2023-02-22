@@ -232,7 +232,7 @@ public class FirebaseMessageReceiver
                     Data inputDataNotification = new Data.Builder().putString("name", remoteMessage.getData().get("title")).putString("image", remoteMessage.getData().get("image"))
                             .putString("body", message).putString("channel", remoteMessage.getData().get("sender_id"))
                             .putString("blockedFor", remoteMessage.getData().get("blockedFor")).putString("special", remoteMessage.getData().get("special"))
-                            .putString("chat_id",remoteMessage.getData().get("chat_id"))
+                            .putString("chat_id", remoteMessage.getData().get("chat_id"))
                             .putString("fcm_token", remoteMessage.getData().get("fcm_token")).build();
 
 
@@ -250,6 +250,7 @@ public class FirebaseMessageReceiver
                             remoteMessage.getData().get("state"), remoteMessage.getData().get("dateTime"),
                             remoteMessage.getData().get("sender_id"));
                     Log.d(TAG, "baseApp" + remoteMessage.getData().get("chat_id"));
+                }
 
                     if (chatRoomRepoo.checkISNewChat( remoteMessage.getData().get("chat_id"))) {
                         chatRoomRepoo.addChatRoom(
@@ -275,10 +276,13 @@ public class FirebaseMessageReceiver
                                         ""
                                 )
                         );
-                    } else if (chatRoomRepoo.checkInChat(remoteMessage.getData().get("sender_id"))) {
+                    }
+//                    else if (chatRoomRepoo.checkInChat(remoteMessage.getData().get("sender_id"))) {
+                    else  {
+
 
                         ChatMessage chatMessage = new ChatMessage();
-                        chatMessage.setId(remoteMessage.getData().get("message_id"));
+                        chatMessage.setMessageId(remoteMessage.getData().get("message_id"));
 
                         chatMessage.setMessage(remoteMessage.getData().get("body"));
                         if (remoteMessage.getData().get("type").equals("imageWeb")) {
@@ -298,7 +302,7 @@ public class FirebaseMessageReceiver
 //                        myBase.getChatMessageRepoo().addMessage(chatMessage);
                         chatMessageRepoo.addMessage(chatMessage);
 
-                    } else {
+                    }
 
 //                        chatRoomRepoo.setLastMessage(remoteMessage.getData().get("body"), remoteMessage.getData().get("chat_id"), remoteMessage.getData().get("sender_id"),
 //                                remoteMessage.getData().get("reciver_id"), remoteMessage.getData().get("type"),
@@ -310,8 +314,8 @@ public class FirebaseMessageReceiver
 
                 }
             }
-        }
-    }
+
+
 
 
 
