@@ -32,7 +32,7 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
     var postList: MutableList<ChatRoomModel> = ArrayList()
     lateinit var myId: String
     lateinit var myBase: BaseApp
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
 
     //    lateinit var chatRoomViewModel: ChatRoomViewModel
     val chatRoomViewModel by viewModels<ChatRoomViewModel>()
@@ -193,6 +193,12 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
         bundle.putString("special", chatRoomModel.sn)
         bundle.putString("blockedFor", chatRoomModel.blocked_for)
         anthorUserInChatRoomId.id = chatRoomModel!!.other_id
+        anthorUserInChatRoomId.fcmToken = chatRoomModel.user_token
+        anthorUserInChatRoomId.blockedFor = chatRoomModel.blocked_for
+        anthorUserInChatRoomId.specialNumber = chatRoomModel?.sn!!
+        anthorUserInChatRoomId.userName = chatRoomModel.username
+        anthorUserInChatRoomId.chatId = chatRoomModel.id
+        anthorUserInChatRoomId.imageUrl = chatRoomModel.image
 
 
         ///////////////////////

@@ -53,6 +53,12 @@
     <color name="icon_converstion_color">#00A79D</color>
     <color name="background_conversation_toolbar">#00A79D</color>
     <color name="line_color">#F1F1F1</color>
+    <color name="video_counter_color_pix">#E53935</color>
+    <color name="primary_color_pix">#075e54</color>
+    <color name="primary_light_color_pix">#80075e54</color>
+    <color name="surface_color_pix">#ffffff</color>
+    <color name="text_color_pix">#807f7f</color>
+
 
 
 </resources>

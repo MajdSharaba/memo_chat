@@ -9,6 +9,12 @@
     android:layoutDirection="locale"
     android:orientation="vertical">
     <RelativeLayout
+        android:layout_width="match_parent"
+        android:id="@+id/container"
+        android:visibility="gone"
+        android:layout_height="match_parent"
+        />
+    <RelativeLayout
         android:id="@+id/relativeMaps"
         android:visibility="gone"
         android:layout_gravity="center"
@@ -227,7 +233,7 @@
 
 
     <RelativeLayout
-        android:id="@+id/container"
+        android:id="@+id/containerr"
         android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -533,7 +539,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
-                android:layout_margin="10dp"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="5dp"
                 android:gravity="start"
                 android:background="?android:attr/actionBarItemBackground"
 
@@ -556,33 +563,33 @@
                     android:textColor="@color/dialog_choose_text_color" />
 
             </LinearLayout>
-            <LinearLayout
-                android:id="@+id/lytGallaryPick"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:gravity="center"
-                android:background="?android:attr/actionBarItemBackground"
-                android:layout_centerHorizontal="true"
-                android:orientation="vertical">
+<!--            <LinearLayout-->
+<!--                android:id="@+id/lytGallaryPick"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:gravity="center"-->
+<!--                android:background="?android:attr/actionBarItemBackground"-->
+<!--                android:layout_centerHorizontal="true"-->
+<!--                android:orientation="vertical">-->
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    app:srcCompat="@drawable/gallery" />
+<!--                <androidx.appcompat.widget.AppCompatImageView-->
+<!--                    android:layout_width="48dp"-->
+<!--                    android:layout_height="48dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    app:srcCompat="@drawable/gallery" />-->
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_gravity="center"
-                    android:text="@string/title_gallery"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-                    android:textColor="@color/dialog_choose_text_color" />
+<!--                <androidx.appcompat.widget.AppCompatTextView-->
+<!--                    android:id="@+id/image"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_marginTop="5dp"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:text="@string/title_gallery"-->
+<!--                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"-->
+<!--                    android:textColor="@color/dialog_choose_text_color" />-->
 
-            </LinearLayout>
+<!--            </LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/pickFile"
@@ -590,7 +597,8 @@
                 android:layout_height="wrap_content"
                 android:background="?android:attr/actionBarItemBackground"
                 android:layout_alignParentEnd="true"
-                android:layout_margin="10dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginTop="5dp"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -686,4 +694,6 @@
 
 
 </LinearLayout>
+
+
 </layout>

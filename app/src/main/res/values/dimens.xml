@@ -5,4 +5,11 @@
     <dimen name="appbar_padding">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="h1">8dp</dimen>
+    <dimen name="margin_video_counter_pix">42dp</dimen>
+    <dimen name="margin_top">0dp</dimen>
+    <dimen name="margin_top_nve">0dp</dimen>
+    <dimen name="small_thumb">62dp</dimen>
+    <dimen name="fastscroll_bubble_size">38dp</dimen>
+
 </resources>

@@ -3,15 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.yawar.memo">
 
-
-    //////
-    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
-    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
-    /////
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID"
-        tools:node="remove"/>
-
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+    <uses-permission
+        android:name="com.google.android.gms.permission.AD_ID"
+        tools:node="remove" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+    <uses-permission android:name="android.permission." />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -53,11 +55,16 @@
         android:usesCleartextTraffic="true"
         tools:ignore="DataExtractionRules"
         tools:replace="android:theme">
+        <activity
+            android:name=".FragmentSamplee"
+            android:screenOrientation="portrait"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
 
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
-            tools:replace="android:value"
-            android:value="@string/facebook_app_id" />
+            android:value="@string/facebook_app_id"
+            tools:replace="android:value" />
         <meta-data
             android:name="com.facebook.sdk.ClientToken"
             android:value="@string/facebook_client_token" />
@@ -89,43 +96,43 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.requestCall.RequestCallActivity"
-            android:supportsPictureInPicture="true"
-            android:configChanges=
-                "screenSize|smallestScreenSize|screenLayout|orientation"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:exported="false"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
+            android:supportsPictureInPicture="true"
             android:theme="@style/ThemeOverlay.ChatMemo.CallReq">
-        <intent-filter>
-            <action android:name="com.yawar.memo.action.mute" />
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
-        <intent-filter>
-            <action android:name="com.yawar.memo.action.closeCall" />
-            <category android:name="android.intent.category.DEFAULT" />
-        </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.responeCallPage.ResponeCallActivity"
-            android:exported="false"
-            android:supportsPictureInPicture="true"
-            android:launchMode="singleTop"
-            android:configChanges=
-                "screenSize|smallestScreenSize|screenLayout|orientation"
-            android:screenOrientation="portrait"
-            android:showOnLockScreen="true"
-            android:theme="@style/AppTheme" >
-
             <intent-filter>
                 <action android:name="com.yawar.memo.action.mute" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.yawar.memo.action.closeCall" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <!-- android:excludeFromRecents="true" -->
+        <activity
+            android:name=".ui.responeCallPage.ResponeCallActivity"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:showOnLockScreen="true"
+            android:supportsPictureInPicture="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="com.yawar.memo.action.mute" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.yawar.memo.action.closeCall" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity> <!-- android:excludeFromRecents="true" -->
         <!-- android:taskAffinity="" -->
         <activity
             android:name=".ui.blockUserPage.BlockedUsersActivity"
@@ -161,7 +168,6 @@
             android:name=".service.SocketIOService"
             android:enabled="true"
             android:exported="false" />
-
         <service
             android:name=".service.FirebaseMessageReceiver"
             android:enabled="true"
@@ -176,9 +182,7 @@
             android:resource="@xml/authenticator" />
 
         <receiver android:name=".notification.CancelCallFromCallNotification" />
-        <receiver android:name=".notification.CancelCallFromCallNotification" />
-
-        <!-- <service -->
+        <receiver android:name=".notification.CancelCallFromCallNotification" /> <!-- <service -->
         <!-- android:name=".videocalltest.ConnService" -->
         <!-- android:exported="true" -->
         <!-- android:permission="android.permission.BIND_TELECOM_CONNECTION_SERVICE"> -->
@@ -191,14 +195,11 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.chatPage.ConversationActivity"
-            android:screenOrientation="portrait"
             android:launchMode="singleTop"
             android:parentActivityName=".ui.dashBoard.DashBord"
+            android:screenOrientation="portrait"
             android:supportsPictureInPicture="false"
-            android:theme="@style/AppTheme" />
-<!--        android:parentActivityName=".ui.dashBoard.DashBord"-->
-
-
+            android:theme="@style/AppTheme" /> <!-- android:parentActivityName=".ui.dashBoard.DashBord" -->
         <activity
             android:name=".ui.dashBoard.DashBord"
             android:screenOrientation="portrait"

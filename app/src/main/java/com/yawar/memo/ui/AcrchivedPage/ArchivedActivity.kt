@@ -29,7 +29,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
     lateinit var itemAdapter: ArchivedAdapter
      val archivedActViewModel by viewModels <ArchivedActViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
 
     lateinit var myId: String
     lateinit var myBase: BaseApp
@@ -111,6 +111,12 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
         bundle.putString("special", chatRoomModel.sn)
         bundle.putString("blockedFor", chatRoomModel.blocked_for)
         anthorUserInChatRoomId.id =  chatRoomModel.other_id
+        anthorUserInChatRoomId.fcmToken = chatRoomModel.user_token
+        anthorUserInChatRoomId.blockedFor = chatRoomModel.blocked_for!!
+        anthorUserInChatRoomId.specialNumber = chatRoomModel?.sn!!
+        anthorUserInChatRoomId.userName = chatRoomModel.username
+        anthorUserInChatRoomId.chatId = chatRoomModel.id
+        anthorUserInChatRoomId.imageUrl = chatRoomModel.image
         val intent = Intent(this, ConversationActivity::class.java)
         intent.putExtras(bundle)
         startActivity(intent)

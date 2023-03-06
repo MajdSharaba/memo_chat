@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.BaseApp
 import com.yawar.memo.database.dao.ChatRoomDatabase
@@ -27,13 +27,13 @@ class ChatMessageRepoo
     private val chatMessageEntityMapper: ChatMessageEntityMapper,
         ) {
 
-    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("2")
+    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
     private val _chatMessageistMutableLiveData = MutableLiveData<ArrayList<ChatMessage?>?>()
     //            return repository.chatMessageistMutableLiveData;
 //    val chatMessaheHistory: LiveData<ArrayList<ChatMessage?>?>
 //        get() = _chatMessageistMutableLiveData
-    val chatMessaheHistory: LiveData<List<ChatMessage>> = Transformations.map(database.chatRoomDao.getChatMessage(anthorUserInChatRoomId.id)) {
-        chatMessageEntityMapper.toDomainList(it) as List<ChatMessage>?
+    val chatMessaheHistory: LiveData<List<ChatMessage>> = database.chatRoomDao.getChatMessage(anthorUserInChatRoomId.id).map {
+        chatMessageEntityMapper.toDomainList(it) as List<ChatMessage>
     }
 
     private val _selectedMessage = MutableLiveData<ArrayList<ChatMessage?>?>()

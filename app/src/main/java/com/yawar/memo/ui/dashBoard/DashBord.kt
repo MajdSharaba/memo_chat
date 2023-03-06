@@ -13,6 +13,7 @@ import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
@@ -21,8 +22,10 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -32,6 +35,7 @@ import androidx.work.WorkManager
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.badge.BadgeDrawable
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import com.yawar.memo.BaseApp
 import com.yawar.memo.R
@@ -83,10 +87,26 @@ class DashBord : AppCompatActivity() {
     lateinit var myId: String
     @Inject
     lateinit var authRepo: AuthRepo
+    var readImagePermission =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
     private fun connectSocket() {
         val service = Intent(this, SocketIOService::class.java)
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_JOIN)
         startService(service)
+    }
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            // Permission is granted. Continue the action or workflow in your
+            // app.
+        } else {
+            // Explain to the user that the feature is unavailable because the
+            // features requires a permission that the user has denied. At the
+            // same time, respect the user's decision. Don't link to system
+            // settings in an effort to convince the user to change their
+            // decision.
+        }
     }
 
     private val reciveNewChat: BroadcastReceiver = object : BroadcastReceiver() {
@@ -496,6 +516,40 @@ class DashBord : AppCompatActivity() {
         } catch (e: Exception) {
         }
 
+        when {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // You can use the API that requires the permission.
+                Log.e("onCreate", "onCreate: PERMISSION GRANTED")
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                Snackbar.make(
+                    findViewById(R.id.parent_layout),
+                    "Notification blocked",
+                    Snackbar.LENGTH_LONG
+                ).setAction("Settings") {
+                    // Responds to click on the action
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                }.show()
+                //  Toast.makeText(this, "NOT ALLOWED", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.e("onCreate", "onCreate: ask for permissions")
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                  if (Build.VERSION.SDK_INT >= 33) {
+                   Log.e("onCreate", "onCreate: 33" )
+                requestPermissionLauncher.launch(
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+                 }
+            }
+        }
 
 
     }
@@ -522,7 +576,8 @@ class DashBord : AppCompatActivity() {
     }
 
     fun checkPermission() {
-        if (permissions.isStorageWriteOk(this)) {
+
+        if (permissions.isStorageReadOk(this,readImagePermission)) {
             createDirectory("memo")
             createDirectory("memo/send")
             createDirectory("memo/recive")
@@ -530,7 +585,17 @@ class DashBord : AppCompatActivity() {
             createDirectory("memo/recive/voiceRecord")
             createDirectory("memo/send/video")
             createDirectory("memo/recive/video")
-        } else permissions.requestStorage(this)
+        } else {
+//            createDirectory("memo")
+//            createDirectory("memo/send")
+//            createDirectory("memo/recive")
+//            createDirectory("memo/send/voiceRecord")
+//            createDirectory("memo/recive/voiceRecord")
+//            createDirectory("memo/send/video")
+//            createDirectory("memo/recive/video")
+            permissions.requestStorage(this)
+
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -548,10 +613,12 @@ class DashBord : AppCompatActivity() {
                 createDirectory("memo/send/video")
                 createDirectory("memo/recive/video")
                 //                    chatRoomRepo.callAPI(myId);
-            } else if (!shouldShowRequestPermissionRationale(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-            ) {
+            } else
+//                if (!shouldShowRequestPermissionRationale(
+//                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+//                )
+//            ) {
+            {
                 showPermissionDialog(
                     resources.getString(R.string.write_premission),
                     STORAGE_PERMISSION_CODE

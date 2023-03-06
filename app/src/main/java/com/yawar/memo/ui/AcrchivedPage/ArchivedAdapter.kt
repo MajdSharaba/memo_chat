@@ -97,7 +97,7 @@ class ArchivedAdapter(var context: Activity) :
 
      class ViewHolder private  constructor(val binding: ChatRoomRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
-         val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+         val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
 
          @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(
@@ -157,6 +157,13 @@ class ArchivedAdapter(var context: Activity) :
                     bundle.putString("blockedFor", chatRoomModel?.blocked_for)
 //                    Log.d("blockedForrrrrrrrr",chatRoomModel.blocked_for!!)
                     anthorUserInChatRoomId.id = chatRoomModel?.other_id!!
+                    anthorUserInChatRoomId.fcmToken = chatRoomModel?.user_token!!
+                    anthorUserInChatRoomId.blockedFor = chatRoomModel?.blocked_for!!
+                    anthorUserInChatRoomId.specialNumber = chatRoomModel?.sn!!
+                    anthorUserInChatRoomId.userName = chatRoomModel.username
+                    anthorUserInChatRoomId.chatId = chatRoomModel.id
+                    anthorUserInChatRoomId.imageUrl = chatRoomModel.image
+
                     val intent = Intent(context, ConversationActivity::class.java)
                     intent.putExtras(bundle)
                     context.startActivity(intent)

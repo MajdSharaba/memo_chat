@@ -18,14 +18,11 @@ class ArchivedActViewModel @Inject constructor(private val chatRoomRepoo: ChatRo
 
     fun loadData(): LiveData<ArrayList<ChatRoomModel?>?> {
         return chatRoomRepoo.chatRoomListMutableLiveData as  LiveData<ArrayList<ChatRoomModel?>?>
-
     }
     fun removeFromArchived(my_id: String, your_id: String) {
         return chatRoomRepoo.removeFromArchived(my_id, your_id)
-
 //        repository.removeFromArchived(my_id, your_id)
     }
-
     fun setArchived(state: Boolean) {
         chatRoomRepoo.setisArchived( state)
     }

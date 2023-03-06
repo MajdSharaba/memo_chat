@@ -57,7 +57,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
     private lateinit var loadingPB: ProgressBar
     private lateinit var nestedSV: NestedScrollView
     val handler = Handler()
-    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
     val searchModelView by viewModels<SearchModelView>()
 
     @SuppressLint("MissingInflatedId")
@@ -194,6 +194,12 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
         bundle.putString("special", searchRespone.sn)
         bundle.putString("blockedFor", searchRespone.blocked_for)
         anthorUserInChatRoomId.id = searchRespone!!.id!!
+        anthorUserInChatRoomId.fcmToken = searchRespone?.token!!
+        anthorUserInChatRoomId.blockedFor = searchRespone.blocked_for
+        anthorUserInChatRoomId.specialNumber = searchRespone?.sn!!
+        anthorUserInChatRoomId.userName = searchRespone.first_name + ""+searchRespone.last_name
+        anthorUserInChatRoomId.chatId = ""
+        anthorUserInChatRoomId.imageUrl = searchRespone?.image!!
         val intent = Intent(context, ConversationActivity::class.java)
         intent.putExtras(bundle)
         startActivity(intent)

@@ -1,5 +1,6 @@
 package com.yawar.memo.network.networkModel.chatRoomModel
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
 
@@ -61,7 +62,7 @@ data class ChatRoomModelDto(
 
     @Json(name = "phone")
     var  phone:String  = "",
-    )
+    ) : Parcelable
 
 /**
  * Convert Network results to database objects

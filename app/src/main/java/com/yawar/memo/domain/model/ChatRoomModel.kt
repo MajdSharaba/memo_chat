@@ -1,5 +1,6 @@
 package com.yawar.memo.domain.model
 
+import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -42,7 +43,7 @@ import kotlinx.android.parcel.Parcelize
     var msg_sender:String? = "",
 
     var phone:String? = "",
-        ): Cloneable {
+        ): Cloneable, Parcelable {
 
     public override fun  clone() : ChatRoomModel {
 

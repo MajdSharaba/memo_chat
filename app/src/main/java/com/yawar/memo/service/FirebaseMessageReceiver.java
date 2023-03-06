@@ -50,12 +50,11 @@ import dagger.hilt.android.AndroidEntryPoint;
 @AndroidEntryPoint
 public class FirebaseMessageReceiver
         extends FirebaseMessagingService  {
-
+    
     int id =1;
     String TAG = "FirebaseMessageReceiver";
     public static final String workCallTag = "notificationCallWork";
     public static final String workTag = "notificationWork";
-
     BaseApp myBase;
     @Inject
     ChatRoomRepoo chatRoomRepoo;
@@ -63,8 +62,6 @@ public class FirebaseMessageReceiver
     String chat_id;
     private WorkManager mWorkManager;
     ArrayList<String> muteList = new ArrayList<String>();
-
-
     ClassSharedPreferences classSharedPreferences;
     @Inject
     ChatMessageRepoo chatMessageRepoo;
@@ -72,10 +69,6 @@ public class FirebaseMessageReceiver
     private final int NOTIFICATION_ID = 237;
 //    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
     String GROUP_KEY_WORK_EMAIL = "com.android.example.WORK_EMAIL";
-
-
-
-
     // Override onMessageReceived() method to extract the
     // title and
     // body from the message passed in FCM

@@ -1,5 +1,6 @@
 package com.yawar.memo.domain.model
 
+import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -14,7 +15,7 @@ import kotlinx.android.parcel.Parcelize
     var token: String? = null,
     var blocked_for: String? = null,
 //    var isAdded: Boolean = false,
- ) : Cloneable  {
+ ) : Cloneable, Parcelable {
      public override fun  clone() : SearchModel {
          var clone : SearchModel
          try {

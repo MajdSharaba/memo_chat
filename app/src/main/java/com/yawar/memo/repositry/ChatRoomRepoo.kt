@@ -4,7 +4,7 @@ package com.yawar.memo.repositry
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.database.dao.ChatRoomDatabase
 import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntityMapper
@@ -23,8 +23,8 @@ class ChatRoomRepoo  @Inject constructor(
 
     private val TAG: String = "ChatRoomRepoo"
     private val _chatRoomListMutableLiveData = MutableLiveData<ArrayList<ChatRoomModel?>?>()
-    val chatRoomListMutableLiveData: LiveData<List<ChatRoomModel>> = Transformations.map(database.chatRoomDao.getChatRooms()) {
-        chatRoomEntityMapper.toDomainList(it) as List<ChatRoomModel>?
+    val chatRoomListMutableLiveData: LiveData<List<ChatRoomModel>> = database.chatRoomDao.getChatRooms().map {
+        chatRoomEntityMapper.toDomainList(it) as List<ChatRoomModel>
     }
 
     private val _isArchivedMutableLiveData = MutableLiveData<Boolean>(false)
@@ -322,25 +322,25 @@ class ChatRoomRepoo  @Inject constructor(
     fun updateLastMessageState(state: String?, chat_id: String) {
         coroutineScope.launch {
 
-        var chatRoomsList = chatRoomListMutableLiveData.value as ArrayList
-        if (chatRoomsList != null) {
-            for (chatRoom in chatRoomsList) {
-                if (chatRoom != null) {
-                    if (chatRoom.id == chat_id) {
+//        var chatRoomsList = chatRoomListMutableLiveData.value as ArrayList
+//        if (chatRoomsList != null) {
+//            for (chatRoom in chatRoomsList) {
+//                if (chatRoom != null) {
+//                    if (chatRoom.id == chat_id) {
 //                        chatRoom.mstate = state
                         withContext(Dispatchers.IO) {
 
-                            database.chatRoomDao.updateLastMessaageState(chatRoom.id, state!!)
+                            database.chatRoomDao.updateLastMessaageState(chat_id, state!!)
                         }
 
-                        break
+//                        break
                     }
                 }
-            }
-        }
-        }
+//            }
+//        }
+//        }
 //        _chatRoomListMutableLiveData.postValue(chatRoomsList)
-    }
+//    }
     fun checkISNewChat( chatId: String) : Boolean {
         if(chatRoomListMutableLiveData.value!=null) {
             var chatRoomsList = chatRoomListMutableLiveData.value

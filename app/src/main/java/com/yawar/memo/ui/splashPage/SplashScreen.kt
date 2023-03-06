@@ -48,6 +48,7 @@ class SplashScreen : AppCompatActivity() {
         classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         myBase = BaseApp.instance!!
 //        authRepo = myBase.authRepo
+//    Log.d("classSharedPreferences", classSharedPreferences.user.secretNumber.toString())
 
 //        splachActViewModel = ViewModelProvider(this).get(SplachActViewModel::class.java)
         Handler().postDelayed({
@@ -61,6 +62,7 @@ class SplashScreen : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else if (classSharedPreferences.verficationNumber == null) {
+                Log.d("classSharedPreferences.verficationNumber", "")
 
                 //Intent is used to switch from one activity to another.
                 intent = Intent(this, LoginActivity::class.java)

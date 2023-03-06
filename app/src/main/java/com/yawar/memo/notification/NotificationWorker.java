@@ -65,7 +65,7 @@ public class NotificationWorker extends Worker {
     @Override
     public Worker.Result doWork() {
         classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
-        AnthorUserInChatRoomId anthorUserInChatRoomId = AnthorUserInChatRoomId.Companion.getInstance("");
+        AnthorUserInChatRoomId anthorUserInChatRoomId = AnthorUserInChatRoomId.Companion.getInstance("","","","","","","");
 
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
@@ -80,6 +80,8 @@ public class NotificationWorker extends Worker {
         final String fcmToken = getInputData().getString("fcm_token" );
         final String specialNumber = getInputData().getString("special" );
         final String chatId = getInputData().getString("chat_id" );
+        Log.d(TAG, "doWorkkkkk: "+imageUrl);
+
 
         final String blockedFor = getInputData().getString("blockedFor" );
         int id =1;
@@ -102,6 +104,15 @@ public class NotificationWorker extends Worker {
             intent.putExtra("special", specialNumber);
             intent.putExtra("blockedFor",blockedFor);
             anthorUserInChatRoomId.setId(channel);
+            anthorUserInChatRoomId.setBlockedFor(blockedFor);
+            anthorUserInChatRoomId.setFcmToken(fcmToken);
+            anthorUserInChatRoomId.setChatId(chatId);
+            anthorUserInChatRoomId.setSpecialNumber(specialNumber);
+            anthorUserInChatRoomId.setUserName(name);
+            anthorUserInChatRoomId.setImageUrl(imageUrl);
+
+
+
 
 
 //            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -134,7 +145,6 @@ public class NotificationWorker extends Worker {
                     .setAutoCancel(false)
                     .setNumber(5)
                     .setOnlyAlertOnce(true)
-
                     .setGroup(GROUP_KEY_WORK_EMAIL)
                     .setVibrate(new long[]{1000, 1000, 1000,
                             1000, 1000})
@@ -195,7 +205,13 @@ public class NotificationWorker extends Worker {
             Bundle bundle = new Bundle();
             bundle.putStringArrayList("majd",arrayList);
             builder.setExtras(bundle);
-            Glide.with(applicationContext)
+            if(imageUrl.isEmpty()){
+                builder.setLargeIcon(ImageProperties.getCircleBitmap(BitmapFactory.decodeResource(applicationContext.getResources(),
+                        R.drawable.th)));
+                notificationManager.notify(Integer.parseInt(channel), builder.build());
+            }
+
+           else Glide.with(applicationContext)
                     .asBitmap()
                     .load(AllConstants.imageUrl + imageUrl)
                     .into(new CustomTarget<Bitmap>() {

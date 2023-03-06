@@ -65,6 +65,8 @@ class RegisterViewModel  @Inject constructor(val chatApi: ChatApi): ViewModel() 
                 val number = respObj.getString("phone");
                 val status= respObj.getString("status");
                 val userModel =  UserModel(user_id,first_name,last_name,email,number,secret_number,profile_image,status);
+                Log.d("register", "reg${secret_number}")
+
                 _userModelRespone.value = userModel
                 _loadingMutableLiveData.value = false
 

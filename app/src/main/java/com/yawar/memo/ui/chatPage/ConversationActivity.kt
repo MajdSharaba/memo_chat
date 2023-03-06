@@ -49,8 +49,6 @@ import com.devlomi.record_view.RecordPermissionHandler
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
-import com.fxn.pix.Options
-import com.fxn.pix.Pix
 import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -63,13 +61,16 @@ import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import com.yawar.memo.BaseApp
 import com.yawar.memo.BuildConfig
+import com.yawar.memo.FragmentSamplee
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
 import com.yawar.memo.databinding.ActivityConversationBinding
+import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.domain.model.UserModel
 import com.yawar.memo.permissions.Permissions
+import com.yawar.memo.pix.helpers.*
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.SocketIOService
@@ -90,13 +91,15 @@ import java.nio.file.Path
 import java.util.*
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     PickiTCallbacks , CallbackListener {
     lateinit var  binding: ActivityConversationBinding
     var mediaControl: MediaController? = null
-    private val requestcode = 1
+    private var requestcode = 1
     var first = true
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
     var timeProperties: TimeProperties? = null
     lateinit  var linearLayoutManager : LinearLayoutManager
     @Inject
@@ -111,15 +114,15 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     private var adapter: ChatAdapter? = null
     val myBase: BaseApp? = BaseApp.instance!!
 //    var chatRoomRepoo: ChatRoomRepoImp? = null
-        var chatRoomRepoo: ChatRoomRepoo? = null
+    var chatRoomRepoo: ChatRoomRepoo? = null
 
-    var chat_id = ""
+//    var chat_id = ""
     var fcmToken: String? = null
     var isAllMessgeMe = true
     var supportMapFragment: SupportMapFragment? = null
     var client: FusedLocationProviderClient? = null
     var latLng: LatLng? = null
-    lateinit var stringLatLng: String
+     var stringLatLng: String? = null
     var locationLatLng: LatLng? = null
 //    @Inject
 //    var chatMessageRepoo: ChatMessageRepoo
@@ -314,7 +317,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     e.printStackTrace()
                 }
                 if (senderId == user_id && reciverId == anthor_user_id) {
-                    if (state != "3" && chat_id == user_id + anthor_user_id) {
+                    if (state != "3" && anthorUserInChatRoomId.chatId == user_id + anthor_user_id) {
                         //                            myBase.getObserver().setLastMessage(text, recive_chat_id, user_id, anthor_user_id, type, state, MessageDate);
                         if (!recive_chat_id.isEmpty()) {
                             chatRoomRepoo!!.setLastMessage(
@@ -327,7 +330,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                                 messageDate,
                                 user_id
                             )
-                            chat_id = recive_chat_id
+//                            chat_id = recive_chat_id
+                            anthorUserInChatRoomId.chatId = recive_chat_id
                         }
 
                     } else {
@@ -343,7 +347,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                                 senderId
                             )
                         } else {
-                            chatRoomRepoo!!.updateLastMessageState(state, chat_id)
+                            chatRoomRepoo!!.updateLastMessageState(state, anthorUserInChatRoomId.chatId)
                         }
                     }
                     conversationModelView!!.setMessageState(id, state)
@@ -445,7 +449,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             onTyping.put("id", anthor_user_id)
             onTyping.put("typing", typing)
             onTyping.put("my_id", user_id)
-            onTyping.put("chat_id", chat_id)
+            onTyping.put("chat_id", anthorUserInChatRoomId.chatId)
         } catch (e: JSONException) {
             e.printStackTrace()
         }
@@ -474,8 +478,9 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-        if (chat_id.isEmpty()) {
-            chat_id = user_id + anthor_user_id
+        if (anthorUserInChatRoomId.chatId.isEmpty()) {
+            anthorUserInChatRoomId.chatId = user_id + anthor_user_id
+//            anthorUserInChatRoomId.chatId = chat_id
             chatRoomRepoo!!.addChatRoom(
                 ChatRoomModel(
                     userName!!, anthor_user_id, message!!,
@@ -633,11 +638,11 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         userName = bundle.getString("name", "user")
         imageUrl = bundle.getString("image")
         specialNumber = bundle.getString("special", "")
-        chat_id = bundle.getString("chat_id", "")
-        Log.d(TAG, "initViews:${chat_id} ")
-        if (chat_id.isEmpty()) {
+        anthorUserInChatRoomId.chatId = bundle.getString("chat_id", "")
+        Log.d(TAG, "initViews:${anthorUserInChatRoomId.chatId} ")
+        if (anthorUserInChatRoomId.chatId.isEmpty()) {
             if (chatRoomRepoo != null) {
-                chat_id = chatRoomRepoo!!.getChatId(anthor_user_id)
+                anthorUserInChatRoomId.chatId = chatRoomRepoo!!.getChatId(anthor_user_id)
             }
         }
         fcmToken = bundle.getString("fcm_token", "")
@@ -914,7 +919,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         binding.pickLocation.setOnClickListener(View.OnClickListener {
             hideLayout()
             makeMapsAction()
-            binding.container.visibility = View.GONE
+            binding.containerr.visibility = View.GONE
             binding.relativeMaps.visibility = View.VISIBLE
             binding.sendLocation.visibility = View.VISIBLE
 
@@ -922,55 +927,57 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         })
         binding.sendLocation.setOnClickListener(View.OnClickListener {
             val dataTime =  Calendar.getInstance(TimeZone.getTimeZone("GMT")).timeInMillis.toString()
+             if (stringLatLng!=null) {
+                 hideLayout()
+                 println(stringLatLng + "stringLatLng")
+                 binding.relativeMaps.visibility = View.GONE
+                 binding.containerr.visibility = View.VISIBLE
+                 val message_id = System.currentTimeMillis().toString() + "_" + user_id
+                 val jsonObject = JSONObject()
+                 val notification = JSONObject()
 
-            if (stringLatLng == null) {
-                return@OnClickListener
-            }
-            hideLayout()
-            println(stringLatLng + "stringLatLng")
-            val message_id = System.currentTimeMillis().toString() + "_" + user_id
-            val jsonObject = JSONObject()
-            val notification = JSONObject()
+                 try {
+                     jsonObject.put("sender_id", user_id)
+                     jsonObject.put("reciver_id", anthor_user_id)
+                     jsonObject.put("message", stringLatLng)
+                     jsonObject.put("message_type", "location")
+                     jsonObject.put("state", "0")
+                     jsonObject.put("message_id", message_id)
+                     jsonObject.put(
+                         "dateTime",
+                         dataTime
+                     )
+                     notification.put("token", fcmToken)
+                     notification.put("my_token", classSharedPreferences?.fcmToken)
+                     notification.put("image", classSharedPreferences?.user!!.image)
+                     notification.put(
+                         "title",
+                         classSharedPreferences?.user?.userName + " " + classSharedPreferences?.user?.lastName
+                     )
+                     notification.put("chat_id", anthorUserInChatRoomId.chatId)
+                     notification.put(
+                         "blockedFor", conversationModelView!!.blockedFor().value,
+                     )
+                     jsonObject.put("notification", notification)
+                 } catch (e: JSONException) {
+                     e.printStackTrace()
+                 }
 
-            try {
-                jsonObject.put("sender_id", user_id)
-                jsonObject.put("reciver_id", anthor_user_id)
-                jsonObject.put("message", stringLatLng)
-                jsonObject.put("message_type", "location")
-                jsonObject.put("state", "0")
-                jsonObject.put("message_id", message_id)
-                jsonObject.put(
-                    "dateTime",
-                    dataTime
-                )
-                notification.put("token", fcmToken)
-                notification.put("my_token", classSharedPreferences?.fcmToken)
-                notification.put("image", classSharedPreferences?.user!!.image)
-                notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
-                notification.put("chat_id", chat_id)
-                notification.put(
-                    "blockedFor", conversationModelView!!.blockedFor().value,
-                )
-                jsonObject.put("notification",notification)
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
 
-            binding.relativeMaps.visibility = View.GONE
-            binding.container.visibility = View.VISIBLE
-            val chatMessage = ChatMessage()
-            chatMessage.messageId = message_id //dummy
-            chatMessage.message = stringLatLng
-            chatMessage.dateTime =
-                dataTime
-            chatMessage.isMe = true
-            chatMessage.type = "location"
-            chatMessage.state = "0"
-            chatMessage.senderId = user_id
-            chatMessage.recivedId = anthor_user_id
-            chatMessage.isChecked = false
-            displayMessage(chatMessage)
-            newMeesage(jsonObject)
+                 val chatMessage = ChatMessage()
+                 chatMessage.messageId = message_id //dummy
+                 chatMessage.message = stringLatLng!!
+                 chatMessage.dateTime =
+                     dataTime
+                 chatMessage.isMe = true
+                 chatMessage.type = "location"
+                 chatMessage.state = "0"
+                 chatMessage.senderId = user_id
+                 chatMessage.recivedId = anthor_user_id
+                 chatMessage.isChecked = false
+                 displayMessage(chatMessage)
+                 newMeesage(jsonObject)
+             }
         })
     }
 
@@ -988,7 +995,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             bundle.putString("image", imageUrl)
             bundle.putString("fcm_token", fcmToken)
             bundle.putString("special", specialNumber)
-            bundle.putString("chat_id", chat_id)
+            bundle.putString("chat_id", anthorUserInChatRoomId.chatId)
             bundle.putString("blockedFor", conversationModelView!!.blockedFor().value)
             intent.putExtras(bundle)
             startActivity(intent)
@@ -1118,7 +1125,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 notification.put("my_token", classSharedPreferences?.fcmToken)
                 notification.put("image", classSharedPreferences?.user!!.image)
                 notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
-                notification.put("chat_id", chat_id)
+                notification.put("chat_id", anthorUserInChatRoomId.chatId)
                 notification.put(
                     "blockedFor", conversationModelView!!.blockedFor().value,
                 )
@@ -1158,29 +1165,10 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         ////to pick image
         binding.lytCameraPick.setOnClickListener {
             hideLayout()
-            val options = Options.init()
-                .setRequestCode(PICK_IMAGE_VIDEO) //Request code for activity results
-                .setCount(1)
-                .setFrontfacing(false) //Front Facing camera on start
-                .setSpanCount(4) //Span count for gallery min 1 & max 5
-                .setMode(Options.Mode.All) //Option to select only pictures or videos or both
-                .setVideoDurationLimitinSeconds(30)
-                .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT)
-            Pix.start(this, options)
+            val intent = Intent(this, FragmentSamplee::class.java)
+            startActivity(intent)
         }
-        ////pick from gallery
-        binding.lytGallaryPick.setOnClickListener {
-            hideLayout()
-            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-            intent.type = "image/*"
-            intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*", "video/*"))
-            startActivityForResult(
-                intent,
-                PICK_IMAGE_FROM_GALLERY
-            )
-        }
-        //// to pick file
+
         binding.pickFile.setOnClickListener {
             hideLayout()
             println("file")
@@ -1194,11 +1182,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         binding.recordButton.isListenForRecord = true
         binding.recordButton.setOnClickListener { view: View? -> }
         binding.recordView.setLessThanSecondAllowed(false)
+
         binding.recordView.setRecordPermissionHandler(RecordPermissionHandler {
             if (permissions!!.isRecordingOk(this)) if (permissions!!.isStorageReadOk(
                     this
-                )
-            ) return@RecordPermissionHandler true else permissions!!.requestStorage(this) else permissions!!.requestRecording(
+                , readAudioPermission)
+            ) return@RecordPermissionHandler true else permissions!!.requestAudioStorage(this) else permissions!!.requestRecording(
                 this
             )
             false
@@ -1422,13 +1411,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             this,
             Manifest.permission.READ_EXTERNAL_STORAGE
         )
-        if (permisson != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                MY_REQUEST_CODE_PERMISSION
-            )
-            return
-        }
+//        if (permisson != PackageManager.PERMISSION_GRANTED) {
+//            requestPermissions(
+//                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+//                MY_REQUEST_CODE_PERMISSION
+//            )
+//            return
+//        }
         doBrowseFile()
     }
     fun displayMessage(message: ChatMessage?) {
@@ -1466,14 +1455,16 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
             AllConstants.RECORDING_REQUEST_CODE -> {
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if (this.permissions!!.isStorageReadOk(this)) return else this.permissions!!.requestStorage(
+                    if (this.permissions!!.isStorageReadOk(this,Manifest.permission.READ_MEDIA_AUDIO)) return else this.permissions!!.requestAudioStorage(
                         this
                     )
-                } else DialogProperties.showPermissionDialog(
-                    resources.getString(R.string.record_voice_premission),
-                    AllConstants.RECORD_AUDIO_PERMISSION_REJECT,
-                    this
-                )
+                } else {
+                    DialogProperties.showPermissionDialog(
+                        resources.getString(R.string.record_voice_premission),
+                        AllConstants.RECORD_AUDIO_PERMISSION_REJECT,
+                        this
+                    )
+                }
             }
             AllConstants.STORAGE_REQUEST_CODE -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) return else  //                    showPermissionDialog(getResources().getString(R.string.read_premission), 1777);
                 DialogProperties.showPermissionDialog(
@@ -1501,18 +1492,18 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 )
             }
             AllConstants.OPEN_CAMERA_PERMISSION -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                val options = Options.init()
-                    .setRequestCode(PICK_IMAGE_VIDEO) //Request code for activity results
-                    .setCount(1) //Number of images to restict selection count
-                    .setFrontfacing(false) //Front Facing camera on start
-                    .setSpanCount(
-                        4
-                    ) //Span count for gallery min 1 & max 5
-                    .setMode(Options.Mode.All) //Option to select only pictures or videos or both
-                    .setVideoDurationLimitinSeconds(30) //Duration for video recording
-                    .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT) //Orientaion
-                //Custom Path For media Storage
-                Pix.start(this, options)
+//                val options = Options.init()
+//                    .setRequestCode(PICK_IMAGE_VIDEO) //Request code for activity results
+//                    .setCount(1) //Number of images to restict selection count
+//                    .setFrontfacing(false) //Front Facing camera on start
+//                    .setSpanCount(
+//                        4
+//                    ) //Span count for gallery min 1 & max 5
+//                    .setMode(Options.Mode.All) //Option to select only pictures or videos or both
+//                    .setVideoDurationLimitinSeconds(30) //Duration for video recording
+//                    .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT) //Orientaion
+//                //Custom Path For media Storage
+//                Pix.start(this, options)
             } else {
                 DialogProperties.showPermissionDialog(
                     resources.getString(R.string.camera_premission),
@@ -1601,18 +1592,23 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
         } else if (requestCode == AllConstants.RECORD_AUDIO_PERMISSION_REJECT) {
             if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
+                Log.d(TAG, "onRequestPermissionsResultNot:")
+
                 DialogProperties.showPermissionDialog(
                     resources.getString(R.string.record_voice_premission),
                     AllConstants.RECORD_AUDIO_PERMISSION_REJECT,
                     this
                 )
             } else {
-                if (permissions!!.isStorageReadOk(this)) return else permissions!!.requestStorage(
+                if (permissions!!.isStorageReadOk(this,Manifest.permission.READ_MEDIA_AUDIO)) return else permissions!!.requestStorage(
                     this
                 )
             }
         } else if (requestCode == AllConstants.STORAGE_PERMISSION_REJECT) {
-            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+
+//            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+            if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+
                 DialogProperties.showPermissionDialog(
                     resources.getString(R.string.read_premission),
                     AllConstants.STORAGE_PERMISSION_REJECT,
@@ -1629,19 +1625,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     this
                 )
             } else {
-                val options = Options.init()
-                    .setRequestCode(PICK_IMAGE_VIDEO) //Request code for activity results
-                    .setCount(1) //Number of images to restict selection count
-                    .setFrontfacing(false) //Front Facing camera on start
-                    .setPreSelectedUrls(returnValue)
-                    .setSpanCount(
-                        1
-                    ) //Span count for gallery min 1 & max 5
-                    .setMode(Options.Mode.All) //Option to select only pictures or videos or both
-                    .setVideoDurationLimitinSeconds(30) //Duration for video recording
-                    .setScreenOrientation(Options.SCREEN_ORIENTATION_PORTRAIT) //Orientaion
-                //Custom Path For media Storage
-                Pix.start(this, options)
+
             }
         } else if (requestCode == AllConstants.LOCATION_PERMISSION_REJECT) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
@@ -1717,37 +1701,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         Log.d("nameeeee>>>>  ", displayName)
                     }
                 }
-                PICK_IMAGE_VIDEO -> {
-                    val returnValue = data!!.getStringArrayListExtra(Pix.IMAGE_RESULTS)
-                    val selectedMediaUri = Uri.parse(returnValue!![0])
-                    if (!FileUtil.isVideoFile(selectedMediaUri.toString())) {
-                        showImageBeforeSend(selectedMediaUri, "pix")
-                    } else {
-                        showVideoBeforeSend(selectedMediaUri, "pix")
-//                        showDialogVideo(selectedMediaUri.toString())
-                    }
-                }
-                PICK_IMAGE_FROM_GALLERY -> {
-                    val selectedMediaUriGallery = data!!.data
-                    val columns = arrayOf(
-                        MediaStore.Images.Media.DATA,
-                        MediaStore.Images.Media.MIME_TYPE
-                    )
-                    val cursor1 =
-                        contentResolver.query(selectedMediaUriGallery!!, columns, null, null, null)
-                    cursor1!!.moveToFirst()
-                    val pathColumnIndex = cursor1.getColumnIndex(columns[0])
-                    val mimeTypeColumnIndex = cursor1.getColumnIndex(columns[1])
-                    val contentPath = cursor1.getString(pathColumnIndex)
-                    val mimeType = cursor1.getString(mimeTypeColumnIndex)
-                    cursor1.close()
-                    if (mimeType.startsWith("image")) {
-                        showImageBeforeSend(selectedMediaUriGallery, "picker")
-                    } else if (mimeType.startsWith("video")) {
-                        showVideoBeforeSend(selectedMediaUriGallery, "picker")
 
-                    }
-                }
             }
         } else {
         }
@@ -1797,7 +1751,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             sendObject.put("message_type", "contact")
             sendObject.put("state", "0")
             sendObject.put("message_id", message_id)
-            sendObject.put("chat_id", chat_id)
+            sendObject.put("chat_id", anthorUserInChatRoomId.chatId)
             sendObject.put("orginalName", name)
             sendObject.put(
                 "dateTime",
@@ -1808,7 +1762,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             notification.put("my_token", classSharedPreferences?.fcmToken)
             notification.put("image", classSharedPreferences?.user!!.image)
             notification.put("title", classSharedPreferences?.user?.userName +" "+ classSharedPreferences?.user?.lastName )
-            notification.put("chat_id", chat_id)
+            notification.put("chat_id", anthorUserInChatRoomId.chatId)
             notification.put(
                 "blockedFor", conversationModelView!!.blockedFor().value,
             )
@@ -1837,7 +1791,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         val intent = Intent(this, DashBord::class.java)
 
         if (binding.relativeMaps.visibility == View.VISIBLE) {
-            binding.container.visibility = View.VISIBLE
+            binding.containerr.visibility = View.VISIBLE
             binding.relativeMaps.visibility = View.GONE
         } else if (conversationModelView!!.selectedMessage.value != null) {
             if (conversationModelView!!.selectedMessage.value!!.size > 0) {
@@ -1859,7 +1813,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     //// on click in message
     override fun onHandleSelection(position: Int, chatMessage: ChatMessage?, myMessage: Boolean) {
         val pdfFile: File
-        if (!hasPermissions(this, *PERMISSIONS)) {
+        if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+            permissions!!.requestStorage(
+                this
+            )
+            conversationModelView!!.setMessageDownload(chatMessage?.messageId, false)
+
             Log.v(TAG, "download() Method DON'T HAVE PERMISSIONS ")
         } else {
             pdfFile = if (myMessage) {
@@ -1900,7 +1859,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         val pdfFile: File
         //        System.out.println(chatMessage.message + "onDownload");
         Log.v(TAG, "download() Method invoked ")
-        if (!hasPermissions(this, *PERMISSIONS)) {
+        if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+            permissions!!.requestStorage(
+                this
+            )
+            conversationModelView!!.setMessageDownload(chatMessage?.messageId, false)
+
         } else {
             Log.v(TAG, "download() Method HAVE PERMISSIONS ")
             if (myMessage) {
@@ -1942,7 +1906,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     override fun downloadVoice(position: Int, chatMessage: ChatMessage?, myMessage: Boolean) {
         val audioFile: File
 
-        if (!hasPermissions(this, *PERMISSIONS)) {
+        if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+            permissions!!.requestStorage(
+                this
+            )
+            conversationModelView!!.setMessageDownload(chatMessage?.messageId, false)
+
             Log.v(TAG, "download() Method DON'T HAVE PERMISSIONS ")
         } else {
             Log.v(TAG, "download() Method HAVE PERMISSIONS ")
@@ -1982,8 +1951,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
     override fun downloadVideo(position: Int, chatMessage: ChatMessage?, myMessage: Boolean) {
         val videoFile: File
-        if (!hasPermissions(this, *PERMISSIONS)) {
+        if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+            permissions!!.requestStorage(
+                this
+            )
+            conversationModelView!!.setMessageDownload(chatMessage?.messageId, false)
+
             Log.v(TAG, "download() Method DON'T HAVE PERMISSIONS ")
+
         } else {
             Log.v(TAG, "download() Method HAVE PERMISSIONS ")
             if (myMessage) {
@@ -2021,7 +1996,13 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
 
     override fun downloadImage(position: Int, chatMessage: ChatMessage?, myMessage: Boolean) {
         val imageFile: File
-        if (!hasPermissions(this, *PERMISSIONS)) {
+        if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+            permissions!!.requestStorage(
+                this
+            )
+            if (chatMessage != null) {
+                chatMessage.isDownload = false
+            }
             Log.v(TAG, "download() Method DON'T HAVE PERMISSIONS ")
         } else {
             Log.v(TAG, "download() Method HAVE PERMISSIONS ")
@@ -2068,7 +2049,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         val latitude = latlong[0].toDouble()
         val longitude = latlong[1].toDouble()
         locationLatLng = LatLng(latitude, longitude)
-        binding.container.visibility = View.GONE
+        binding.containerr.visibility = View.GONE
         binding.relativeMaps.visibility = View.VISIBLE
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -2250,8 +2231,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 val task = client!!.lastLocation
                 task.addOnSuccessListener { location ->
                     //When Success
-                    println(location.toString() + "Location")
                     if (location != null) {
+                        println(location.toString() + "Location")
                         //Sync Map
                         supportMapFragment!!.getMapAsync { googleMap -> //Initialize Lat And Long
                             latLng = LatLng(location.latitude, location.longitude)
@@ -2388,7 +2369,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
     fun processSocketFile(chatMessage: ChatMessage): Void? {
         displayMessage(chatMessage)
-        if (!hasPermissions(this, *PERMISSIONS)) {
+        if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+            permissions!!.requestStorage(
+                this
+            )
+            conversationModelView!!.setMessageDownload(chatMessage.messageId, false)
+
             Log.v(TAG, "download() Method DON'T HAVE PERMISSIONS ")
         } else {
             when (chatMessage.type) {
@@ -2449,7 +2435,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                 }
                 "file" -> {
                     val pdfFile: File
-                    if (!hasPermissions(this, *PERMISSIONS)) {
+                    if (!hasPermissions(this, *PERMISSIONSARRAY)) {
+
                     } else {
                         val dFile =
                             getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/recive")
@@ -2494,175 +2481,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             }
         })
     }
-    @SuppressLint("Range")
-    fun showImageBeforeSend(uri: Uri?, type: String) {
 
-        val fileNmae = System.currentTimeMillis().toString() + "_" + user_id
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_image_before_send)
-        dialog.setTitle("Title...")
-        dialog.window!!.setLayout(
-            ViewGroup.LayoutParams.FILL_PARENT,
-            ViewGroup.LayoutParams.FILL_PARENT
-        )
-        val image = dialog.findViewById<PhotoView>(R.id.photo_view)
-        image.setImageURI(uri)
-        val fab = dialog.findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener {
-            var displayNamee: String? = null
-            val pathImage: Uri?
-            pathImage =
-                if (type == "pix") Uri.fromFile(File(uri.toString())) else {
-                    uri
-                }
-            val myFileImage = File(pathImage.toString())
-            FileUtil.copyFileOrDirectory(
-                FileUtil.getPath(this, pathImage),
-                getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video")!!
-                    .absolutePath
-            ,fileNmae)
-            if (pathImage.toString().startsWith("content://")) {
-                var cursor: Cursor? = null
-                try {
-                    cursor = this.contentResolver.query(
-                        uri!!,
-                        null,
-                        null,
-                        null,
-                        null
-                    )
-                    if (cursor != null && cursor.moveToFirst()) {
-                        displayNamee =
-                            cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                        val chatMessage = FileUtil.uploadImage(
-                            fileNmae,
-                            uri,
-                            this,
-                            user_id,
-                            anthor_user_id,
-                            conversationModelView!!.blockedFor().value
-                        ,fcmToken)
-                        displayMessage(chatMessage)
-                    }
-                } finally {
-                    cursor!!.close()
-                }
-            } else if (pathImage.toString().startsWith("file://")) {
-                displayNamee = myFileImage.name
-                val chatMessage = FileUtil.uploadImage(
-                    fileNmae,
-                    pathImage,
-                    this,
-                    user_id,
-                    anthor_user_id,
-                    conversationModelView!!.blockedFor().value
-                ,fcmToken)
-                displayMessage(chatMessage)
-            }
-            dialog.dismiss()
-        }
-        dialog.show()
-    }
-    @SuppressLint("Range")
-    fun showVideoBeforeSend(uri: Uri?, type: String) {
-        val fileNmae = System.currentTimeMillis().toString() + "_" + user_id
-
-        val dialog = Dialog(this)
-        dialog.setContentView(R.layout.dialog_video_before_send)
-        dialog.setTitle("Title...")
-        dialog.window!!.setLayout(
-            ViewGroup.LayoutParams.FILL_PARENT,
-            ViewGroup.LayoutParams.FILL_PARENT
-        )
-        val videoView = dialog.findViewById<VideoView>(R.id.simpleVideoView)
-        mediaControl = MediaController(dialog.context)
-        videoView.requestFocus()
-        videoView.setOnPreparedListener { mediaPlayer ->
-            mediaPlayer.setOnVideoSizeChangedListener { mp, width, height ->
-
-                videoView.setMediaController(mediaControl)
-
-                mediaControl!!.setAnchorView(videoView)
-                mediaControl!!.setMediaPlayer(videoView)
-            }
-        }
-        videoView.setMediaController(mediaControl)
-        mediaControl!!.setAnchorView(videoView)
-        mediaControl!!.setMediaPlayer(videoView)
-        videoView.setMediaController(mediaControl)
-        videoView.setVideoURI(uri)
-        videoView.start()
-        videoView.setOnCompletionListener {
-        }
-        videoView.setOnErrorListener { mp, what, extra -> //                finish();
-            false
-        }
-        val fab = dialog.findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener {
-            val pathhh: Uri?
-            var compressPath: Uri
-            pathhh = if (type == "pix") {
-                Uri.fromFile(File(uri.toString()))
-            } else {
-                uri
-            }
-            val myFilee = File(pathhh.toString())
-            FileUtil.copyFileOrDirectory(
-                FileUtil.getPath(this, pathhh),
-                getExternalFilesDir(Environment.DIRECTORY_DCIM + File.separator + "memo/send/video")!!
-                    .absolutePath
-            ,fileNmae)
-            var displayNamee: String? = null
-            if (pathhh.toString().startsWith("content://")) {
-                var cursor: Cursor? = null
-                try {
-                    cursor = this.contentResolver.query(
-                        uri!!,
-                        null,
-                        null,
-                        null,
-                        null
-                    )
-                    if (cursor != null && cursor.moveToFirst()) {
-                        displayNamee =
-                            cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
-                        println(displayNamee)
-                        val chatMessage = FileUtil.uploadVideo(
-                            fileNmae,
-                            uri,
-                            this,
-                            user_id,
-                            anthor_user_id,
-                            conversationModelView!!.blockedFor().value
-                        ,fcmToken)
-                        displayMessage(chatMessage)
-                        //                                                    compressVideo(compressPath,displayNamee);
-                    }
-                } finally {
-                    cursor!!.close()
-                }
-            } else if (pathhh.toString().startsWith("file://")) {
-                displayNamee = myFilee.name
-                val chatMessage = FileUtil.uploadVideo(
-                    fileNmae,
-                    pathhh,
-                    this,
-                    user_id,
-                    anthor_user_id,
-                    conversationModelView!!.blockedFor().value
-                ,fcmToken)
-                displayMessage(chatMessage)
-            }
-            dialog.dismiss()
-        }
-        dialog.show()
-    }
-    private fun showDialogVideo(path: String) {
-//        val dialogFragment = DialogFragmentVideoBeforeSend(this@ConversationActivity,path)
-//        dialogFragment.show(supportFragmentManager, "signature")
-
-
-    }
     override fun onDataReceived(data: String) {
         Log.d(TAG, "onDataReceived: ${data}")
     }
@@ -2684,7 +2503,17 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         const val ON_BLOCK_USER = "ConversationActivity.ON_BLOCK_USER"
         const val ON_UN_BLOCK_USER = "ConversationActivity.ON_UN_BLOCK_USER"
         private const val TAG = "MainActivity2"
-        private val PERMISSIONS = arrayOf(
+        var readImagePermission =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_IMAGES else Manifest.permission.READ_EXTERNAL_STORAGE
+        var readVideoPermission =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_VIDEO else Manifest.permission.READ_EXTERNAL_STORAGE
+        var readAudioPermission =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Manifest.permission.READ_MEDIA_AUDIO else Manifest.permission.READ_EXTERNAL_STORAGE
+        private val PERMISSIONSARRAY = arrayOf(
+            readImagePermission,
+            readVideoPermission
+        )
+        private val DOWNLOADPERMISSIONSARRAY = arrayOf(
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
         )

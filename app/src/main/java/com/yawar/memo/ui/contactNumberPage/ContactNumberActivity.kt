@@ -39,7 +39,7 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
     lateinit var myId: String
     lateinit var myBase: BaseApp
 //    lateinit var serverApi: ServerApi
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
 
     val contactNumberViewModel by viewModels<ContactNumberViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
@@ -209,6 +209,12 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
         bundle.putString("chat_id", "")
         bundle.putString("blockedFor", sendContactNumberResponse.blockedFor)
         anthorUserInChatRoomId.id = sendContactNumberResponse!!.id!!
+        anthorUserInChatRoomId.fcmToken = sendContactNumberResponse?.fcmToken!!
+        anthorUserInChatRoomId.blockedFor = sendContactNumberResponse?.blockedFor!!
+        anthorUserInChatRoomId.specialNumber = ""
+        anthorUserInChatRoomId.userName = sendContactNumberResponse?.name!!
+        anthorUserInChatRoomId.chatId = sendContactNumberResponse.chat_id!!
+        anthorUserInChatRoomId.imageUrl = sendContactNumberResponse.image!!
         val intent = Intent(this, ConversationActivity::class.java)
         intent.putExtras(bundle)
         startActivity(intent)

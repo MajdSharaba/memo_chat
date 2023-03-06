@@ -51,7 +51,7 @@ import javax.inject.Inject
 class UserInformationActivity : AppCompatActivity() {
 //    var EXAMPLE_COUNTER: Key<Int>
     private val recyclerDataArrayList = ArrayList<MediaModel>()
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
 
     //    lateinit  var userInformationViewModelFactory: UserInformationViewModelFactory
     lateinit var timeProperties: TimeProperties
@@ -371,6 +371,12 @@ class UserInformationActivity : AppCompatActivity() {
             bundle.putString("chat_id", chatId)
             bundle.putString("blockedFor", userInformationViewModel.blockedFor().value)
             anthorUserInChatRoomId.id = another_user_id
+            anthorUserInChatRoomId.blockedFor = blockedFor
+            anthorUserInChatRoomId.fcmToken =  fcm_token
+            anthorUserInChatRoomId.specialNumber = sn
+            anthorUserInChatRoomId.userName = userName
+            anthorUserInChatRoomId.chatId = chatId
+            anthorUserInChatRoomId.imageUrl = imageUrl
             val intent = Intent(this@UserInformationActivity, ConversationActivity::class.java)
             intent.putExtras(bundle)
             startActivity(intent)

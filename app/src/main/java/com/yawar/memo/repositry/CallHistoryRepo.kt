@@ -3,7 +3,7 @@ package com.yawar.memo.repositry
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.yawar.memo.Api.ChatApi
 import com.yawar.memo.database.dao.ChatRoomDatabase
 import com.yawar.memo.database.entity.callHistoryEntity.CallHistoryEntityMapper
@@ -26,8 +26,8 @@ class CallHistoryRepo @Inject  constructor(
 
 ){
     val callModelListMutableLiveData: LiveData<List<CallHistoryModel>>
-        = Transformations.map(database.chatRoomDao.getCallHistory()) {
-        callHistoryEntityMapper.toDomainList(it) as List<CallHistoryModel>?
+        = database.chatRoomDao.getCallHistory().map {
+        callHistoryEntityMapper.toDomainList(it) as List<CallHistoryModel>
     }
 
     private val _loadingMutableLiveData =  MutableLiveData<Boolean>(false)

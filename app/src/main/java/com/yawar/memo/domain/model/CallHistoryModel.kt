@@ -1,5 +1,6 @@
 package com.yawar.memo.domain.model
 
+import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
@@ -13,7 +14,7 @@ import kotlinx.android.parcel.Parcelize
      var call_status: String = "",
      var duration: String = "",
      var createdAt: String = "",
-): Cloneable {
+): Cloneable, Parcelable {
 
     public override fun clone(): CallHistoryModel {
 

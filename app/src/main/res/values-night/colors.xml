@@ -35,6 +35,12 @@
     <color name="background_conversation_toolbar">#222222</color>
     <color name="background_setting_color">#0E0E0E</color>
     <color name="line_color">#1B1B1B</color>
+    <color name="video_counter_color_pix">#E53935</color>
+    <color name="primary_color_pix">#075e54</color>
+    <color name="primary_light_color_pix">#80075e54</color>
+    <color name="surface_color_pix">#ffffff</color>
+    <color name="text_color_pix">#807f7f</color>
+
 
 
 

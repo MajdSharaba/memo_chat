@@ -1,5 +1,6 @@
 package com.yawar.memo.network.networkModel.callHistoryModel
 
+import android.os.Parcelable
 import com.squareup.moshi.Json
 import kotlinx.android.parcel.Parcelize
 
@@ -35,5 +36,5 @@ class CallHistoryDto (
     @Json(name = "call_time")
     var call_time: String? = "0",
 
-){
+) : Parcelable {
 }

@@ -441,7 +441,6 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
                 case EVENT_TYPE_SEND_PEER_ID:
                     System.out.println("EVENT_TYPE_SEND_PEER_ID");
-
                     String send_peer_id_message_paramter = intent.getExtras().getString(EXTRA_SEND_PEER_ID_PARAMTERS);
                     Log.i(TAG, "onStartCommand: before send_peer_id_message_paramter");
 
@@ -1379,9 +1378,13 @@ public class SocketIOService extends Service implements SocketEventListener.List
             //                        id = message.getString("message_id");
             reciverId = message.getString("reciver_id");
             chatId = message.getString("chat_id");
-            if (!text.equals("welcome to memo"))
+            if (!text.equals("welcome to memo")) {
                 dateTime = message.getString("dateTime");
-            fileName = message.getString("orginalName");
+                if (!type.equals("text") && !type.equals("location")) {
+                    fileName = message.getString("orginalName");
+
+                }
+            }
 
             //                        fileName = message.getString("orginalName");
         } catch (JSONException e) {
@@ -1458,7 +1461,5 @@ public class SocketIOService extends Service implements SocketEventListener.List
 
 
 }
-
-
 
 

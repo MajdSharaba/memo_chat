@@ -1,5 +1,7 @@
 package com.yawar.memo.utils;
 
+import static com.yawar.memo.SocketFunctionKt.newMeesage;
+
 import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -539,7 +541,7 @@ public class FileUtil {
 //            //"file:///storage/emulated/0/memo/1640514470604.3gp"
 //            final byte[] inputData = FileUtil.getBytes(iStream);
         try {
-            bitmap = MediaStore.Images.Media.getBitmap(activity.getContentResolver(), pdfFile);
+            bitmap = MediaStore.Images.Media.getBitmap(BaseApp.Companion.getInstance().getContentResolver(), pdfFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -594,7 +596,8 @@ public class FileUtil {
                             sendObject.put("notification",notification);
 
                             chatMessageRepo.setMessageUpload(message_id,false);
-                            activity.newMeesage(sendObject);
+//                            activity.newMeesage(sendObject);
+                            newMeesage(sendObject);
 
 
                         } catch (JSONException e) {
@@ -683,7 +686,7 @@ public class FileUtil {
         InputStream iStream = null;
         try {
 
-            iStream = activity.getContentResolver().openInputStream(pdffile);
+            iStream =BaseApp.Companion.getInstance().getContentResolver().openInputStream(pdffile);
             System.out.println(pdffile);
             //"file:///storage/emulated/0/memo/1640514470604.3gp"
             final byte[] inputData = FileUtil.getBytes(iStream);
@@ -729,8 +732,8 @@ public class FileUtil {
                                 sendObject.put("notification",notification);
 
                                 chatMessageRepo.setMessageUpload(message_id,false);
-                                activity.newMeesage(sendObject);
-
+//                                activity.newMeesage(sendObject);
+                                newMeesage(sendObject);
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
