@@ -57,7 +57,7 @@ class SearchFragment : Fragment(), SearchAdapter.CallbackInterface {
     private lateinit var loadingPB: ProgressBar
     private lateinit var nestedSV: NestedScrollView
     val handler = Handler()
-    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
     val searchModelView by viewModels<SearchModelView>()
 
     @SuppressLint("MissingInflatedId")

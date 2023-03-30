@@ -516,40 +516,6 @@ class DashBord : AppCompatActivity() {
         } catch (e: Exception) {
         }
 
-        when {
-            ContextCompat.checkSelfPermission(
-                this, Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
-                Log.e("onCreate", "onCreate: PERMISSION GRANTED")
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                Snackbar.make(
-                    findViewById(R.id.parent_layout),
-                    "Notification blocked",
-                    Snackbar.LENGTH_LONG
-                ).setAction("Settings") {
-                    // Responds to click on the action
-                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    val uri: Uri = Uri.fromParts("package", packageName, null)
-                    intent.data = uri
-                    startActivity(intent)
-                }.show()
-                //  Toast.makeText(this, "NOT ALLOWED", Toast.LENGTH_SHORT).show()
-            }
-            else -> {
-                Log.e("onCreate", "onCreate: ask for permissions")
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-                  if (Build.VERSION.SDK_INT >= 33) {
-                   Log.e("onCreate", "onCreate: 33" )
-                requestPermissionLauncher.launch(
-                    Manifest.permission.POST_NOTIFICATIONS
-                )
-                 }
-            }
-        }
 
 
     }
@@ -585,6 +551,7 @@ class DashBord : AppCompatActivity() {
             createDirectory("memo/recive/voiceRecord")
             createDirectory("memo/send/video")
             createDirectory("memo/recive/video")
+            requestPostNotification()
         } else {
 //            createDirectory("memo")
 //            createDirectory("memo/send")
@@ -612,6 +579,7 @@ class DashBord : AppCompatActivity() {
                 createDirectory("memo/recive/voiceRecord")
                 createDirectory("memo/send/video")
                 createDirectory("memo/recive/video")
+                requestPostNotification()
                 //                    chatRoomRepo.callAPI(myId);
             } else
 //                if (!shouldShowRequestPermissionRationale(
@@ -692,6 +660,7 @@ class DashBord : AppCompatActivity() {
                 createDirectory("memo/recive/voiceRecord")
                 createDirectory("memo/send/video")
                 createDirectory("memo/recive/video")
+                requestPostNotification()
                 //                    chatRoomRepo.callAPI(myId);
             }
 
@@ -868,6 +837,45 @@ class DashBord : AppCompatActivity() {
         } else {
             Log.d("Account created", "Account creation failed. Look at previous logs to investigate")
         }
+    }
+
+
+    private fun requestPostNotification(){
+        when {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                // You can use the API that requires the permission.
+                Log.e("onCreate", "onCreate: PERMISSION GRANTED")
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                Snackbar.make(
+                    findViewById(R.id.dashboardContainer),
+                    "Notification blocked",
+                    Snackbar.LENGTH_LONG
+                ).setAction("Settings") {
+                    // Responds to click on the action
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    val uri: Uri = Uri.fromParts("package", packageName, null)
+                    intent.data = uri
+                    startActivity(intent)
+                }.show()
+                //  Toast.makeText(this, "NOT ALLOWED", Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Log.e("onCreate", "onCreate: ask for permissions")
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                if (Build.VERSION.SDK_INT >= 33) {
+                    Log.e("onCreate", "onCreate: 33" )
+                    requestPermissionLauncher.launch(
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )
+                }
+            }
+        }
+
     }
 }
 

@@ -6,6 +6,7 @@ import com.yawar.memo.domain.model.SearchRespone
 import com.yawar.memo.network.networkModel.callHistoryModel.CallHistoryDto
 import com.yawar.memo.network.networkModel.chatMessageModel.ChatMessageDto
 import com.yawar.memo.network.networkModel.chatRoomModel.ChatRoomRespone
+import com.yawar.memo.network.networkModel.specialMessageModel.SpecialMessageDto
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -58,6 +59,13 @@ interface ChatApi {
         @Field("user_id") user_id: String?,
     ): Deferred<String?>?
 
+    @FormUrlEncoded
+    @POST("add_favorite_message")
+    fun addSpecialMessage(
+        @Field("messages") message_id: String?,
+        @Field("other_id") anthor_user_id: String?,
+        @Field("my_id") my_id: String?
+    ): Deferred<String?>?
 
     @FormUrlEncoded
     @POST("myblocklist")
@@ -114,6 +122,12 @@ interface ChatApi {
         @Field("page") page: String?,
         @Field("my_id") my_id: String?
     ): SearchRespone?
+
+    @FormUrlEncoded
+    @POST("get_favorite_message")
+     fun getSpecialMessages(
+        @Field("my_id") my_id: String?
+    ): Deferred<List<SpecialMessageDto>>
 
 
     @FormUrlEncoded

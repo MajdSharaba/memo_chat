@@ -211,6 +211,15 @@
                     android:src="@drawable/ic_forword"/>
 
                 <ImageButton
+                    android:id="@+id/image_button_special_messages"
+                    android:background="?android:attr/actionBarItemBackground"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_special_image"/>
+
+                <ImageButton
                     android:id="@+id/image_button_reply"
                     android:background="?android:attr/actionBarItemBackground"
                     android:layout_width="wrap_content"
@@ -686,8 +695,8 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
             app:borderWidth="0dp"
+            android:src="@drawable/ic_arrow_more"
             android:backgroundTint="@color/memo_background_color_new"
-            android:src="@drawable/ic_click_to_more"
             />
     </RelativeLayout>
 

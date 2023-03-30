@@ -4,16 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-
 import androidx.core.app.NotificationManagerCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.yawar.memo.BaseApp;
 import com.yawar.memo.ui.responeCallPage.ResponeCallActivity;
 import com.yawar.memo.constant.AllConstants;
 import com.yawar.memo.service.SocketIOService;
 import com.yawar.memo.sessionManager.ClassSharedPreferences;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

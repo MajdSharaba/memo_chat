@@ -37,4 +37,7 @@ class ChatMessageDto(
 
     @Json(name = "edited")
     var  edited:String="",
+
+    @Json(name = "favorite_for")
+    var favorite_for:String?="",
 ) : Parcelable

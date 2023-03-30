@@ -22,12 +22,10 @@
         app:cardUseCompatPadding="false"
         android:orientation="vertical"
         >
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -35,8 +33,6 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:id="@+id/layout_id">
-
-
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/iv_image"
                     android:layout_width="50dp"
@@ -45,7 +41,6 @@
                     android:layout_margin="5dp"
                     app:userImage = "@{searchRespone}"
                     />
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_weight="5"
@@ -95,19 +90,15 @@
                     android:textColor="@color/memo_background_color_new"
                     android:fontFamily="@font/roboto_regular"
                     android:textSize="10sp" />
-
-
             </LinearLayout>
-
             <include
                 layout="@layout/item_divider"
                 android:layout_marginStart="50dp"
                 android:layout_width="match_parent"
-                android:layout_height="0.1dp">
-
+                android:layout_height="0.1dp"
+                >
             </include>
         </LinearLayout>
-
 
     </androidx.cardview.widget.CardView>
 </layout>

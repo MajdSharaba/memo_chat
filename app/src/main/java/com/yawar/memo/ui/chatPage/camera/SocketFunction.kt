@@ -7,7 +7,7 @@ import com.yawar.memo.repositry.ChatRoomRepoo
 import com.yawar.memo.service.SocketIOService
 import org.json.JSONException
 import org.json.JSONObject
-val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
 val chatRoomRepoo = BaseApp.instance?.chatRoomRepoo
 fun newMeesage(chatMessage: JSONObject) {
     var message: String? = ""

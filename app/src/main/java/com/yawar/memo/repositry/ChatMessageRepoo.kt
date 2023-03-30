@@ -27,11 +27,12 @@ class ChatMessageRepoo
     private val chatMessageEntityMapper: ChatMessageEntityMapper,
         ) {
 
-    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
     private val _chatMessageistMutableLiveData = MutableLiveData<ArrayList<ChatMessage?>?>()
     //            return repository.chatMessageistMutableLiveData;
 //    val chatMessaheHistory: LiveData<ArrayList<ChatMessage?>?>
 //        get() = _chatMessageistMutableLiveData
+  //  "107"
     val chatMessaheHistory: LiveData<List<ChatMessage>> = database.chatRoomDao.getChatMessage(anthorUserInChatRoomId.id).map {
         chatMessageEntityMapper.toDomainList(it) as List<ChatMessage>
     }
@@ -58,6 +59,8 @@ class ChatMessageRepoo
 
 
     fun loadChatRoom(my_id: String?, anthor_user_id:String) {
+        Log.d("loadChatMessage",anthor_user_id)
+
         _loadingMutableLiveData.value = true
         _chatMessageistMutableLiveData.value = null
         coroutineScope.launch {
@@ -68,6 +71,7 @@ class ChatMessageRepoo
 //                .getChatMessgeHistory( my_id,  anthor_user_id)
 //            val getChatRoomsDeferred = GdgApi.apiService
 //                .getChatMessgeHistory( my_id,  anthor_user_id)
+            Log.d("loadChatMessage",my_id!!)
             val getChatRoomsDeferred = chatApi.getChatMessgeHistory( my_id,  anthor_user_id)
             try {
                 val listResult = getChatRoomsDeferred?.await()
@@ -218,6 +222,10 @@ class ChatMessageRepoo
                 database.chatRoomDao.setIsMessageDownload(
                     message_id,isDownload
                 )
+                database.chatRoomDao.updateIsDownload(
+                    message_id,isDownload
+                )
+
 
             }
         }
@@ -300,8 +308,8 @@ class ChatMessageRepoo
 
     fun clearSelectedMessage() {
 
-        var chatMessageList = _selectedMessage.value
-        Log.d("clearSelectedMessage", "clearSelectedMessage: ${chatMessageList?.size}")
+        var chatMessageList = selectedMessage.value
+        Log.d("clearSelectedMessage", "clearSelectedMessage: ${selectedMessage.value}")
 
         if (chatMessageList != null) {
             for ( chatMessage in chatMessageList) {
@@ -417,7 +425,57 @@ class ChatMessageRepoo
         }
 //        clearSelectedMessage();
     }
-        fun getUnRecivedMessages(
+
+    fun addSpecialMessage(
+        message_id: String,
+        anthor_user_id: String?,
+        my_id: String?,
+    ) {
+        coroutineScope.launch {
+            var chatMessageList = chatMessaheHistory.value as ArrayList
+            var chatMessages = selectedMessage.value
+            Log.d("getMarsRealEstateProperties: ", message_id)
+
+
+//            var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService
+//                .deleteMessage(message_id, user_id)
+//            var deleteDeferred =  GdgApi.apiService
+//                .deleteMessage(message_id,user_id)
+
+            var deleteDeferred =  chatApi
+                .addSpecialMessage(message_id,anthor_user_id, my_id)
+            try {
+                var listResult = deleteDeferred?.await()
+                Log.d("getMarsRealEstateProperties: ", listResult.toString()+message_id)
+                if (chatMessages != null) {
+                    for (i in 0 until chatMessages.size) {
+                        val id = chatMessages?.get(i)?.messageId
+                        if (chatMessageList != null) {
+                            for (chatMessage in chatMessageList) {
+                                if (chatMessage != null) {
+                                    if (chatMessage.messageId == id) {
+                                        withContext(Dispatchers.IO) {
+                                            database.chatRoomDao.addSpecialMessage(
+                                                id,true
+                                            )
+                                        }
+                                        break
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                clearSelectedMessage()
+
+            } catch (e: Exception) {
+                Log.d("getMarsRealEstateProperties: ", "Failure: ${e.message}")
+            }
+        }
+//        clearSelectedMessage();
+    }
+        fun getUnRecivedMessages (
         ) {
             val chatMessageList = ArrayList<ChatMessage?>()
 

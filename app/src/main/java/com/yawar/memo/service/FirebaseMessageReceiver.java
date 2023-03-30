@@ -226,7 +226,7 @@ public class FirebaseMessageReceiver
                             .putString("body", message).putString("channel", remoteMessage.getData().get("sender_id"))
                             .putString("blockedFor", remoteMessage.getData().get("blockedFor")).putString("special", remoteMessage.getData().get("special"))
                             .putString("chat_id", remoteMessage.getData().get("chat_id"))
-                            .putString("fcm_token", remoteMessage.getData().get("fcm_token")).build();
+                            .putString("fcm_token", remoteMessage.getData().get("my_token")).build();
 
 
                     sendMessageStateTwo(remoteMessage.getData().get("sender_id"), message, remoteMessage.getData().get("type"),

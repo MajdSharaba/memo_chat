@@ -10,7 +10,6 @@ data class ChatMessageEntity
     @PrimaryKey(autoGenerate = false)
     var  messageId:String = "",
 
-
 //    var  id: Long = 0,
 
     var  isMe:Boolean = false,
@@ -37,5 +36,8 @@ data class ChatMessageEntity
 
     var  upload:Boolean = false,
 
-    var  isChecked:Boolean = false
+    var  isChecked:Boolean = false,
+
+    var favoriteFor:Boolean? = false,
+
 )

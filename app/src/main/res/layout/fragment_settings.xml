@@ -153,14 +153,14 @@
                            android:layout_width="20dp"
                            android:layout_height="20dp"
                             android:layout_gravity="center"
-                           android:src="@drawable/devices">
+                           android:src="@drawable/sarter_messages">
 
                        </ImageView>
                         <TextView
                             android:id="@+id/dev"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="@string/devices"
+                            android:text="@string/title_activity_favourite"
                             android:layout_marginStart="10dp"
                             android:textStyle="bold"
                             android:textSize="16sp"

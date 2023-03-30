@@ -101,7 +101,7 @@ class ChatRoomAdapter(
 
     class ViewHolder private  constructor(val binding: ChatRoomRowBinding) : RecyclerView.ViewHolder(binding.root) {
         @SuppressLint("UseCompatLoadingForDrawables")
-        val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+        val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
 
         fun bind(
             chatRoomModel: ChatRoomModel,

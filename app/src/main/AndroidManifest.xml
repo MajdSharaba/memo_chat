@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.yawar.memo">
+    package="com.yawar.memo" >
 
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
@@ -40,6 +40,7 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+<!--    <uses-permission android:name="android.permission.RECEIVE_SMS" />-->
 
     <application
         android:name=".BaseApp"
@@ -51,14 +52,29 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_logo_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ChatMemo"
+        android:theme="@style/Theme.App.Starting"
         android:usesCleartextTraffic="true"
         tools:ignore="DataExtractionRules"
-        tools:replace="android:theme">
+        tools:replace="android:theme" >
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.ChatMemo" />
+        <activity
+            android:name=".jetbackCompose.favouriteActivity.FavouriteActivity"
+            android:exported="false"
+            android:label="@string/title_activity_favourite"
+            android:theme="@style/Theme.ChatMemo" />
+        <activity
+            android:name=".jetbackCompose.components.GoogleMapView"
+            android:exported="false"
+            android:theme="@style/Theme.ChatMemo" />
         <activity
             android:name=".FragmentSamplee"
-            android:screenOrientation="portrait"
             android:exported="false"
+            android:theme="@style/Theme.ChatMemo"
+            android:screenOrientation="portrait"
             tools:ignore="Instantiatable" />
 
         <meta-data
@@ -75,7 +91,7 @@
             android:label="@string/app_name" />
         <activity
             android:name="com.facebook.CustomTabActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -101,7 +117,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:supportsPictureInPicture="true"
-            android:theme="@style/ThemeOverlay.ChatMemo.CallReq">
+            android:theme="@style/ThemeOverlay.ChatMemo.CallReq" >
             <intent-filter>
                 <action android:name="com.yawar.memo.action.mute" />
 
@@ -121,7 +137,7 @@
             android:screenOrientation="portrait"
             android:showOnLockScreen="true"
             android:supportsPictureInPicture="true"
-            android:theme="@style/AppTheme">
+            android:theme="@style/AppTheme" >
             <intent-filter>
                 <action android:name="com.yawar.memo.action.mute" />
 
@@ -142,6 +158,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
+            android:name=".jetbackCompose.components.VideoView"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
+        <activity
             android:name=".ui.userInformationPage.UserInformationActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
@@ -154,7 +174,7 @@
             android:name=".utils.GenericFileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/external_files" />
@@ -171,7 +191,7 @@
         <service
             android:name=".service.FirebaseMessageReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
@@ -190,6 +210,13 @@
         <!-- <action android:name="android.telecom.ConnectionService" /> -->
         <!-- </intent-filter> -->
         <!-- </service> -->
+        <!-- <receiver android:name=".service.MySMSBroadcastReceiver" -->
+        <!-- android:exported="true" -->
+        <!-- > -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
         <activity
             android:name=".ui.chatPage.video.VideoActivity"
             android:theme="@style/AppTheme" />
@@ -222,7 +249,8 @@
             android:name=".ui.splashPage.SplashScreen"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme">
+            android:theme="@style/Theme.App.Starting"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

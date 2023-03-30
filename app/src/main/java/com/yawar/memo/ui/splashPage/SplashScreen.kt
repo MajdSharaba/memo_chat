@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -41,9 +42,16 @@ class SplashScreen : AppCompatActivity() {
     val splachActViewModel by viewModels<SplachActViewModel>()
 //    var progressDialog: ProgressDialog? = null
 //    var progressBar: ProgressBar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+
         CallProperty.setStatusBarOrScreenStatus(this)
         super.onCreate(savedInstanceState)
+        // Keep the splash screen visible for this Activity
+        splashScreen.setKeepOnScreenCondition { true }
+
+//        finish()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash_screen)
         classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         myBase = BaseApp.instance!!

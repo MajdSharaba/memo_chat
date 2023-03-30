@@ -34,7 +34,12 @@ class ChatMessageEntityMapper : DomainMapper<ChatMessageEntity, ChatMessage> {
 
           upload = model.upload,
 
-          isChecked = model.isChecked
+          isChecked = model.isChecked,
+
+          favoriteFor = model.favoriteFor,
+
+
+
         )
     }
 
@@ -69,7 +74,10 @@ class ChatMessageEntityMapper : DomainMapper<ChatMessageEntity, ChatMessage> {
 
             upload = domainModel.upload,
 
-            isChecked = domainModel.isChecked
+            isChecked = domainModel.isChecked,
+
+            favoriteFor = domainModel.favoriteFor
+
         )
     }
 

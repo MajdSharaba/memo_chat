@@ -30,12 +30,12 @@ import com.google.firebase.storage.StorageReference
 import com.yawar.memo.BaseApp
 import com.yawar.memo.R
 import com.yawar.memo.constant.AllConstants
-import com.yawar.memo.database.dao.ChatRoomDatabase
 import com.yawar.memo.databinding.DialogImageChtBinding
 import com.yawar.memo.databinding.FragmentSettingsBinding
 import com.yawar.memo.databinding.InputNameDialogBinding
 import com.yawar.memo.language.BottomSheetFragment
 import com.yawar.memo.domain.model.UserModel
+import com.yawar.memo.jetbackCompose.favouriteActivity.FavouriteActivity
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.repositry.BlockUserRepo
 import com.yawar.memo.repositry.ChatRoomRepoo
@@ -47,8 +47,6 @@ import com.yawar.memo.ui.blockUserPage.BlockedUsersActivity
 import com.yawar.memo.ui.deviceLinkPage.DevicesLinkActivity
 import com.yawar.memo.ui.splashPage.SplashScreen
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
@@ -264,7 +262,9 @@ class SettingsFragment : Fragment() {
             alertDialog.show()
         }
         binding.devices.setOnClickListener {
-            val intent = Intent(activity, DevicesLinkActivity::class.java)
+//            val intent = Intent(activity, DevicesLinkActivity::class.java)
+//            startActivity(intent)
+            val intent = Intent(context, FavouriteActivity::class.java)
             startActivity(intent)
         }
 

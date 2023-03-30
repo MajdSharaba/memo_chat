@@ -6,6 +6,7 @@ import androidx.room.*
 import com.yawar.memo.database.entity.ChatMessageEntity.ChatMessageEntity
 import com.yawar.memo.database.entity.callHistoryEntity.CallHistoryEntity
 import com.yawar.memo.database.entity.chatRoomEntity.ChatRoomEntity
+import com.yawar.memo.database.entity.specialMessageEntity.SpecailMessageEntity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -87,14 +88,31 @@ interface ChatRoomDao {
     @Query("UPDATE  ChatMessageEntity SET isUpdate = :isUpdate , message = :message  WHERE messageId = :messageId")
     fun updateMessage(messageId: String, message:String, isUpdate: String  )
 
+    @Query("UPDATE  ChatMessageEntity SET favoriteFor = :favoriteFor  WHERE messageId = :messageId")
+    fun addSpecialMessage(messageId: String, favoriteFor: Boolean )
+
     @Query("DELETE FROM ChatMessageEntity WHERE recivedId = :userId OR senderId = :userId")
     fun deleteChatMessages(userId: String)
 
 
     @Query("DELETE FROM ChatMessageEntity")
     fun deleteChatMessageTable()
+
+
+    @Query("SELECT * FROM SpecailMessageEntity ORDER BY created_at DESC ")
+    fun  getSpecialMessage():LiveData<List<SpecailMessageEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertSpecailMessages(vararg specailMessageEntity: SpecailMessageEntity)
+
+    @Query("UPDATE  SpecailMessageEntity SET isDownlod = :isDownlod  WHERE message_id = :message_id")
+    fun updateIsDownload(message_id: String, isDownlod: Boolean )
+
+    @Query("UPDATE  SpecailMessageEntity SET isChecked = :isChecked  WHERE message_id = :message_id")
+    fun setIsSpecialMessageChecked(message_id: String, isChecked : Boolean )
+
 }
-@Database(entities = [ChatRoomEntity::class, CallHistoryEntity::class, ChatMessageEntity::class], version = 1)
+@Database(entities = [ChatRoomEntity::class, CallHistoryEntity::class, ChatMessageEntity::class , SpecailMessageEntity::class], version = 1)
 abstract class ChatRoomDatabase : RoomDatabase() {
     abstract val chatRoomDao: ChatRoomDao
 

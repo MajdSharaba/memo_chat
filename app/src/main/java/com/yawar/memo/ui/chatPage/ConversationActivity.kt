@@ -4,7 +4,6 @@ import android.Manifest
 import android.animation.Animator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.Dialog
 import android.app.NotificationManager
 import android.content.*
 import android.content.pm.PackageManager
@@ -15,11 +14,11 @@ import android.location.LocationManager
 import android.media.MediaPlayer.create
 import android.media.MediaRecorder
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.ContactsContract
-import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.provider.Settings
 import android.text.Editable
@@ -31,7 +30,6 @@ import android.view.View.*
 import android.widget.EditText
 import android.widget.MediaController
 import android.widget.Toast
-import android.widget.VideoView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -49,14 +47,12 @@ import com.devlomi.record_view.RecordPermissionHandler
 import com.downloader.Error
 import com.downloader.OnDownloadListener
 import com.downloader.PRDownloader
-import com.github.chrisbanes.photoview.PhotoView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks
 import com.yawar.memo.BaseApp
@@ -99,7 +95,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     var mediaControl: MediaController? = null
     private var requestcode = 1
     var first = true
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
     var timeProperties: TimeProperties? = null
     lateinit  var linearLayoutManager : LinearLayoutManager
     @Inject
@@ -273,7 +269,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     val first_user_id = jsonObject.getString("reciver_id")
                     val second_user_id = jsonObject.getString("sender_id")
                     if (anthor_user_id == first_user_id || anthor_user_id == second_user_id) {
-                        conversationModelView!!.ubdateMessage(message_id, updateMessage)
+                        conversationModelView!!.updateMessage(message_id, updateMessage)
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -576,7 +572,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_conversation)
         setSupportActionBar(binding.toolbar)
-        pickiT = PickiT(this, this, this)
         if (!isPermissionGranted) {
             askPermissions()
         }
@@ -811,8 +806,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     if (chatMessages.isEmpty()) {
                         binding.linerNoMesssage.visibility = View.VISIBLE
                         binding.messagesContainer.visibility = View.GONE
-                    } else {
 
+                    } else {
                         val list = ArrayList<ChatMessage?>()
                         for (chatMessage in chatMessages) {
                             list.add(chatMessage?.clone())
@@ -821,12 +816,42 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         //                    adapter.add(chatHistory);
                         adapter!!.setData(list)
 
+//                        binding.messagesContainer.findViewHolderForAdapterPosition(position)?.itemView?.setBackgroundColor(resources.getColor(R.color.background_onLong_click))
+
                         if (conversationModelView!!.isFirst.value!!) {
                             if (conversationModelView?.getChatMessaheHistory()?.value?.size!! > 0 ) {
                                 conversationModelView!!.setIsFirst(false)
 
-                                binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size)
+//                                binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size)
+//                                binding.messagesContainer.findViewHolderForAdapterPosition(position)?.itemView?.setBackgroundColor(resources.getColor(R.color.background_onLong_click))
+                                if(anthorUserInChatRoomId.messageId.isNotEmpty()) {
+                                    val position = adapter!!.getPositionForId(anthorUserInChatRoomId.messageId)
 
+                                    Log.d(TAG, "messagesContainer: ${anthorUserInChatRoomId.messageId}")
+                                    binding.messagesContainer.scrollToPosition(position)
+                                    conversationModelView?.setMessageChecked(
+                                        anthorUserInChatRoomId.messageId,
+                                        true
+                                    )
+
+                                    anthorUserInChatRoomId.messageId = ""
+
+                                    conversationModelView?.setMessageChecked(
+                                        anthorUserInChatRoomId.messageId,
+                                        false
+                                    )
+                                }
+                                else{
+                                    Log.d(TAG, "initViewsss:${conversationModelView!!.getChatMessaheHistory().value!!.size} ")
+
+                                    binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size-1)
+
+                                }
+
+
+//                                conversationModelView!!.getChatMessaheHistory().value?.forEach {
+//                                    binding.messagesContainer.scrollToPosition()
+//                                }
                             }
 
                     }
@@ -836,7 +861,12 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                         if(conversationModelView?.getChatMessaheHistory()?.value?.size!! > binding.messagesContainer.layoutManager?.itemCount!!){
 //                            val count = binding.messagesContainer.layoutManager?.itemCount!!
 //                                                        binding.messagesContainer.smoothScrollToPosition(count)
+                            conversationModelView?.setMessageChecked(
+                                anthorUserInChatRoomId.messageId,
+                                false
+                            )
                             scroll(10)
+
                             Log.d(TAG, "initViewssbbb: ${conversationModelView?.getChatMessaheHistory()?.value?.size.toString()+","+binding.messagesContainer.layoutManager?.itemCount }")
 
 
@@ -874,6 +904,51 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
                     binding.personInformationLiner.visibility = View.VISIBLE
                     binding.toolbar.setBackgroundColor(resources.getColor(R.color.memo_background_color))
                 }
+                conversationModelView.setMessageState("0")
+
+                for(message in  chatMessages) {
+                    if (message?.favoriteFor!!) {
+                        conversationModelView.setMessageState(
+                            if (conversationModelView.messagesState == "0" || conversationModelView.messagesState == "allFavorite") {
+                                "allFavorite"
+                            } else {
+                                "different"
+                            }
+                        )
+                    } else {
+                        conversationModelView.setMessageState(
+                            if (conversationModelView.messagesState == "0" || conversationModelView.messagesState == "allUnFavorite") {
+                                "allUnFavorite"
+
+                            } else {
+                                "different"
+
+                            }
+                        )
+                    }
+                }
+                   when (conversationModelView.messagesState){
+
+                       "allFavorite" -> {
+                           binding.imageButtonSpecialMessages.visibility = VISIBLE
+
+                           binding.imageButtonSpecialMessages.setImageDrawable(this.getDrawable(R.drawable.ic_un_special))
+                       }
+                       "allUnFavorite" ->{
+                           binding.imageButtonSpecialMessages.visibility = VISIBLE
+
+                           binding.imageButtonSpecialMessages.setImageDrawable(this.getDrawable(R.drawable.ic_special_image))
+
+                       }
+                       "different" ->{
+                           binding.imageButtonSpecialMessages.visibility = GONE
+
+                       }
+
+                   }
+
+
+
             }
         }
 //        conversationModelView!!.getLoading().observe(
@@ -907,7 +982,8 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         }
         adapter = ChatAdapter(this)
         binding.messagesContainer.adapter = adapter
-        binding.messagesContainer.addOnLayoutChangeListener(OnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+        binding.messagesContainer.addOnLayoutChangeListener(
+            OnLayoutChangeListener { v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
             if (bottom < oldBottom) {
                 binding.messagesContainer.postDelayed(Runnable {
                     if (adapter!!.currentList.size > 1)  binding.messagesContainer.smoothScrollToPosition(
@@ -1138,7 +1214,6 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
             chatMessage.messageId = message_id //dummy
             chatMessage.message = messageText
             chatMessage.dateTime = dataTime
-
             chatMessage.isMe = true
             chatMessage.senderId = user_id
             chatMessage.type = "text"
@@ -1255,12 +1330,22 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         binding.imageButtonDelete.setOnClickListener { alertDeleteDialog() }
         binding.imageButtonFoword.setOnClickListener {
             val fm = supportFragmentManager
+            val messages =  conversationModelView?.selectedMessage?.value!!
             val forwardDialogFragment = ForwardDialogFragment.newInstance(
-                conversationModelView?.selectedMessage?.value!!, "jj"
+                messages, conversationModelView
             )
             forwardDialogFragment.show(fm, "fragment_edit_name")
+
+        }
+
+        binding.imageButtonSpecialMessages.setOnClickListener{
+            Log.d(TAG, "imageButtonSpecialMessages")
+            conversationModelView.addSpecialMessages(deleteMessage,anthor_user_id, user_id)
+            deleteMessage.clear()
+
         }
     }
+    
 
     @SuppressLint("ResourceType")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -1563,10 +1648,14 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
     }
 
     private fun scroll(dealay : Long) {
+        val messageId = anthorUserInChatRoomId.messageId
         binding.messagesContainer.postDelayed({
             if(conversationModelView?.getChatMessaheHistory()?.value?.size!=null)
             if (conversationModelView?.getChatMessaheHistory()?.value?.size!! > 0) {
-                binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
+                if(messageId.isEmpty()) {
+                    Log.d(TAG, "scrollllllllllllll${anthorUserInChatRoomId.messageId}")
+                    binding.messagesContainer.scrollToPosition(conversationModelView!!.getChatMessaheHistory().value!!.size - 1)
+                }
             }
         }, dealay)
     }
@@ -1580,6 +1669,7 @@ class ConversationActivity : AppCompatActivity(), ChatAdapter.CallbackInterface,
         super.onActivityResult(requestCode, resultCode, data)
         val message_id = System.currentTimeMillis().toString() + "_" + user_id
         println(requestCode.toString() + "requestCode")
+
         if (requestCode == AllConstants.READ_STORAGE_PERMISSION_REJECT) {
             if ( checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
                 DialogProperties.showPermissionDialog(

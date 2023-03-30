@@ -29,8 +29,7 @@ class ArchivedActivity : AppCompatActivity(), ArchivedAdapter.CallbackInterfac {
     lateinit var itemAdapter: ArchivedAdapter
      val archivedActViewModel by viewModels <ArchivedActViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
-
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
     lateinit var myId: String
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityArchivedBinding

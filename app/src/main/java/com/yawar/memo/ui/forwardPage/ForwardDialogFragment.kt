@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,7 @@ import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.domain.model.SendContactNumberResponse
 import com.yawar.memo.service.SocketIOService
 import com.yawar.memo.sessionManager.ClassSharedPreferences
+import com.yawar.memo.ui.chatPage.ConversationModelView
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
@@ -51,6 +53,7 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
     lateinit var my_id: String
      private val forwardDialogViewModel by viewModels<ForwardDialogViewModel>()
 
+
     private lateinit var select_title2: TextView
     var textSize = 14.0f
     lateinit var sharedPreferences: SharedPreferences
@@ -64,7 +67,7 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
         } catch (e: JSONException) {
             e.printStackTrace()
         }
-        forwardDialogViewModel.clearSelectedMessage()
+        conversationModelView.clearSelectedMessage()
         service.putExtra(SocketIOService.EXTRA_FORWARD_MESSAGE_PARAMTERS, `object`.toString())
         service.putExtra(SocketIOService.EXTRA_EVENT_TYPE, SocketIOService.EVENT_TYPE_Forward)
         requireActivity().startService(service)
@@ -96,7 +99,7 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
 //        forwardDialogViewModel = ViewModelProvider(this).get(
 //            ForwardDialogViewModel::class.java
 //        )
-
+        Log.d("chatMessageArrayList", chatMessageArrayList.size.toString())
         for ( ChatMessage in chatMessageArrayList) {
             if (ChatMessage != null) {
                 chatMessageListId.add("\"" + ChatMessage.messageId + "\"")
@@ -154,13 +157,16 @@ class ForwardDialogFragment : DialogFragment(), java.util.Observer,
         private const val ARG_PARAM1 = "param1"
         private const val ARG_PARAM2 = "param2"
         var chatMessageArrayList = ArrayList<ChatMessage?>()
+        lateinit var conversationModelView  : ConversationModelView
 
 
-        fun newInstance(param1: ArrayList<ChatMessage?>, param2: String?): ForwardDialogFragment {
+        fun newInstance(param1: ArrayList<ChatMessage?>, param2: ConversationModelView): ForwardDialogFragment {
             val fragment = ForwardDialogFragment()
             val args = Bundle()
             chatMessageArrayList = param1
-            args.putString(ARG_PARAM2, param2)
+            conversationModelView = param2
+
+//            args.putString(ARG_PARAM2, param2)
             fragment.arguments = args
             return fragment
         }

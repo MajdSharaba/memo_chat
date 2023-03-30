@@ -14,10 +14,8 @@ import com.yawar.memo.pix.helpers.*
 import com.yawar.memo.ui.chatPage.ConversationModelView
 import com.yawar.memo.ui.chatPage.camera.Adapter
 import dagger.hilt.android.AndroidEntryPoint
-import io.ak1.pix.models.Flash
-import io.ak1.pix.models.Mode
-import io.ak1.pix.models.Options
-import io.ak1.pix.models.Ratio
+import io.ak1.pix.models.*
+
 /**
  * Created By Akshay Sharma on 20,June,2021
  * https://ak1.io
@@ -40,7 +38,7 @@ class FragmentSamplee() : AppCompatActivity() {
 
     private fun showCameraFragment() {
         val options = Options().apply {
-            ratio = Ratio.RATIO_AUTO                                    //Image/video capture ratio
+            ratio = Ratio.RATIO_AUTO //Image/video capture ratio
             count =
                 1                                                   //Number of images to restrict selection count
             spanCount = 4                                               //Number for columns in grid
@@ -48,7 +46,9 @@ class FragmentSamplee() : AppCompatActivity() {
                 "Pix/Camera"                                         //Custom Path For media Storage
             isFrontFacing =
                 false                                       //Front Facing camera on start
-//                videoDurationLimitInSeconds = 10                            //Duration for video recording
+            videoOptions = VideoOptions().apply {
+                videoDurationLimitInSeconds = 30
+            }
             mode =
                 Mode.All                                             //Option to select only pictures or videos or both
             flash =

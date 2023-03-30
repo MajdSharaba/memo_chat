@@ -21,10 +21,10 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/memo_background_color</item>
-<!--        <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>-->
+        <!--        <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>-->
         <item name="colorPrimaryVariant">@color/memo_background_color</item>
         <item name="colorOnPrimary">@color/backgroundColor</item>
-<!--        <item name="colorOnPrimary">@color/white</item>-->
+        <!--        <item name="colorOnPrimary">@color/white</item>-->
 
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
@@ -39,6 +39,7 @@
     <style name="Theme.ChatMemo.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.ChatMemo.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
     <style name="ThemeOverlay.ChatMemo.FullscreenContainer" parent="">
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>

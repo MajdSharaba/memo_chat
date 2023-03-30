@@ -318,6 +318,10 @@ public class RegisterActivity extends AppCompatActivity implements AdapterView.O
             Toast.makeText(this,R.string.choose_special_number,Toast.LENGTH_SHORT).show();
             return false;
 
+        } else if (fName.isEmpty() && lName.isEmpty()) {
+            Toast.makeText(this,R.string.choose_name,Toast.LENGTH_SHORT).show();
+            return false;
+
         }
         spennerItemChooser = spennerItemChooser.replace("-","");
         System.out.println("spennerItemChooser"+spennerItemChooser);

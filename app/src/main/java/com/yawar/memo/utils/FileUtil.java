@@ -938,6 +938,8 @@ public class FileUtil {
 
     public static ChatMessage uploadPDF(String pdfname, Uri pdffile, ConversationActivity activity, String user_id,
                                         String anthor_user_id , String blockedFor, String token) {
+        Log.d("ressssssoo","uploadPDF");
+
         String message_id = System.currentTimeMillis() + "_" + user_id;
         String dataTime =  String.valueOf(Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
         BaseApp myBase = BaseApp.Companion.getInstance();
@@ -1022,6 +1024,7 @@ public class FileUtil {
                     new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            Log.d("onErrorResponse", "onErrorResponse: }"+error.getMessage());
 //                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }) {

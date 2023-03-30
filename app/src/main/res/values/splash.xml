@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/memo_background_color</item>
+
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_inset</item>
+
+
+        <item name="splashScreenIconSize">20dp</item>
+
+        <item name="windowSplashScreenAnimationDuration">10</item>
+
+
+
+        <item name="postSplashScreenTheme">@style/Theme.ChatMemo</item>
+    </style>
+</resources>
+<!--    https://www.youtube.com/watch?v=Loo4i5IrZ4Y-->

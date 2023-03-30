@@ -1,21 +1,24 @@
 package com.yawar.memo.network.networkModel.chatMessageModel
 
+import android.util.Log
 import com.yawar.memo.BaseApp
 import com.yawar.memo.database.entity.ChatMessageEntity.ChatMessageEntity
 import com.yawar.memo.domain.model.ChatMessage
 import com.yawar.memo.domain.model.util.DomainMapper
 import com.yawar.memo.domain.model.util.EntityMapper
+import kotlin.math.log
 
 class ChatMessageDtoMapper : DomainMapper<ChatMessageDto, ChatMessage>,
     EntityMapper<ChatMessageDto, ChatMessageEntity> {
     override fun mapToDominModel(model: ChatMessageDto): ChatMessage {
+        Log.d("mapToDominModel: ", "mapToDominModel: ${model.favorite_for+""+BaseApp.instance?.classSharedPreferences?.user?.userId }")
 
         return ChatMessage(
             messageId  = model.message_id,
 
 //            id = model.id,
 
-            isMe  =  model.sender_id== BaseApp.instance?.classSharedPreferences?.user?.userId,
+            isMe  =  model.sender_id == BaseApp.instance?.classSharedPreferences?.user?.userId,
 
             message = model.message,
 
@@ -39,7 +42,10 @@ class ChatMessageDtoMapper : DomainMapper<ChatMessageDto, ChatMessage>,
 
             upload = false,
 
-            isChecked = false
+            isChecked = false,
+
+            favoriteFor = (model.favorite_for == BaseApp.instance?.classSharedPreferences?.user?.userId) or (model.favorite_for == "0")
+
         )
     }
 
@@ -54,7 +60,9 @@ class ChatMessageDtoMapper : DomainMapper<ChatMessageDto, ChatMessage>,
     ////////////////to Entity
 
     override fun mapToEntityModel(model: ChatMessageDto): ChatMessageEntity {
+        Log.d("mapToDominModel: ", "mapToDominModel: ${model.favorite_for+""+BaseApp.instance?.classSharedPreferences?.user?.userId }")
         return ChatMessageEntity(
+
             messageId  = model.message_id,
 
 //            id = model.id.toInt(),
@@ -83,7 +91,10 @@ class ChatMessageDtoMapper : DomainMapper<ChatMessageDto, ChatMessage>,
 
             upload = false,
 
-            isChecked = false
+            isChecked = false,
+
+            favoriteFor = (model.favorite_for == BaseApp.instance?.classSharedPreferences?.user?.userId) or (model.favorite_for == "0")
+
         )
     }
 

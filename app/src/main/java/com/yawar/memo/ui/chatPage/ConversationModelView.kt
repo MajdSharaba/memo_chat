@@ -10,6 +10,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import javax.inject.Inject
 import kotlin.collections.ArrayList
+import kotlin.math.log
 
 @HiltViewModel
 //class ConversationModelView(anthorUesrId: String, blockedForState: String) : ViewModel() {
@@ -21,6 +22,9 @@ class ConversationModelView @Inject constructor (val chatMessageRepoo : ChatMess
 //    private val chatMessageRepoo = baseApp.chatMessageRepoo
     var lastSeen = "null"
     lateinit var user_id : String
+
+    var messagesState : String = "0"
+
 
 
 
@@ -151,7 +155,7 @@ init {
 //        }
 //    }
 
-    fun ubdateMessage(messge_id: String?, message: String?) {
+    fun updateMessage(messge_id: String?, message: String?) {
         chatMessageRepoo.UpdateMessage(messge_id!!, message)
     }
 
@@ -181,6 +185,12 @@ init {
             selectedMessage.value)
     }
 
+    fun addSpecialMessages(message_id: ArrayList<String?>, another_user_id: String, my_id: String?) {
+        chatMessageRepoo.addSpecialMessage(message_id.toString(),
+            another_user_id,
+           my_id)
+    }
+
     fun setLoading(value: Boolean) {
         chatMessageRepoo.setLoading(value)
     }
@@ -196,6 +206,10 @@ init {
     }
     fun setTyping(value: String) {
         _isTyping.value = value
+    }
+    fun setMessageState(value: String) {
+        Log.d("setMessageState", "setMessageState:${value}")
+        messagesState = value
     }
 
     fun  getLoading() :LiveData<Boolean>{

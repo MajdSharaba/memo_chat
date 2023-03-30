@@ -21,7 +21,9 @@ data class ChatMessage(
     var  isDownload:Boolean = false,
     var  upload:Boolean = false,
     var  isChecked:Boolean = false,
-):  Cloneable, Parcelable {
+    var  favoriteFor:Boolean?= false,
+
+    ):  Cloneable, Parcelable {
 
      public override fun  clone() : ChatMessage {
 

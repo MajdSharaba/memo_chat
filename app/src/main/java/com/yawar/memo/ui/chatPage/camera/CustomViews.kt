@@ -42,7 +42,7 @@ fun fragmentBody(
 
 
         val myId = BaseApp.instance?.classSharedPreferences?.user?.userId
-        val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+        val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
 
         this.layoutParams = layoutParams
         addView(PhotoView(context).apply {
@@ -61,6 +61,7 @@ fun fragmentBody(
                 this.gravity = Gravity.END or Gravity.BOTTOM
             }
             imageTintList = ColorStateList.valueOf(Color.WHITE)
+            setBackgroundColor(context.getColor(R.color.memo_background_color))
             setImageResource(R.drawable.ic_arrow_send)
             setOnClickListener {
                 Log.d("fragmentBody", "fragmentBody: ")
@@ -134,7 +135,7 @@ fun fragmentBody2(
         this.gravity = Gravity.CENTER
     }
     val myId = BaseApp.instance?.classSharedPreferences?.user?.userId
-    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("", "", "", "", "", "", "")
+    val anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("", "", "", "", "", "", "","")
     return FrameLayout(context).apply {
         this.layoutParams = layoutParams
         setBackgroundResource(R.color.black)

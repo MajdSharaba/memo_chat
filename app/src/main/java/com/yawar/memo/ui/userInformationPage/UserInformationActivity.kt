@@ -51,7 +51,7 @@ import javax.inject.Inject
 class UserInformationActivity : AppCompatActivity() {
 //    var EXAMPLE_COUNTER: Key<Int>
     private val recyclerDataArrayList = ArrayList<MediaModel>()
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
 
     //    lateinit  var userInformationViewModelFactory: UserInformationViewModelFactory
     lateinit var timeProperties: TimeProperties

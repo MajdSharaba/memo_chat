@@ -65,22 +65,22 @@ public class NotificationWorker extends Worker {
     @Override
     public Worker.Result doWork() {
         classSharedPreferences = BaseApp.Companion.getInstance().getClassSharedPreferences();
-        AnthorUserInChatRoomId anthorUserInChatRoomId = AnthorUserInChatRoomId.Companion.getInstance("","","","","","","");
+        AnthorUserInChatRoomId anthorUserInChatRoomId = AnthorUserInChatRoomId.Companion.getInstance("","","","","","","","");
 
         boolean inCall=false;
         Context applicationContext = getApplicationContext();
         ArrayList<String> arrayList = new ArrayList<String>();
 //        inboxStyle = new NotificationCompat.InboxStyle();
-
-       inboxStyle =  new NotificationCompat.MessagingStyle("Me");
+        String chatId = "";
+        inboxStyle =  new NotificationCompat.MessagingStyle("Me");
         final String imageUrl = getInputData().getString("image");
         final String name = getInputData().getString("name" );
         final String message = getInputData().getString("body" );
         final String channel = getInputData().getString("channel" );
         final String fcmToken = getInputData().getString("fcm_token" );
         final String specialNumber = getInputData().getString("special" );
-        final String chatId = getInputData().getString("chat_id" );
-        Log.d(TAG, "doWorkkkkk: "+imageUrl);
+          chatId = getInputData().getString("chat_id" );
+        Log.d(TAG, "doWorkkkkk: "+chatId);
 
 
         final String blockedFor = getInputData().getString("blockedFor" );
@@ -106,7 +106,9 @@ public class NotificationWorker extends Worker {
             anthorUserInChatRoomId.setId(channel);
             anthorUserInChatRoomId.setBlockedFor(blockedFor);
             anthorUserInChatRoomId.setFcmToken(fcmToken);
+            if(chatId!=null)
             anthorUserInChatRoomId.setChatId(chatId);
+            if(specialNumber!=null)
             anthorUserInChatRoomId.setSpecialNumber(specialNumber);
             anthorUserInChatRoomId.setUserName(name);
             anthorUserInChatRoomId.setImageUrl(imageUrl);

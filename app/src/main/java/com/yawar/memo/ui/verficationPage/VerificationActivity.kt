@@ -2,6 +2,7 @@ package com.yawar.memo.ui.verficationPage
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.MotionEvent
@@ -13,25 +14,50 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.firebase.auth.PhoneAuthProvider.ForceResendingToken
 import com.yawar.memo.BaseApp
-import com.yawar.memo.network.AuthApi
 import com.yawar.memo.R
-import com.yawar.memo.utils.CallProperty
 import com.yawar.memo.databinding.ActivityVerificationBinding
+import com.yawar.memo.network.AuthApi
 import com.yawar.memo.repositry.AuthRepo
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.registerPage.RegisterActivity
+import com.yawar.memo.utils.CallProperty
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject
+
+
 @AndroidEntryPoint
 class VerificationActivity : AppCompatActivity(), java.util.Observer {
+    private val TAG = "verificationCodeTextView"
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var myBase: BaseApp
     lateinit var binding: ActivityVerificationBinding
+    private val SMS_CONSENT_REQUEST = 2 // Can be any integer
+
+//    private val smsReceiver = object : BroadcastReceiver() {
+//        override fun onReceive(context: Context, intent: Intent) {
+//            if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
+//                val extras: Bundle = intent.extras!!
+//                val status = extras[SmsRetriever.EXTRA_STATUS] as Status
+//
+//                if (status.statusCode == CommonStatusCodes.SUCCESS) {
+//                    // Get SMS message contents
+//                    val message = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String
+//                    // Extract verification code from message
+//                    val verificationCode = message.replace("[^0-9]".toRegex(), "")
+//                    // Set verification code in text view
+//                    Log.d(TAG, "Verification code: $verificationCode")
+//                }
+//            }
+//        }
+//    }
+
+
     var count = 60
     @Inject
     lateinit var authRepo: AuthRepo
@@ -52,6 +78,7 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
 //        )
 
         authApi = AuthApi(this)
+
 
         verficationViewModel.getSpecialNumber().observe(this, object : Observer<JSONObject?> {
             override fun onChanged(jsonObject: JSONObject?) {
@@ -184,6 +211,16 @@ class VerificationActivity : AppCompatActivity(), java.util.Observer {
                 authApi.showErrorMessage.setValue(false)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+//        registerReceiver(smsReceiver, filter)
+    }
+    override fun onPause() {
+        super.onPause()
+//        unregisterReceiver(smsReceiver)
     }
 
     fun timer() {

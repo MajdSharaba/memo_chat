@@ -30,6 +30,7 @@ data class Img(
 @SuppressLint("ParcelCreator")
 @Parcelize
 class Options : Parcelable {
+
     var ratio = Ratio.RATIO_AUTO
     var count = 1
     var spanCount = 4
@@ -39,6 +40,7 @@ class Options : Parcelable {
     var flash = Flash.Auto
     var preSelectedUrls = ArrayList<Uri>()
     var videoOptions : VideoOptions = VideoOptions()
+
 }
 
 @Parcelize

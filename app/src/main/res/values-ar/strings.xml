@@ -90,6 +90,7 @@
     <string name="sendText">ادخل رقمك الهاتف وسوف نقوم بأرسال رمز التحقق اليك ليتم تأكيد حسابك </string>
     <string name="verifictionText">ادخل الرمز الذي قمنا بأرساله الى رقمك </string>
     <string name="choose_special_number">اختر رقمك المعرف</string>
+    <string name="choose_name">الرجاء اختيار اسم</string>
     <string name="register">انشاء حساب</string>
     <string name="alert_delete_message">حذف الرسائل؟</string>
     <string name="delete_for_me">الحذف لدي</string>
@@ -289,5 +290,9 @@
     <string name="click_button">click button</string>
     <string name="camera_flash_button">camera flash button</string>
     <string name="lens_facing_button">lens facing button</string>
+    <string name="you">انت</string>
+    <string name="title_activity_favourite">الرسائل المميزة بنجمة</string>
+
+
 
 </resources>

@@ -1,6 +1,8 @@
 package com.yawar.memo.dataBindingAdapter
 
 import android.os.Environment
+import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.yawar.memo.domain.model.ChatMessage
@@ -27,6 +29,18 @@ fun TextView.setName(item : ChatMessage?) {
         else{
             text = "0.0"
 
+        }
+    }
+}
+
+@BindingAdapter("image_for_special")
+fun ImageView.setVisability(item : ChatMessage?) {
+    item?.let {
+        if(item.favoriteFor!!){
+            visibility = View.VISIBLE
+        }
+        else{
+            visibility = View.GONE
         }
     }
 }

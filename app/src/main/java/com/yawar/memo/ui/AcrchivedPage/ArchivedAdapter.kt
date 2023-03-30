@@ -97,7 +97,7 @@ class ArchivedAdapter(var context: Activity) :
 
      class ViewHolder private  constructor(val binding: ChatRoomRowBinding) :
         RecyclerView.ViewHolder(binding.root) {
-         val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+         val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
 
          @SuppressLint("UseCompatLoadingForDrawables")
         fun bind(

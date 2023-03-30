@@ -20,6 +20,7 @@ import com.yawar.memo.databinding.FragmentChatRoomBinding
 import com.yawar.memo.domain.model.AnthorUserInChatRoomId
 import com.yawar.memo.domain.model.ChatRoomModel
 import com.yawar.memo.domain.model.UserModel
+import com.yawar.memo.jetbackCompose.favouriteActivity.FavouriteActivity
 import com.yawar.memo.modelView.ChatRoomViewModel
 import com.yawar.memo.sessionManager.ClassSharedPreferences
 import com.yawar.memo.ui.AcrchivedPage.ArchivedActivity
@@ -32,7 +33,7 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
     var postList: MutableList<ChatRoomModel> = ArrayList()
     lateinit var myId: String
     lateinit var myBase: BaseApp
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
 
     //    lateinit var chatRoomViewModel: ChatRoomViewModel
     val chatRoomViewModel by viewModels<ChatRoomViewModel>()
@@ -134,6 +135,7 @@ class ChatRoomFragment : Fragment(), ChatRoomAdapter.CallbackInterfac {
         binding.fab.setOnClickListener(View.OnClickListener {
             val intent = Intent(context, ContactNumberActivity::class.java)
             startActivity(intent)
+
         })
 
         ///////new chat

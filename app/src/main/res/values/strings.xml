@@ -72,6 +72,7 @@
     <string name="sendText">Please enter your number and we will send code for you  </string>
     <string name="verifictionText">"Please enter the code that we've sent to your number"</string>
     <string name="choose_special_number">choose special number</string>
+    <string name="choose_name">please choose name</string>
     <string name="register">Register</string>
     <string name="alert_delete_message">Delete Messages?</string>
     <string name="delete_for_me">Delete For Me</string>
@@ -244,5 +245,9 @@
     <string name="click_button">click button</string>
     <string name="camera_flash_button">camera flash button</string>
     <string name="lens_facing_button">lens facing button</string>
+    <string name="title_activity_favourite">Starred messages</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="you">You</string>
+
 
 </resources>

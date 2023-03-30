@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto"
+
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -141,6 +142,13 @@
                     android:layout_margin="5dp"
                     android:gravity="end"
                     android:orientation="horizontal">
+                    <ImageView
+                        android:id="@+id/image_for_special"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_star"
+                        custom:tint="@color/gray" />
 
                     <TextView
                         android:id="@+id/tv_date"

@@ -39,7 +39,7 @@ class ContactNumberActivity : AppCompatActivity(), ContactNumberAdapter.Callback
     lateinit var myId: String
     lateinit var myBase: BaseApp
 //    lateinit var serverApi: ServerApi
-    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","")
+    val  anthorUserInChatRoomId = AnthorUserInChatRoomId.getInstance("","","","","","","","")
 
     val contactNumberViewModel by viewModels<ContactNumberViewModel>()
     lateinit var classSharedPreferences: ClassSharedPreferences

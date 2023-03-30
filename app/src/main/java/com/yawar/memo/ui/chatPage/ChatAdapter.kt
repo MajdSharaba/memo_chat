@@ -97,6 +97,7 @@ class ChatAdapter(private val context: Activity) :
         }
 
     }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
@@ -145,12 +146,23 @@ class ChatAdapter(private val context: Activity) :
             }
             false
         }
+
     }
 
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
+
+    fun getPositionForId(messageId: String): Int {
+        for (i in currentList.indices) {
+            if (currentList[i].messageId == messageId) {
+                return i
+            }
+        }
+        return RecyclerView.NO_POSITION // ID not found
+    }
+
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
@@ -177,6 +189,12 @@ class ChatAdapter(private val context: Activity) :
             context: Activity,
             mCallback: CallbackInterface?
         ) {
+            if(chatMessage.favoriteFor!!){
+                binding.imageForSpecial.visibility = View.VISIBLE
+            }
+            else{
+                binding.imageForSpecial.visibility = View.GONE
+            }
              setAlignment(myMsg, chatMessage.state, context)
              binding.tvDate.text =
                  TimeProperties.getDate(chatMessage.dateTime.toLong(), "hh:mm")
@@ -279,7 +297,7 @@ class ChatAdapter(private val context: Activity) :
                     binding.contentWithBackground.layoutParams as LinearLayout.LayoutParams
                 layoutParams.gravity = Gravity.LEFT
                 binding.contentWithBackground.layoutParams = layoutParams
-                binding.tvDate.setTextColor(context.resources.getColor(R.color.textColor))
+                binding.tvDate.setTextColor(context.resources.getColor(R.color.white))
                 val lp = binding.content.layoutParams as RelativeLayout.LayoutParams
                 lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0)
                 lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
@@ -311,7 +329,14 @@ class ChatAdapter(private val context: Activity) :
              context: Activity,
              mCallback: CallbackInterface?
          ) {
+
              setAlignment(myMsg, chatMessage.state, context)
+             if(chatMessage.favoriteFor!!){
+                 binding.imageForSpecial.visibility = View.VISIBLE
+             }
+             else{
+                 binding.imageForSpecial.visibility = View.GONE
+             }
              binding.content.visibility = View.VISIBLE
              binding.tvDate.text = TimeProperties.getDate(
                  chatMessage.dateTime.toLong(), "hh:mm"
@@ -459,7 +484,7 @@ class ChatAdapter(private val context: Activity) :
              context: Activity
          ) {
              if (isMe) {
-                 (this as LayoutVoiceViewHolder).binding.contentWithBackground.setBackgroundResource(
+                 this.binding.contentWithBackground.setBackgroundResource(
                      R.drawable.in_message_bg
                  )
                  val layoutParams =
@@ -493,7 +518,7 @@ class ChatAdapter(private val context: Activity) :
                  binding.ivState.visibility = View.VISIBLE
 
              } else if (!isMe) {
-                 (this as LayoutVoiceViewHolder).binding.ivState.visibility = View.GONE
+                 this.binding.ivState.visibility = View.GONE
                  binding.contentWithBackground.setBackgroundResource(R.drawable.out_message_bg)
                  val layoutParams =
                      binding.contentWithBackground.layoutParams as LinearLayout.LayoutParams
@@ -539,6 +564,12 @@ class ChatAdapter(private val context: Activity) :
              mCallback: CallbackInterface?
         ) {
             setAlignment(myMsg, chatMessage.state, context)
+             if(chatMessage.favoriteFor!!){
+                 binding.imageForSpecial.visibility = View.VISIBLE
+             }
+             else{
+                 binding.imageForSpecial.visibility = View.GONE
+             }
             binding.tvDate.text = TimeProperties.getDate(
                 chatMessage.dateTime.toLong(), "hh:mm"
             )
@@ -599,7 +630,7 @@ class ChatAdapter(private val context: Activity) :
              context: Activity
          ) {
              if (isMe) {
-                 (this as LayoutVideoViewHolder).binding.contentWithBackground.setBackgroundResource(
+                 this.binding.contentWithBackground.setBackgroundResource(
                      R.drawable.in_message_bg
                  )
                  val layoutParams =
@@ -627,13 +658,13 @@ class ChatAdapter(private val context: Activity) :
                  }
                  binding.ivState.visibility = View.VISIBLE
              } else if (!isMe) {
-                 (this as LayoutVideoViewHolder).binding.ivState.visibility = View.GONE
+                 this.binding.ivState.visibility = View.GONE
                  binding.contentWithBackground.setBackgroundResource(R.drawable.out_message_bg)
                  val layoutParams =
                      binding.contentWithBackground.layoutParams as LinearLayout.LayoutParams
                  layoutParams.gravity = Gravity.LEFT
                  binding.contentWithBackground.layoutParams = layoutParams
-                 binding.tvDate.setTextColor(context.resources.getColor(R.color.textColor))
+                 binding.tvDate.setTextColor(context.resources.getColor(R.color.white))
                  val lp = binding.content.layoutParams as RelativeLayout.LayoutParams
                  lp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0)
                  lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT)
@@ -666,6 +697,12 @@ class ChatAdapter(private val context: Activity) :
             var userNameeee = chatMessage.fileName
 
             setAlignment(myMsg, chatMessage.state, context)
+            if(chatMessage.favoriteFor!!){
+                binding.imageForSpecial.visibility = View.VISIBLE
+            }
+            else{
+                binding.imageForSpecial.visibility = View.GONE
+            }
             binding.tvDate.text =
                 TimeProperties.getDate(chatMessage.dateTime.toLong(), "hh:mm")
             val pdfFile: File
@@ -792,13 +829,18 @@ class ChatAdapter(private val context: Activity) :
             chatMessage: ChatMessage,
             context: Activity
         ) {
-            setAlignment(myMsg, chatMessage.state, context)
-
+               setAlignment(myMsg, chatMessage.state, context)
 
                 binding.tvDate.text
                 TimeProperties.getDate(
                 chatMessage.dateTime.toLong(), "hh:mm"
             )
+            if(chatMessage.favoriteFor!!){
+                binding.imageForSpecial.visibility = View.VISIBLE
+            }
+            else{
+                binding.imageForSpecial.visibility = View.GONE
+            }
             binding.phone.text = chatMessage.message
             binding.name.text = chatMessage.fileName
             binding.addContact.setOnClickListener {
@@ -924,6 +966,12 @@ class ChatAdapter(private val context: Activity) :
             mCallback: CallbackInterface?
         ) {
             setAlignment(myMsg, chatMessage.state, context)
+            if(chatMessage.favoriteFor!!){
+                binding.imageForSpecial.visibility = View.VISIBLE
+            }
+            else{
+                binding.imageForSpecial.visibility = View.GONE
+            }
             binding.tvDate.text = TimeProperties.getDate(
                 chatMessage.dateTime.toLong(), "hh:mm"
             )
@@ -1000,6 +1048,12 @@ class ChatAdapter(private val context: Activity) :
             context: Activity
         ) {
             setAlignment(myMsg, chatMessage.state, context)
+            if(chatMessage.favoriteFor!!){
+                binding.imageForSpecial.visibility = View.VISIBLE
+            }
+            else{
+                binding.imageForSpecial.visibility = View.GONE
+            }
             binding.tvDate.text =
                 TimeProperties.getDate(chatMessage.dateTime.toLong(), "hh:mm")
             if (chatMessage.isUpdate == "1") {

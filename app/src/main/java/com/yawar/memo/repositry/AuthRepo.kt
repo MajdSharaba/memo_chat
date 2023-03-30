@@ -70,6 +70,8 @@ class AuthRepo @Inject constructor(
             try {
                 val listResult = getChatRoomsDeferred?.await()
                 BaseApp.instance?.classSharedPreferences!!.fcmToken = token
+                Log.d("getMarsRealEstateProperties: ","token: ${listResult}")
+
 
 
             } catch (e: Exception) {
