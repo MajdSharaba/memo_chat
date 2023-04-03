@@ -50,10 +50,10 @@ class CallAdapter(var context: CallHistoryFragment) :
 
 
     override fun getFilter(): Filter {
-        return exampleFilter
+        return searchFilter
     }
 
-    private val exampleFilter: Filter = object : Filter() {
+    private val searchFilter: Filter = object : Filter() {
         override fun performFiltering(constraint: CharSequence): FilterResults {
             val filteredList: MutableList<CallHistoryModel?> = ArrayList()
             println(listsearch.size.toString() + "listsearch.size()")
@@ -63,6 +63,35 @@ class CallAdapter(var context: CallHistoryFragment) :
                 val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
                 for (item in listsearch) {
                     if (item!!.username.lowercase(Locale.getDefault()).contains(filterPattern)) {
+                        filteredList.add(item)
+                    }
+                }
+            }
+            val results = FilterResults()
+            results.values = filteredList
+            return results
+        }
+
+        override fun publishResults(constraint: CharSequence, results: FilterResults) {
+            submitList(results.values as List<CallHistoryModel?>)
+        }
+    }
+
+
+    fun getTypeFilter() : Filter{
+        return typeFilter
+    }
+
+    private val typeFilter: Filter = object : Filter() {
+        override fun performFiltering(constraint: CharSequence): FilterResults {
+            val filteredList: MutableList<CallHistoryModel?> = ArrayList()
+            println(listsearch.size.toString() + "listsearch.size()")
+            if (constraint == null || constraint.length == 0) {
+                filteredList.addAll(listsearch)
+            } else {
+                val filterPattern = constraint.toString().lowercase(Locale.getDefault()).trim { it <= ' ' }
+                for (item in listsearch) {
+                    if (item!!.call_status == filterPattern){
                         filteredList.add(item)
                     }
                 }

@@ -32,7 +32,10 @@ class CallHistoryModelView @Inject constructor(val calllHistoryRepo: CallHistory
     val loadingMutableLiveData : LiveData<Boolean>
         get() = calllHistoryRepo.loadingMutableLiveData
 
-//    var date: Date? = null
+    private val _state =  MutableLiveData<String>("all")
+    val state : LiveData<String>
+        get() = _state
+
 
 
 

@@ -24,7 +24,7 @@ android {
         applicationId "com.yawar.memo"
         minSdkVersion 28
         targetSdkVersion 33
-        versionCode 20
+        versionCode 21
         versionName "5.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

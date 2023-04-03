@@ -248,6 +248,8 @@
     <string name="title_activity_favourite">Starred messages</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="you">You</string>
+    <string name="all">All</string>
+    <string name="missed">Missed</string>
 
 
 </resources>

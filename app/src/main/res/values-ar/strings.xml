@@ -293,6 +293,9 @@
     <string name="you">انت</string>
     <string name="title_activity_favourite">الرسائل المميزة بنجمة</string>
 
+    <string name="all">الكل</string>
+    <string name="missed">فائتة</string>
+
 
 
 </resources>

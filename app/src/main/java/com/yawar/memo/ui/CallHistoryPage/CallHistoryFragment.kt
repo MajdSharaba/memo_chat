@@ -1,11 +1,15 @@
 package com.yawar.memo.ui.CallHistoryPage
 
+import android.annotation.SuppressLint
 import android.app.NotificationManager
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.databinding.DataBindingUtil
@@ -27,10 +31,12 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
     lateinit var itemAdapter: CallAdapter
     lateinit var classSharedPreferences: ClassSharedPreferences
     lateinit var binding: FragmentCallHistoryBinding
+    @SuppressLint("SuspiciousIndentation")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_call_history,container,false)
         val view = binding.root
         closeMessingCallCurrentNotification()
@@ -40,14 +46,23 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
         binding.recyclerView.layoutManager = linearLayoutManager
         classSharedPreferences = BaseApp.instance?.classSharedPreferences!!
         itemAdapter = CallAdapter(this)
-//        callHistoryModelView = ViewModelProvider(this)[CallHistoryModelView::class.java]
+        binding.toggle.setOnCheckedChangeListener{group, checkedId ->
+          val radioButton = view.findViewById<RadioButton>(checkedId)
+              if(binding.missed.isChecked) {
+                  itemAdapter.getTypeFilter().filter("missed call")
+              }
+            else{
+                itemAdapter.getTypeFilter().filter("")
+            }
+            
+        }
         callHistoryModelView.loadData()
             .observe(
                 requireActivity(),
                 Observer<List<CallHistoryModel?>?> { callModels ->
                     val list = ArrayList<CallHistoryModel?>()
                     if (callModels != null) {
-                        println("no call"+callModels)
+                        Log.d("callHistoryModelView", "onCreateView:${callModels} ")
                         if (callModels.isEmpty()) {
                             binding.linerNoCallHistory.visibility = View.VISIBLE
                             binding.recyclerView.visibility = View.GONE
@@ -62,7 +77,8 @@ class CallHistoryFragment : Fragment(), CallAdapter.CallbackInterface {
                             itemAdapter.setData(list)
                         }
                     }
-                })
+                }
+            )
         binding.recyclerView.adapter = itemAdapter
         callHistoryModelView.loadingMutableLiveData.observe(
             requireActivity()

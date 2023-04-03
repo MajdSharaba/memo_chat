@@ -434,7 +434,7 @@ class ChatMessageRepoo
         coroutineScope.launch {
             var chatMessageList = chatMessaheHistory.value as ArrayList
             var chatMessages = selectedMessage.value
-            Log.d("getMarsRealEstateProperties: ", message_id)
+            Log.d("getMarsRealEstateProperties: ", message_id + anthor_user_id + my_id!! )
 
 
 //            var deleteDeferred = GdgApi(AllConstants.base_node_url).apiService
